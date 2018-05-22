@@ -10,7 +10,7 @@
 
 #include "../common/types.h"
 
-namespace MPM {
+namespace Core {
 
 	class Time {
 		static Real timeScale;

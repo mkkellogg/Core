@@ -19,7 +19,7 @@
 #include "image/RawImage.h"
 #include "image/CubeTexture.h"
 
-namespace MPM {
+namespace Core {
 
   Demo::Demo(Engine& engine): engine(engine) {
     this->imageLoader = engine.getImageLoader();
@@ -31,23 +31,23 @@ namespace MPM {
     this->engine.onUpdate([this](Engine& engine) {
 
       // TODO: Remove this camera rotation code, it's only for demo purposes
-     /* static MPM::Real rotationAngle = 0.0;
-      std::shared_ptr<MPM::Camera> camera = engine.getCamera();
+     /* static Core::Real rotationAngle = 0.0;
+      std::shared_ptr<Core::Camera> camera = engine.getCamera();
       if (camera) {
         rotationAngle += 0.01;
-        if (rotationAngle >= MPM::Math::TwoPI) rotationAngle -= MPM::Math::TwoPI;
+        if (rotationAngle >= Core::Math::TwoPI) rotationAngle -= Core::Math::TwoPI;
 
-        MPM::Quaternion qA;
+        Core::Quaternion qA;
         qA.fromAngleAxis(rotationAngle, 0, 1, 0);
-        MPM::Matrix4x4 rotationMatrixA;
+        Core::Matrix4x4 rotationMatrixA;
         qA.rotationMatrix(rotationMatrixA);
 
-        MPM::Quaternion qB;
+        Core::Quaternion qB;
         qB.fromAngleAxis(-0.8, 1, 0, 0);
-        MPM::Matrix4x4 rotationMatrixB;
+        Core::Matrix4x4 rotationMatrixB;
         qB.rotationMatrix(rotationMatrixB);
 
-        MPM::Matrix4x4 worldMatrix;
+        Core::Matrix4x4 worldMatrix;
         worldMatrix.multiply(rotationMatrixA);
 
         if(demoMode == DemoMode::Dollhouse) {
@@ -60,12 +60,12 @@ namespace MPM {
 
     });
 
-   /* std::shared_ptr<MPM::Scene> scene = std::make_shared<MPM::Scene>();
+   /* std::shared_ptr<Core::Scene> scene = std::make_shared<Core::Scene>();
     engine.setScene(scene);
 
     if (demoMode == DemoMode::Panorama) {
-      std::shared_ptr<MPM::Mesh> skyboxMesh = std::make_shared<MPM::Mesh>(36, false);
-      MPM::Real vertexPositions[] = {
+      std::shared_ptr<Core::Mesh> skyboxMesh = std::make_shared<Core::Mesh>(36, false);
+      Core::Real vertexPositions[] = {
           // back
           -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0,
           -1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0,
@@ -85,8 +85,8 @@ namespace MPM {
           1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0,
           1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0
       };
-      skyboxMesh->enableAttribute(MPM::StandardAttributes::Position);
-      MPM::Bool positionInited = skyboxMesh->initVertexPositions(36);
+      skyboxMesh->enableAttribute(Core::StandardAttributes::Position);
+      Core::Bool positionInited = skyboxMesh->initVertexPositions(36);
       ASSERT(positionInited, "Unable to initialize skybox mesh vertex positions.");
       skyboxMesh->getVertexPositions()->store(vertexPositions);
 
@@ -97,28 +97,28 @@ namespace MPM {
       this->skyboxImages.push_back(imageLoader->loadJPEG("Pano/skybox4.jpg", false));
       this->skyboxImages.push_back(imageLoader->loadJPEG("Pano/skybox2.jpg", false));
 
-      this->skyboxTexture = MPM::CubeTexture::createCubeTexture(this->skyboxImages[0].get(), this->skyboxImages[1].get(),
+      this->skyboxTexture = Core::CubeTexture::createCubeTexture(this->skyboxImages[0].get(), this->skyboxImages[1].get(),
                                                                 this->skyboxImages[2].get(), this->skyboxImages[3].get(),
                                                                 this->skyboxImages[4].get(), this->skyboxImages[5].get());
 
-      this->skyboxMaterial = std::make_shared<MPM::BasicCubeMaterial>();
+      this->skyboxMaterial = std::make_shared<Core::BasicCubeMaterial>();
       skyboxMaterial->build();
       skyboxMaterial->setSkyboxTexture(skyboxTexture);
 
-      std::shared_ptr<MPM::Object3D> skyboxObj = std::make_shared<MPM::Object3D>();
-      std::shared_ptr<MPM::MeshRenderer> skyboxRenderer = std::make_shared<MPM::MeshRenderer>(
+      std::shared_ptr<Core::Object3D> skyboxObj = std::make_shared<Core::Object3D>();
+      std::shared_ptr<Core::MeshRenderer> skyboxRenderer = std::make_shared<Core::MeshRenderer>(
           skyboxMaterial, skyboxObj);
-      skyboxObj->addRenderable<MPM::Mesh>(skyboxMesh);
-      skyboxObj->setCustomRenderer<MPM::Mesh>(skyboxRenderer);
+      skyboxObj->addRenderable<Core::Mesh>(skyboxMesh);
+      skyboxObj->setCustomRenderer<Core::Mesh>(skyboxRenderer);
       scene->getRoot()->addObject(skyboxObj);
     }
     else {
-      MPM::DAMLoader damLoader(assetLoader, imageLoader);
+      Core::DAMLoader damLoader(assetLoader, imageLoader);
       auto meshObj = damLoader.load("hT3RtfKyx9B","3f13ceb2d2494214ad7cce632c20b770", true, true);
       scene->getRoot()->addObject(meshObj);
     }
 
-    std::shared_ptr<MPM::Camera> camera = std::make_shared<MPM::Camera>();
+    std::shared_ptr<Core::Camera> camera = std::make_shared<Core::Camera>();
     engine.setCamera(camera);*/
   }
 

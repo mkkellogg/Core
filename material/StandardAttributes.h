@@ -5,7 +5,7 @@
 #ifndef MPM_STANDARDATTRIBUTES_H
 #define MPM_STANDARDATTRIBUTES_H
 
-namespace MPM {
+namespace Core {
 
   enum class StandardAttributes {
     Position = 0,

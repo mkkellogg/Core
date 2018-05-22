@@ -12,12 +12,12 @@
 #include "../base/VectorStorage.h"
 #include "Vector3Components.h"
 
-namespace MPM {
+namespace Core {
 
   #define VECTOR3_COMPONENT_COUNT 4
 
   template <typename T, bool isPoint, bool customStorage,
-      typename = typename std::enable_if<MPM::is_numeric<T>::value, T>::type> class Vector3;
+      typename = typename std::enable_if<Core::is_numeric<T>::value, T>::type> class Vector3;
 
   template <typename T, bool isPoint, bool customStorage>
   class Vector3<T, isPoint, customStorage, T>: public VectorStorage<T, VECTOR3_COMPONENT_COUNT, customStorage>, public Vector3Components<T> {

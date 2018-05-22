@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-namespace MPM {
+namespace Core {
 
   Shader::Shader() {
 

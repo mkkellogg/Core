@@ -4,7 +4,7 @@
 
 #include "Time.h"
 
-namespace MPM {
+namespace Core {
   Real Time::timeScale = 1.0f;
   Bool Time::initialized = false;
   unsigned long long Time::startupTime = 0;

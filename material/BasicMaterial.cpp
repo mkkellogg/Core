@@ -27,7 +27,7 @@ static const char fragmentShader[] =
         "    gl_FragColor = vColor;\n"
         "}\n";
 
-namespace MPM {
+namespace Core {
 
   BasicMaterial::BasicMaterial() {
 

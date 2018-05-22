@@ -12,7 +12,7 @@
 #include "../material/Material.h"
 #include "../render/Camera.h"
 
-namespace MPM  {
+namespace Core  {
 
   // forward declarations
   class Object3D;

@@ -4,7 +4,7 @@
 
 #include "Object3D.h"
 
-namespace MPM {
+namespace Core {
 
   Object3D::Object3D() {
 

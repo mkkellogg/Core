@@ -5,7 +5,7 @@
 #include "Texture.h"
 #include "../common/assert.h"
 
-namespace MPM {
+namespace Core {
 
   GLuint Texture::getTextureID() {
     return this->textureId;

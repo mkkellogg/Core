@@ -8,7 +8,7 @@
 #include "../common/types.h"
 #include "../math/Math.h"
 
-namespace MPM {
+namespace Core {
 
   template <typename T>
   class Vector3Components {

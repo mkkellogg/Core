@@ -12,7 +12,7 @@
 #include "BaseObjectRenderer.h"
 #include "ObjectRenderer.h"
 
-namespace MPM {
+namespace Core {
 
   class ObjectRenderers {
 

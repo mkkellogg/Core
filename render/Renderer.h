@@ -14,7 +14,7 @@
 #include "ObjectRenderers.h"
 #include "ObjectRenderer.h"
 
-namespace MPM {
+namespace Core {
 
   class Renderer {
     void processSceneStep(const std::shared_ptr<Object3D> object,

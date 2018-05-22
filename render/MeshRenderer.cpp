@@ -5,7 +5,7 @@
 #include "MeshRenderer.h"
 #include "../common/gl.h"
 
-namespace MPM {
+namespace Core {
 
   MeshRenderer::MeshRenderer(std::shared_ptr<Material> material, std::shared_ptr<Object3D> owner):
       ObjectRenderer<Mesh>(owner), material(material) {

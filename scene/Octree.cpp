@@ -4,7 +4,7 @@
 
 #include "Octree.h"
 
-namespace MPM {
+namespace Core {
 
 
 

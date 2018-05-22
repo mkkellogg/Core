@@ -9,7 +9,7 @@
 #include "../common/types.h"
 #include "../scene/Object3D.h"
 
-namespace MPM {
+namespace Core {
 
   class AssetLoader {
   public:

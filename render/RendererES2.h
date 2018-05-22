@@ -8,7 +8,7 @@
 #include "Renderer.h"
 #include "../geometry/Mesh.h"
 
-namespace MPM {
+namespace Core {
   class RendererES2: public Renderer {
   public:
     RendererES2();

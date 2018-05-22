@@ -5,7 +5,7 @@
 #include "Scene.h"
 #include "../common/assert.h"
 
-namespace MPM {
+namespace Core {
 
   Scene::Scene() {
     std::shared_ptr<Object3D> root = std::make_shared<Object3D>();

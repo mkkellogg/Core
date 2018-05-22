@@ -4,7 +4,7 @@
 
 #include "Object3DComponent.h"
 
-namespace MPM {
+namespace Core {
 
   Object3DComponent::Object3DComponent(std::shared_ptr<Object3D> owner): owner(owner) {
 

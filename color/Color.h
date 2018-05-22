@@ -9,7 +9,7 @@
 #include "../base/VectorStorage.h"
 #include "Color4Components.h"
 
-namespace MPM {
+namespace Core {
 
   #define COLOR_COMPONENT_COUNT 4
 

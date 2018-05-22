@@ -7,7 +7,7 @@
 
 #include <memory>
 
-namespace MPM {
+namespace Core {
 
   // forward declaration
   class Object3D;

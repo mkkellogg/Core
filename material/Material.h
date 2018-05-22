@@ -11,7 +11,7 @@
 #include "StandardAttributes.h"
 #include "StandardUniforms.h"
 
-namespace MPM {
+namespace Core {
   class Material {
   protected:
     std::shared_ptr<Shader> shader;

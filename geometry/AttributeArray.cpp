@@ -7,7 +7,7 @@
 #include "../common/gl.h"
 #include "../common/assert.h"
 
-namespace MPM {
+namespace Core {
   template<typename T>
   AttributeArray<T>::AttributeArray(UInt32 attributeCount): storage(nullptr), attributes(nullptr), attributeCount(attributeCount) {
     allocate();

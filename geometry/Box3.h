@@ -9,7 +9,7 @@
 #include "Vector3Components.h"
 #include "Vector3.h"
 
-namespace MPM {
+namespace Core {
 
   class Box3 {
 

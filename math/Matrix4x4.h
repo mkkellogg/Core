@@ -9,7 +9,7 @@
 #include "../geometry/Vector3.h"
 #include "../base/BaseVector.h"
 
-namespace MPM {
+namespace Core {
 
   // forward declarations
   class Quaternion;

@@ -7,7 +7,7 @@
 
 #include "../common/types.h"
 
-namespace MPM {
+namespace Core {
 
   template <typename T>
   class Vector2Components {

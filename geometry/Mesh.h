@@ -18,7 +18,7 @@
 #include "../material/StandardAttributes.h"
 #include "Box3.h"
 
-namespace MPM {
+namespace Core {
 
   class Mesh : public Renderable<Mesh>  {
 

@@ -17,7 +17,7 @@
 #include "../render/ObjectRenderer.h"
 #include "../render/ObjectRenderers.h"
 
-namespace MPM {
+namespace Core {
 
   // forward declarations
   class Mesh;

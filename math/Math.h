@@ -7,7 +7,7 @@
 
 #include "../common/types.h"
 
-namespace MPM {
+namespace Core {
   class Math {
   public:
     static const Real PI;

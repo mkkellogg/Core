@@ -9,7 +9,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-namespace MPM {
+namespace Core {
 
   const Real Math::PI = 3.14159265358979f;
   const Real Math::TwoPI = Math::PI * 2.0f;

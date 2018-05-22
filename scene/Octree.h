@@ -13,7 +13,7 @@
 #include "../geometry/Vector3.h"
 #include "../geometry/Mesh.h"
 
-namespace MPM {
+namespace Core {
 
   class Octree {
 

@@ -9,7 +9,7 @@
 #include "../common/assert.h"
 #include "RawImage.h"
 
-namespace MPM {
+namespace Core {
 
   std::shared_ptr<CubeTexture> CubeTexture::createCubeTexture(RawImage *front, RawImage *back,
                                               RawImage *top, RawImage *bottom,

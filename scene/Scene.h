@@ -11,7 +11,7 @@
 #include "../common/types.h"
 #include "Object3D.h"
 
-namespace MPM {
+namespace Core {
 
   class Scene {
 

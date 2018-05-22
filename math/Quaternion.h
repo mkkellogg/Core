@@ -10,7 +10,7 @@
 #include "../common/types.h"
 #include "../geometry/Vector3Components.h"
 
-namespace MPM
+namespace Core
 {
   class Quaternion
   {

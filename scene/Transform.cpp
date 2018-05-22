@@ -4,7 +4,7 @@
 
 #include "Transform.h"
 
-namespace MPM {
+namespace Core {
 
   Transform::Transform() {
     this->matrix.setIdentity();

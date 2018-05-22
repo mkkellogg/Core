@@ -7,7 +7,7 @@
 
 #include "BaseRenderable.h"
 
-namespace MPM {
+namespace Core {
 
   template <typename T>
   class Renderable : public BaseRenderable{

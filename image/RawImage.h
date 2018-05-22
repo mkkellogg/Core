@@ -7,7 +7,7 @@
 
 #include "../common/types.h"
 
-namespace MPM {
+namespace Core {
   class RawImage {
     Byte* imageBytes;
     UInt32 width;

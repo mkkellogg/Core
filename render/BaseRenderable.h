@@ -5,7 +5,7 @@
 #ifndef MPM_BASE_RENDERABLE_H
 #define MPM_BASE_RENDERABLE_H
 
-namespace MPM {
+namespace Core {
 
   class BaseRenderable {
 

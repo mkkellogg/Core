@@ -9,7 +9,7 @@
 #include "../math/Matrix4x4.h"
 #include "../scene/Object3D.h"
 
-namespace MPM {
+namespace Core {
   class Camera : public Object3D {
     Real fov;
     Real aspectRatio;

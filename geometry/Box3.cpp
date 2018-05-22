@@ -4,7 +4,7 @@
 
 #include "Box3.h"
 
-namespace MPM {
+namespace Core {
 
   Box3::Box3() {
 

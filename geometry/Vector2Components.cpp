@@ -4,7 +4,7 @@
 
 #include "Vector2Components.h"
 
-namespace MPM {
+namespace Core {
 
   template <typename T>
   Vector2Components<T>::Vector2Components(T* data, const T& x, const T& y): x(data[0]), y(data[1]) {

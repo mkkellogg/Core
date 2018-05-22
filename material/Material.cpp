@@ -6,7 +6,7 @@
 #include "../common/debug.h"
 #include "Material.h"
 
-namespace MPM {
+namespace Core {
 
   Material::Material(): ready(false) {
 

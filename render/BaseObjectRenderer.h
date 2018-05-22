@@ -9,7 +9,7 @@
 #include "../scene/Object3DComponent.h"
 #include "BaseRenderable.h"
 
-namespace MPM  {
+namespace Core  {
 
   // forward declarations
   class Object3D;

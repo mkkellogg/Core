@@ -4,7 +4,7 @@
 
 #include "Color4Components.h"
 
-namespace MPM {
+namespace Core {
 
   Color4Components::Color4Components(Real* data, const Real& x, const Real& y, const Real& z, const Real w):
       r(data[0]), g(data[1]), b(data[2]), a(data[2]) {

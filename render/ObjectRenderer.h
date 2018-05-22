@@ -8,7 +8,7 @@
 #include <memory>
 #include "BaseObjectRenderer.h"
 
-namespace MPM  {
+namespace Core  {
 
   // forward declarations
   class Object3D;

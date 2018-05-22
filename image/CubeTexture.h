@@ -8,7 +8,7 @@
 #include "Texture.h"
 #include "RawImage.h"
 
-namespace MPM {
+namespace Core {
 
   class CubeTexture : public Texture {
   public:

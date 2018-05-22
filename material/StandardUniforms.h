@@ -5,7 +5,7 @@
 #ifndef MPM_UNIFORMS_H
 #define MPM_UNIFORMS_H
 
-namespace MPM {
+namespace Core {
 
   enum class StandardUniforms {
     ModelMatrix = 0,

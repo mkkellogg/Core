@@ -8,7 +8,7 @@
 #include "../common/debug.h"
 #include "../common/assert.h"
 
-namespace MPM {
+namespace Core {
 
 #define I(_i, _j) ((_j) + ROWSIZE_MATRIX_4X4 * (_i))
 

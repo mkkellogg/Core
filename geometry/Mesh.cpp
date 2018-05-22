@@ -5,7 +5,7 @@
 #include "../common/types.h"
 #include "Mesh.h"
 
-namespace MPM {
+namespace Core {
 
   Mesh::Mesh(UInt32 size, Bool indexed):
     size(size),  vertexPositions(nullptr), vertexColors(nullptr), vertexUVs(nullptr), indexed(indexed) {

@@ -7,7 +7,7 @@
 
 #include  "../math/Matrix4x4.h"
 
-namespace MPM {
+namespace Core {
 
   class Transform {
     Matrix4x4 matrix;

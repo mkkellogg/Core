@@ -10,7 +10,7 @@
 #include <unordered_map>
 #include "RawImage.h"
 
-namespace MPM {
+namespace Core {
   class ImageLoader {
     std::unordered_map<std::string, std::shared_ptr<RawImage>> cache;
   protected:

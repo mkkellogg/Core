@@ -8,7 +8,7 @@
 #include "Material.h"
 #include "../image/Texture.h"
 
-namespace MPM {
+namespace Core {
   class BasicMaterial : public Material {
     GLuint positionLocation;
     GLuint colorLocation;

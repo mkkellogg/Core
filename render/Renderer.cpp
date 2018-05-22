@@ -5,7 +5,7 @@
 #include "Renderer.h"
 #include "../math/Matrix4x4.h"
 
-namespace MPM {
+namespace Core {
 
   Renderer::Renderer() {
 

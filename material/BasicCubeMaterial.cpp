@@ -35,7 +35,7 @@ static const char fragmentShader[] =
         "    gl_FragColor = textureColor;\n"
         "}\n";
 
-namespace MPM {
+namespace Core {
 
   BasicCubeMaterial::BasicCubeMaterial() {
 

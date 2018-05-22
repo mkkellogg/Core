@@ -8,7 +8,7 @@
 #include "Material.h"
 #include "../image/CubeTexture.h"
 
-namespace MPM {
+namespace Core {
   class BasicCubeMaterial : public Material {
     GLuint positionLocation;
     GLuint colorLocation;

@@ -8,7 +8,7 @@
 #include "../math/Math.h"
 #include "../math/Matrix4x4.h"
 
-namespace MPM {
+namespace Core {
 
   const UInt32 Camera::DEFAULT_FOV = 70;
   const UInt32 Camera::DEFAULT_WIDTH = 1200;

@@ -4,7 +4,7 @@
 
 #include "Color4Components.h"
 
-namespace MPM {
+namespace Core {
 
   template <bool customStorage>
   Color4<customStorage>::Color4(): Color4(0.0, 0.0, 0.0, 1.0) {}

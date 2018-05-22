@@ -4,7 +4,7 @@
 
 #include "RawImage.h"
 
-namespace MPM {
+namespace Core {
 
   RawImage::RawImage(Byte* imageBytes, UInt32 width, UInt32 height):
       imageBytes(imageBytes), width(width), height(height) {

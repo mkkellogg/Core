@@ -1,7 +1,7 @@
 #include "RendererES2.h"
 #include "../render/MeshRenderer.h"
 
-namespace MPM {
+namespace Core {
 
   RendererES2::RendererES2() {
 

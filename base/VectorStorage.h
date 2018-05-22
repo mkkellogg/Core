@@ -8,7 +8,7 @@
 #include "../common/types.h"
 #include "BaseVector.h"
 
-namespace MPM {
+namespace Core {
 
   template<typename T, UInt32 componentCount, bool customStorage>
   class VectorStorage {};

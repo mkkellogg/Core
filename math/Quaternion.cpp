@@ -9,7 +9,7 @@
 #include "Math.h"
 #include "../geometry/Vector3.h"
 
-namespace MPM
+namespace Core
 {
   const Quaternion Quaternion::Identity(0, 0, 0, 1);
 

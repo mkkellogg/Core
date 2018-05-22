@@ -13,7 +13,7 @@
 #include "image/ImageLoader.h"
 #include "asset/AssetLoader.h"
 
-namespace MPM {
+namespace Core {
 
   class Engine {
 

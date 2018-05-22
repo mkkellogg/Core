@@ -8,7 +8,7 @@
 #include <type_traits>
 #include <iostream>
 
-namespace MPM {
+namespace Core {
 
   typedef bool Bool;
 

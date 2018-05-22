@@ -4,7 +4,7 @@
 
 #include "ImageLoader.h"
 
-namespace MPM {
+namespace Core {
 
   Bool ImageLoader::isImageInCache(const std::string& name) {
     auto got = this->cache.find(name);

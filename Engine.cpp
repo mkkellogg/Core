@@ -18,7 +18,7 @@ static GLboolean gl3stubInit() {
 }
 #endif
 
-namespace MPM {
+namespace Core {
 
   static void printGlString(const char* name, GLenum s) {
     static char glString[128];
@@ -70,7 +70,7 @@ namespace MPM {
     }
     else if (glVersion == GLVersion::Two) {
       if (maxGL >= 2) {
-        renderer = MPM::RendererES2::createRenderer();
+        renderer = Core::RendererES2::createRenderer();
         DebugPrintError("Using OpenGL ES 2.0 renderer");
       }
       else {

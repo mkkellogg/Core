@@ -9,7 +9,7 @@
 #include "../common/gl.h"
 #include "../common/types.h"
 
-namespace MPM {
+namespace Core {
   class Shader {
 
     Bool ready;
