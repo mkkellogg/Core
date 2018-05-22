@@ -6,9 +6,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
 
 find_package (OpenGL REQUIRED)
 
-set(SOURE_DIR ${CMAKE_SOURCE_DIR})
-
-
 set(INCLUDE_DIRS
     asset
     image
@@ -94,24 +91,22 @@ target_link_libraries(core ${OPENGL_LIBRARIES})
 add_custom_target(MakeIncludeDir ALL COMMAND ${CMAKE_COMMAND} -E make_directory "include")
 
 # do the copying
-foreach( dir_i ${INCLUDE_DIRS})
+foreach(dir_i ${INCLUDE_DIRS})
     add_custom_command(
     TARGET core
     POST_BUILD
     COMMAND ${CMAKE_COMMAND}
     ARGS -E make_directory "include/${dir_i}"
 )
-endforeach( dir_i )
+endforeach(dir_i)
 
 # do the copying
-foreach( file_i ${INCLUDE_FILES})
+foreach(file_i ${INCLUDE_FILES})
     add_custom_command(
     TARGET core
     POST_BUILD
-    COMMENT "copying ${CMAKE_SOURCE_DIR}/${file_i} to  include/${file_i}"
+    # COMMENT "copying ${CMAKE_SOURCE_DIR}/${file_i} to  include/${file_i}"
     COMMAND ${CMAKE_COMMAND}
     ARGS -E copy "${CMAKE_SOURCE_DIR}/${file_i}" "include/${file_i}"
 )
-endforeach( file_i )
-
-# file(COPY ${INCLUDE_FILES} DESTINATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/include")
+endforeach(file_i)
