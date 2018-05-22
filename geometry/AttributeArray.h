@@ -142,11 +142,11 @@ namespace Core {
 
     iterator begin() {
       return iterator(this, 0);
-    };
+    }
 
     iterator end() {
       return iterator(this, this->getAttributeCount());
-    };
+    }
 
   };
 }

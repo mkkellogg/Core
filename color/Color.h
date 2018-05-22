@@ -13,15 +13,17 @@ namespace Core {
 
   public:
 
-    Color4();
-    Color4(Real r, Real g, Real b, Real a);
-    Color4(Real* storage);
-    Color4(Real* storage, Real r, Real g, Real b, Real a);
+    Color4(): Color4(0.0, 0.0, 0.0, 1.0) {}
+
+    Color4(Real r, Real g, Real b, Real a): Color4Components(this->data, r, g, b, a) {}
+
+    Color4(Real* storage): Color4(storage, 0.0, 0.0, 0.0, 1.0) {}
+
+    Color4(Real* storage, Real r, Real g, Real b, Real a):
+    VectorStorage<Real, COLOR_COMPONENT_COUNT, true>(storage), Color4Components(this->data, r, g, b, a) {}
 
   };
 
   typedef Color4<false> Color;
   typedef Color4<true> ColorS;
 }
-
-#include "Color.cpp"
