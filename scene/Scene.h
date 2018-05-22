@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/14/17.
-//
-
-#ifndef MPM_SCENE_H
-#define MPM_SCENE_H
+#pragma once
 
 #include <vector>
 #include <memory>
@@ -25,6 +20,3 @@ namespace Core {
   };
 
 }
-
-
-#endif //MPM_SCENE_H

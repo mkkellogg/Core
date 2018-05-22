@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/16/17.
-//
-
-#ifndef MPM_CAMERA_H
-#define MPM_CAMERA_H
+#pragma once
 
 #include "../common/types.h"
 #include "../math/Matrix4x4.h"
@@ -36,5 +31,3 @@ namespace Core {
                                                  Real nearP, Real farP, Matrix4x4& out);
   };
 }
-
-#endif //MPM_CAMERA_H

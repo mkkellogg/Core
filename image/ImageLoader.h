@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/19/17.
-//
-
-#ifndef MPM_IMAGELOADER_H
-#define MPM_IMAGELOADER_H
+#pragma once
 
 #include <memory>
 #include <string>
@@ -21,5 +16,3 @@ namespace Core {
     virtual std::shared_ptr<RawImage> loadJPEG(const std::string& name, Bool fromAssets = true) = 0;
   };
 }
-
-#endif //MPM_IMAGELOADER_H

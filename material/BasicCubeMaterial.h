@@ -1,9 +1,4 @@
-//
-// Created by mark on 12/15/17.
-//
-
-#ifndef MPM_BASIC_CUBE_MATERIAL_H
-#define MPM_BASIC_CUBE_MATERIAL_H
+#pragma once
 
 #include "Material.h"
 #include "../image/CubeTexture.h"
@@ -25,6 +20,3 @@ namespace Core {
     void setSkyboxTexture(std::shared_ptr<CubeTexture> texture);
   };
 }
-
-
-#endif //MPM_BASIC_CUBE_MATERIAL_H

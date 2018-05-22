@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/14/17.
-//
-
-#ifndef MPM_ASSERT_H
-#define MPM_ASSERT_H
+#pragma once
 
 #include "debug.h"
 #include <stdlib.h>
@@ -16,5 +11,3 @@
 		exit(-1);							                  \
 	}									   	                    \
 }
-
-#endif //MPM_ASSERT_H

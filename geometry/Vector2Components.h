@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/13/17.
-//
-
-#ifndef MPM_VECTOR_2_COMPONENTS_H
-#define MPM_VECTOR_2_COMPONENTS_H
+#pragma once
 
 #include "../common/types.h"
 
@@ -26,5 +21,3 @@ namespace Core {
 }
 
 #include "Vector2Components.cpp"
-
-#endif //MPM_VECTOR_2_COMPONENTS_H

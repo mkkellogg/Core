@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/29/17.
-//
-
-#ifndef MPM_ASSET_LOADER_H
-#define MPM_ASSET_LOADER_H
+#pragma once
 
 #include <memory>
 #include "../common/types.h"
@@ -21,6 +16,3 @@ namespace Core {
   };
 
 }
-
-
-#endif //MPM_ASSET_LOADER_H

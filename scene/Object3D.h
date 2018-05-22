@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/14/17.
-//
-
-#ifndef MPM_OBJECT3D_H
-#define MPM_OBJECT3D_H
+#pragma once
 
 #include <vector>
 #include <memory>
@@ -101,5 +96,3 @@ namespace Core {
   };
 
 }
-
-#endif //MPM_OBJECT3D_H

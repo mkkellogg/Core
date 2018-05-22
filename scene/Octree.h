@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 1/7/18.
-//
-
-#ifndef MPM_OCTREE_H
-#define MPM_OCTREE_H
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -103,6 +98,3 @@ namespace Core {
   };
 
 }
-
-
-#endif //MPM_OCTREE_H

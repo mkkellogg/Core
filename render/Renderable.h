@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 1/15/18.
-//
-
-#ifndef MPM_RENDERABLE_H
-#define MPM_RENDERABLE_H
+#pragma once
 
 #include "BaseRenderable.h"
 
@@ -19,5 +14,3 @@ namespace Core {
   };
 
 }
-
-#endif //MPM_RENDERABLE_H

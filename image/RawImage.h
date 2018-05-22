@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/19/17.
-//
-
-#ifndef MPM_RAWIMAGE_H
-#define MPM_RAWIMAGE_H
+#pragma once
 
 #include "../common/types.h"
 
@@ -21,6 +16,3 @@ namespace Core {
     UInt32 getHeight();
   };
 }
-
-
-#endif //MPM_RAWIMAGE_H

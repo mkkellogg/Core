@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/16/17.
-//
-
-#ifndef MPM_MATH_H
-#define MPM_MATH_H
+#pragma once
 
 #include "../common/types.h"
 
@@ -36,6 +31,3 @@ namespace Core {
     static Real Random();
   };
 }
-
-
-#endif //MPM_MATH_H

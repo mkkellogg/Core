@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/13/17.
-//
-
-#ifndef MPM_VECTOR3_H
-#define MPM_VECTOR3_H
+#pragma once
 
 #include <type_traits>
 #include <iostream>
@@ -129,5 +124,3 @@ namespace Core {
   typedef Vector3<Real, true, true> Point3rs;
 
 }
-
-#endif //MPM_VECTOR3_H

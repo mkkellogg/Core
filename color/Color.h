@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/13/17.
-//
-
-#ifndef MPM_COLOR_H
-#define MPM_COLOR_H
+#pragma once
 
 #include "../common/types.h"
 #include "../base/VectorStorage.h"
@@ -30,5 +25,3 @@ namespace Core {
 }
 
 #include "Color.cpp"
-
-#endif //MPM_COLOR_H

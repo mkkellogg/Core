@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/15/17.
-//
-
-#ifndef MPM_BASIC_TEXTURED_MATERIAL_H
-#define MPM_BASIC_TEXTURED_MATERIAL_H
+#pragma once
 
 #include "Material.h"
 #include "../image/Texture.h"
@@ -26,6 +21,3 @@ namespace Core {
     void setTexture(std::shared_ptr<Texture> texture);
   };
 }
-
-
-#endif //MPM_BASIC_TEXTURED_MATERIAL_H

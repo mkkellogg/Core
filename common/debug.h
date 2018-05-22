@@ -1,8 +1,4 @@
-//
-// Created by Mark Kellogg on 12/13/17.
-//
-
-#pragma once 
+#pragma once
 
 #ifndef MPM_DEBUG_H
 #define MPM_DEBUG_H

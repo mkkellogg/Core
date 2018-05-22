@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 1/17/18.
-//
-
-#ifndef MPM_OBJECT_RENDERS_H
-#define MPM_OBJECT_RENDERS_H
+#pragma once
 
 #include <memory>
 #include <unordered_map>
@@ -71,5 +66,3 @@ namespace Core {
 
   };
 }
-
-#endif //MPM_OBJECT_RENDERS_H

@@ -1,9 +1,4 @@
-//
-// Created by mark on 12/18/17.
-//
-
-#ifndef MPM_QUATERNION_H_H
-#define MPM_QUATERNION_H_H
+#pragma once
 
 #include "../geometry/Vector3.h"
 #include "Matrix4x4.h"
@@ -73,5 +68,3 @@ namespace Core
   // Global operator allowing left-multiply by scalar.
   Quaternion operator*(Real s, const Quaternion& q);
 }
-
-#endif //MPM_QUATERNION_H_H

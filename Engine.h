@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/14/17.
-//
-
-#ifndef MPM_ENGINE_H
-#define MPM_ENGINE_H
+#pragma once
 
 #include <functional>
 #include "scene/Scene.h"
@@ -62,5 +57,3 @@ namespace Core {
 
   };
 }
-
-#endif //MPM_ENGINE_H

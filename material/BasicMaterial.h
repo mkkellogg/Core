@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/15/17.
-//
-
-#ifndef MPM_BASIC_MATERIAL_H
-#define MPM_BASIC_MATERIAL_H
+#pragma once
 
 #include "Material.h"
 #include "../image/Texture.h"
@@ -23,6 +18,3 @@ namespace Core {
     virtual void sendCustomUniformsToShader() override;
   };
 }
-
-
-#endif //MPM_BASIC_MATERIAL_H

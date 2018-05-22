@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/15/17.
-//
-
-#ifndef MPM_UNIFORMS_H
-#define MPM_UNIFORMS_H
+#pragma once
 
 namespace Core {
 
@@ -16,5 +11,3 @@ namespace Core {
   };
 
 }
-
-#endif //MPM_UNIFORMS_H

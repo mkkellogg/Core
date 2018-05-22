@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/13/17.
-//
-
-#ifndef MPM_BASE_VECTOR_STORAGE_H
-#define MPM_BASE_VECTOR_STORAGE_H
+#pragma once
 
 #include "../common/types.h"
 #include "BaseVector.h"
@@ -27,5 +22,3 @@ namespace Core {
   };
 
 }
-
-#endif //MPM_BASE_VECTOR_STORAGE_H

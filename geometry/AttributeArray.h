@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/14/17.
-//
-
-#ifndef MPM_ATTRIBUTEARRAY_H
-#define MPM_ATTRIBUTEARRAY_H
+#pragma once
 
 #include "../common/types.h"
 #include "../common/gl.h"
@@ -82,5 +77,3 @@ namespace Core {
 }
 
 #include "AttributeArray.cpp"
-
-#endif //MPM_ATTRIBUTEARRAY_H

@@ -1,10 +1,4 @@
-//
-// Created by Mark Kellogg on 1/18/18.
-//
-
-#ifndef MPM_TIME_H
-#define MPM_TIME_H
-
+#pragma once
 
 #include <chrono>
 
@@ -39,6 +33,3 @@ namespace Core {
 
 	};
 }
-
-
-#endif //MPM_TIME_H

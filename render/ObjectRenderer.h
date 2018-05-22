@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/15/17.
-//
-
-#ifndef MPM_OBJECT_RENDERER_H
-#define MPM_OBJECT_RENDERER_H
+#pragma once
 
 #include <memory>
 #include "BaseObjectRenderer.h"
@@ -22,7 +17,3 @@ namespace Core  {
     virtual void renderObject(std::shared_ptr<Camera> camera, std::shared_ptr<T> renderable) = 0;
   };
 }
-
-
-
-#endif //MPM_OBJECT_RENDERER_H

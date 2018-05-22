@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/13/17.
-//
-
-#ifndef MPM_MESH_H
-#define MPM_MESH_H
+#pragma once
 
 #include <new>
 #include <unordered_map>
@@ -65,5 +60,3 @@ namespace Core {
   };
 
 }
-
-#endif //MPM_MESH_H

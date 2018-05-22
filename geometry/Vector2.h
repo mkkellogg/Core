@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/13/17.
-//
-
-#ifndef MPM_VECTOR2_H
-#define MPM_VECTOR2_H
+#pragma once
 
 #include "../common/types.h"
 #include "../base/VectorStorage.h"
@@ -35,5 +30,3 @@ namespace Core {
   typedef Vector2<Real, false> Vector2r;
   typedef Vector2<Real, true> Vector2rs;
 }
-
-#endif //MPM_VECTOR2_H

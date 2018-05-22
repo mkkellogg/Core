@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/13/17.
-//
-
-#ifndef MPM_TYPES_H
-#define MPM_TYPES_H
+#pragma once
 
 #include <type_traits>
 #include <iostream>
@@ -41,6 +36,3 @@ namespace Core {
     static const Bool value = std::is_integral<T>::value || std::is_floating_point<T>::value;
   };
 }
-
-
-#endif //MPM_TYPES_H

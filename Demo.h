@@ -1,7 +1,3 @@
-//
-// Created by Mark Kellogg on 1/18/18.
-//
-
 #pragma once
 
 #include "Engine.h"

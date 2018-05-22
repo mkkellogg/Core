@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/15/17.
-//
-
-#ifndef MPM_BASE_OBJECT_RENDERER_H
-#define MPM_BASE_OBJECT_RENDERER_H
+#pragma once
 
 #include <memory>
 #include "../scene/Object3DComponent.h"
@@ -23,7 +18,3 @@ namespace Core  {
     virtual void render(std::shared_ptr<Camera> camera) = 0;
   };
 }
-
-
-
-#endif //MPM_BASE_OBJECT_RENDERER_H

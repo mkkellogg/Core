@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 1/3/18.
-//
-
-#ifndef MPM_BOX_H
-#define MPM_BOX_H
+#pragma once
 
 #include "../common/types.h"
 #include "Vector3Components.h"
@@ -36,5 +31,3 @@ namespace Core {
   };
 
 }
-
-#endif //MPM_BOX_H

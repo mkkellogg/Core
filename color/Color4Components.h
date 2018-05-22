@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/13/17.
-//
-
-#ifndef MPM_COLOR4_COMPONENTS_H
-#define MPM_COLOR4_COMPONENTS_H
+#pragma once
 
 #include "../common/types.h"
 
@@ -25,5 +20,3 @@ namespace Core {
   };
 
 }
-
-#endif //MPM_COLOR4_COMPONENTS_H

@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/13/17.
-//
-
-#ifndef MPM_VECTOR_3_COMPONENTS_H
-#define MPM_VECTOR_3_COMPONENTS_H
+#pragma once
 
 #include "../common/types.h"
 #include "../math/Math.h"
@@ -50,5 +45,3 @@ namespace Core {
   Vector3Components<T>::~Vector3Components() {}
 
 }
-
-#endif //MPM_VECTOR_COMPONENTS_3_H

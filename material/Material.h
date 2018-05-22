@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/15/17.
-//
-
-#ifndef MPM_MATERIAL_H
-#define MPM_MATERIAL_H
+#pragma once
 
 #include <memory>
 #include "../common/gl.h"
@@ -28,6 +23,3 @@ namespace Core {
     virtual void sendCustomUniformsToShader() = 0;
   };
 }
-
-
-#endif //MPM_MATERIAL_H

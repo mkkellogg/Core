@@ -1,9 +1,4 @@
-//
-// Created by mark on 12/13/17.
-//
-
-#ifndef MPM_RENDERERES2_H
-#define MPM_RENDERERES2_H
+#pragma once
 
 #include "Renderer.h"
 #include "../geometry/Mesh.h"
@@ -22,5 +17,3 @@ namespace Core {
     static Renderer* createRenderer();
   };
 }
-
-#endif //MPM_RENDERERES2_H

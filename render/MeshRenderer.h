@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/15/17.
-//
-
-#ifndef MPM_MESHRENDERER_H
-#define MPM_MESHRENDERER_H
+#pragma once
 
 #include <memory>
 #include "../geometry/AttributeArray.h"
@@ -43,7 +38,3 @@ namespace Core  {
     }
   }
 }
-
-
-
-#endif //MPM_MESHRENDERER_H

@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/19/17.
-//
-
-#ifndef MPM_TEXTURE_H
-#define MPM_TEXTURE_H
+#pragma once
 
 #include <memory>
 #include "../common/gl.h"
@@ -24,6 +19,3 @@ namespace Core {
   };
 
 }
-
-
-#endif //MPM_TEXTURE_H

@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/29/17.
-//
-
-#ifndef MPM_RENDERABLE_GROUP_H
-#define MPM_RENDERABLE_GROUP_H
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -37,5 +32,3 @@ namespace MPM {
   };
 
 }
-
-#endif //MPM_RENDERABLE_GROUP_H

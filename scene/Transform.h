@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/18/17.
-//
-
-#ifndef MPM_TRANSFORM_H
-#define MPM_TRANSFORM_H
+#pragma once
 
 #include  "../math/Matrix4x4.h"
 
@@ -34,6 +29,3 @@ namespace Core {
   };
 
 }
-
-
-#endif //MPM_TRANSFORM_H

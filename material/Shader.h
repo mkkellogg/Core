@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/15/17.
-//
-
-#ifndef MPM_SHADER_H
-#define MPM_SHADER_H
+#pragma once
 
 #include <string>
 #include "../common/gl.h"
@@ -34,6 +29,3 @@ namespace Core {
 
   };
 }
-
-
-#endif //MPM_SHADER_H

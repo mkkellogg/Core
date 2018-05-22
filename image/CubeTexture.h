@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/19/17.
-//
-
-#ifndef MPM_CUBETEXTURE_H
-#define MPM_CUBETEXTURE_H
+#pragma once
 
 #include "Texture.h"
 #include "RawImage.h"
@@ -18,6 +13,3 @@ namespace Core {
   };
 
 }
-
-
-#endif //MPM_CUBETEXTURE_H

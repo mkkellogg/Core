@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/13/17.
-//
-
-#ifndef MPM_RENDERER_H
-#define MPM_RENDERER_H
+#pragma once
 
 #include "../common/gl.h"
 #include "../common/debug.h"
@@ -33,5 +28,3 @@ namespace Core {
 
   };
 }
-
-#endif //MPM_RENDERER_H

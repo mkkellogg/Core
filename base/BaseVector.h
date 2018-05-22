@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/22/17.
-//
-
-#ifndef MPM_BASE_VECTOR_H
-#define MPM_BASE_VECTOR_H
+#pragma once
 
 #include "../common/types.h"
 
@@ -30,6 +25,3 @@ namespace Core {
   };
 
 }
-
-
-#endif //MPM_BASE_VECTOR_H

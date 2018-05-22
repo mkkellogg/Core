@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/15/17.
-//
-
-#ifndef MPM_STANDARDATTRIBUTES_H
-#define MPM_STANDARDATTRIBUTES_H
+#pragma once
 
 namespace Core {
 
@@ -15,5 +10,3 @@ namespace Core {
   };
 
 }
-
-#endif //MPM_STANDARDATTRIBUTES_H
