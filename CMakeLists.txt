@@ -15,40 +15,59 @@ set(INCLUDE_DIRS
     material
     color
     math
-    util)
+    util
+    common)
 
 set(INCLUDE_FILES
-    asset/AssetLoader.h
-    image/jpgd.h
-    image/ImageLoader.h
-    image/RawImage.h
-    image/Texture.h
-    image/CubeTexture.h
-    geometry/Mesh.h
     geometry/Box3.h
+    geometry/Vector2Components.h
+    geometry/Mesh.h
+    geometry/Vector3Components.h
+    geometry/Vector3.h
+    geometry/Vector2.h
+    geometry/AttributeArray.h
     scene/Object3D.h
-    scene/Object3DComponent.h
     scene/Scene.h
+    scene/Object3DComponent.h
     scene/Transform.h
     scene/Octree.h
-    render/MeshRenderer.h
-    render/Camera.h
-    render/Renderer.h
-    render/RendererES2.h
-    render/ObjectRenderers.h
-    material/Material.h
+    Engine.h
+    asset/AssetLoader.h
     material/BasicMaterial.h
+    material/Material.h
+    material/StandardUniforms.h
     material/BasicTexturedMaterial.h
+    material/StandardAttributes.h
     material/BasicCubeMaterial.h
     material/Shader.h
+    Demo.h
+    render/Renderable.h
+    render/ObjectRenderers.h
+    render/RenderableGroup.h
+    render/BaseObjectRenderer.h
+    render/ObjectRenderer.h
+    render/Camera.h
+    render/RendererES2.h
+    render/Renderer.h
+    render/BaseRenderable.h
+    render/MeshRenderer.h
+    image/ImageLoader.h
+    image/CubeTexture.h
+    image/Texture.h
+    image/jpgd.h
+    image/RawImage.h
+    color/Color.h
     color/Color4Components.h
-    math/Math.h
-    math/Matrix4x4.h
-    math/Quaternion.h
     util/Time.h
-    Engine.h
-    Demo.h)
-    #RendererES3.h)
+    math/Math.h
+    math/Quaternion.h
+    math/Matrix4x4.h
+    base/VectorStorage.h
+    base/BaseVector.h
+    common/gl.h
+    common/assert.h
+    common/types.h
+    common/debug.h)
 
 set(SOURCE_FILES
     asset/AssetLoader.cpp
