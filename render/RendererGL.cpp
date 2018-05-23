@@ -1,22 +1,22 @@
-#include "RendererES2.h"
+#include "RendererGL.h"
 #include "../render/MeshRenderer.h"
 
 namespace Core {
 
-  RendererES2::RendererES2() {
+  RendererGL::RendererGL() {
 
   }
 
-  Bool RendererES2::init() {
+  Bool RendererGL::init() {
       return true;
   }
 
-  RendererES2::~RendererES2() {
+  RendererGL::~RendererGL() {
 
   }
 
-  Renderer *RendererES2::createRenderer() {
-    RendererES2 *renderer = new RendererES2;
+  Renderer* RendererGL::createRenderer() {
+    RendererGL *renderer = new RendererGL;
     if (!renderer->init()) {
       delete renderer;
       return nullptr;
@@ -24,7 +24,7 @@ namespace Core {
     return renderer;
   }
 
-  void RendererES2::render(std::shared_ptr<Scene> scene, std::shared_ptr<Camera> camera) {
+  void RendererGL::render(std::shared_ptr<Scene> scene, std::shared_ptr<Camera> camera) {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

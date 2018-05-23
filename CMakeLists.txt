@@ -47,7 +47,7 @@ set(INCLUDE_FILES
     render/BaseObjectRenderer.h
     render/ObjectRenderer.h
     render/Camera.h
-    render/RendererES2.h
+    render/RendererGL.h
     render/Renderer.h
     render/BaseRenderable.h
     render/MeshRenderer.h
@@ -88,7 +88,7 @@ set(SOURCE_FILES
     render/MeshRenderer.cpp
     render/Camera.cpp
     render/Renderer.cpp
-    render/RendererES2.cpp
+    render/RendererGL.cpp
     render/ObjectRenderers.cpp
     material/Material.cpp
     material/BasicMaterial.cpp

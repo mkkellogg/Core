@@ -4,7 +4,7 @@
 #include "scene/Scene.h"
 #include "render/Camera.h"
 #include "render/Renderer.h"
-#include "render/RendererES2.h"
+#include "render/RendererGL.h"
 #include "image/ImageLoader.h"
 #include "asset/AssetLoader.h"
 

@@ -21,12 +21,6 @@ static GLboolean gl3stubInit() {
 namespace Core {
 
   static void printGlString(const char* name, GLenum s) {
-    //static char glString[512];
-    //const char* v = (const char*)glGetString(s);
-    //const int length = strlen(v);
-    //printf("length: %d\n", length);
-    //sprintf(glString, "GL %s: %s\n", name, v);
-   // DebugPrintMessage(glString);
     const char* v = (const char*)glGetString(s);
     Debug::PrintMessage("GL %s: %s\n", name, v);
   }
@@ -55,37 +49,8 @@ namespace Core {
     printGlString("Renderer", GL_RENDERER);
     printGlString("Extensions", GL_EXTENSIONS);
 
-    /*UInt32 maxGL = 0;
+    UInt32 maxGL = 0;
     const char* versionStr = (const char*)glGetString(GL_VERSION);
-    if (strstr(versionStr, "OpenGL ES 3.") && gl3stubInit()) {
-      maxGL = 3;
-    }
-    else if (strstr(versionStr, "OpenGL ES 2.")) {
-      maxGL = 2;
-    }
-    else {
-      maxGL = 1;
-    }
-
-    if (glVersion == GLVersion::Three) {
-      // Currently not supported...
-      Debug::PrintError("OpenGL ES 3.0 not supported!");
-      exit(-1);
-    }
-    else if (glVersion == GLVersion::Two) {
-      if (maxGL >= 2) {
-        renderer = Core::RendererES2::createRenderer();
-        Debug::PrintError("Using OpenGL ES 2.0 renderer");
-      }
-      else {
-        Debug::PrintError("Unable to start desired OpenGL ES 2.0 renderer!");
-        exit(-1);
-      }
-    }
-    else {
-      Debug::PrintError("Unsupported OpenGL ES version");
-      exit(-1);
-    }*/
 
     glClearColor(1.0, 0, 0, 1);
     glFrontFace(GL_CCW);
