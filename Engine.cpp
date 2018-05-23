@@ -21,7 +21,7 @@ static GLboolean gl3stubInit() {
 namespace Core {
 
   static void printGlString(const char* name, GLenum s) {
-    static char glString[128];
+    static char glString[512];
     const char* v = (const char*)glGetString(s);
     sprintf(glString, "GL %s: %s\n", name, v);
     DebugPrintMessage(glString);
@@ -37,7 +37,7 @@ namespace Core {
   }
 
   void Engine::cleanup() {
-    if (renderer) {
+    if (renderer != nullptr) {
       delete renderer;
       renderer = nullptr;
     }
@@ -51,7 +51,7 @@ namespace Core {
     printGlString("Renderer", GL_RENDERER);
     printGlString("Extensions", GL_EXTENSIONS);
 
-    UInt32 maxGL = 0;
+    /*UInt32 maxGL = 0;
     const char* versionStr = (const char*)glGetString(GL_VERSION);
     if (strstr(versionStr, "OpenGL ES 3.") && gl3stubInit()) {
       maxGL = 3;
@@ -81,7 +81,7 @@ namespace Core {
     else {
       DebugPrintError("Unsupported OpenGL ES version");
       exit(-1);
-    }
+    }*/
 
     glClearColor(1.0, 0, 0, 1);
     glFrontFace(GL_CCW);
