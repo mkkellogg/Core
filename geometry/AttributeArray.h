@@ -22,7 +22,7 @@ namespace Core {
       this->storage = new (std::nothrow) typename T::ComponentType[this->attributeCount * T::ComponentCount];
       ASSERT(this->storage != nullptr, "AttributeArray::allocate() -> Unable to allocate storage!");
 
-      Byte * tempAttributes =  new(std::nothrow) Byte[this->attributeCount * sizeof(T)];
+      Byte * tempAttributes =  (Byte *)(::operator new(this->attributeCount * sizeof(T)));
       ASSERT(tempAttributes != nullptr, "AttributeArray::allocate() -> Unable to allocate attributes!");
 
       this->attributes = reinterpret_cast<T*>(tempAttributes);
@@ -36,7 +36,7 @@ namespace Core {
         for (UInt32 i = 0; i < this->attributeCount; i++) {
           this->attributes[i].~T();
         }
-        delete this->attributes;
+        ::operator delete(this->attributes);
         this->attributes = nullptr;
       }
       if (this->storage != nullptr) {

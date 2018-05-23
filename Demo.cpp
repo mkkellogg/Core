@@ -22,8 +22,8 @@
 namespace Core {
 
   Demo::Demo(Engine& engine): engine(engine) {
-    this->imageLoader = engine.getImageLoader();
-    this->assetLoader = engine.getAssetLoader();
+    //this->imageLoader = engine.getImageLoader();
+    //this->assetLoader = engine.getAssetLoader();
   }
 
   void Demo::run() {
@@ -31,7 +31,7 @@ namespace Core {
     this->engine.onUpdate([this](Engine& engine) {
 
       // TODO: Remove this camera rotation code, it's only for demo purposes
-     /* static Core::Real rotationAngle = 0.0;
+      static Core::Real rotationAngle = 0.0;
       std::shared_ptr<Core::Camera> camera = engine.getCamera();
       if (camera) {
         rotationAngle += 0.01;
@@ -50,15 +50,54 @@ namespace Core {
         Core::Matrix4x4 worldMatrix;
         worldMatrix.multiply(rotationMatrixA);
 
-        if(demoMode == DemoMode::Dollhouse) {
-          worldMatrix.translate(0, 12, 15);
-          worldMatrix.multiply(rotationMatrixB);
-        }
+        worldMatrix.translate(0, 12, 15);
+        worldMatrix.multiply(rotationMatrixB);
 
         camera->getLocalTransform().getMatrix().copy(worldMatrix);
-      }*/
+      }
 
     });
+
+    std::shared_ptr<Core::Scene> scene = std::make_shared<Core::Scene>();
+    engine.setScene(scene);
+
+    std::shared_ptr<Core::Mesh> skyboxMesh = std::make_shared<Core::Mesh>(36, false);
+    Core::Real vertexPositions[] = {
+        // back
+        -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0,
+        -1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0,
+        // left
+        -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0,
+        -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0,
+        // right
+        1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0,
+        1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+        // top
+        -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0,
+        -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+        // bottom
+        -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0,
+        -1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0,
+        // front
+        1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0
+    };
+
+    skyboxMesh->enableAttribute(Core::StandardAttributes::Position);
+    Core::Bool positionInited = skyboxMesh->initVertexPositions(36);
+    ASSERT(positionInited, "Unable to initialize skybox mesh vertex positions.");
+    skyboxMesh->getVertexPositions()->store(vertexPositions);
+
+    this->skyboxMaterial = std::make_shared<Core::BasicMaterial>();
+    this->skyboxMaterial->build();
+
+    std::shared_ptr<Core::Object3D> skyboxObj = std::make_shared<Core::Object3D>();
+    std::shared_ptr<Core::MeshRenderer> skyboxRenderer = std::make_shared<Core::MeshRenderer>(this->skyboxMaterial, skyboxObj);
+    skyboxObj->addRenderable<Core::Mesh>(skyboxMesh);
+    skyboxObj->setCustomRenderer<Core::Mesh>(skyboxRenderer);
+    scene->getRoot()->addObject(skyboxObj);
+
+
 
    /* std::shared_ptr<Core::Scene> scene = std::make_shared<Core::Scene>();
     engine.setScene(scene);

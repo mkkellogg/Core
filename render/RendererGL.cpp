@@ -8,6 +8,7 @@ namespace Core {
   }
 
   Bool RendererGL::init() {
+      Renderer::init();
       return true;
   }
 

@@ -8,7 +8,7 @@ namespace Core {
   public:
     RendererGL();
     virtual ~RendererGL();
-    Bool init();
+    virtual Bool init() override;
     virtual void render(std::shared_ptr<Scene> scene, std::shared_ptr<Camera> camera) override;
 
   private:

@@ -52,6 +52,8 @@ namespace Core {
     UInt32 maxGL = 0;
     const char* versionStr = (const char*)glGetString(GL_VERSION);
 
+    renderer = Core::RendererGL::createRenderer();
+
     glClearColor(1.0, 0, 0, 1);
     glFrontFace(GL_CCW);
     glCullFace(GL_BACK);

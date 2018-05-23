@@ -19,6 +19,7 @@ namespace Core {
   public:
     virtual ~Renderer();
 
+    virtual Bool init();
     void resize(int w, int h);
     virtual void render(std::shared_ptr<Scene> scene, std::shared_ptr<Camera> camera) = 0;
     void processScene(std::shared_ptr<Scene> scene, std::vector<std::shared_ptr<Object3D>>& out);

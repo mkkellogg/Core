@@ -15,6 +15,10 @@ namespace Core {
 
   }
 
+  Bool Renderer::init() {
+    return true;
+  }
+
   void Renderer::processScene(std::shared_ptr<Scene> scene, std::vector<std::shared_ptr<Object3D>>& out) {
     std::vector<Transform> transformStack;
     transformStack.push_back(Transform());

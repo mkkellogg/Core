@@ -3,7 +3,7 @@
 #include "Engine.h"
 #include "image/RawImage.h"
 #include "image/CubeTexture.h"
-#include "material/BasicCubeMaterial.h"
+#include "material/BasicMaterial.h"
 
 namespace Core {
 
@@ -12,7 +12,7 @@ namespace Core {
 
     std::vector<std::shared_ptr<RawImage>> skyboxImages;
     std::shared_ptr<CubeTexture> skyboxTexture;
-    std::shared_ptr<BasicCubeMaterial> skyboxMaterial;
+    std::shared_ptr<BasicMaterial> skyboxMaterial;
 
     std::shared_ptr<Core::ImageLoader> imageLoader;
     std::shared_ptr<Core::AssetLoader> assetLoader;
