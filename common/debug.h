@@ -1,9 +1,11 @@
 #pragma once
 
-#ifndef MPM_DEBUG_H
-#define MPM_DEBUG_H
+// #define DebugPrintError(msg) printf("%s\n", (msg));
+// #define DebugPrintMessage(msg) printf("%s\n", (msg));
 
-#define DebugPrintError(msg) printf("%s\n", (msg));
-#define DebugPrintMessage(msg) printf("%s\n", (msg));
+class Debug {
+    public:
 
-#endif 
+    static void PrintMessage(const char* fmt...);
+    static void PrintError(const char* fmt...);
+};

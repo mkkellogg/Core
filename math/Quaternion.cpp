@@ -186,7 +186,7 @@ namespace Core
    */
   Quaternion Quaternion::operator/(Real s) const {
     if (s == 0)
-      DebugPrintMessage("Dividing quaternion by 0.\n");
+      Debug::PrintMessage("Dividing quaternion by 0.\n");
     Vector3r comp = complex();
     comp.x /= s;
     comp.y /= s;

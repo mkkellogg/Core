@@ -40,7 +40,7 @@ namespace Core {
       this->copy(sourceData);
     } else {
       this->setIdentity();
-      DebugPrintError("Matrix4x4::Matrix4x4(Real *) -> Null data passed.");
+      Debug::PrintError("Matrix4x4::Matrix4x4(Real *) -> Null data passed.");
     }
   }
 

@@ -40,18 +40,15 @@ namespace Core {
   }
 
   Bool Shader::checkGlError(const char *funcName) {
-    static char errorString[128];
     GLint err = glGetError();
     if (err != GL_NO_ERROR) {
-      sprintf(errorString, "GL error after %s(): 0x%08x\n", funcName, err);
-      DebugPrintError(errorString);
+      Debug::PrintError("GL error after %s(): 0x%08x\n", funcName, err);
       return true;
     }
     return false;
   }
 
   GLuint Shader::createShader(GLenum shaderType, const std::string& src) {
-    static char errorString[128];
     GLuint shader = glCreateShader(shaderType);
     if (!shader) {
       Shader::checkGlError("glCreateShader");
@@ -70,10 +67,9 @@ namespace Core {
         GLchar *infoLog = (GLchar *) malloc(infoLogLen);
         if (infoLog) {
           glGetShaderInfoLog(shader, infoLogLen, NULL, infoLog);
-          sprintf(errorString, "Could not compile %s shader:\n%s\n",
-                shaderType == GL_VERTEX_SHADER ? "vertex" : "fragment",
-                infoLog);
-          DebugPrintError(errorString);
+          Debug::PrintError("Could not compile %s shader:\n%s\n",
+                          shaderType == GL_VERTEX_SHADER ? "vertex" : "fragment",
+                          infoLog);
           free(infoLog);
         }
       }
@@ -110,7 +106,7 @@ namespace Core {
     glLinkProgram(program);
     glGetProgramiv(program, GL_LINK_STATUS, &linked);
     if (!linked) {
-      DebugPrintError("Could not link program");
+      Debug::PrintError("Could not link program");
       GLint infoLogLen = 0;
       glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLen);
       if (infoLogLen) {
@@ -118,7 +114,7 @@ namespace Core {
         if (infoLog) {
           glGetProgramInfoLog(program, infoLogLen, NULL, infoLog);
           sprintf(errorString, "Could not link program:\n%s\n", infoLog);
-          DebugPrintError(errorString);
+          Debug::PrintError(errorString);
           free(infoLog);
         }
       }

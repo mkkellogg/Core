@@ -7,7 +7,7 @@
 {										   	                    \
 	if(!(exp))					     		              \
 	{										                      \
-		DebugPrintError((msg));			            \
+		Debug::PrintError((msg));			            \
 		exit(-1);							                  \
 	}									   	                    \
 }

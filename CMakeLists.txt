@@ -70,6 +70,7 @@ set(INCLUDE_FILES
     common/debug.h)
 
 set(SOURCE_FILES
+    common/Debug.cpp
     asset/AssetLoader.cpp
     gl3stub_wrapper.c
     image/jpgd.cpp
