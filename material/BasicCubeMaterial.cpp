@@ -56,7 +56,7 @@ namespace Core {
     return true;
   }
 
-  GLuint BasicCubeMaterial::getShaderLocation(StandardAttributes attribute) {
+  GLint BasicCubeMaterial::getShaderLocation(StandardAttributes attribute) {
     switch(attribute) {
       case StandardAttributes::Position:
         return this->positionLocation;
@@ -67,7 +67,7 @@ namespace Core {
     }
   }
 
-  GLuint BasicCubeMaterial::getShaderLocation(StandardUniforms uniform) {
+  GLint BasicCubeMaterial::getShaderLocation(StandardUniforms uniform) {
     switch(uniform) {
       case StandardUniforms::ProjectionMatrix:
         return this->projectionMatrixLocation;

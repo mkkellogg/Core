@@ -5,17 +5,17 @@
 
 namespace Core {
   class BasicCubeMaterial : public Material {
-    GLuint positionLocation;
-    GLuint colorLocation;
-    GLuint skyboxLocation;
+    GLint positionLocation;
+    GLint colorLocation;
+    GLint skyboxLocation;
     std::shared_ptr<CubeTexture> skyboxTexture;
-    GLuint projectionMatrixLocation;
-    GLuint viewMatrixLocation;
+    GLint projectionMatrixLocation;
+    GLint viewMatrixLocation;
   public:
     BasicCubeMaterial();
     virtual Bool build() override;
-    virtual GLuint getShaderLocation(StandardAttributes attribute) override;
-    virtual GLuint getShaderLocation(StandardUniforms uniform) override;
+    virtual GLint getShaderLocation(StandardAttributes attribute) override;
+    virtual GLint getShaderLocation(StandardUniforms uniform) override;
     virtual void sendCustomUniformsToShader() override;
     void setSkyboxTexture(std::shared_ptr<CubeTexture> texture);
   };

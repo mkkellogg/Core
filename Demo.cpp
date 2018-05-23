@@ -97,7 +97,8 @@ namespace Core {
     skyboxObj->setCustomRenderer<Core::Mesh>(skyboxRenderer);
     scene->getRoot()->addObject(skyboxObj);
 
-
+    std::shared_ptr<Core::Camera> camera = std::make_shared<Core::Camera>();
+    engine.setCamera(camera);
 
    /* std::shared_ptr<Core::Scene> scene = std::make_shared<Core::Scene>();
     engine.setScene(scene);

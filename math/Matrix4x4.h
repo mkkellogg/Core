@@ -1,9 +1,4 @@
-//
-// Created by Mark Kellogg on 12/17/17.
-//
-
-#ifndef MPM_MATRIX4X4_H
-#define MPM_MATRIX4X4_H
+#pragma once 
 
 #include "../common/types.h"
 #include "../geometry/Vector3.h"
@@ -92,5 +87,3 @@ namespace Core {
     static void preScale(const Real * source, Real * dest, Real x, Real y, Real z);
   };
 }
-
-#endif //MPM_MATRIX4X4_H

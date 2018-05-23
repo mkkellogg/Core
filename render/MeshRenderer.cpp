@@ -15,20 +15,17 @@ namespace Core {
   void MeshRenderer::renderObject(std::shared_ptr<Camera> camera, std::shared_ptr<Mesh> mesh) {
     glUseProgram(this->material->getShader()->getProgram());
 
-    this->checkAndSetShaderAttribute(mesh, StandardAttributes::Position,
-                                     mesh->getVertexPositions(), GL_FLOAT, GL_FALSE, 0, 0);
-    this->checkAndSetShaderAttribute(mesh, StandardAttributes::Color, mesh->getVertexColors(),
-                                     GL_FLOAT, GL_FALSE, 0, 0);
-    this->checkAndSetShaderAttribute(mesh, StandardAttributes::UV, mesh->getVertexUVs(),
-                                     GL_FLOAT, GL_FALSE, 0, 0);
+    this->checkAndSetShaderAttribute(mesh, StandardAttributes::Position, mesh->getVertexPositions(), GL_FLOAT, GL_FALSE, 0, 0);
+    this->checkAndSetShaderAttribute(mesh, StandardAttributes::Color, mesh->getVertexColors(), GL_FLOAT, GL_FALSE, 0, 0);
+    this->checkAndSetShaderAttribute(mesh, StandardAttributes::UV, mesh->getVertexUVs(), GL_FLOAT, GL_FALSE, 0, 0);
 
-    GLuint projectionLoc = this->material->getShaderLocation(
-        StandardUniforms::ProjectionMatrix);
-    GLuint viewMatrixLoc = this->material->getShaderLocation(StandardUniforms::ViewMatrix);
+    GLint projectionLoc = this->material->getShaderLocation(StandardUniforms::ProjectionMatrix);
+    GLint viewMatrixLoc = this->material->getShaderLocation(StandardUniforms::ViewMatrix);
 
     if (projectionLoc >= 0) {
       const Matrix4x4 &matrix = camera->getProjectionMatrix();
-      glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, matrix.getConstData());
+      const Real* matData = matrix.getConstData();
+      glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, matData);
     }
 
     if (viewMatrixLoc >= 0) {

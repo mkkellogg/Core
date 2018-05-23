@@ -54,7 +54,7 @@ namespace Core {
     return true;
   }
 
-  GLuint BasicTexturedMaterial::getShaderLocation(StandardAttributes attribute) {
+  GLint BasicTexturedMaterial::getShaderLocation(StandardAttributes attribute) {
     switch(attribute) {
       case StandardAttributes::Position:
         return this->positionLocation;
@@ -67,7 +67,7 @@ namespace Core {
     }
   }
 
-  GLuint BasicTexturedMaterial::getShaderLocation(StandardUniforms uniform) {
+  GLint BasicTexturedMaterial::getShaderLocation(StandardUniforms uniform) {
     switch(uniform) {
       case StandardUniforms::ProjectionMatrix:
         return this->projectionMatrixLocation;

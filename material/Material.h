@@ -18,8 +18,8 @@ namespace Core {
     Material(std::shared_ptr<Shader> shader);
     std::shared_ptr<Shader> getShader();
     virtual Bool build() = 0;
-    virtual GLuint getShaderLocation(StandardAttributes attribute) = 0;
-    virtual GLuint getShaderLocation(StandardUniforms uniform) = 0;
+    virtual GLint getShaderLocation(StandardAttributes attribute) = 0;
+    virtual GLint getShaderLocation(StandardUniforms uniform) = 0;
     virtual void sendCustomUniformsToShader() = 0;
   };
 }
