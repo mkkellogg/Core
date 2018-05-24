@@ -1,2 +1,2 @@
 # Core
-3D transformation and rendering engine
+Light-weight, C/C++ based, 3D rendering library
