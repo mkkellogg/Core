@@ -1,7 +1,3 @@
-//
-// Created by Mark Kellogg on 1/3/18.
-//
-
 #include "Box3.h"
 
 namespace Core {

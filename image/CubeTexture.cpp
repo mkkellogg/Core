@@ -1,7 +1,3 @@
-//
-// Created by Mark Kellogg on 12/19/17.
-//
-
 #include <memory>
 #include <vector>
 #include "../common/gl.h"

@@ -1,7 +1,3 @@
-//
-// Created by Mark Kellogg on 12/16/17.
-//
-
 #include <cmath>
 #include "Math.h"
 #include "../common/types.h"

@@ -4,7 +4,7 @@
 #include <vector>
 #include "../scene/Object3DComponent.h"
 
-namespace MPM {
+namespace Core {
 
   template <typename T>
   class RenderableGroup : Object3DComponent {

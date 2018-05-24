@@ -1,10 +1,6 @@
-//
-// Created by Mark Kellogg on 1/15/18.
-//
-
 #include "Renderable.h"
 
-namespace MPM {
+namespace Core {
 
 
 }

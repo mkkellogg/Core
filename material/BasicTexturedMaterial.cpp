@@ -1,7 +1,3 @@
-//
-// Created by Mark Kellogg on 12/15/17.
-//
-
 #include "BasicTexturedMaterial.h"
 #include "StandardAttributes.h"
 #include "StandardUniforms.h"

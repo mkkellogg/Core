@@ -1,7 +1,3 @@
-//
-// Created by Mark Kellogg on 12/18/17.
-//
-
 #include "Transform.h"
 
 namespace Core {

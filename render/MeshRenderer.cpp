@@ -1,7 +1,3 @@
-//
-// Created by Mark Kellogg on 12/15/17.
-//
-
 #include "MeshRenderer.h"
 #include "../common/gl.h"
 

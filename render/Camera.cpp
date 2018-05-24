@@ -1,7 +1,3 @@
-//
-// Created by Mark Kellogg on 12/16/17.
-//
-
 #include "string.h"
 #include "Camera.h"
 #include "../common/types.h"

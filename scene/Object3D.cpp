@@ -1,7 +1,3 @@
-//
-// Created by Mark Kellogg on 12/14/17.
-//
-
 #include "Object3D.h"
 
 namespace Core {

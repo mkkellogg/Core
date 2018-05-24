@@ -1,7 +1,3 @@
-//
-// Created by Mark Kellogg on 12/17/17.
-//
-
 #include <string.h>
 #include "Matrix4x4.h"
 #include "Quaternion.h"

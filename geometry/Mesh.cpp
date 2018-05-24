@@ -1,7 +1,3 @@
-//
-// Created by Mark Kellogg on 12/13/17.
-//
-
 #include "../common/types.h"
 #include "Mesh.h"
 

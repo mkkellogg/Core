@@ -1,7 +1,3 @@
-//
-// Created by Mark Kellogg on 1/18/18.
-//
-
 #include <memory>
 #include "Demo.h"
 #include "common/types.h"

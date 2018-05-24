@@ -1,7 +1,3 @@
-//
-// Created by Mark Kellogg on 12/14/17.
-//
-
 #include <stdlib.h>
 #include <string.h>
 #include <new>

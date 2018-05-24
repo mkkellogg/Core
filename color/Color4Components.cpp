@@ -1,7 +1,3 @@
-//
-// Created by Mark Kellogg on 1/3/18.
-//
-
 #include "Color4Components.h"
 
 namespace Core {

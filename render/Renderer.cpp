@@ -1,7 +1,3 @@
-//
-// Created by Mark Kellogg on 12/13/17.
-//
-
 #include "Renderer.h"
 #include "../math/Matrix4x4.h"
 
