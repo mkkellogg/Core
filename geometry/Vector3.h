@@ -26,6 +26,7 @@ namespace Core {
     static const Vector3<T, isPoint, customStorage> Zero;
     static const Vector3<T, isPoint, customStorage> UnitY;
     static const Vector3<T, isPoint, customStorage> UnitX;
+    static const Vector3<T, isPoint, customStorage> Forward;
 
     Vector3() : Vector3(0.0, 0.0, 0.0) {}
     Vector3(const Vector3& src) : Vector3(src.x, src.y, src.z) {}
@@ -116,6 +117,10 @@ namespace Core {
 
   template <typename T, bool isPoint, bool customStorage>
   const Vector3<T, isPoint, customStorage> Vector3<T, isPoint, customStorage, T>::UnitX {1.0, 0.0, 0.0};
+
+  template <typename T, bool isPoint, bool customStorage>
+  const Vector3<T, isPoint, customStorage> Vector3<T, isPoint, customStorage, T>::Forward {0.0, 0.0, -1.0};
+
 
 
   typedef Vector3<Real, false, false> Vector3r;

@@ -40,7 +40,6 @@ namespace Core {
     template <typename T>
     void setRenderer(std::shared_ptr<ObjectRenderer<T>> renderer) {
       UInt32 typeID = this->getTypeCode<T>();
-      UInt32 rendererIndex;
       if (this->rendererIndexMap.find(this->getTypeCode<T>()) == this->rendererIndexMap.end()) {
         this->rendererIndexMap[typeID] = this->renderers.size();
         this->renderers.push_back(renderer);

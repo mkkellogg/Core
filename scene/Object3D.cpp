@@ -6,6 +6,10 @@ namespace Core {
 
   }
 
+  Object3D::~Object3D() {
+
+  }
+
   Transform& Object3D::getLocalTransform() {
     return this->localTransform;
   }

@@ -1,5 +1,6 @@
 #include "MeshRenderer.h"
 #include "../common/gl.h"
+#include "RenderableContainer.h"
 
 namespace Core {
 
@@ -42,8 +43,11 @@ namespace Core {
   }
 
   void MeshRenderer::render(std::shared_ptr<Camera> camera) {
-    for (auto mesh : this->owner->getRenderables<Mesh>()) {
-      this->renderObject(camera, mesh);
+    std::shared_ptr<RenderableContainer> thisContainer = std::dynamic_pointer_cast<RenderableContainer>(this->owner);
+    if (thisContainer) {
+      for (auto mesh : thisContainer->getRenderables<Mesh>()) {
+        this->renderObject(camera, mesh);
+      }
     }
   }
 }

@@ -9,6 +9,7 @@
 #include "material/StandardAttributes.h"
 #include "geometry/Mesh.h"
 #include "render/MeshRenderer.h"
+#include "render/RenderableContainer.h"
 #include "material/BasicCubeMaterial.h"
 #include "material/BasicMaterial.h"
 #include "material/StandardAttributes.h"
@@ -86,7 +87,7 @@ namespace Core {
     this->skyboxMaterial = std::make_shared<Core::BasicMaterial>();
     this->skyboxMaterial->build();
 
-    std::shared_ptr<Core::Object3D> skyboxObj = std::make_shared<Core::Object3D>();
+    std::shared_ptr<Core::RenderableContainer> skyboxObj = std::make_shared<Core::RenderableContainer>();
     std::shared_ptr<Core::MeshRenderer> skyboxRenderer = std::make_shared<Core::MeshRenderer>(this->skyboxMaterial, skyboxObj);
     skyboxObj->addRenderable<Core::Mesh>(skyboxMesh);
     skyboxObj->setCustomRenderer<Core::Mesh>(skyboxRenderer);

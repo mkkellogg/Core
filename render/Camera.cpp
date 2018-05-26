@@ -37,13 +37,19 @@ namespace Core {
     this->updateProjection(this->fov, this->aspectRatio, this->nearP, this->farP);
   }
 
-  const Matrix4x4& Camera::getProjectionMatrix() {
+  const Matrix4x4& Camera::getProjectionMatrix() const{
     return this->projectionMatrix;
   }
 
+  void Camera::lookAt(const Point3r& target) {
+    /*Point3r cameraPos;
+    cameraPos.copy(this->p)
+    Vector3r toTarget;
+    Vector3r::Forward */
+  }
+
   void Camera::buildPerspectiveProjectionMatrix(Real fov, Real ratio,
-                                                Real nearP, Real farP, Matrix4x4& out)
-  {
+                                                Real nearP, Real farP, Matrix4x4& out) {
     // convert fov to radians
     Real f = 1.0f / Math::Tan(fov * Math::DegreesToRads * .5f);
 

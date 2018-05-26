@@ -41,6 +41,7 @@ set(INCLUDE_FILES
     material/BasicCubeMaterial.h
     material/Shader.h
     Demo.h
+    render/RenderableContainer.h
     render/Renderable.h
     render/ObjectRenderers.h
     render/RenderableGroup.h
@@ -85,6 +86,7 @@ set(SOURCE_FILES
     scene/Scene.cpp
     scene/Transform.cpp
     scene/Octree.cpp
+    render/RenderableContainer.cpp
     render/MeshRenderer.cpp
     render/Camera.cpp
     render/Renderer.cpp
@@ -109,6 +111,7 @@ add_library(core ${SOURCE_FILES})
 target_link_libraries(core ${OPENGL_LIBRARIES})
 
 add_custom_target(MakeIncludeDir ALL COMMAND ${CMAKE_COMMAND} -E make_directory "include")
+add_custom_target(MakeIncludeCoreDir ALL COMMAND ${CMAKE_COMMAND} -E make_directory "include/Core")
 
 # do the copying
 foreach(dir_i ${INCLUDE_DIRS})
@@ -116,7 +119,7 @@ foreach(dir_i ${INCLUDE_DIRS})
     TARGET core
     POST_BUILD
     COMMAND ${CMAKE_COMMAND}
-    ARGS -E make_directory "include/${dir_i}"
+    ARGS -E make_directory "include/Core/${dir_i}"
 )
 endforeach(dir_i)
 
@@ -125,8 +128,8 @@ foreach(file_i ${INCLUDE_FILES})
     add_custom_command(
     TARGET core
     POST_BUILD
-    # COMMENT "copying ${CMAKE_SOURCE_DIR}/${file_i} to  include/${file_i}"
+    # COMMENT "copying ${CMAKE_SOURCE_DIR}/${file_i} to  include/Core/${file_i}"
     COMMAND ${CMAKE_COMMAND}
-    ARGS -E copy "${CMAKE_SOURCE_DIR}/${file_i}" "include/${file_i}"
+    ARGS -E copy "${CMAKE_SOURCE_DIR}/${file_i}" "include/Core/${file_i}"
 )
 endforeach(file_i)

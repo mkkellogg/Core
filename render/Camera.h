@@ -3,6 +3,7 @@
 #include "../common/types.h"
 #include "../math/Matrix4x4.h"
 #include "../scene/Object3D.h"
+#include "../geometry/Vector3.h"
 
 namespace Core {
   class Camera : public Object3D {
@@ -25,7 +26,8 @@ namespace Core {
     void setAspectRatio(Real ratio);
     void setAspectRatioFromDimensions(UInt32 width, UInt32 height);
     void updateProjection(Real fov, Real ratio, Real nearP, Real farP);
-    const Matrix4x4& getProjectionMatrix();
+    const Matrix4x4& getProjectionMatrix() const;
+    void lookAt(const Point3r& target);
 
     static void buildPerspectiveProjectionMatrix(Real fov, Real ratio,
                                                  Real nearP, Real farP, Matrix4x4& out);
