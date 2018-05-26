@@ -26,7 +26,7 @@ namespace Core {
     }
 
     if (viewMatrixLoc >= 0) {
-      Matrix4x4 viewMatrix = camera->getLocalTransform().getMatrix();
+      Matrix4x4 viewMatrix = camera->getTransform().getWorldMatrix();
       viewMatrix.invert();
       glUniformMatrix4fv(viewMatrixLoc, 1, GL_FALSE, viewMatrix.getConstData());
     }

@@ -4,28 +4,28 @@
 
 namespace Core {
 
+  // forward declarations
+  class Object3D;
+
   class Transform {
-    Matrix4x4 matrix;
+    Matrix4x4 localMatrix;
+    Matrix4x4 worldMatrix;
+    const Object3D& target;
   public:
-    Transform();
-    explicit Transform(const Matrix4x4& matrix);
+    Transform(const Object3D& target);
+    explicit Transform(const Object3D& target, const Matrix4x4& matrix);
     virtual ~Transform();
 
-    const Transform& operator =(const Transform & source);
+    Matrix4x4& getLocalMatrix();
+    const Matrix4x4& getConstLocalMatrix() const;
+     Matrix4x4& getWorldMatrix();
+    const Matrix4x4& getConstWorldMatrix() const;
 
-    Matrix4x4& getMatrix();
-    const Matrix4x4& getConstMatrix() const;
+    void toLocalMatrix(Matrix4x4& dest) const;
+    void toWorldMatrix(Matrix4x4& dest) const;
 
-    void toMatrix(Matrix4x4& dest) const;
-    void copy(const Transform& transform);
-    void copy(const Matrix4x4& matrix);
-    void copy(const Real * matrixData);
-    void setIdentity();
-    void invert();
-    void transformBy(const Transform& transform);
-    void preTransformBy(const Transform& transform);
-    void transformBy(const Matrix4x4& matrix);
-    void preTransformBy(const Matrix4x4& matrix);
+    void updateWorldMatrix();
+
   };
 
 }

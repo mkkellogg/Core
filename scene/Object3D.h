@@ -19,16 +19,15 @@ namespace Core {
   class MeshRenderer;
 
   class Object3D {
-    Transform localTransform;
-    Transform worldTransform;
+    Transform transform;
     std::vector<std::shared_ptr<Object3D>> children;
+    std::shared_ptr<Object3D> parent;
 
   public:
     Object3D();
     virtual ~Object3D();
 
-    Transform& getLocalTransform();
-    Transform& getWorldTransform();
+    Transform& getTransform();
     std::vector<std::shared_ptr<Object3D>>::const_iterator beginIterateChildren();
     std::vector<std::shared_ptr<Object3D>>::const_iterator endIterateChildren();
     UInt32 size() const;

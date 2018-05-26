@@ -12,6 +12,13 @@
 
 namespace Core {
 
+  /*template <typename T, typename Enable = void>
+  class RenderableContainer : public RenderableContainer {};
+
+  template <typename T>
+  class RenderableContainer<T, typename std::enable_if<std::is_base_of<Renderable<T>, T>::value>::type> : public RenderableContainer {
+*/
+
   template <typename T, typename = typename std::enable_if<std::is_base_of<Renderable<T>, T>::value>::type>
   class RenderableContainer : public BaseRenderableContainer {
 
@@ -37,6 +44,14 @@ namespace Core {
 
     std::shared_ptr<ObjectRenderer<T>> getRenderer() {
       return renderer;
+    }
+
+    typename std::vector<std::shared_ptr<T>>::iterator begin() {
+      return this->renderables.begin();
+    }
+
+    typename std::vector<std::shared_ptr<T>>::iterator end() {
+      return this->renderables.end();
     }
   };
 }

@@ -49,7 +49,7 @@ namespace Core {
         worldMatrix.translate(0, 12, 15);
         worldMatrix.multiply(rotationMatrixB);
 
-        camera->getLocalTransform().getMatrix().copy(worldMatrix);
+        camera->getTransform().getLocalMatrix().copy(worldMatrix);
       }
 
     });

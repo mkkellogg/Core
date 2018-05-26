@@ -2,7 +2,7 @@
 
 namespace Core {
 
-  Object3D::Object3D() {
+  Object3D::Object3D(): transform(*this), parent(nullptr) {
 
   }
 
@@ -10,12 +10,8 @@ namespace Core {
 
   }
 
-  Transform& Object3D::getLocalTransform() {
-    return this->localTransform;
-  }
-
-  Transform& Object3D::getWorldTransform() {
-    return this->worldTransform;
+  Transform& Object3D::getTransform() {
+    return this->transform;
   }
 
   std::vector<std::shared_ptr<Object3D>>::const_iterator Object3D::beginIterateChildren() {

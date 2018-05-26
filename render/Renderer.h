@@ -13,7 +13,7 @@ namespace Core {
 
   class Renderer {
     void processSceneStep(const std::shared_ptr<Object3D> object,
-                          std::vector<Transform>& transformStack,
+                          std::vector<Transform*>& transformStack,
                           std::vector<std::shared_ptr<Object3D>>& out);
 
   public:
