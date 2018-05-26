@@ -9,7 +9,7 @@ namespace Core  {
   class Object3D;
 
   template <typename T>
-  class ObjectRenderer : public BaseObjectRenderer{
+  class ObjectRenderer : public BaseObjectRenderer {
 
   public:
 

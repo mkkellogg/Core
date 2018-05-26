@@ -1,6 +1,7 @@
 #include "RendererGL.h"
 #include "../render/MeshRenderer.h"
 #include "../render/RenderableContainer.h"
+#include "../render/BaseRenderableContainer.h"
 
 namespace Core {
 
@@ -33,14 +34,11 @@ namespace Core {
     std::vector<std::shared_ptr<Object3D>> objectList;
     this->processScene(scene, objectList);
     for (auto object : objectList) {
-      /*std::shared_ptr<ObjectRenderer<Mesh>> renderer = object->getCustomRenderer<Mesh>();
-      if (renderer) {
-        renderer->render(camera);
-      }*/
-      std::shared_ptr<RenderableContainer> renderableContainer = std::dynamic_pointer_cast<RenderableContainer>(object);
+      std::shared_ptr<BaseRenderableContainer> renderableContainer = std::dynamic_pointer_cast<BaseRenderableContainer>(object);
       if(renderableContainer) {
-        for (auto itr = renderableContainer->beginIterateRenderers(); itr != renderableContainer->endIterateRenderers(); ++itr) {
-          (*itr)->render(camera);
+        std::shared_ptr<BaseObjectRenderer> baseRenderer = renderableContainer->getBaseRenderer();
+        if(baseRenderer) {
+          baseRenderer->render(camera);
         }
       }
     }

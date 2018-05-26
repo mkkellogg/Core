@@ -2,8 +2,5 @@
 
 namespace Core {
 
-  RenderableContainer::RenderableContainer() {
-
-  }
 
 }

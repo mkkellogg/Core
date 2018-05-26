@@ -43,9 +43,10 @@ namespace Core {
   }
 
   void MeshRenderer::render(std::shared_ptr<Camera> camera) {
-    std::shared_ptr<RenderableContainer> thisContainer = std::dynamic_pointer_cast<RenderableContainer>(this->owner);
+    std::shared_ptr<RenderableContainer<Mesh>> thisContainer = std::dynamic_pointer_cast<RenderableContainer<Mesh>>(this->owner);
     if (thisContainer) {
-      for (auto mesh : thisContainer->getRenderables<Mesh>()) {
+      auto renderables = thisContainer->getRenderables();
+      for (auto mesh : renderables) {
         this->renderObject(camera, mesh);
       }
     }

@@ -87,10 +87,10 @@ namespace Core {
     this->skyboxMaterial = std::make_shared<Core::BasicMaterial>();
     this->skyboxMaterial->build();
 
-    std::shared_ptr<Core::RenderableContainer> skyboxObj = std::make_shared<Core::RenderableContainer>();
+    std::shared_ptr<Core::RenderableContainer<Mesh>> skyboxObj = std::make_shared<Core::RenderableContainer<Mesh>>();
     std::shared_ptr<Core::MeshRenderer> skyboxRenderer = std::make_shared<Core::MeshRenderer>(this->skyboxMaterial, skyboxObj);
-    skyboxObj->addRenderable<Core::Mesh>(skyboxMesh);
-    skyboxObj->setCustomRenderer<Core::Mesh>(skyboxRenderer);
+    skyboxObj->addRenderable(skyboxMesh);
+    skyboxObj->setRenderer(skyboxRenderer);
     scene->getRoot()->addObject(skyboxObj);
 
     std::shared_ptr<Core::Camera> camera = std::make_shared<Core::Camera>();

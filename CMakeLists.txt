@@ -41,6 +41,7 @@ set(INCLUDE_FILES
     material/BasicCubeMaterial.h
     material/Shader.h
     Demo.h
+    render/BaseRenderableContainer.h
     render/RenderableContainer.h
     render/Renderable.h
     render/ObjectRenderers.h
@@ -86,6 +87,7 @@ set(SOURCE_FILES
     scene/Scene.cpp
     scene/Transform.cpp
     scene/Octree.cpp
+    render/BaseRenderableContainer.cpp
     render/RenderableContainer.cpp
     render/MeshRenderer.cpp
     render/Camera.cpp
