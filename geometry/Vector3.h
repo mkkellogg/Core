@@ -11,10 +11,10 @@ namespace Core {
 
   #define VECTOR3_COMPONENT_COUNT 4
 
-  template <typename T, bool isPoint, bool customStorage, typename Enable = void> class Vector3;
+  template <typename T, bool customStorage, bool isPoint, typename Enable = void> class Vector3;
 
-  template <typename T, bool isPoint, bool customStorage>
-  class Vector3<T, isPoint, customStorage, Core::enable_if_t<Core::is_numeric<T>::value>>: public VectorStorage<T, VECTOR3_COMPONENT_COUNT, customStorage>, public Vector3Components<T> {
+  template <typename T, bool customStorage, bool isPoint>
+  class Vector3<T, customStorage, isPoint, Core::enable_if_t<Core::is_numeric<T>::value>>: public VectorStorage<T, VECTOR3_COMPONENT_COUNT, customStorage>, public Vector3Components<T> {
 
   protected:
 
@@ -22,10 +22,10 @@ namespace Core {
 
   public:
 
-    static const Vector3<T, isPoint, customStorage> Zero;
-    static const Vector3<T, isPoint, customStorage> UnitY;
-    static const Vector3<T, isPoint, customStorage> UnitX;
-    static const Vector3<T, isPoint, customStorage> Forward;
+    static const Vector3<T, customStorage, isPoint> Zero;
+    static const Vector3<T, customStorage, isPoint> UnitY;
+    static const Vector3<T, customStorage, isPoint> UnitX;
+    static const Vector3<T, customStorage, isPoint> Forward;
 
     Vector3() : Vector3(0.0, 0.0, 0.0) {}
     Vector3(const Vector3& src) : Vector3(src.x, src.y, src.z) {}
@@ -97,8 +97,8 @@ namespace Core {
       return vec;
     }
 
-   // template <typename TV, bool isPointV, bool customStorageV>
-    //void testFunc(const Vector3<TV, isPointV, customStorageV>& other);
+    template <typename TV, bool isPointV, bool customStorageV>
+    void testFunc(const Vector3<TV, isPointV, customStorageV>& other);
 
     /*template <typename TV, bool isPointV, bool customStorageV>
     const Vector3 operator -(const Vector3<TV, isPointV, customStorageV>& other) const {
@@ -121,31 +121,31 @@ namespace Core {
   };
 
 
-  /*template <typename T, bool isPoint, bool customStorage>
-  template <typename TV, bool isPointV, bool customStorageV>
-  void Vector3<T, isPoint, customStorage, T>::testFunc(const Vector3<TV, isPointV, customStorageV>& other) {
+  template <typename T, bool customStorage, bool isPoint>
+  template <typename TV, bool customStorageV, bool isPointV>
+  void Vector3<T, customStorage, isPoint, Core::enable_if_t<Core::is_numeric<T>::value>>::testFunc(const Vector3<TV, customStorageV, isPointV>& other) {
 
-  }*/
+  }
 
 
 
   typedef Vector3<Real, false, false> Vector3r;
-  typedef Vector3<Real, true, false> Point3r;
-  typedef Vector3<Real, false, true> Vector3rs;
+  typedef Vector3<Real, false, true> Point3r;
+  typedef Vector3<Real, true, false> Vector3rs;
   typedef Vector3<Real, true, true> Point3rs;
 
  
-  template <typename T, bool isPoint, bool customStorage>
-  const Vector3<T, isPoint, customStorage> Vector3<T, isPoint, customStorage, Core::enable_if_t<Core::is_numeric<T>::value>>::Zero;
+  template <typename T, bool customStorage, bool isPoint>
+  const Vector3<T, customStorage, isPoint> Vector3<T, customStorage, isPoint, Core::enable_if_t<Core::is_numeric<T>::value>>::Zero;
 
-  template <typename T, bool isPoint, bool customStorage>
-  const Vector3<T, isPoint, customStorage> Vector3<T, isPoint, customStorage, Core::enable_if_t<Core::is_numeric<T>::value>>::UnitY {0.0, 1.0, 0.0};
+  template <typename T, bool customStorage, bool isPoint>
+  const Vector3<T, customStorage, isPoint> Vector3<T, customStorage, isPoint, Core::enable_if_t<Core::is_numeric<T>::value>>::UnitY {0.0, 1.0, 0.0};
 
-  template <typename T, bool isPoint, bool customStorage>
-  const Vector3<T, isPoint, customStorage> Vector3<T, isPoint, customStorage, Core::enable_if_t<Core::is_numeric<T>::value>>::UnitX {1.0, 0.0, 0.0};
+  template <typename T, bool customStorage, bool isPoint>
+  const Vector3<T, customStorage, isPoint> Vector3<T, customStorage, isPoint, Core::enable_if_t<Core::is_numeric<T>::value>>::UnitX {1.0, 0.0, 0.0};
 
-  template <typename T, bool isPoint, bool customStorage>
-  const Vector3<T, isPoint, customStorage> Vector3<T, isPoint, customStorage, Core::enable_if_t<Core::is_numeric<T>::value>>::Forward {0.0, 0.0, -1.0};
+  template <typename T, bool customStorage, bool isPoint>
+  const Vector3<T, customStorage, isPoint> Vector3<T, customStorage, isPoint, Core::enable_if_t<Core::is_numeric<T>::value>>::Forward {0.0, 0.0, -1.0};
 
 
 }
