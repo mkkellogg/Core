@@ -1,5 +1,7 @@
 #pragma once
 
+#include <type_traits>
+
 #include "../common/types.h"
 #include "../math/Matrix4x4.h"
 #include "../scene/Object3D.h"
@@ -9,7 +11,8 @@
 #include "Renderable.h"
 
 namespace Core {
-  template <typename T>
+
+  template <typename T, typename = typename std::enable_if<std::is_base_of<Renderable<T>, T>::value>::type>
   class RenderableContainer : public BaseRenderableContainer {
 
     std::vector<std::shared_ptr<T>> renderables;
