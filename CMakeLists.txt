@@ -45,7 +45,6 @@ set(INCLUDE_FILES
     render/RenderableContainer.h
     render/Renderable.h
     render/ObjectRenderers.h
-    render/RenderableGroup.h
     render/BaseObjectRenderer.h
     render/ObjectRenderer.h
     render/Camera.h
