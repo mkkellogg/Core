@@ -1,4 +1,4 @@
-#include "Transform.h"
+#include "Object3D.h"
 
 namespace Core {
 
@@ -46,7 +46,12 @@ namespace Core {
   }
 
   void Transform::updateWorldMatrix() {
-    
+    this->worldMatrix.copy(localMatrix);
+    std::shared_ptr<Object3D> parent = const_cast<Object3D&>(target).getParent();
+    while(parent) {
+      this->worldMatrix.preMultiply(parent->getTransform().getLocalMatrix());
+      parent = std::const_pointer_cast<Object3D>(parent)->getParent();
+    }
   }
 
 }
