@@ -42,8 +42,13 @@ namespace Core {
   }
 
   void Camera::lookAt(const Point3r& target) {
-   /* Point3r cameraPos;
-    cameraPos.copy(this->p)
+    Point3r cameraPos;
+    this->transform.updateWorldMatrix();
+    this->transform.transform(cameraPos);
+
+   // Vector3r toTarget(target);
+    
+    /*cameraPos.copy(this->p)
     Vector3r toTarget;
     Vector3r::Forward */
   }

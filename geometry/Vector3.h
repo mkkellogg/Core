@@ -14,6 +14,11 @@ namespace Core {
   template <typename T, bool isPoint, bool customStorage,
       typename = typename std::enable_if<Core::is_numeric<T>::value, T>::type> class Vector3;
 
+  typedef Vector3<Real, false, false> Vector3r;
+  typedef Vector3<Real, true, false> Point3r;
+  typedef Vector3<Real, false, true> Vector3rs;
+  typedef Vector3<Real, true, true> Point3rs;
+
   template <typename T, bool isPoint, bool customStorage>
   class Vector3<T, isPoint, customStorage, T>: public VectorStorage<T, VECTOR3_COMPONENT_COUNT, customStorage>, public Vector3Components<T> {
 
@@ -98,6 +103,18 @@ namespace Core {
       return vec;
     }
 
+    template <typename TV, bool isPointV, bool customStorageV>
+    void testFunc(const Vector3<TV, isPointV, customStorageV>& other);
+
+    /*template <typename TV, bool isPointV, bool customStorageV>
+    const Vector3 operator -(const Vector3<TV, isPointV, customStorageV>& other) const {
+      Vector3<T, isPoint, customStorage> vec = *this;
+      vec.x -= other.x;
+      vec.y -= other.y;
+      vec.z -= other.z;
+      return vec;
+    }*/
+
     const Vector3 operator *(const T& scale) const {
       Vector3<T, isPoint, customStorage> vec = *this;
       vec.x *= scale;
@@ -108,6 +125,21 @@ namespace Core {
     }
 
   };
+
+
+  template <typename T, bool isPoint, bool customStorage>
+  template <typename TV, bool isPointV, bool customStorageV>
+  void Vector3<T, isPoint, customStorage, T>::testFunc(const Vector3<TV, isPointV, customStorageV>& other) {
+
+  }
+
+
+
+
+
+
+
+
 
   template <typename T, bool isPoint, bool customStorage>
   const Vector3<T, isPoint, customStorage> Vector3<T, isPoint, customStorage, T>::Zero;
@@ -121,11 +153,5 @@ namespace Core {
   template <typename T, bool isPoint, bool customStorage>
   const Vector3<T, isPoint, customStorage> Vector3<T, isPoint, customStorage, T>::Forward {0.0, 0.0, -1.0};
 
-
-
-  typedef Vector3<Real, false, false> Vector3r;
-  typedef Vector3<Real, true, false> Point3r;
-  typedef Vector3<Real, false, true> Vector3rs;
-  typedef Vector3<Real, true, true> Point3rs;
 
 }

@@ -26,6 +26,8 @@ namespace Core {
 
     void updateWorldMatrix();
 
+    void transform(BaseVector<Real, 4>& vector) const;
+
   };
 
 }

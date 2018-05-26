@@ -54,4 +54,7 @@ namespace Core {
     }
   }
 
+  void Transform::transform(BaseVector<Real, 4>& vector) const {
+    this->worldMatrix.transform(vector);
+  }
 }

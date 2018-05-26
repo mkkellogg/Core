@@ -19,9 +19,13 @@ namespace Core {
   class MeshRenderer;
 
   class Object3D {
-    Transform transform;
+    
     std::vector<std::shared_ptr<Object3D>> children;
     std::shared_ptr<Object3D> parent;
+  
+  protected:
+    Transform transform;
+
 
   public:
     Object3D();
