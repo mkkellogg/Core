@@ -12,15 +12,11 @@
 
 namespace Core {
 
-  /*template <typename T, typename Enable = void>
-  class RenderableContainer : public RenderableContainer {};
+  template <typename T, typename Enable = void>
+  class RenderableContainer;
 
   template <typename T>
-  class RenderableContainer<T, typename std::enable_if<std::is_base_of<Renderable<T>, T>::value>::type> : public RenderableContainer {
-*/
-
-  template <typename T, typename = typename std::enable_if<std::is_base_of<Renderable<T>, T>::value>::type>
-  class RenderableContainer : public BaseRenderableContainer {
+  class RenderableContainer<T, typename std::enable_if<std::is_base_of<Renderable<T>, T>::value>::type> : public BaseRenderableContainer {
 
     std::vector<std::shared_ptr<T>> renderables;
 

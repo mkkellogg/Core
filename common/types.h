@@ -35,4 +35,9 @@ namespace Core {
   struct is_numeric{
     static const Bool value = std::is_integral<T>::value || std::is_floating_point<T>::value;
   };
+
+  template< bool B, class T = void >
+  using enable_if_t = typename std::enable_if<B,T>::type;
 }
+
+
