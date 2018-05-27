@@ -130,15 +130,15 @@ namespace Core {
     Vector3v(T* storage, const T& x, const T& y, const T& z): Vector3<T, customStorage, false>(storage, x, y, z) {
     }
 
-    const Vector3v operator *(const T& scale) const {
+    Vector3v operator *(const T& scale) const {
       return Vector3v(Vector3<T, customStorage, false>::operator * (scale));
     }
 
-    const Vector3v operator -(const Vector3v<T, customStorage>& other) const {
+    Vector3v operator -(const Vector3v<T, customStorage>& other) const {
       return Vector3v(Vector3<T, customStorage, customStorage>::operator -(other));
     }
 
-    const Vector3v operator +(const Vector3v<T, customStorage>& other) const {
+    Vector3v operator +(const Vector3v<T, customStorage>& other) const {
       return Vector3v(Vector3<T, customStorage, customStorage>::operator +(other));
     }
 
@@ -157,19 +157,19 @@ namespace Core {
     Vector3p(T* storage, const T& x, const T& y, const T& z): Vector3<T, customStorage, true>(storage, x, y, z) {
     }
 
-    const Vector3p operator *(const T& scale) const {
+    Vector3p operator *(const T& scale) const {
       return Vector3p(Vector3<T, customStorage, false>::operator * (scale));
     }
 
-    const Vector3p operator -(const Vector3v<T, customStorage>& other) const {
+    Vector3p operator -(const Vector3v<T, customStorage>& other) const {
       return Vector3p(Vector3<T, customStorage, customStorage>::operator -(other));
     }
 
-    const Vector3v<T, customStorage> operator -(const Vector3p<T, customStorage>& other) const {
+    Vector3v<T, customStorage> operator -(const Vector3p<T, customStorage>& other) const {
       return Vector3v<T, customStorage>(Vector3<T, customStorage, customStorage>::operator -(other));
     }
 
-    const Vector3p operator +(const Vector3v<T, customStorage>& other) const {
+    Vector3p operator +(const Vector3v<T, customStorage>& other) const {
       return Vector3p(Vector3<T, customStorage, customStorage>::operator +(other));
     }
 
@@ -179,11 +179,6 @@ namespace Core {
   typedef Vector3v<Real, false> Point3r;
   typedef Vector3p<Real, true> Vector3rs;
   typedef Vector3p<Real, true> Point3rs;
-
-  /*typedef Vector3<Real, false, false> Vector3r;
-  typedef Vector3<Real, false, true> Point3r;
-  typedef Vector3<Real, true, false> Vector3rs;
-  typedef Vector3<Real, true, true> Point3rs;*/
 
  
   template <typename T, bool customStorage, bool isPoint>
@@ -197,6 +192,5 @@ namespace Core {
 
   template <typename T, bool customStorage, bool isPoint>
   const Vector3<T, customStorage, isPoint> Vector3<T, customStorage, isPoint, Core::enable_if_t<Core::is_numeric<T>::value>>::Forward {0.0, 0.0, -1.0};
-
 
 }
