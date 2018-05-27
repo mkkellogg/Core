@@ -20,7 +20,7 @@ namespace Core
     Quaternion(const Vector3Components<Real>& v, Real w);
     explicit Quaternion(const Real* array);
     Quaternion(Real x, Real y, Real z, Real w);
-    void Set(Real x, Real y, Real z, Real w);
+    void set(Real x, Real y, Real z, Real w);
     Real x() const;
     Real y() const;
     Real z() const;

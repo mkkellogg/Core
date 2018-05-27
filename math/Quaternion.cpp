@@ -29,7 +29,7 @@ namespace Core
     mData[3] = w;
   }
 
-  void Quaternion::Set(Real x, Real y, Real z, Real w) {
+  void Quaternion::set(Real x, Real y, Real z, Real w) {
     mData[0] = x;
     mData[1] = y;
     mData[2] = z;
@@ -576,7 +576,7 @@ namespace Core
     Real z = sclp * qa.z() + sclq * end.z();
     Real w = sclp * qa.w() + sclq * end.w();
 
-    qOut.Set(x, y, z, w);
+    qOut.set(x, y, z, w);
     return qOut;
   }
 
@@ -659,7 +659,7 @@ namespace Core
       Vector3r c;
       Vector3r::cross(v0, v1, c);
 
-      q.Set(c.x * invs, c.y * invs, c.z * invs, s * 0.5f);
+      q.set(c.x * invs, c.y * invs, c.z * invs, s * 0.5f);
       q.normalize();
     }
 

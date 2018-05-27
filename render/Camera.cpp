@@ -2,6 +2,7 @@
 #include "Camera.h"
 #include "../common/types.h"
 #include "../math/Math.h"
+#include "../math/Quaternion.h"
 #include "../math/Matrix4x4.h"
 
 namespace Core {
@@ -46,11 +47,25 @@ namespace Core {
     this->transform.updateWorldMatrix();
     this->transform.transform(cameraPos);
 
-   // Vector3r toTarget(target);
+    Vector3r toTarget = target - cameraPos;
+    toTarget.normalize();
+
+    Vector3r toTargetXZ = toTarget;
+    toTargetXZ.y = 0;
+    toTargetXZ.normalize();
+
+    Quaternion a = Quaternion::getRotation(Vector3r::Forward, toTargetXZ);
+    Quaternion b = Quaternion::getRotation(toTargetXZ, toTarget);
+    Quaternion finalRotation = a * b;
     
-    /*cameraPos.copy(this->p)
-    Vector3r toTarget;
-    Vector3r::Forward */
+    Matrix4x4& local = this->transform.getLocalMatrix();
+    local.copy(finalRotation.rotationMatrix());
+    auto matData = local.getData();
+    matData[12] = cameraPos.x;
+    matData[13] = cameraPos.y;
+    matData[14] = cameraPos.z;
+   
+    this->transform.updateWorldMatrix();
   }
 
   void Camera::buildPerspectiveProjectionMatrix(Real fov, Real ratio,
