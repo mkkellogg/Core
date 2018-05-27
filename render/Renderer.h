@@ -14,16 +14,25 @@ namespace Core {
   class Renderer {
     void processSceneStep(const std::shared_ptr<Object3D> object,
                           std::vector<Transform*>& transformStack,
-                          std::vector<std::shared_ptr<Object3D>>& out);
+                          std::vector<std::shared_ptr<Object3D>>& outObjects,
+                          std::vector<std::shared_ptr<Camera>>& outCameras);
+  protected:
+     UInt32 renderWidth;
+     UInt32 renderHeight;
 
   public:
     virtual ~Renderer();
 
     virtual Bool init();
     void resize(int w, int h);
-    virtual void render(std::shared_ptr<Scene> scene, std::shared_ptr<Camera> camera) = 0;
-    void processScene(std::shared_ptr<Scene> scene, std::vector<std::shared_ptr<Object3D>>& out);
-
+    virtual void render(std::shared_ptr<Scene> scene) = 0;
+    virtual void render(std::shared_ptr<Scene> scene, 
+                        std::shared_ptr<Camera> camera,
+                        std::vector<std::shared_ptr<Object3D>>& objectList) = 0;
+    void processScene(std::shared_ptr<Scene> scene, 
+                      std::vector<std::shared_ptr<Object3D>>& outObjects,
+                      std::vector<std::shared_ptr<Camera>>& outCamerast);
+    void setAspectRatioFromDimensions(UInt32 width, UInt32 height);                  
   protected:
     Renderer();
 

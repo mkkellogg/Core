@@ -9,11 +9,11 @@ namespace Core {
     RendererGL();
     virtual ~RendererGL();
     virtual Bool init() override;
-    virtual void render(std::shared_ptr<Scene> scene, std::shared_ptr<Camera> camera) override;
+    virtual void render(std::shared_ptr<Scene> scene) override;
+    virtual void render(std::shared_ptr<Scene> scene, 
+                        std::shared_ptr<Camera> camera,
+                        std::vector<std::shared_ptr<Object3D>>& objectList) override;
 
-  private:
-
-  public:
     static Renderer* createRenderer();
   };
 }

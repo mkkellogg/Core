@@ -27,18 +27,26 @@ namespace Core {
     return renderer;
   }
 
-  void RendererGL::render(std::shared_ptr<Scene> scene, std::shared_ptr<Camera> camera) {
-
+  void RendererGL::render(std::shared_ptr<Scene> scene) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     std::vector<std::shared_ptr<Object3D>> objectList;
-    this->processScene(scene, objectList);
+    std::vector<std::shared_ptr<Camera>> cameraList;
+    this->processScene(scene, objectList, cameraList);
+    for(auto camera: cameraList) {
+      camera->setAspectRatioFromDimensions(this->renderWidth, this->renderHeight);
+      render(scene, camera, objectList);
+    }
+  }
+
+  void RendererGL::render(std::shared_ptr<Scene> scene, 
+                          std::shared_ptr<Camera> camera,
+                          std::vector<std::shared_ptr<Object3D>>& objectList) {
     for (auto object : objectList) {
       std::shared_ptr<BaseRenderableContainer> renderableContainer = std::dynamic_pointer_cast<BaseRenderableContainer>(object);
       if(renderableContainer) {
-        std::shared_ptr<BaseObjectRenderer> baseRenderer = renderableContainer->getBaseRenderer();
-        if(baseRenderer) {
-          baseRenderer->render(camera);
+        std::shared_ptr<BaseObjectRenderer> objectRenderer = renderableContainer->getBaseRenderer();
+        if(objectRenderer) {
+          objectRenderer->render(camera);
         }
       }
     }

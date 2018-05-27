@@ -74,12 +74,6 @@ namespace Core {
       return a.x * b.x + a.y * b.y + a.z * b.z;
     }
 
-    static void cross(const Vector3& a, const Vector3& b, Vector3& result)  {
-      result.x = (a.y * b.z) - (b.y * a.z);
-      result.y = (b.x * a.z) - (a.x * b.z);
-      result.z = (a.x * b.y) - (b.x * a.y);
-    }
-
     static Real magnitude(const T& x, const T& y, const T& z) {
       return (Real)Math::SquareRoot(x * x + y * y + z * z);
     };
@@ -128,6 +122,12 @@ namespace Core {
 
     Vector3v(T* storage): Vector3v(storage, 0.0, 0.0, 0.0) {}
     Vector3v(T* storage, const T& x, const T& y, const T& z): Vector3<T, customStorage, false>(storage, x, y, z) {
+    }
+
+    static void cross(const Vector3v& a, const Vector3v& b, Vector3v& result)  {
+      result.x = (a.y * b.z) - (b.y * a.z);
+      result.y = (b.x * a.z) - (a.x * b.z);
+      result.z = (a.x * b.y) - (b.x * a.y);
     }
 
     Vector3v operator *(const T& scale) const {
@@ -181,7 +181,6 @@ namespace Core {
   typedef Vector3v<Real, true> Vector3rs;
   typedef Vector3p<Real, true> Point3rs;
 
- 
   template <typename T, bool customStorage>
   const Vector3v<T, customStorage> Vector3v<T, customStorage>::Zero;
 

@@ -3,7 +3,7 @@
 
 namespace Core {
 
-  Renderer::Renderer() {
+  Renderer::Renderer(): renderWidth(0), renderHeight(0) {
 
   }
 
@@ -15,14 +15,17 @@ namespace Core {
     return true;
   }
 
-  void Renderer::processScene(std::shared_ptr<Scene> scene, std::vector<std::shared_ptr<Object3D>>& out) {
+  void Renderer::processScene(std::shared_ptr<Scene> scene, 
+                              std::vector<std::shared_ptr<Object3D>>& outObjects,
+                              std::vector<std::shared_ptr<Camera>>& outCameras) {
     std::vector<Transform*> transformStack;
-    processSceneStep(scene->getRoot(), transformStack, out);
+    processSceneStep(scene->getRoot(), transformStack, outObjects, outCameras);
   }
 
   void Renderer::processSceneStep(const std::shared_ptr<Object3D> object,
                                   std::vector<Transform*>& transformStack,
-                                  std::vector<std::shared_ptr<Object3D>>& out) {
+                                  std::vector<std::shared_ptr<Object3D>>& outObjects,
+                                  std::vector<std::shared_ptr<Camera>>& outCameras) {
     for (auto itr = object->beginIterateChildren(); itr != object->endIterateChildren(); ++itr) {
       const std::shared_ptr<Object3D> obj = *itr;
 
@@ -36,10 +39,18 @@ namespace Core {
       objTransform.getWorldMatrix().copy(nextMatrix);
 
       transformStack.push_back(&objTransform);
-      out.push_back(obj);
-      this->processSceneStep(obj, transformStack, out);
+      outObjects.push_back(obj);
+      std::shared_ptr<Camera> cam = std::dynamic_pointer_cast<Camera>(obj);
+      if (cam) {
+        outCameras.push_back(cam);
+      }
+      this->processSceneStep(obj, transformStack, outObjects, outCameras);
       transformStack.pop_back();
     }
   }
 
+  void Renderer::setAspectRatioFromDimensions(UInt32 width, UInt32 height) {
+    this->renderWidth = width;
+    this->renderHeight = height;
+  }
 }

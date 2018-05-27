@@ -23,7 +23,6 @@ namespace Core {
 
     GLVersion glVersion;
     std::shared_ptr<Scene> scene;
-    std::shared_ptr<Camera> camera;
     std::shared_ptr<ImageLoader> imageLoader;
     std::shared_ptr<AssetLoader> assetLoader;
     Renderer* renderer;
@@ -46,8 +45,6 @@ namespace Core {
     void resize(UInt32 width, UInt32 height);
     void setScene(std::shared_ptr<Scene> scene);
     std::shared_ptr<Scene> getScene();
-    void setCamera(std::shared_ptr<Camera> camera);
-    std::shared_ptr<Camera> getCamera();
     void setImageLoader(std::shared_ptr<ImageLoader> imageLoader);
     std::shared_ptr<ImageLoader> getImageLoader();
     void setAssetLoader(std::shared_ptr<AssetLoader> assetLoader);

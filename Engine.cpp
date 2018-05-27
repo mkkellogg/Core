@@ -22,7 +22,7 @@ namespace Core {
   }
 
   Engine::Engine(GLVersion version):
-      glVersion(version), renderer(nullptr), camera(nullptr), screenWidth(0), screenHeight(0) {
+      glVersion(version), renderer(nullptr), screenWidth(0), screenHeight(0) {
 
   }
 
@@ -69,7 +69,7 @@ namespace Core {
 
   void Engine::render() {
     if (this->scene) {
-      this->renderer->render(this->scene, this->camera);
+      this->renderer->render(this->scene);
     }
   }
 
@@ -77,8 +77,8 @@ namespace Core {
     glViewport(0, 0, width, height);
     this->screenWidth = width;
     this->screenHeight = height;
-    if (this->camera) {
-      this->camera->setAspectRatioFromDimensions(width, height);
+    if (this->renderer) {
+      this->renderer->setAspectRatioFromDimensions(width, height);
     }
   }
 
@@ -88,14 +88,6 @@ namespace Core {
 
   std::shared_ptr<Scene> Engine::getScene() {
     return this->scene;
-  }
-
-  void Engine::setCamera(std::shared_ptr<Camera> camera) {
-    this->camera = camera;
-  }
-
-  std::shared_ptr<Camera> Engine::getCamera() {
-    return this->camera;
   }
 
   void Engine::setImageLoader(std::shared_ptr<ImageLoader> imageLoader) {

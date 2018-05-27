@@ -25,10 +25,10 @@ namespace Core {
 
   void Demo::run() {
 
-    this->engine.onUpdate([this](Engine& engine) {
+    std::shared_ptr<Core::Camera> camera;
+    this->engine.onUpdate([this, camera](Engine& engine) {
 
       static Core::Real rotationAngle = 0.0;
-      std::shared_ptr<Core::Camera> camera = engine.getCamera();
       if (camera) {
         rotationAngle += 0.01;
         if (rotationAngle >= Core::Math::TwoPI) rotationAngle -= Core::Math::TwoPI;
@@ -93,8 +93,8 @@ namespace Core {
     skyboxObj->setRenderer(skyboxRenderer);
     scene->getRoot()->addObject(skyboxObj);
 
-    std::shared_ptr<Core::Camera> camera = std::make_shared<Core::Camera>();
-    engine.setCamera(camera);
+    camera = std::make_shared<Core::Camera>();
+    scene->getRoot()->addObject(camera);
 
   }
 

@@ -64,8 +64,6 @@ namespace Core {
     matData[12] = cameraPos.x;
     matData[13] = cameraPos.y;
     matData[14] = cameraPos.z;
-   
-    this->transform.updateWorldMatrix();
   }
 
   void Camera::buildPerspectiveProjectionMatrix(Real fov, Real ratio,
