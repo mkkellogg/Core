@@ -50,7 +50,7 @@ namespace Core {
 
     renderer = Core::RendererGL::createRenderer();
 
-    glClearColor(1.0, 0, 0, 1);
+    glClearColor(0, 0, 0, 1);
     glFrontFace(GL_CCW);
     glCullFace(GL_BACK);
     glEnable(GL_CULL_FACE);
