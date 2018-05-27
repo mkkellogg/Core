@@ -66,7 +66,7 @@ namespace Core {
     }
 
     Real magnitude() const {
-      return Vector3<T, isPoint, customStorage>::magnitude(this->x, this->y, this->z);
+      return Vector3<T, customStorage, isPoint>::magnitude(this->x, this->y, this->z);
     }
 
     Bool isZeroLength() const {
@@ -89,50 +89,101 @@ namespace Core {
       return (Real)Math::SquareRoot(x * x + y * y + z * z);
     };
 
-    const Vector3 operator -(const Vector3Components<T>& other) const {
-      Vector3<T, isPoint, customStorage> vec = *this;
+    const Vector3 operator *(const T& scale) const {
+      Vector3<T, customStorage, isPoint> vec = *this;
+      vec.scale(scale);
+      return vec;
+
+    }
+
+  protected:
+
+    const Vector3 operator -(const Vector3<T, customStorage, isPoint>& other) const {
+      Vector3<T, customStorage, isPoint> vec = *this;
       vec.x -= other.x;
       vec.y -= other.y;
       vec.z -= other.z;
       return vec;
     }
 
-    template <typename TV, bool isPointV, bool customStorageV>
-    void testFunc(const Vector3<TV, isPointV, customStorageV>& other);
-
-    /*template <typename TV, bool isPointV, bool customStorageV>
-    const Vector3 operator -(const Vector3<TV, isPointV, customStorageV>& other) const {
-      Vector3<T, isPoint, customStorage> vec = *this;
-      vec.x -= other.x;
-      vec.y -= other.y;
-      vec.z -= other.z;
+    const Vector3 operator +(const Vector3<T, customStorage, isPoint>& other) const {
+      Vector3<T, customStorage, isPoint> vec = *this;
+      vec.x += other.x;
+      vec.y += other.y;
+      vec.z += other.z;
       return vec;
-    }*/
-
-    const Vector3 operator *(const T& scale) const {
-      Vector3<T, isPoint, customStorage> vec = *this;
-      vec.x *= scale;
-      vec.y *= scale;
-      vec.z *= scale;
-      return vec;
-
     }
 
   };
 
+  
+  template <typename T, bool customStorage>
+  class Vector3v : public Vector3<T, customStorage, false> {
 
-  template <typename T, bool customStorage, bool isPoint>
-  template <typename TV, bool customStorageV, bool isPointV>
-  void Vector3<T, customStorage, isPoint, Core::enable_if_t<Core::is_numeric<T>::value>>::testFunc(const Vector3<TV, customStorageV, isPointV>& other) {
+  public:
+    Vector3v() : Vector3v(0.0, 0.0, 0.0) {}
+    Vector3v(const Vector3<T, customStorage, false>& src) : Vector3v(src.x, src.y, src.z) {}
+    Vector3v(const T& x, const T& y, const T& z): Vector3<T, customStorage, false>(x, y, z) {
+    }
 
-  }
+    Vector3v(T* storage): Vector3v(storage, 0.0, 0.0, 0.0) {}
+    Vector3v(T* storage, const T& x, const T& y, const T& z): Vector3<T, customStorage, false>(storage, x, y, z) {
+    }
 
+    const Vector3v operator *(const T& scale) const {
+      return Vector3v(Vector3<T, customStorage, false>::operator * (scale));
+    }
 
+    const Vector3v operator -(const Vector3v<T, customStorage>& other) const {
+      return Vector3v(Vector3<T, customStorage, customStorage>::operator -(other));
+    }
 
-  typedef Vector3<Real, false, false> Vector3r;
+    const Vector3v operator +(const Vector3v<T, customStorage>& other) const {
+      return Vector3v(Vector3<T, customStorage, customStorage>::operator +(other));
+    }
+
+  };
+
+  template <typename T, bool customStorage>
+  class Vector3p : public Vector3<T, customStorage, true> {
+  
+  public:
+    Vector3p() : Vector3p(0.0, 0.0, 0.0) {}
+    Vector3p(const Vector3<T, customStorage, true>& src) : Vector3p(src.x, src.y, src.z) {}
+    Vector3p(const T& x, const T& y, const T& z): Vector3<T, customStorage, true>(x, y, z) {
+    }
+
+    Vector3p(T* storage): Vector3p(storage, 0.0, 0.0, 0.0) {}
+    Vector3p(T* storage, const T& x, const T& y, const T& z): Vector3<T, customStorage, true>(storage, x, y, z) {
+    }
+
+    const Vector3p operator *(const T& scale) const {
+      return Vector3p(Vector3<T, customStorage, false>::operator * (scale));
+    }
+
+    const Vector3p operator -(const Vector3v<T, customStorage>& other) const {
+      return Vector3p(Vector3<T, customStorage, customStorage>::operator -(other));
+    }
+
+    const Vector3v<T, customStorage> operator -(const Vector3p<T, customStorage>& other) const {
+      return Vector3v<T, customStorage>(Vector3<T, customStorage, customStorage>::operator -(other));
+    }
+
+    const Vector3p operator +(const Vector3v<T, customStorage>& other) const {
+      return Vector3p(Vector3<T, customStorage, customStorage>::operator +(other));
+    }
+
+  };
+
+  typedef Vector3v<Real, false> Vector3r;
+  typedef Vector3v<Real, false> Point3r;
+  typedef Vector3p<Real, true> Vector3rs;
+  typedef Vector3p<Real, true> Point3rs;
+
+  /*typedef Vector3<Real, false, false> Vector3r;
   typedef Vector3<Real, false, true> Point3r;
   typedef Vector3<Real, true, false> Vector3rs;
-  typedef Vector3<Real, true, true> Point3rs;
+  typedef Vector3<Real, true, true> Point3rs;*/
 
  
   template <typename T, bool customStorage, bool isPoint>

@@ -16,7 +16,7 @@ namespace Core {
   class RenderableContainer;
 
   template <typename T>
-  class RenderableContainer<T, typename std::enable_if<std::is_base_of<Renderable<T>, T>::value>::type> : public BaseRenderableContainer {
+  class RenderableContainer<T, Core::enable_if_t<std::is_base_of<Renderable<T>, T>::value>> : public BaseRenderableContainer {
 
     std::vector<std::shared_ptr<T>> renderables;
 
