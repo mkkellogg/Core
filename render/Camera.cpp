@@ -56,10 +56,10 @@ namespace Core {
 
     Quaternion a = Quaternion::getRotation(Vector3r::Forward, toTargetXZ);
     Quaternion b = Quaternion::getRotation(toTargetXZ, toTarget);
-    Quaternion finalRotation = a * b;
     
     Matrix4x4& local = this->transform.getLocalMatrix();
-    local.copy(finalRotation.rotationMatrix());
+    local.copy(a.rotationMatrix());
+    local.preMultiply(b.rotationMatrix());
     auto matData = local.getData();
     matData[12] = cameraPos.x;
     matData[13] = cameraPos.y;

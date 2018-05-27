@@ -114,6 +114,7 @@ namespace Core {
     static const Vector3v<T, customStorage> UnitY;
     static const Vector3v<T, customStorage> UnitX;
     static const Vector3v<T, customStorage> Forward;
+    static const Vector3v<T, customStorage> Up;
 
     Vector3v() : Vector3v(0.0, 0.0, 0.0) {}
     Vector3v(const Vector3<T, customStorage, false>& src) : Vector3v(src.x, src.y, src.z) {}
@@ -192,5 +193,8 @@ namespace Core {
 
   template <typename T, bool customStorage>
   const Vector3v<T, customStorage> Vector3v<T, customStorage>::Forward {0.0, 0.0, -1.0};
+
+  template <typename T, bool customStorage>
+  const Vector3v<T, customStorage> Vector3v<T, customStorage>::Up {0.0, 1.0, 0.0};
 
 }
