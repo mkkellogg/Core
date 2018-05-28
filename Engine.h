@@ -42,7 +42,7 @@ namespace Core {
     void update();
     void render();
 
-    void resize(UInt32 width, UInt32 height);
+    void setRenderSize(UInt32 width, UInt32 height);
     void setScene(std::shared_ptr<Scene> scene);
     std::shared_ptr<Scene> getScene();
     void setImageLoader(std::shared_ptr<ImageLoader> imageLoader);

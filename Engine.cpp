@@ -73,7 +73,7 @@ namespace Core {
     }
   }
 
-  void Engine::resize(UInt32 width, UInt32 height) {
+  void Engine::setRenderSize(UInt32 width, UInt32 height) {
     glViewport(0, 0, width, height);
     this->screenWidth = width;
     this->screenHeight = height;
