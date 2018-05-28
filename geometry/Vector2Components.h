@@ -14,7 +14,7 @@ namespace Core {
       this->set(x, y);
     }
 
-    virtual ~Vector2Components() {}
+    virtual ~Vector2Components() = 0;
 
     void set(const T& x, const T& y) {
       this->x = x;
@@ -27,4 +27,6 @@ namespace Core {
 
   };
 
+  template <typename T>
+  Vector2Components<T>::~Vector2Components() {}
 }

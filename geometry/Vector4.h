@@ -16,14 +16,9 @@ namespace Core {
 
   public:
 
-    T& x = this->data[0];
-    T& y = this->data[1];
-    T& z = this->data[0];
-    T& w = this->data[1];
-
-    Vector4(): Vector4(0.0, 0.0) {}
-    Vector4(const T& x, const T& y): Vector4Components<T>(this->data, x, y, z, w) {}
-    Vector4(T* storage): Vector4(storage, 0.0, 0.0) {}
+    Vector4(): Vector4(0.0, 0.0, 0.0, 0.0) {}
+    Vector4(const T& x, const T& y, const T& z, const T& w): Vector4Components<T>(this->data, x, y, z, w) {}
+    Vector4(T* storage): Vector4(storage, 0.0, 0.0, 0.0, 0.0) {}
     Vector4(T* storage, const T& x, const T& y, const T& z, const T& w):
     VectorStorage<T, VECTOR4_COMPONENT_COUNT, true>(storage), Vector4Components<T>(this->data, x, y, z, w) {}
 

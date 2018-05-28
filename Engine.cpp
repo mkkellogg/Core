@@ -74,7 +74,6 @@ namespace Core {
   }
 
   void Engine::setRenderSize(UInt32 width, UInt32 height) {
-    glViewport(0, 0, width, height);
     if (this->renderer) {
       this->renderer->setRenderSize(width, height);
     }

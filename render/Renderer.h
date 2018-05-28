@@ -6,6 +6,7 @@
 #include "../scene/Object3D.h"
 #include "../scene/Transform.h"
 #include "../geometry/Vector2.h"
+#include "../geometry/Vector4.h"
 #include "Camera.h"
 #include "ObjectRenderers.h"
 #include "ObjectRenderer.h"
@@ -19,6 +20,7 @@ namespace Core {
                           std::vector<std::shared_ptr<Camera>>& outCameras);
   protected:
     Vector2u renderSize;
+    Vector4u viewport;
 
   public:
     virtual ~Renderer();

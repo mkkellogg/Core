@@ -16,7 +16,7 @@ namespace Core {
       this->set(x, y, z, w);
     }
 
-    virtual ~Vector4Components() {}
+    virtual ~Vector4Components() = 0;
 
     void set(const T& x, const T& y, const T& z, const T& w) {
       this->x = x;
@@ -31,4 +31,6 @@ namespace Core {
 
   };
 
+  template <typename T>
+  Vector4Components<T>::~Vector4Components() {}
 }

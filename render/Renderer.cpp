@@ -37,13 +37,15 @@ namespace Core {
       Transform& objTransform = obj->getTransform();
       nextMatrix.multiply(objTransform.getLocalMatrix());
       objTransform.getWorldMatrix().copy(nextMatrix);
-
       transformStack.push_back(&objTransform);
       outObjects.push_back(obj);
+
+      // check if this object is a camera
       std::shared_ptr<Camera> cam = std::dynamic_pointer_cast<Camera>(obj);
       if (cam) {
         outCameras.push_back(cam);
       }
+
       this->processSceneStep(obj, transformStack, outObjects, outCameras);
       transformStack.pop_back();
     }
