@@ -40,7 +40,7 @@ namespace Core
     this->fromMatrix(matrix);
   }
 
-  Quaternion::Quaternion(const Vector3Components<Real>& v, Real w) {
+  Quaternion::Quaternion(const Vector3r& v, Real w) {
     mData[0] = v.x;
     mData[1] = v.y;
     mData[2] = v.z;
@@ -67,7 +67,7 @@ namespace Core
     return Vector3r(mData[0], mData[1], mData[2]);
   }
 
-  void Quaternion::complex(const Vector3Components<Real>& c) {
+  void Quaternion::complex(const Vector3r& c) {
     mData[0] = c.x;
     mData[1] = c.y;
     mData[2] = c.z;
@@ -358,7 +358,7 @@ namespace Core
     }
   }
 
-  void Quaternion::fromAngleAxis(const Real rfAngle, const Vector3Components<Real>& rkAxis) {
+  void Quaternion::fromAngleAxis(const Real rfAngle, const Vector3r& rkAxis) {
     // assert:  axis[] is unit length
     //
     // The quaternion representing the rotation is
@@ -413,7 +413,7 @@ namespace Core
    * @warning conjugate() is used instead of inverse() for better
    * performance, when this quaternion must be normalized.
    */
-   Vector3r Quaternion::rotatedVector(const Vector3Components<Real>& v) const {
+   Vector3r Quaternion::rotatedVector(const Vector3r& v) const {
     return (((*this) * Quaternion(v, 0)) * conjugate()).complex();
    }
 
@@ -422,7 +422,7 @@ namespace Core
    * euler angle rotation.
    * @param euler A 3-vector in order:  roll-pitch-yaw.
    */
-  void Quaternion::euler(const Vector3Components<Real>& euler) {
+  void Quaternion::euler(const Vector3r& euler) {
     Real c1 = Math::Cos(euler.z * 0.5f * Math::DegreesToRads);
     Real c2 = Math::Cos(euler.y * 0.5f * Math::DegreesToRads);
     Real c3 = Math::Cos(euler.x * 0.5f * Math::DegreesToRads);
@@ -595,15 +595,15 @@ namespace Core
     return mData + i;
   }
 
-  Quaternion Quaternion::getRotation(const Vector3Components<Real>& source,
-                                     const Vector3Components<Real>& dest)
+  Quaternion Quaternion::getRotation(const Vector3r& source,
+                                     const Vector3r& dest)
   {
     return getRotation(source, dest, Vector3r::Zero);
   }
 
-  Quaternion Quaternion::getRotation(const Vector3Components<Real>& source,
-                                     const Vector3Components<Real>& dest,
-                                     const Vector3Components<Real>& fallbackAxis)
+  Quaternion Quaternion::getRotation(const Vector3r& source,
+                                     const Vector3r& dest,
+                                     const Vector3r& fallbackAxis)
   {
     // Based on Stan Melax's article in Game Programming Gems
     Quaternion q;

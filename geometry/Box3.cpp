@@ -6,7 +6,7 @@ namespace Core {
 
   }
 
-  Box3::Box3(const Vector3Components<Real>& min, const Vector3Components<Real>& max) {
+  Box3::Box3(const Vector3r& min, const Vector3r& max) {
     this->setMin(min);
     this->setMax(max);
   }
@@ -16,7 +16,7 @@ namespace Core {
     this->setMax(maxX, maxY, maxZ);
   }
 
-  void Box3::setMin(const Vector3Components<Real>& min) {
+  void Box3::setMin(const Vector3r& min) {
     this->min.copy(min);
   }
 
@@ -24,7 +24,7 @@ namespace Core {
     this->min.set(x, y, z);
   }
 
-  void Box3::setMax(const Vector3Components<Real>& max) {
+  void Box3::setMax(const Vector3r& max) {
     this->max.copy(max);
   }
 
@@ -36,8 +36,6 @@ namespace Core {
     if (this == &other) return *this;
     this->min = other.min;
     this->max = other.max;
-    /*this->setMin(other.min);
-    this->setMax(other.max);*/
     return *this;
   }
 

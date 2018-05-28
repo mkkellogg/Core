@@ -40,19 +40,23 @@ namespace Core {
       
     }
 
-    const Vector3Base& operator =(const Vector3Base& other){
+    Vector3Base& operator =(const Vector3Base& other){
       if (this == &other) return *this;
       this->copy(other);
     }
 
-    virtual void set(const T& x, const T& y, const T& z) override {
+    virtual void copy(const Vector3Base& src) {
+      this->set(src.x, src.y, src.z);
+      this->w = src.w;
+    }
+
+    virtual void set(const T& x, const T& y, const T& z) {
       Vector3Components<T>::set(x, y, z);
     }
 
     void normalize() {
       Real magnitude = this->magnitude();
-      if (magnitude != 0)
-      {
+      if (magnitude != 0) {
         this->scale(1 / magnitude);
       }
     }

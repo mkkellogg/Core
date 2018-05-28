@@ -24,7 +24,7 @@ namespace Core {
       return Math::Abs(other.x - this->x) < epsilon && Math::Abs(other.y - this->y) < epsilon && Math::Abs(other.z - this->z) < epsilon;
     }
 
-    virtual void set(const T& x, const T& y, const T& z) {
+    void set(const T& x, const T& y, const T& z) {
       this->x = x;
       this->y = y;
       this->z = z;
@@ -34,7 +34,7 @@ namespace Core {
       this->set(src.x, src.y, src.z);
     }
 
-    const Vector3Components& operator =(const Vector3Components& other) {
+    Vector3Components& operator =(const Vector3Components& other) {
       if (this == &other) return *this;
       this->copy(other);
     }
