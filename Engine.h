@@ -26,9 +26,7 @@ namespace Core {
     std::shared_ptr<ImageLoader> imageLoader;
     std::shared_ptr<AssetLoader> assetLoader;
     Renderer* renderer;
-    UInt32 screenWidth;
-    UInt32 screenHeight;
-
+    
     std::vector<std::function<void(Engine&)>> updateCallbacks;
 
     void cleanup();

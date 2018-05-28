@@ -5,6 +5,7 @@
 #include "../scene/Scene.h"
 #include "../scene/Object3D.h"
 #include "../scene/Transform.h"
+#include "../geometry/Vector2.h"
 #include "Camera.h"
 #include "ObjectRenderers.h"
 #include "ObjectRenderer.h"
@@ -17,8 +18,7 @@ namespace Core {
                           std::vector<std::shared_ptr<Object3D>>& outObjects,
                           std::vector<std::shared_ptr<Camera>>& outCameras);
   protected:
-     UInt32 renderWidth;
-     UInt32 renderHeight;
+    Vector2u renderSize;
 
   public:
     virtual ~Renderer();
@@ -32,7 +32,7 @@ namespace Core {
     void processScene(std::shared_ptr<Scene> scene, 
                       std::vector<std::shared_ptr<Object3D>>& outObjects,
                       std::vector<std::shared_ptr<Camera>>& outCamerast);
-    void setAspectRatioFromDimensions(UInt32 width, UInt32 height);                  
+    void setRenderSize(UInt32 width, UInt32 height);                  
   protected:
     Renderer();
 

@@ -3,7 +3,7 @@
 
 namespace Core {
 
-  Renderer::Renderer(): renderWidth(0), renderHeight(0) {
+  Renderer::Renderer() {
 
   }
 
@@ -49,8 +49,8 @@ namespace Core {
     }
   }
 
-  void Renderer::setAspectRatioFromDimensions(UInt32 width, UInt32 height) {
-    this->renderWidth = width;
-    this->renderHeight = height;
+  void Renderer::setRenderSize(UInt32 width, UInt32 height) {
+    this->renderSize.x = width;
+    this->renderSize.y = height;
   }
 }

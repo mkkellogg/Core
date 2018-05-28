@@ -22,7 +22,7 @@ namespace Core {
   }
 
   Engine::Engine(GLVersion version):
-      glVersion(version), renderer(nullptr), screenWidth(0), screenHeight(0) {
+      glVersion(version), renderer(nullptr) {
 
   }
 
@@ -75,10 +75,8 @@ namespace Core {
 
   void Engine::setRenderSize(UInt32 width, UInt32 height) {
     glViewport(0, 0, width, height);
-    this->screenWidth = width;
-    this->screenHeight = height;
     if (this->renderer) {
-      this->renderer->setAspectRatioFromDimensions(width, height);
+      this->renderer->setRenderSize(width, height);
     }
   }
 

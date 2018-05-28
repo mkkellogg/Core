@@ -33,7 +33,7 @@ namespace Core {
     std::vector<std::shared_ptr<Camera>> cameraList;
     this->processScene(scene, objectList, cameraList);
     for(auto camera: cameraList) {
-      camera->setAspectRatioFromDimensions(this->renderWidth, this->renderHeight);
+      camera->setAspectRatioFromDimensions(this->renderSize.x, this->renderSize.y);
       render(scene, camera, objectList);
     }
   }

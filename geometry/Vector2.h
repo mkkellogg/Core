@@ -29,4 +29,10 @@ namespace Core {
 
   typedef Vector2<Real, false> Vector2r;
   typedef Vector2<Real, true> Vector2rs;
+
+  typedef Vector2<Int32, false> Vector2i;
+  typedef Vector2<Int32, true> Vector2is;
+
+  typedef Vector2<UInt32, false> Vector2u;
+  typedef Vector2<UInt32, true> Vector2us;
 }
