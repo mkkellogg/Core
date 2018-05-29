@@ -40,7 +40,10 @@ namespace Core {
     void update();
     void render();
 
-    void setRenderSize(UInt32 width, UInt32 height);
+    void setRenderSize(UInt32 width, UInt32 height, Bool updateViewport = true);
+    void setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
+    void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
+
     void setScene(std::shared_ptr<Scene> scene);
     std::shared_ptr<Scene> getScene();
     void setImageLoader(std::shared_ptr<ImageLoader> imageLoader);

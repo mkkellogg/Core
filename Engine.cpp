@@ -73,9 +73,21 @@ namespace Core {
     }
   }
 
-  void Engine::setRenderSize(UInt32 width, UInt32 height) {
+  void Engine::setRenderSize(UInt32 width, UInt32 height, Bool updateViewport) {
     if (this->renderer) {
-      this->renderer->setRenderSize(width, height);
+      this->renderer->setRenderSize(width, height, updateViewport);
+    }
+  }
+
+  void Engine::setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32  viewPortHeight) {
+    if (this->renderer) {
+      this->renderer->setRenderSize(width, height, hOffset, vOffset, viewPortWidth, viewPortHeight);
+    }
+  }
+
+  void Engine::setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) {
+    if (this->renderer) {
+      this->renderer->setViewport(hOffset, vOffset, viewPortWidth, viewPortHeight);
     }
   }
 

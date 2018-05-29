@@ -15,5 +15,6 @@ namespace Core {
                         std::vector<std::shared_ptr<Object3D>>& objectList) override;
 
     static Renderer* createRenderer();
+    virtual void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) override;
   };
 }

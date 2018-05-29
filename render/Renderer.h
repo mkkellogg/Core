@@ -26,7 +26,6 @@ namespace Core {
     virtual ~Renderer();
 
     virtual Bool init();
-    void resize(int w, int h);
     virtual void render(std::shared_ptr<Scene> scene) = 0;
     virtual void render(std::shared_ptr<Scene> scene, 
                         std::shared_ptr<Camera> camera,
@@ -34,7 +33,11 @@ namespace Core {
     void processScene(std::shared_ptr<Scene> scene, 
                       std::vector<std::shared_ptr<Object3D>>& outObjects,
                       std::vector<std::shared_ptr<Camera>>& outCamerast);
-    void setRenderSize(UInt32 width, UInt32 height);                  
+
+    void setRenderSize(UInt32 width, UInt32 height,Bool updateViewport = true);    
+    void setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
+    virtual void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
+
   protected:
     Renderer();
 

@@ -27,6 +27,11 @@ namespace Core {
     return renderer;
   }
 
+  void RendererGL::setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) {
+    Renderer::setViewport(hOffset, vOffset, viewPortWidth, viewPortHeight);
+    glViewport(hOffset, vOffset, viewPortWidth, viewPortHeight);
+  }
+
   void RendererGL::render(std::shared_ptr<Scene> scene) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     std::vector<std::shared_ptr<Object3D>> objectList;
