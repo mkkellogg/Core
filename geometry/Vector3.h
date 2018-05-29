@@ -50,6 +50,10 @@ namespace Core {
       this->w = src.w;
     }
 
+    virtual void copy(const Vector3Components<T>& src) {
+      this->set(src.x, src.y, src.z);
+    }
+
     virtual void set(const T& x, const T& y, const T& z) {
       Vector3Components<T>::set(x, y, z);
     }
