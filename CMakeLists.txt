@@ -21,10 +21,12 @@ set(INCLUDE_DIRS
 set(INCLUDE_FILES
     geometry/Box3.h
     geometry/Vector2Components.h
+    geometry/Vector2.h
     geometry/Mesh.h
     geometry/Vector3Components.h
     geometry/Vector3.h
-    geometry/Vector2.h
+    geometry/Vector4Components.h
+    geometry/Vector4.h
     geometry/AttributeArray.h
     scene/Object3D.h
     scene/Scene.h

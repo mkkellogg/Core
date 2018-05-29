@@ -8,11 +8,10 @@ namespace Core {
 
   #define VECTOR4_COMPONENT_COUNT 4
 
-  template <typename T, bool customStorage,
-      typename = typename std::enable_if<Core::is_numeric<T>::value, T>::type> class Vector4;
+  template <typename T, bool customStorage, typename Enable = void> class Vector4;
 
   template <typename T, bool customStorage>
-  class Vector4<T, customStorage, T> : public VectorStorage<T, VECTOR4_COMPONENT_COUNT, customStorage>, public Vector4Components<T> {
+  class Vector4<T, customStorage, Core::enable_if_t<Core::is_numeric<T>::value>> : public VectorStorage<T, VECTOR4_COMPONENT_COUNT, customStorage>, public Vector4Components<T> {
 
   public:
 
