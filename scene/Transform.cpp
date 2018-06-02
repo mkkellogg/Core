@@ -54,7 +54,11 @@ namespace Core {
     }
   }
 
-  void Transform::transform(BaseVector<Real, 4>& vector) const {
+  void Transform::transform(Vector4<Real>& vector) const {
     this->worldMatrix.transform(vector);
+  }
+
+  void Transform::transform(Vector3Base<Real>& vector, Bool asPoint) const {
+    this->worldMatrix.transform(vector, asPoint);
   }
 }

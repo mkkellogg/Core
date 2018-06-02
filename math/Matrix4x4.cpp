@@ -403,7 +403,7 @@ namespace Core {
   /*
 	 * Transform [vector] by this matrix, and store the result in [out]
 	 */
-  void Matrix4x4::transform(const BaseVector<Real, 4>& vector, BaseVector<Real, 4>& out) const {
+  void Matrix4x4::transform(const Vector4<Real>& vector, Vector4<Real>& out) const {
     const Real * vectorData = vector.getConstData();
     Matrix4x4::multiplyMV(this->data, vectorData, out.getData());
   }
@@ -411,10 +411,26 @@ namespace Core {
   /*
    * Transform [vector] by this matrix
    */
-  void Matrix4x4::transform(BaseVector<Real, 4>& vector) const {
+  void Matrix4x4::transform(Vector4<Real>& vector) const {
     Real temp[ROWSIZE_MATRIX_4X4];
     Matrix4x4::multiplyMV(this->data, vector.getData(), temp);
     memcpy(vector.getData(), temp, sizeof(Real) * ROWSIZE_MATRIX_4X4);
+  }
+
+  void Matrix4x4::transform(const Vector3Base<Real>& vector, Vector3Base<Real>& out, Bool asPoint) const {
+    Vector4<Real> temp(vector.x, vector.y, vector.z, asPoint ? 1.0f : 0.0f);
+    this->transform(temp);
+    out.x = temp.x;
+    out.y = temp.y;
+    out.z = temp.z;
+  }
+
+  void  Matrix4x4::transform(Vector3Base<Real>& vector, Bool asPoint) const {
+    Vector4<Real> temp(vector.x, vector.y, vector.z, asPoint ? 1.0f : 0.0f);
+    this->transform(temp);
+    vector.x = temp.x;
+    vector.y = temp.y;
+    vector.z = temp.z;
   }
 
   /*

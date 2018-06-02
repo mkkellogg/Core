@@ -2,6 +2,7 @@
 
 #include "../common/types.h"
 #include "../geometry/Vector3.h"
+#include "../geometry/Vector4.h"
 #include "../base/BaseVector.h"
 
 namespace Core {
@@ -49,8 +50,10 @@ namespace Core {
     static Real calculateDeterminant(const Real * source, Real * adjoinOut = nullptr);
 
     void multiplyByScalar(Real scalar);
-    void transform(const BaseVector<Real, 4>& vector, BaseVector<Real, 4>& out) const;
-    void transform(BaseVector<Real, 4>& vector) const;
+    void transform(const Vector4<Real>& vector, Vector4<Real>& out) const;
+    void transform(Vector4<Real>& vector) const;
+    void transform(const Vector3Base<Real>& vector, Vector3Base<Real>& out, Bool asPoint) const;
+    void transform(Vector3Base<Real>& vector, Bool asPoint) const;
     void transform(Real * vector4f) const;
     void add(const Matrix4x4& matrix);
     void multiply(const Matrix4x4& matrix);

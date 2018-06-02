@@ -11,7 +11,7 @@ namespace Core {
 
   #define VECTOR3_COMPONENT_COUNT 4
 
-  template <typename T, bool customStorage, typename Enable = void> class Vector3Base;
+  template <typename T, bool customStorage = false, typename Enable = void> class Vector3Base;
 
   template <typename T, bool customStorage>
   class Vector3Base<T, customStorage, Core::enable_if_t<Core::is_numeric<T>::value>>: public VectorStorage<T, VECTOR3_COMPONENT_COUNT, customStorage>, public Vector3Components<T> {
@@ -38,6 +38,10 @@ namespace Core {
 
     virtual ~Vector3Base() {
       
+    }
+
+    T getW() {
+      return this->w;
     }
 
     Vector3Base& operator =(const Vector3Base& other){
@@ -117,7 +121,7 @@ namespace Core {
   };
 
   
-  template <typename T, bool customStorage>
+  template <typename T, bool customStorage  = false>
   class Vector3 : public Vector3Base<T, customStorage> {
 
   public:
@@ -163,7 +167,7 @@ namespace Core {
 
   };
 
-  template <typename T, bool customStorage>
+  template <typename T, bool customStorage  = false>
   class Point3 : public Vector3Base<T, customStorage> {
   
   public:
