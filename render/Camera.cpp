@@ -70,9 +70,11 @@ namespace Core {
     Core::Matrix4x4 projection = this->projectionMatrix;
     Real w = vec.getW();
     projection.transform(vec, w == 0.0f ? false : true);
-    vec.x /= w;
-    vec.y /= w;
-    vec.z /= w;
+    if (w != 0) {
+      vec.x /= w;
+      vec.y /= w;
+      vec.z /= w;
+    }
   }
 
   void Camera::unProject(Vector3Base<Real>& vec) {
@@ -80,9 +82,12 @@ namespace Core {
     projection.invert();
     Real w = vec.getW();
     projection.transform(vec, w == 0.0f ? false : true);
-    vec.x /= w;
-    vec.y /= w;
-    vec.z /= w;
+    if (w != 0) {
+      vec.x /= w;
+      vec.y /= w;
+      vec.z /= w;
+    }
+    
   }
 
   void Camera::buildPerspectiveProjectionMatrix(Real fov, Real ratio,
