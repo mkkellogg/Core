@@ -45,7 +45,7 @@ namespace Core {
   void Camera::lookAt(const Point3r& target) {
     Point3r cameraPos;
     this->transform.updateWorldMatrix();
-    this->transform.transform(cameraPos);
+    this->transform.transform(cameraPos, true);
 
     Vector3r toTarget = target - cameraPos;
     toTarget.normalize();
@@ -64,6 +64,25 @@ namespace Core {
     matData[12] = cameraPos.x;
     matData[13] = cameraPos.y;
     matData[14] = cameraPos.z;
+  }
+
+  void Camera::project(Vector3Base<Real>& vec) {
+    Core::Matrix4x4 projection = this->projectionMatrix;
+    Real w = vec.getW();
+    projection.transform(vec, w == 0.0f ? false : true);
+    vec.x /= w;
+    vec.y /= w;
+    vec.z /= w;
+  }
+
+  void Camera::unProject(Vector3Base<Real>& vec) {
+    Core::Matrix4x4 projection = this->projectionMatrix;
+    projection.invert();
+    Real w = vec.getW();
+    projection.transform(vec, w == 0.0f ? false : true);
+    vec.x /= w;
+    vec.y /= w;
+    vec.z /= w;
   }
 
   void Camera::buildPerspectiveProjectionMatrix(Real fov, Real ratio,

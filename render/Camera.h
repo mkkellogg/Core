@@ -7,13 +7,7 @@
 
 namespace Core {
   class Camera : public Object3D {
-    Real fov;
-    Real aspectRatio;
-    Real nearP;
-    Real farP;
-    Matrix4x4 projectionMatrix;
   public:
-
     static const UInt32 DEFAULT_FOV;
     static const UInt32 DEFAULT_WIDTH;
     static const UInt32 DEFAULT_HEIGHT;
@@ -28,8 +22,17 @@ namespace Core {
     void updateProjection(Real fov, Real ratio, Real nearP, Real farP);
     const Matrix4x4& getProjectionMatrix() const;
     void lookAt(const Point3r& target);
+    void project(Vector3Base<Real>& vec);
+    void unProject(Vector3Base<Real>& vec);
 
     static void buildPerspectiveProjectionMatrix(Real fov, Real ratio,
                                                  Real nearP, Real farP, Matrix4x4& out);
+private: 
+    Real fov;
+    Real aspectRatio;
+    Real nearP;
+    Real farP;
+    Matrix4x4 projectionMatrix;
+
   };
 }
