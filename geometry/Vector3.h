@@ -47,6 +47,7 @@ namespace Core {
     Vector3Base& operator =(const Vector3Base& other){
       if (this == &other) return *this;
       this->copy(other);
+      return *this;
     }
 
     virtual void copy(const Vector3Base& src) {
