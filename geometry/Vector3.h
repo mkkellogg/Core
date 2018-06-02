@@ -63,6 +63,10 @@ namespace Core {
       Vector3Components<T>::set(x, y, z);
     }
 
+    void invert() {
+      this->scale(-1.0);
+    }
+
     void normalize() {
       Real magnitude = this->magnitude();
       if (magnitude != 0) {

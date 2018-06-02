@@ -18,7 +18,7 @@ namespace Core {
 
     Matrix4x4& getLocalMatrix();
     const Matrix4x4& getConstLocalMatrix() const;
-     Matrix4x4& getWorldMatrix();
+    Matrix4x4& getWorldMatrix();
     const Matrix4x4& getConstWorldMatrix() const;
 
     void toLocalMatrix(Matrix4x4& dest) const;

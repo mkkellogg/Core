@@ -68,4 +68,8 @@ namespace Core {
   void Renderer::setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) {
     this->viewport.set(hOffset, vOffset, viewPortWidth, viewPortHeight);
   }
+
+  Vector4u Renderer::getViewport() {
+    return this->viewport;
+  }
 }

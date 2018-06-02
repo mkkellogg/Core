@@ -1,12 +1,15 @@
 #pragma once
 
 #include <functional>
+#include <memory>
+
 #include "scene/Scene.h"
 #include "render/Camera.h"
 #include "render/Renderer.h"
 #include "render/RendererGL.h"
 #include "image/ImageLoader.h"
 #include "asset/AssetLoader.h"
+#include "geometry/Vector4.h"
 
 namespace Core {
 
@@ -25,7 +28,7 @@ namespace Core {
     std::shared_ptr<Scene> scene;
     std::shared_ptr<ImageLoader> imageLoader;
     std::shared_ptr<AssetLoader> assetLoader;
-    Renderer* renderer;
+    std::shared_ptr<Renderer> renderer;
     
     std::vector<std::function<void(Engine&)>> updateCallbacks;
 
@@ -39,6 +42,8 @@ namespace Core {
     void init();
     void update();
     void render();
+
+    std::shared_ptr<Renderer> getRenderer();
 
     void setRenderSize(UInt32 width, UInt32 height, Bool updateViewport = true);
     void setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);

@@ -31,10 +31,7 @@ namespace Core {
   }
 
   void Engine::cleanup() {
-    if (renderer != nullptr) {
-      delete renderer;
-      renderer = nullptr;
-    }
+
   }
 
   void Engine::init() {
@@ -48,7 +45,7 @@ namespace Core {
     UInt32 maxGL = 0;
     const char* versionStr = (const char*)glGetString(GL_VERSION);
 
-    renderer = Core::RendererGL::createRenderer();
+    renderer = std::shared_ptr<Renderer>(Core::RendererGL::createRenderer());
 
     glClearColor(0, 0, 0, 1);
     glFrontFace(GL_CCW);
@@ -71,6 +68,10 @@ namespace Core {
     if (this->scene) {
       this->renderer->render(this->scene);
     }
+  }
+
+  std::shared_ptr<Renderer> Engine::getRenderer() {
+    return renderer;
   }
 
   void Engine::setRenderSize(UInt32 width, UInt32 height, Bool updateViewport) {
