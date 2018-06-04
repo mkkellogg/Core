@@ -10,6 +10,7 @@ namespace Core {
     GLint uvLocation;
     GLint projectionMatrixLocation;
     GLint viewMatrixLocation;
+    GLint modelMatrixLocation;
   public:
     BasicMaterial();
     virtual Bool build() override;

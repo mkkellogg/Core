@@ -18,17 +18,22 @@ namespace Core {
 
     GLint projectionLoc = this->material->getShaderLocation(StandardUniforms::ProjectionMatrix);
     GLint viewMatrixLoc = this->material->getShaderLocation(StandardUniforms::ViewMatrix);
+    GLint modelMatrixLoc = this->material->getShaderLocation(StandardUniforms::ModelMatrix);
 
     if (projectionLoc >= 0) {
       const Matrix4x4 &matrix = camera->getProjectionMatrix();
-      const Real* matData = matrix.getConstData();
-      glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, matData);
+      glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, matrix.getConstData());
     }
 
     if (viewMatrixLoc >= 0) {
       Matrix4x4 viewMatrix = camera->getTransform().getWorldMatrix();
       viewMatrix.invert();
       glUniformMatrix4fv(viewMatrixLoc, 1, GL_FALSE, viewMatrix.getConstData());
+    }
+
+     if (modelMatrixLoc >= 0) {
+      Matrix4x4 modelmatrix = owner->getTransform().getWorldMatrix();
+      glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, modelmatrix.getConstData());
     }
 
     this->material->sendCustomUniformsToShader();
