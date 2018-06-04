@@ -596,7 +596,7 @@ namespace Core {
    * this matrix by a translation matrix
    */
   void Matrix4x4::preTranslate(Real x, Real y, Real z) {
-    Matrix4x4::translate(this->data, this->data, x, y, z);
+    Matrix4x4::preTranslate(this->data, this->data, x, y, z);
   }
 
   /*
@@ -622,7 +622,7 @@ namespace Core {
   /*
    * Translate the 4x4 matrix pointed to by [source] by [x], [y], and [z], and store in [dest]
    *
-   * This performs a post-transformation, in that it is equivalent to post-multiplying
+   * This performs a post-transformation, in that it is equivalent to pospreTranslatet-multiplying
    * [source] by a translation matrix
    */
   void Matrix4x4::translate(const Real * source, Real * dest, Real x, Real y, Real z) {
@@ -648,15 +648,9 @@ namespace Core {
    * [source] by a translation matrix
    */
   void Matrix4x4::preTranslate(const Real * source, Real * dest, Real x, Real y, Real z) {
-    Matrix4x4 trans;
-    trans.setIdentity();
-
-    Real *matrixData = trans.getData();
-    matrixData[12] = x;
-    matrixData[13] = y;
-    matrixData[14] = z;
-
-    Matrix4x4::multiplyMM(matrixData, source, dest);
+    dest[12] = source[12] + x;
+    dest[13] = source[13] + y;
+    dest[14] = source[14] + z;
   }
 
   /*
