@@ -3,8 +3,6 @@
 namespace Core {
 
   class BaseRenderable {
-
-
   public:
 
 

@@ -6,14 +6,14 @@
 namespace Core {
 
   class BaseRenderableContainer : public Object3D {
-
-  protected:
-    std::shared_ptr<BaseObjectRenderer> renderer;
   public:
 
     std::shared_ptr<BaseObjectRenderer> getBaseRenderer() {
       return renderer;
     }
+
+  protected:
+    std::shared_ptr<BaseObjectRenderer> renderer;
   };
 
 }

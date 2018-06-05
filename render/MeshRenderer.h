@@ -13,15 +13,16 @@ namespace Core  {
   class Object3D;
 
   class MeshRenderer : public ObjectRenderer<Mesh>{
-    std::shared_ptr<Material> material;
-    template <typename T> void checkAndSetShaderAttribute(std::shared_ptr<Mesh> mesh, StandardAttributes attribute,
-                                        AttributeArray<T>* array, GLenum type, GLboolean normalize,
-                                        GLsizei stride, const GLvoid * pointer);
-
   public:
     MeshRenderer(std::shared_ptr<Material> material, std::shared_ptr<Object3D> owner);
     virtual void render(std::shared_ptr<Camera> camera) override;
     virtual void renderObject(std::shared_ptr<Camera> camera, std::shared_ptr<Mesh> mesh) override;
+
+  private:
+    std::shared_ptr<Material> material;
+    template <typename T> void checkAndSetShaderAttribute(std::shared_ptr<Mesh> mesh, StandardAttributes attribute,
+                                                          AttributeArray<T>* array, GLenum type, GLboolean normalize,
+                                                          GLsizei stride, const GLvoid * pointer);
   };
 
   template <typename T> void MeshRenderer::checkAndSetShaderAttribute(std::shared_ptr<Mesh> mesh, StandardAttributes attribute,

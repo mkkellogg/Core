@@ -14,14 +14,6 @@
 namespace Core {
 
   class Renderer {
-    void processSceneStep(const std::shared_ptr<Object3D> object,
-                          std::vector<Transform*>& transformStack,
-                          std::vector<std::shared_ptr<Object3D>>& outObjects,
-                          std::vector<std::shared_ptr<Camera>>& outCameras);
-  protected:
-    Vector2u renderSize;
-    Vector4u viewport;
-
   public:
     virtual ~Renderer();
 
@@ -39,8 +31,16 @@ namespace Core {
     virtual void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
     Vector4u getViewport();
     
+  private:
+    void processSceneStep(const std::shared_ptr<Object3D> object,
+                          std::vector<Transform*>& transformStack,
+                          std::vector<std::shared_ptr<Object3D>>& outObjects,
+                          std::vector<std::shared_ptr<Camera>>& outCameras);
   protected:
     Renderer();
+
+    Vector2u renderSize;
+    Vector4u viewport;
 
   };
 }

@@ -6,8 +6,6 @@ namespace Core {
 
   template <typename T>
   class Renderable : public BaseRenderable{
-
-
   public:
 
 

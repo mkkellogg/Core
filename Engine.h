@@ -22,20 +22,6 @@ namespace Core {
       Three = 3,
     };
 
-  private:
-
-    GLVersion glVersion;
-    std::shared_ptr<Scene> scene;
-    std::shared_ptr<ImageLoader> imageLoader;
-    std::shared_ptr<AssetLoader> assetLoader;
-    std::shared_ptr<Renderer> renderer;
-    
-    std::vector<std::function<void(Engine&)>> updateCallbacks;
-
-    void cleanup();
-
-  public:
-
     Engine(GLVersion version);
     virtual ~Engine();
 
@@ -57,6 +43,16 @@ namespace Core {
     std::shared_ptr<AssetLoader> getAssetLoader();
 
     void onUpdate(std::function<void(Engine&)> func);
+
+  private:
+    GLVersion glVersion;
+    std::shared_ptr<Scene> scene;
+    std::shared_ptr<ImageLoader> imageLoader;
+    std::shared_ptr<AssetLoader> assetLoader;
+    std::shared_ptr<Renderer> renderer;
+    std::vector<std::function<void(Engine&)>> updateCallbacks;
+
+    void cleanup();
 
   };
 }

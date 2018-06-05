@@ -13,7 +13,16 @@ namespace Core {
   class Octree {
 
     class OctreeNode : public Object3D {
+    public:
 
+      static const UInt32 MaxLevel = 8;
+
+      OctreeNode(const Box3& bounds, UInt32 level) {
+        this->level = level;
+        this->bounds = bounds;
+      }
+
+    private:
       Box3 bounds;
       std::vector<std::shared_ptr<OctreeNode>> childNodes;
       UInt32 level;
@@ -70,16 +79,6 @@ namespace Core {
             //this->addObject(mesh);
           }
       }
-
-    public:
-
-      static const UInt32 MaxLevel = 8;
-
-      OctreeNode(const Box3& bounds, UInt32 level) {
-        this->level = level;
-        this->bounds = bounds;
-      }
-
     };
 
   public:

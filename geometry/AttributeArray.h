@@ -10,60 +10,6 @@
 namespace Core {
 
   template <typename T> class AttributeArray {
-    typename T::ComponentType * storage;
-    T* attributes;
-    UInt32 attributeCount;
-    const UInt32 componentCount = T::ComponentCount;
-    GLuint bufferID;
-
-    void allocate() {
-      this->deallocate();
-
-      this->storage = new (std::nothrow) typename T::ComponentType[this->attributeCount * T::ComponentCount];
-      ASSERT(this->storage != nullptr, "AttributeArray::allocate() -> Unable to allocate storage!");
-
-      Byte * tempAttributes =  (Byte *)(::operator new(this->attributeCount * sizeof(T)));
-      ASSERT(tempAttributes != nullptr, "AttributeArray::allocate() -> Unable to allocate attributes!");
-
-      this->attributes = reinterpret_cast<T*>(tempAttributes);
-      for (UInt32 i = 0; i < this->attributeCount; i ++) {
-        new(this->attributes + i) T(this->storage + i);
-      }
-    }
-
-    void deallocate() {
-      if (this->attributes != nullptr) {
-        for (UInt32 i = 0; i < this->attributeCount; i++) {
-          this->attributes[i].~T();
-        }
-        ::operator delete(this->attributes);
-        this->attributes = nullptr;
-      }
-      if (this->storage != nullptr) {
-        delete this->storage;
-        this->storage = nullptr;
-      }
-    }
-
-    void buildGPUBuffer() {
-      glGenBuffers(1, &this->bufferID);
-      this->updateBufferData();
-    }
-
-    void destroyGPUBuffer() {
-      glDeleteBuffers(1, &this->bufferID);
-    }
-
-    UInt32 getSize() const {
-      return this->attributeCount * T::ComponentCount * sizeof(typename T::ComponentType);
-    }
-
-    void updateBufferData() {
-      glBindBuffer(GL_ARRAY_BUFFER, this->bufferID);
-      glBufferData(GL_ARRAY_BUFFER, this->getSize(), this->storage, GL_DYNAMIC_DRAW);
-      glBindBuffer(GL_ARRAY_BUFFER, 0);
-    }
-
   public:
 
     AttributeArray(UInt32 attributeCount): storage(nullptr), attributes(nullptr), attributeCount(attributeCount) {
@@ -148,5 +94,59 @@ namespace Core {
       return iterator(this, this->getAttributeCount());
     }
 
+  private:
+    typename T::ComponentType * storage;
+    T* attributes;
+    UInt32 attributeCount;
+    const UInt32 componentCount = T::ComponentCount;
+    GLuint bufferID;
+
+    void allocate() {
+      this->deallocate();
+
+      this->storage = new (std::nothrow) typename T::ComponentType[this->attributeCount * T::ComponentCount];
+      ASSERT(this->storage != nullptr, "AttributeArray::allocate() -> Unable to allocate storage!");
+
+      Byte * tempAttributes =  (Byte *)(::operator new(this->attributeCount * sizeof(T)));
+      ASSERT(tempAttributes != nullptr, "AttributeArray::allocate() -> Unable to allocate attributes!");
+
+      this->attributes = reinterpret_cast<T*>(tempAttributes);
+      for (UInt32 i = 0; i < this->attributeCount; i ++) {
+        new(this->attributes + i) T(this->storage + i);
+      }
+    }
+
+    void deallocate() {
+      if (this->attributes != nullptr) {
+        for (UInt32 i = 0; i < this->attributeCount; i++) {
+          this->attributes[i].~T();
+        }
+        ::operator delete(this->attributes);
+        this->attributes = nullptr;
+      }
+      if (this->storage != nullptr) {
+        delete this->storage;
+        this->storage = nullptr;
+      }
+    }
+
+    void buildGPUBuffer() {
+      glGenBuffers(1, &this->bufferID);
+      this->updateBufferData();
+    }
+
+    void destroyGPUBuffer() {
+      glDeleteBuffers(1, &this->bufferID);
+    }
+
+    UInt32 getSize() const {
+      return this->attributeCount * T::ComponentCount * sizeof(typename T::ComponentType);
+    }
+
+    void updateBufferData() {
+      glBindBuffer(GL_ARRAY_BUFFER, this->bufferID);
+      glBufferData(GL_ARRAY_BUFFER, this->getSize(), this->storage, GL_DYNAMIC_DRAW);
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
   };
 }

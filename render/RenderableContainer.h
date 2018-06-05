@@ -17,9 +17,6 @@ namespace Core {
 
   template <typename T>
   class RenderableContainer<T, Core::enable_if_t<std::is_base_of<Renderable<T>, T>::value>> : public BaseRenderableContainer {
-
-    std::vector<std::shared_ptr<T>> renderables;
-
   public:
 
     RenderableContainer() {
@@ -49,5 +46,8 @@ namespace Core {
     typename std::vector<std::shared_ptr<T>>::iterator end() {
       return this->renderables.end();
     }
+
+  private:
+    std::vector<std::shared_ptr<T>> renderables;
   };
 }

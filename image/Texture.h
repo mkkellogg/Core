@@ -8,14 +8,12 @@
 namespace Core {
 
   class Texture {
+  public:
+    GLuint getTextureID();
+    static std::shared_ptr<Texture> createTexture(RawImage *imageData);
 
   protected:
     GLuint textureId;
-
-  public:
-    GLuint getTextureID();
-
-    static std::shared_ptr<Texture> createTexture(RawImage *imageData);
   };
 
 }

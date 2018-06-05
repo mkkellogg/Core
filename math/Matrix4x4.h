@@ -14,7 +14,6 @@ namespace Core {
   #define ROWSIZE_MATRIX_4X4 4
 
   class Matrix4x4 {
-    Real data[SIZE_MATRIX_4X4];
   public:
     Matrix4x4();
     explicit  Matrix4x4(const Real * sourceData);
@@ -88,5 +87,8 @@ namespace Core {
     void scale(Matrix4x4& out, Real x, Real y, Real z) const;
     static void scale(const Real * source, Real * dest, Real x, Real y, Real z);
     static void preScale(const Real * source, Real * dest, Real x, Real y, Real z);
+
+  private:
+    Real data[SIZE_MATRIX_4X4];
   };
 }

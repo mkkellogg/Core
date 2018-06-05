@@ -16,10 +16,6 @@ namespace Core {
   template <typename T, bool customStorage>
   class Vector3Base<T, customStorage, Core::enable_if_t<Core::is_numeric<T>::value>>: public VectorStorage<T, VECTOR3_COMPONENT_COUNT, customStorage>, public Vector3Components<T> {
 
-  protected:
-
-    T& w = this->data[3];
-
   public:
 
     Vector3Base() : Vector3Base(0.0, 0.0, 0.0) {}
@@ -107,6 +103,8 @@ namespace Core {
 
   protected:
 
+    T& w = this->data[3];
+
     const Vector3Base operator -(const Vector3Base<T, customStorage>& other) const {
       Vector3Base<T, customStorage> vec = *this;
       vec.x -= other.x;
@@ -128,7 +126,6 @@ namespace Core {
   
   template <typename T, bool customStorage  = false>
   class Vector3 : public Vector3Base<T, customStorage> {
-
   public:
     static const Vector3<T, customStorage> Zero;
     static const Vector3<T, customStorage> UnitY;

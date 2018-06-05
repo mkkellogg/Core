@@ -16,9 +16,10 @@ namespace Core {
 
   template<typename T, UInt32 componentCount>
   class VectorStorage <T, componentCount, false>: public BaseVector<T, componentCount> {
-    T _storage[componentCount];
   public:
     VectorStorage(): BaseVector<T, componentCount>(_storage) {}
+  private:
+    T _storage[componentCount];
   };
 
 }

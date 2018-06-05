@@ -6,8 +6,6 @@ namespace Core {
 
   template<typename T, UInt32 componentCount>
   class BaseVector {
-  protected:
-    T *data;
   public:
 
     static const UInt32 ComponentCount = componentCount;
@@ -22,6 +20,9 @@ namespace Core {
     T *getData() {
       return this->data;
     }
+    
+  protected:
+    T *data;
   };
 
 }

@@ -9,14 +9,12 @@
 namespace Core {
 
   class Scene {
-
-    std::shared_ptr<Object3D> root;
-
   public:
     Scene();
-
     std::shared_ptr<Object3D> getRoot();
 
+  private:
+    std::shared_ptr<Object3D> root;
   };
 
 }

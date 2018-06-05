@@ -4,9 +4,6 @@
 
 namespace Core {
   class RawImage {
-    Byte* imageBytes;
-    UInt32 width;
-    UInt32 height;
   public:
     RawImage(Byte* imageBytes, UInt32 width, UInt32 height);
     virtual ~RawImage();
@@ -14,5 +11,10 @@ namespace Core {
     Byte* getImageData();
     UInt32 getWidth();
     UInt32 getHeight();
+    
+  private:
+    Byte* imageBytes;
+    UInt32 width;
+    UInt32 height;
   };
 }

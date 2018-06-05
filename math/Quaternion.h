@@ -49,9 +49,9 @@ namespace Core
     void fromAngleAxis(const Real rfAngle, const Vector3Components<Real>& rkAxis);
     void fromAngleAxis(Real angle, Real x, Real y, Real z);
     // void scaledAxis(const Vector3Components<Real>& w);
-   Vector3r rotatedVector(const Vector3Components<Real>& v) const;
+    Vector3r rotatedVector(const Vector3Components<Real>& v) const;
     void euler(const Vector3Components<Real>& euler);
-   Vector3r euler(void) const;
+    Vector3r euler(void) const;
     //void decoupleZ(Quaternion* Qxy, Quaternion* Qz) const;
     Quaternion slerp(const Quaternion& q1, Real t);
     static Quaternion slerp(const Quaternion& Qa, const Quaternion& Qb, const Real t);

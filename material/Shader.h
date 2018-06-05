@@ -6,17 +6,6 @@
 
 namespace Core {
   class Shader {
-
-    Bool ready;
-    std::string vertexSource;
-    std::string fragmentSource;
-    static Bool checkGlError(const char *funcName);
-    GLuint createShader(GLenum shaderType, const std::string& src);
-    GLuint createProgram(const std::string& vertex, const std::string& fragment);
-
-  protected:
-    GLuint glProgram;
-
   public:
     Shader();
     virtual ~Shader();
@@ -26,6 +15,17 @@ namespace Core {
     Bool build();
     Bool isReady();
     GLuint getProgram();
+
+  private:
+    Bool ready;
+    std::string vertexSource;
+    std::string fragmentSource;
+    static Bool checkGlError(const char *funcName);
+    GLuint createShader(GLenum shaderType, const std::string& src);
+    GLuint createProgram(const std::string& vertex, const std::string& fragment);
+
+  protected:
+    GLuint glProgram;
 
   };
 }

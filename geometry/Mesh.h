@@ -16,21 +16,6 @@
 namespace Core {
 
   class Mesh : public Renderable<Mesh>  {
-
-    UInt32 size;
-    Bool indexed;
-
-    Bool enabledAttributes[(UInt32)StandardAttributes::_Count];
-    AttributeArray<Vector3rs>* vertexPositions;
-    AttributeArray<ColorS>* vertexColors;
-    AttributeArray<Vector2rs>* vertexUVs;
-    GLuint indexBuffer;
-
-    Box3 boundingBox;
-
-    void initAttributes();
-    void initIndices();
-
   public:
 
     Mesh(UInt32 size, Bool indexed);
@@ -57,6 +42,20 @@ namespace Core {
     void calculateBoundingBox();
     const Box3& getBoundingBox() const;
 
+  private:
+    UInt32 size;
+    Bool indexed;
+
+    Bool enabledAttributes[(UInt32)StandardAttributes::_Count];
+    AttributeArray<Vector3rs>* vertexPositions;
+    AttributeArray<ColorS>* vertexColors;
+    AttributeArray<Vector2rs>* vertexUVs;
+    GLuint indexBuffer;
+
+    Box3 boundingBox;
+
+    void initAttributes();
+    void initIndices();
   };
 
 }

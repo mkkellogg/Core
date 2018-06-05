@@ -11,7 +11,6 @@ namespace Core  {
   class Camera;
 
   class BaseObjectRenderer : public Object3DComponent{
-
   public:
 
     BaseObjectRenderer(std::shared_ptr<Object3D> owner): Object3DComponent(owner){}

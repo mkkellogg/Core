@@ -8,11 +8,6 @@
 
 namespace Core {
   class Material {
-  protected:
-    std::shared_ptr<Shader> shader;
-    Bool ready;
-    Bool buildFromSource(const std::string& vertexSource, const std::string& fragmentSource);
-    void setShader(std::shared_ptr<Shader> shader);
   public:
     Material();
     Material(std::shared_ptr<Shader> shader);
@@ -21,5 +16,11 @@ namespace Core {
     virtual GLint getShaderLocation(StandardAttributes attribute) = 0;
     virtual GLint getShaderLocation(StandardUniforms uniform) = 0;
     virtual void sendCustomUniformsToShader() = 0;
+
+  protected:
+    std::shared_ptr<Shader> shader;
+    Bool ready;
+    Bool buildFromSource(const std::string& vertexSource, const std::string& fragmentSource);
+    void setShader(std::shared_ptr<Shader> shader);
   };
 }

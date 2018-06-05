@@ -6,10 +6,6 @@
 namespace Core {
 
   class Box3 {
-
-    Vector3r min;
-    Vector3r max;
-
   public:
 
     Box3();
@@ -27,6 +23,10 @@ namespace Core {
     const Vector3r& getMax() const;
 
     Bool containsBox(const Box3& box) const;
+    
+  private:
+    Vector3r min;
+    Vector3r max;
   };
 
 }
