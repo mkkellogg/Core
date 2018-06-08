@@ -18,26 +18,22 @@ namespace Core {
   void Renderer::processScene(std::shared_ptr<Scene> scene, 
                               std::vector<std::shared_ptr<Object3D>>& outObjects,
                               std::vector<std::shared_ptr<Camera>>& outCameras) {
-    std::vector<Transform*> transformStack;
-    processSceneStep(scene->getRoot(), transformStack, outObjects, outCameras);
+    Matrix4x4 rootTransform;
+    processSceneStep(scene->getRoot(), rootTransform, outObjects, outCameras);
   }
 
   void Renderer::processSceneStep(const std::shared_ptr<Object3D> object,
-                                  std::vector<Transform*>& transformStack,
+                                  const Matrix4x4& curTransform,
                                   std::vector<std::shared_ptr<Object3D>>& outObjects,
                                   std::vector<std::shared_ptr<Camera>>& outCameras) {
     for (auto itr = object->beginIterateChildren(); itr != object->endIterateChildren(); ++itr) {
       const std::shared_ptr<Object3D> obj = *itr;
 
-      Matrix4x4 nextMatrix;
-      if (transformStack.size() > 0) {
-        nextMatrix = transformStack.back()->getWorldMatrix();
-      }
+      Matrix4x4 nextTransform = curTransform;      
 
       Transform& objTransform = obj->getTransform();
-      nextMatrix.multiply(objTransform.getLocalMatrix());
-      objTransform.getWorldMatrix().copy(nextMatrix);
-      transformStack.push_back(&objTransform);
+      nextTransform.multiply(objTransform.getLocalMatrix());
+      objTransform.getWorldMatrix().copy(nextTransform);
       outObjects.push_back(obj);
 
       // check if this object is a camera
@@ -46,8 +42,7 @@ namespace Core {
         outCameras.push_back(cam);
       }
 
-      this->processSceneStep(obj, transformStack, outObjects, outCameras);
-      transformStack.pop_back();
+      this->processSceneStep(obj, nextTransform, outObjects, outCameras);
     }
   }
 

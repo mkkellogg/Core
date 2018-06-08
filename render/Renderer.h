@@ -33,7 +33,7 @@ namespace Core {
     
   private:
     void processSceneStep(const std::shared_ptr<Object3D> object,
-                          std::vector<Transform*>& transformStack,
+                          const Matrix4x4& curTransform,
                           std::vector<std::shared_ptr<Object3D>>& outObjects,
                           std::vector<std::shared_ptr<Camera>>& outCameras);
   protected:
