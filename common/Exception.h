@@ -2,17 +2,21 @@
 
 #include <string>
 
-class Exception {
-public:
-    Exception(const std::string& msg): msg(msg) {}
-    Exception(const char* msg): msg(msg) {}
+namespace Core {
 
-private:
-    std::string msg;
-};
+    class Exception {
+    public:
+        Exception(const std::string& msg): msg(msg) {}
+        Exception(const char* msg): msg(msg) {}
 
-class AssertionFailedException: Exception {
-public:
-    AssertionFailedException(const std::string& msg): Exception(msg) {}
-    AssertionFailedException(const char* msg): Exception(msg) {}
-};
+    private:
+        std::string msg;
+    };
+
+    class AssertionFailedException: Exception {
+    public:
+        AssertionFailedException(const std::string& msg): Exception(msg) {}
+        AssertionFailedException(const char* msg): Exception(msg) {}
+    };
+
+}
