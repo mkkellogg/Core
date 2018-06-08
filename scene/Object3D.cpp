@@ -1,9 +1,10 @@
 #include "Object3D.h"
 #include "Transform.h"
+#include "../util/ValidWeakPointer.h"
 
 namespace Core {
 
-  Object3D::Object3D(): transform(*this), parent(nullptr) {
+  Object3D::Object3D(): transform(*this) {
 
   }
 
@@ -27,35 +28,40 @@ namespace Core {
     return this->children.size();
   }
 
-  void Object3D::addObject(std::shared_ptr<Object3D> object) {
-    if (object->parent) {
-      object->parent->removeObject(object);
-      Transform& parentTransform = object->parent->getTransform();
-      parentTransform.updateWorldMatrix();
-      Matrix4x4 inverse(parentTransform.getWorldMatrix());
-      inverse.invert();
-      object->getTransform().getLocalMatrix().preMultiply(inverse);
+  void Object3D::addObject(std::weak_ptr<Object3D> object) {
+    if (!object.expired()) {
+      ValidWeakPointer<Object3D> objPtr(object);
+      if(!objPtr->parent.expired()) {
+        ValidWeakPointer<Object3D> parentPtr(objPtr->parent);
+        parentPtr->removeObject(object);
+        Transform& parentTransform = parentPtr->getTransform();
+        parentTransform.updateWorldMatrix();
+        Matrix4x4 inverse(parentTransform.getWorldMatrix());
+        inverse.invert();
+        objPtr->getTransform().getLocalMatrix().preMultiply(inverse);
+      }
+      this->children.push_back(objPtr.getLockedPointer());
     }
-    this->children.push_back(object);
   }
 
-  void Object3D::removeObject(std::shared_ptr<Object3D> object) {
+  void Object3D::removeObject(std::weak_ptr<Object3D> object) {
     std::vector<std::shared_ptr<Object3D>>::iterator result = this->children.end();
+    ValidWeakPointer<Object3D> objectPtr(object);
     for (auto itr = this->children.begin(); itr != this->children.end(); ++itr) {
-      if (*itr == object) {
+      if (*itr == objectPtr.getLockedPointer()) {
         result = itr;
         break;
       }
     }
     if (result != this->children.end()) {
-      Transform& transform = object->getTransform();
+      Transform& transform = objectPtr->getTransform();
       transform.updateWorldMatrix();
       transform.getLocalMatrix().copy(transform.getWorldMatrix());
       this->children.erase(result);
     }
   }
 
-  std::shared_ptr<Object3D> Object3D::getParent() {
+  std::weak_ptr<Object3D> Object3D::getParent() {
     return this->parent;
   }
 }

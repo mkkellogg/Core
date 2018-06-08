@@ -15,7 +15,7 @@ namespace Core {
     friend class Engine;
 
   public:
-    std::shared_ptr<Object3D> getRoot();
+    std::weak_ptr<Object3D> getRoot();
 
   private:
     Scene();

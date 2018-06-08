@@ -8,7 +8,7 @@ namespace Core {
     this->root = root;
   }
 
-  std::shared_ptr<Object3D> Scene::getRoot() {
+  std::weak_ptr<Object3D> Scene::getRoot() {
     return this->root;
   }
 

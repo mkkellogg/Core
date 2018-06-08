@@ -35,6 +35,10 @@ namespace Core {
             return this->lockedPointer.get();
         }
 
+        std::shared_ptr<T> getLockedPointer() {
+            return this->lockedPointer;
+        }
+
     private:
         std::weak_ptr<T> pointer;
         std::shared_ptr<T> lockedPointer;

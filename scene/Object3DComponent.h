@@ -9,9 +9,9 @@ namespace Core {
 
   class Object3DComponent {
   public:
-    Object3DComponent(std::shared_ptr<Object3D> owner);
+    Object3DComponent(std::weak_ptr<Object3D> owner);
 
   protected:
-    std::shared_ptr<Object3D> owner;
+    std::weak_ptr<Object3D> owner;
   };
 }

@@ -27,13 +27,13 @@ namespace Core {
     std::vector<std::shared_ptr<Object3D>>::const_iterator beginIterateChildren();
     std::vector<std::shared_ptr<Object3D>>::const_iterator endIterateChildren();
     UInt32 size() const;
-    void addObject(std::shared_ptr<Object3D> object);
-    void removeObject(std::shared_ptr<Object3D> object);
-    std::shared_ptr<Object3D> getParent();
+    void addObject(std::weak_ptr<Object3D> object);
+    void removeObject(std::weak_ptr<Object3D> object);
+    std::weak_ptr<Object3D> getParent();
 
   private:
     std::vector<std::shared_ptr<Object3D>> children;
-    std::shared_ptr<Object3D> parent;
+    std::weak_ptr<Object3D> parent;
   
   protected:
     Transform transform;

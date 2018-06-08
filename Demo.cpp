@@ -92,11 +92,13 @@ namespace Core {
     std::shared_ptr<Core::MeshRenderer> skyboxRenderer = std::make_shared<Core::MeshRenderer>(this->skyboxMaterial, skyboxObj);
     skyboxObj->addRenderable(skyboxMesh);
     skyboxObj->setRenderer(skyboxRenderer);
+    
     ValidWeakPointer<Core::Scene> scenePtr(scene);
-    scenePtr->getRoot()->addObject(skyboxObj);
+    ValidWeakPointer<Object3D> sceneRootPtr = ValidWeakPointer<Object3D>(scenePtr->getRoot());
+    sceneRootPtr->addObject(skyboxObj);
 
     camera = std::make_shared<Core::Camera>();
-    scenePtr->getRoot()->addObject(camera);
+    sceneRootPtr->addObject(camera);
 
   }
 

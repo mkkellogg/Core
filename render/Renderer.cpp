@@ -21,7 +21,8 @@ namespace Core {
                               std::vector<std::shared_ptr<Camera>>& outCameras) {
     Matrix4x4 rootTransform;
     ValidWeakPointer<Scene> scenePtr = ValidWeakPointer<Scene>(scene);
-    processSceneStep(scenePtr->getRoot(), rootTransform, outObjects, outCameras);
+    ValidWeakPointer<Object3D> sceneRootPtr = ValidWeakPointer<Object3D>(scenePtr->getRoot());
+    processSceneStep(sceneRootPtr.getLockedPointer(), rootTransform, outObjects, outCameras);
   }
 
   void Renderer::processSceneStep(const std::shared_ptr<Object3D> object,

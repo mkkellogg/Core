@@ -1,6 +1,7 @@
 #include "MeshRenderer.h"
 #include "../common/gl.h"
 #include "RenderableContainer.h"
+#include "../util/ValidWeakPointer.h"
 
 namespace Core {
 
@@ -10,6 +11,8 @@ namespace Core {
   }
 
   void MeshRenderer::renderObject(std::shared_ptr<Camera> camera, std::shared_ptr<Mesh> mesh) {
+    ValidWeakPointer<Object3D> ownerPtr(owner);
+
     glUseProgram(this->material->getShader()->getProgram());
 
     this->checkAndSetShaderAttribute(mesh, StandardAttributes::Position, mesh->getVertexPositions(), GL_FLOAT, GL_FALSE, 0, 0);
@@ -32,7 +35,7 @@ namespace Core {
     }
 
      if (modelMatrixLoc >= 0) {
-      Matrix4x4 modelmatrix = owner->getTransform().getWorldMatrix();
+      Matrix4x4 modelmatrix = ownerPtr->getTransform().getWorldMatrix();
       glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, modelmatrix.getConstData());
     }
 
@@ -48,8 +51,8 @@ namespace Core {
   }
 
   void MeshRenderer::render(std::shared_ptr<Camera> camera) {
-  //  RenderableContainer<int, int> t;
-    std::shared_ptr<RenderableContainer<Mesh>> thisContainer = std::dynamic_pointer_cast<RenderableContainer<Mesh>>(this->owner);
+    ValidWeakPointer<Object3D> ownerPtr(owner);
+    std::shared_ptr<RenderableContainer<Mesh>> thisContainer = std::dynamic_pointer_cast<RenderableContainer<Mesh>>(ownerPtr.getLockedPointer());
     if (thisContainer) {
       auto renderables = thisContainer->getRenderables();
       for (auto mesh : renderables) {
