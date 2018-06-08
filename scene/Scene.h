@@ -8,12 +8,18 @@
 
 namespace Core {
 
+  //forward declarations
+  class Engine;
+
   class Scene {
+    friend class Engine;
+
   public:
-    Scene();
     std::shared_ptr<Object3D> getRoot();
 
   private:
+    Scene();
+
     std::shared_ptr<Object3D> root;
   };
 

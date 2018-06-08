@@ -15,6 +15,7 @@
 #include "material/StandardAttributes.h"
 #include "image/RawImage.h"
 #include "image/CubeTexture.h"
+#include "util/ValidWeakPointer.h"
 
 namespace Core {
 
@@ -54,8 +55,8 @@ namespace Core {
 
     });
 
-    std::shared_ptr<Core::Scene> scene = std::make_shared<Core::Scene>();
-    engine.setScene(scene);
+    std::weak_ptr<Core::Scene> scene = engine.createScene();
+    engine.setActiveScene(scene);
 
     std::shared_ptr<Core::Mesh> skyboxMesh = std::make_shared<Core::Mesh>(36, false);
     Core::Real vertexPositions[] = {
@@ -91,10 +92,11 @@ namespace Core {
     std::shared_ptr<Core::MeshRenderer> skyboxRenderer = std::make_shared<Core::MeshRenderer>(this->skyboxMaterial, skyboxObj);
     skyboxObj->addRenderable(skyboxMesh);
     skyboxObj->setRenderer(skyboxRenderer);
-    scene->getRoot()->addObject(skyboxObj);
+    ValidWeakPointer<Core::Scene> scenePtr(scene);
+    scenePtr->getRoot()->addObject(skyboxObj);
 
     camera = std::make_shared<Core::Camera>();
-    scene->getRoot()->addObject(camera);
+    scenePtr->getRoot()->addObject(camera);
 
   }
 

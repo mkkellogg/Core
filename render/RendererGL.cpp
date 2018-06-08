@@ -32,7 +32,7 @@ namespace Core {
     glViewport(hOffset, vOffset, viewPortWidth, viewPortHeight);
   }
 
-  void RendererGL::render(std::shared_ptr<Scene> scene) {
+  void RendererGL::render(std::weak_ptr<Scene> scene) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     std::vector<std::shared_ptr<Object3D>> objectList;
     std::vector<std::shared_ptr<Camera>> cameraList;
@@ -43,7 +43,7 @@ namespace Core {
     }
   }
 
-  void RendererGL::render(std::shared_ptr<Scene> scene, 
+  void RendererGL::render(std::weak_ptr<Scene> scene, 
                           std::shared_ptr<Camera> camera,
                           std::vector<std::shared_ptr<Object3D>>& objectList) {
     for (auto object : objectList) {

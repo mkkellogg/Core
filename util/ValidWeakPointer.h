@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "Exception.h"
+#include "../common/Exception.h"
 
 namespace Core {
 

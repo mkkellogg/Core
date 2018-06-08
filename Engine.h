@@ -35,8 +35,10 @@ namespace Core {
     void setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
     void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
 
-    void setScene(std::shared_ptr<Scene> scene);
-    std::shared_ptr<Scene> getScene();
+    void setActiveScene(std::weak_ptr<Scene> scene);
+    std::weak_ptr<Scene> getActiveScene();
+    std::weak_ptr<Scene> createScene();
+
     void setImageLoader(std::shared_ptr<ImageLoader> imageLoader);
     std::shared_ptr<ImageLoader> getImageLoader();
     void setAssetLoader(std::shared_ptr<AssetLoader> assetLoader);
@@ -46,7 +48,8 @@ namespace Core {
 
   private:
     GLVersion glVersion;
-    std::shared_ptr<Scene> scene;
+    std::vector<std::shared_ptr<Scene>> scenes;
+    std::shared_ptr<Scene> activeScene;
     std::shared_ptr<ImageLoader> imageLoader;
     std::shared_ptr<AssetLoader> assetLoader;
     std::shared_ptr<Renderer> renderer;

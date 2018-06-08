@@ -65,8 +65,8 @@ namespace Core {
   }
 
   void Engine::render() {
-    if (this->scene) {
-      this->renderer->render(this->scene);
+    if (this->activeScene) {
+      this->renderer->render(this->activeScene);
     }
   }
 
@@ -92,12 +92,18 @@ namespace Core {
     }
   }
 
-  void Engine::setScene(std::shared_ptr<Scene> scene) {
-    this->scene = scene;
+  void Engine::setActiveScene(std::weak_ptr<Scene> scene) {
+    this->activeScene = scene.lock();
   }
 
-  std::shared_ptr<Scene> Engine::getScene() {
-    return this->scene;
+  std::weak_ptr<Scene> Engine::getActiveScene() {
+    return this->activeScene;
+  }
+
+  std::weak_ptr<Scene> Engine::createScene() {
+    std::shared_ptr<Scene> newScene = std::shared_ptr<Scene>(new Scene());
+    this->scenes.push_back(newScene);
+    return newScene;
   }
 
   void Engine::setImageLoader(std::shared_ptr<ImageLoader> imageLoader) {

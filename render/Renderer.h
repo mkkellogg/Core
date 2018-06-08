@@ -18,11 +18,11 @@ namespace Core {
     virtual ~Renderer();
 
     virtual Bool init();
-    virtual void render(std::shared_ptr<Scene> scene) = 0;
-    virtual void render(std::shared_ptr<Scene> scene, 
+    virtual void render(std::weak_ptr<Scene> scene) = 0;
+    virtual void render(std::weak_ptr<Scene> scene, 
                         std::shared_ptr<Camera> camera,
                         std::vector<std::shared_ptr<Object3D>>& objectList) = 0;
-    void processScene(std::shared_ptr<Scene> scene, 
+    void processScene(std::weak_ptr<Scene> scene, 
                       std::vector<std::shared_ptr<Object3D>>& outObjects,
                       std::vector<std::shared_ptr<Camera>>& outCamerast);
 

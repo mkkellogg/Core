@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "../math/Matrix4x4.h"
+#include "../util/ValidWeakPointer.h"
 
 namespace Core {
 
@@ -15,11 +16,12 @@ namespace Core {
     return true;
   }
 
-  void Renderer::processScene(std::shared_ptr<Scene> scene, 
+  void Renderer::processScene(std::weak_ptr<Scene> scene, 
                               std::vector<std::shared_ptr<Object3D>>& outObjects,
                               std::vector<std::shared_ptr<Camera>>& outCameras) {
     Matrix4x4 rootTransform;
-    processSceneStep(scene->getRoot(), rootTransform, outObjects, outCameras);
+    ValidWeakPointer<Scene> scenePtr = ValidWeakPointer<Scene>(scene);
+    processSceneStep(scenePtr->getRoot(), rootTransform, outObjects, outCameras);
   }
 
   void Renderer::processSceneStep(const std::shared_ptr<Object3D> object,
