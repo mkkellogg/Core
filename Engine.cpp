@@ -70,7 +70,7 @@ namespace Core {
     }
   }
 
-  std::shared_ptr<Renderer> Engine::getRenderer() {
+  std::weak_ptr<Renderer> Engine::getRenderer() {
     return renderer;
   }
 

@@ -29,7 +29,7 @@ namespace Core {
     void update();
     void render();
 
-    std::shared_ptr<Renderer> getRenderer();
+    std::weak_ptr<Renderer> getRenderer();
 
     void setRenderSize(UInt32 width, UInt32 height, Bool updateViewport = true);
     void setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
