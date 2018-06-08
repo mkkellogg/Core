@@ -62,6 +62,7 @@ set(INCLUDE_FILES
     color/Color.h
     color/Color4Components.h
     util/Time.h
+    util/ValidWeakPointer.h
     math/Math.h
     math/Quaternion.h
     math/Matrix4x4.h

@@ -22,6 +22,11 @@ namespace Core {
             return sharedPtr;
         }
 
+        static bool isUninitialized(std::weak_ptr<T> const& weak) {
+            using wt = std::weak_ptr<T>;
+            return !weak.owner_before(wt{}) && !wt{}.owner_before(weak);
+        }
+
         T* operator->() {
             return this->get();
         }
