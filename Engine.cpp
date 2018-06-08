@@ -106,19 +106,19 @@ namespace Core {
     return newScene;
   }
 
-  void Engine::setImageLoader(std::shared_ptr<ImageLoader> imageLoader) {
+  void Engine::setImageLoader(std::weak_ptr<ImageLoader> imageLoader) {
     this->imageLoader = imageLoader;
   }
 
-  std::shared_ptr<ImageLoader> Engine::getImageLoader() {
+  std::weak_ptr<ImageLoader> Engine::getImageLoader() {
     return this->imageLoader;
   }
 
-  void Engine::setAssetLoader(std::shared_ptr<AssetLoader> assetLoader) {
+  void Engine::setAssetLoader(std::weak_ptr<AssetLoader> assetLoader) {
     this->assetLoader = assetLoader;
   }
 
-  std::shared_ptr<AssetLoader> Engine::getAssetLoader() {
+  std::weak_ptr<AssetLoader> Engine::getAssetLoader() {
     return this->assetLoader;
   }
 

@@ -39,10 +39,10 @@ namespace Core {
     std::weak_ptr<Scene> getActiveScene();
     std::weak_ptr<Scene> createScene();
 
-    void setImageLoader(std::shared_ptr<ImageLoader> imageLoader);
-    std::shared_ptr<ImageLoader> getImageLoader();
-    void setAssetLoader(std::shared_ptr<AssetLoader> assetLoader);
-    std::shared_ptr<AssetLoader> getAssetLoader();
+    void setImageLoader(std::weak_ptr<ImageLoader> imageLoader);
+    std::weak_ptr<ImageLoader> getImageLoader();
+    void setAssetLoader(std::weak_ptr<AssetLoader> assetLoader);
+    std::weak_ptr<AssetLoader> getAssetLoader();
 
     void onUpdate(std::function<void(Engine&)> func);
 
@@ -50,8 +50,8 @@ namespace Core {
     GLVersion glVersion;
     std::vector<std::shared_ptr<Scene>> scenes;
     std::shared_ptr<Scene> activeScene;
-    std::shared_ptr<ImageLoader> imageLoader;
-    std::shared_ptr<AssetLoader> assetLoader;
+    std::weak_ptr<ImageLoader> imageLoader;
+    std::weak_ptr<AssetLoader> assetLoader;
     std::shared_ptr<Renderer> renderer;
     std::vector<std::function<void(Engine&)>> updateCallbacks;
 
