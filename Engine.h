@@ -41,6 +41,13 @@ namespace Core {
 
     std::weak_ptr<Camera> createCamera();
 
+    template <typename T>
+    std::weak_ptr<typename std::enable_if<std::is_base_of<Object3D, T>::value, T>::type> createObject3D() {
+      std::shared_ptr<T> objPtr = std::shared_ptr<T>(new T());
+      this->sceneObjects.push_back(objPtr);
+      return objPtr;
+    }
+
     void setImageLoader(std::weak_ptr<ImageLoader> imageLoader);
     std::weak_ptr<ImageLoader> getImageLoader();
     void setAssetLoader(std::weak_ptr<AssetLoader> assetLoader);
@@ -54,6 +61,8 @@ namespace Core {
     std::shared_ptr<Scene> activeScene;
 
     std::vector<std::shared_ptr<Camera>> cameras;
+
+    std::vector<std::shared_ptr<Object3D>> sceneObjects;
 
     std::weak_ptr<ImageLoader> imageLoader;
     std::weak_ptr<AssetLoader> assetLoader;

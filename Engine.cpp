@@ -101,7 +101,8 @@ namespace Core {
   }
 
   std::weak_ptr<Scene> Engine::createScene() {
-    std::shared_ptr<Scene> newScene = std::shared_ptr<Scene>(new Scene());
+    std::weak_ptr<Object3D> newRoot = this->createObject3D<Object3D>();
+    std::shared_ptr<Scene> newScene = std::shared_ptr<Scene>(new Scene(newRoot));
     this->scenes.push_back(newScene);
     return newScene;
   }

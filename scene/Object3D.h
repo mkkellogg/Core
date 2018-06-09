@@ -17,10 +17,10 @@ namespace Core {
   // forward declarations
   class Mesh;
   class MeshRenderer;
-  class Scene;
+  class Engine;
 
   class Object3D {
-    friend class Scene;
+    friend class Engine;
 
   public:
     virtual ~Object3D();

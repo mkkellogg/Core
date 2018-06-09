@@ -13,14 +13,14 @@
 namespace Core {
 
   // forward declaration
-  class Scene;
+  class Engine;
 
   template <typename T, typename Enable = void>
   class RenderableContainer;
 
   template <typename T>
   class RenderableContainer<T, Core::enable_if_t<std::is_base_of<Renderable<T>, T>::value>> : public BaseRenderableContainer {
-    friend class Scene;
+    friend class Engine;
 
   public:
    
