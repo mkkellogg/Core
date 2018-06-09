@@ -15,10 +15,14 @@
 
 namespace Core {
 
+  // forward declarations
+  class Engine;
+
   class Mesh : public Renderable<Mesh>  {
+    friend class Engine;
+
   public:
 
-    Mesh(UInt32 size, Bool indexed);
     virtual ~Mesh();
 
     UInt32 getSize() const;
@@ -42,7 +46,9 @@ namespace Core {
     void calculateBoundingBox();
     const Box3& getBoundingBox() const;
 
-  private:
+  protected:
+    Mesh(UInt32 size, Bool indexed);
+
     UInt32 size;
     Bool indexed;
 

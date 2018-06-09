@@ -56,7 +56,8 @@ namespace Core {
     if (thisContainer) {
       auto renderables = thisContainer->getRenderables();
       for (auto mesh : renderables) {
-        this->renderObject(camera, mesh);
+        ValidWeakPointer<Mesh> meshPtr(mesh);
+        this->renderObject(camera, meshPtr.getLockedPointer());
       }
     }
   }

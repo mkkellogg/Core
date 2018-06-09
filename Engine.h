@@ -13,6 +13,7 @@
 #include "render/BaseObjectRenderer.h"
 #include "render/RenderableContainer.h"
 #include "material/Material.h"
+#include "geometry/Mesh.h"
 #include "util/ValidWeakPointer.h"
 
 namespace Core {
@@ -62,6 +63,13 @@ namespace Core {
     }
 
     template <typename T>
+    std::weak_ptr<typename std::enable_if<std::is_base_of<Mesh, T>::value, T>::type> createMesh(UInt32 size, Bool indexed) {
+      std::shared_ptr<T> meshPtr = std::shared_ptr<T>(new T(size, indexed));
+      this->meshes.push_back(meshPtr);
+      return meshPtr;
+    }
+
+    template <typename T>
     std::weak_ptr<typename std::enable_if<std::is_base_of<Material, T>::value, T>::type> createMaterial() {
       std::shared_ptr<T> materialPtr = std::shared_ptr<T>(new T());
       this->materials.push_back(materialPtr);
@@ -82,6 +90,7 @@ namespace Core {
     std::vector<std::shared_ptr<Camera>> cameras;
     std::vector<std::shared_ptr<Object3D>> sceneObjects;
     std::vector<std::shared_ptr<Material>> materials;
+    std::vector<std::shared_ptr<Mesh>> meshes;
 
     std::weak_ptr<ImageLoader> imageLoader;
     std::weak_ptr<AssetLoader> assetLoader;

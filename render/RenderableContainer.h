@@ -24,11 +24,11 @@ namespace Core {
 
   public:
    
-    void addRenderable(std::shared_ptr<T> renderable) {
+    void addRenderable(std::weak_ptr<T> renderable) {
       renderables.push_back(renderable);
     }
 
-    const std::vector<std::shared_ptr<T>> getRenderables() {
+    const std::vector<std::weak_ptr<T>> getRenderables() {
       return renderables;
     }
 
@@ -36,11 +36,11 @@ namespace Core {
       return renderer;
     }
 
-    typename std::vector<std::shared_ptr<T>>::iterator begin() {
+    typename std::vector<std::weak_ptr<T>>::iterator begin() {
       return this->renderables.begin();
     }
 
-    typename std::vector<std::shared_ptr<T>>::iterator end() {
+    typename std::vector<std::weak_ptr<T>>::iterator end() {
       return this->renderables.end();
     }
 
@@ -55,6 +55,6 @@ namespace Core {
     }
 
 
-    std::vector<std::shared_ptr<T>> renderables;
+    std::vector<std::weak_ptr<T>> renderables;
   };
 }

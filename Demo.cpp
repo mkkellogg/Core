@@ -60,7 +60,10 @@ namespace Core {
     engine.setActiveScene(scene);
     ValidWeakPointer<Core::Scene> scenePtr(scene);
 
-    std::shared_ptr<Core::Mesh> skyboxMesh = std::make_shared<Core::Mesh>(36, false);
+    std::weak_ptr<Core::Mesh> skyboxMesh = engine.createMesh<Core::Mesh>(36, false);
+    ValidWeakPointer<Core::Mesh> skyboxMeshPtr(skyboxMesh);
+
+
     Core::Real vertexPositions[] = {
         // back
         -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0,
@@ -82,10 +85,10 @@ namespace Core {
         1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0
     };
 
-    skyboxMesh->enableAttribute(Core::StandardAttributes::Position);
-    Core::Bool positionInited = skyboxMesh->initVertexPositions(36);
+    skyboxMeshPtr->enableAttribute(Core::StandardAttributes::Position);
+    Core::Bool positionInited = skyboxMeshPtr->initVertexPositions(36);
     ASSERT(positionInited, "Unable to initialize skybox mesh vertex positions.");
-    skyboxMesh->getVertexPositions()->store(vertexPositions);
+    skyboxMeshPtr->getVertexPositions()->store(vertexPositions);
 
     this->skyboxMaterial = engine.createMaterial<Core::BasicMaterial>();
     ValidWeakPointer<Core::BasicMaterial> skyboxMaterialPtr(this->skyboxMaterial);
