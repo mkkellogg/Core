@@ -6,7 +6,13 @@
 #include "../geometry/Vector3.h"
 
 namespace Core {
+
+  // forward declarations
+  class Engine;
+
   class Camera : public Object3D {
+    friend class Engine;
+
   public:
     static const UInt32 DEFAULT_FOV;
     static const UInt32 DEFAULT_WIDTH;
@@ -15,8 +21,6 @@ namespace Core {
     static const Real DEFAULT_NEARP;
     static const Real DEFAULT_FARP;
 
-    Camera();
-    Camera(Real fov, Real ratio, Real nearP, Real farP);
     void setAspectRatio(Real ratio);
     void setAspectRatioFromDimensions(UInt32 width, UInt32 height);
     void updateProjection(Real fov, Real ratio, Real nearP, Real farP);
@@ -28,6 +32,9 @@ namespace Core {
     static void buildPerspectiveProjectionMatrix(Real fov, Real ratio,
                                                  Real nearP, Real farP, Matrix4x4& out);
 private: 
+    Camera();
+    Camera(Real fov, Real ratio, Real nearP, Real farP);
+
     Real fov;
     Real aspectRatio;
     Real nearP;

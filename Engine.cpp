@@ -106,6 +106,12 @@ namespace Core {
     return newScene;
   }
 
+  std::weak_ptr<Camera> Engine::createCamera() {
+    std::shared_ptr<Camera> newCamera = std::shared_ptr<Camera>(new Camera());
+    this->cameras.push_back(newCamera);
+    return newCamera;
+  }
+
   void Engine::setImageLoader(std::weak_ptr<ImageLoader> imageLoader) {
     this->imageLoader = imageLoader;
   }

@@ -26,11 +26,12 @@ namespace Core {
 
   void Demo::run() {
 
-    std::shared_ptr<Core::Camera> camera;
+    std::weak_ptr<Core::Camera> camera;
     this->engine.onUpdate([this, camera](Engine& engine) {
 
       static Core::Real rotationAngle = 0.0;
-      if (camera) {
+      if (!camera.expired()) {
+        ValidWeakPointer<Camera> cameraPtr(camera);
         rotationAngle += 0.01;
         if (rotationAngle >= Core::Math::TwoPI) rotationAngle -= Core::Math::TwoPI;
 
@@ -50,7 +51,7 @@ namespace Core {
         worldMatrix.translate(0, 12, 15);
         worldMatrix.multiply(rotationMatrixB);
 
-        camera->getTransform().getLocalMatrix().copy(worldMatrix);
+        cameraPtr->getTransform().getLocalMatrix().copy(worldMatrix);
       }
 
     });
@@ -92,12 +93,12 @@ namespace Core {
     std::shared_ptr<Core::MeshRenderer> skyboxRenderer = std::make_shared<Core::MeshRenderer>(this->skyboxMaterial, skyboxObj);
     skyboxObj->addRenderable(skyboxMesh);
     skyboxObj->setRenderer(skyboxRenderer);
-    
+
     ValidWeakPointer<Core::Scene> scenePtr(scene);
     ValidWeakPointer<Object3D> sceneRootPtr = ValidWeakPointer<Object3D>(scenePtr->getRoot());
     sceneRootPtr->addObject(skyboxObj);
 
-    camera = std::make_shared<Core::Camera>();
+    camera = engine.createCamera();
     sceneRootPtr->addObject(camera);
 
   }
