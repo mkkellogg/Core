@@ -32,10 +32,6 @@ namespace Core {
       return renderables;
     }
 
-    void setRenderer(std::shared_ptr<ObjectRenderer<T>> renderer) {
-      this->renderer = renderer;
-    }
-
     std::shared_ptr<ObjectRenderer<T>> getRenderer() {
       return renderer;
     }
@@ -53,6 +49,11 @@ namespace Core {
     RenderableContainer() {
       
     }
+
+    void setRenderer(std::shared_ptr<ObjectRenderer<T>> renderer) {
+      this->renderer = renderer;
+    }
+
 
     std::vector<std::shared_ptr<T>> renderables;
   };

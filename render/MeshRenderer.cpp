@@ -1,27 +1,27 @@
 #include "MeshRenderer.h"
 #include "../common/gl.h"
 #include "RenderableContainer.h"
-#include "../util/ValidWeakPointer.h"
 
 namespace Core {
 
-  MeshRenderer::MeshRenderer(std::shared_ptr<Material> material, std::weak_ptr<Object3D> owner):
+  MeshRenderer::MeshRenderer(std::weak_ptr<Material> material, std::weak_ptr<Object3D> owner):
       ObjectRenderer<Mesh>(owner), material(material) {
 
   }
 
   void MeshRenderer::renderObject(std::shared_ptr<Camera> camera, std::shared_ptr<Mesh> mesh) {
     ValidWeakPointer<Object3D> ownerPtr(owner);
+    ValidWeakPointer<Material> materialPtr(this->material);
 
-    glUseProgram(this->material->getShader()->getProgram());
+    glUseProgram(materialPtr->getShader()->getProgram());
 
     this->checkAndSetShaderAttribute(mesh, StandardAttributes::Position, mesh->getVertexPositions(), GL_FLOAT, GL_FALSE, 0, 0);
     this->checkAndSetShaderAttribute(mesh, StandardAttributes::Color, mesh->getVertexColors(), GL_FLOAT, GL_FALSE, 0, 0);
     this->checkAndSetShaderAttribute(mesh, StandardAttributes::UV, mesh->getVertexUVs(), GL_FLOAT, GL_FALSE, 0, 0);
 
-    GLint projectionLoc = this->material->getShaderLocation(StandardUniforms::ProjectionMatrix);
-    GLint viewMatrixLoc = this->material->getShaderLocation(StandardUniforms::ViewMatrix);
-    GLint modelMatrixLoc = this->material->getShaderLocation(StandardUniforms::ModelMatrix);
+    GLint projectionLoc = materialPtr->getShaderLocation(StandardUniforms::ProjectionMatrix);
+    GLint viewMatrixLoc = materialPtr->getShaderLocation(StandardUniforms::ViewMatrix);
+    GLint modelMatrixLoc = materialPtr->getShaderLocation(StandardUniforms::ModelMatrix);
 
     if (projectionLoc >= 0) {
       const Matrix4x4 &matrix = camera->getProjectionMatrix();
@@ -39,7 +39,7 @@ namespace Core {
       glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, modelmatrix.getConstData());
     }
 
-    this->material->sendCustomUniformsToShader();
+    materialPtr->sendCustomUniformsToShader();
 
     if (mesh->isIndexed()) {
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->getIndexBuffer());

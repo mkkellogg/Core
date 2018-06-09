@@ -10,6 +10,10 @@
 #include "image/ImageLoader.h"
 #include "asset/AssetLoader.h"
 #include "geometry/Vector4.h"
+#include "render/BaseObjectRenderer.h"
+#include "render/RenderableContainer.h"
+#include "material/Material.h"
+#include "util/ValidWeakPointer.h"
 
 namespace Core {
 
@@ -48,6 +52,15 @@ namespace Core {
       return objPtr;
     }
 
+    template <typename T, typename R>
+    std::weak_ptr<typename std::enable_if<std::is_base_of<ObjectRenderer<R>, T>::value, T>::type> 
+    createRenderer(std::weak_ptr<Material> material, std::weak_ptr<RenderableContainer<R>> owner) {
+      std::shared_ptr<T> rendererPtr = std::shared_ptr<T>(new T(material, owner));
+      ValidWeakPointer<RenderableContainer<R>> ownerPtr(owner);
+      ownerPtr->setRenderer(rendererPtr);
+      return rendererPtr;
+    }
+
     void setImageLoader(std::weak_ptr<ImageLoader> imageLoader);
     std::weak_ptr<ImageLoader> getImageLoader();
     void setAssetLoader(std::weak_ptr<AssetLoader> assetLoader);
@@ -59,9 +72,7 @@ namespace Core {
     GLVersion glVersion;
     std::vector<std::shared_ptr<Scene>> scenes;
     std::shared_ptr<Scene> activeScene;
-
     std::vector<std::shared_ptr<Camera>> cameras;
-
     std::vector<std::shared_ptr<Object3D>> sceneObjects;
 
     std::weak_ptr<ImageLoader> imageLoader;

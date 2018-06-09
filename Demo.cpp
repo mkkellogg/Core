@@ -93,9 +93,8 @@ namespace Core {
     std::weak_ptr<Core::RenderableContainer<Mesh>> skyboxObj = engine.createObject3D<Core::RenderableContainer<Mesh>>();
     ValidWeakPointer<Core::RenderableContainer<Mesh>> skyboxObjPtr = ValidWeakPointer<Core::RenderableContainer<Mesh>>(skyboxObj);
 
-    std::shared_ptr<Core::MeshRenderer> skyboxRenderer = std::make_shared<Core::MeshRenderer>(this->skyboxMaterial, skyboxObj);
+    std::weak_ptr<Core::MeshRenderer> skyboxRenderer = engine.createRenderer<Core::MeshRenderer>(this->skyboxMaterial, skyboxObj);
     skyboxObjPtr->addRenderable(skyboxMesh);
-    skyboxObjPtr->setRenderer(skyboxRenderer);
 
     ValidWeakPointer<Object3D> sceneRootPtr = ValidWeakPointer<Object3D>(scenePtr->getRoot());
     sceneRootPtr->addObject(skyboxObj);
