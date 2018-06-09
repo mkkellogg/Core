@@ -13,11 +13,11 @@ namespace Core {
     };
 
     template <typename T>
-    class ValidWeakPointer {
+    class ValidWeakPointer: public std::weak_ptr<T> {
     public:
 
-        ValidWeakPointer(std::weak_ptr<T> ptr): pointer(ptr) {
-            this->lockedPointer = expectValidWeakPointer(this->pointer); 
+        ValidWeakPointer(std::weak_ptr<T> ptr): std::weak_ptr<T>(ptr) {
+            this->lockedPointer = expectValidWeakPointer(*this); 
         }
 
         static std::shared_ptr<T> expectValidWeakPointer(std::weak_ptr<T> ptr) {
@@ -46,7 +46,6 @@ namespace Core {
         }
 
     private:
-        std::weak_ptr<T> pointer;
         std::shared_ptr<T> lockedPointer;
     };
 
