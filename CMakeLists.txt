@@ -6,6 +6,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
 
 find_package (OpenGL REQUIRED)
 
+set(EXECUTABLE_NAME core)
+
 set(INCLUDE_DIRS
     asset
     image
@@ -57,7 +59,6 @@ set(INCLUDE_FILES
     image/ImageLoader.h
     image/CubeTexture.h
     image/Texture.h
-    image/jpgd.h
     image/RawImage.h
     color/Color.h
     color/Color4Components.h
@@ -78,7 +79,6 @@ set(SOURCE_FILES
     common/Debug.cpp
     asset/AssetLoader.cpp
     gl3stub_wrapper.c
-    image/jpgd.cpp
     image/ImageLoader.cpp
     image/RawImage.cpp
     image/Texture.cpp
@@ -111,9 +111,18 @@ set(SOURCE_FILES
     Demo.cpp)
     #RendererES3.cpp)
 
-add_library(core ${SOURCE_FILES})
+add_library(${EXECUTABLE_NAME} ${SOURCE_FILES})
 
-target_link_libraries(core ${OPENGL_LIBRARIES})
+target_link_libraries(${EXECUTABLE_NAME} ${OPENGL_LIBRARIES})
+
+#Find DevIL
+find_package(DevIL REQUIRED)
+if(IL_FOUND)
+    include_directories(${IL_INCLUDE_DIR})
+    target_link_libraries(${EXECUTABLE_NAME} ${IL_LIBRARY})
+    target_link_libraries(${EXECUTABLE_NAME} ${ILU_LIBRARY})
+    target_link_libraries(${EXECUTABLE_NAME} ${ILUT_LIBRARY})
+endif()
 
 add_custom_target(MakeIncludeDir ALL COMMAND ${CMAKE_COMMAND} -E make_directory "include")
 add_custom_target(MakeIncludeCoreDir ALL COMMAND ${CMAKE_COMMAND} -E make_directory "include/Core")
@@ -121,7 +130,7 @@ add_custom_target(MakeIncludeCoreDir ALL COMMAND ${CMAKE_COMMAND} -E make_direct
 # do the copying
 foreach(dir_i ${INCLUDE_DIRS})
     add_custom_command(
-    TARGET core
+    TARGET ${EXECUTABLE_NAME}
     POST_BUILD
     COMMAND ${CMAKE_COMMAND}
     ARGS -E make_directory "include/Core/${dir_i}"
@@ -131,7 +140,7 @@ endforeach(dir_i)
 # do the copying
 foreach(file_i ${INCLUDE_FILES})
     add_custom_command(
-    TARGET core
+    TARGET ${EXECUTABLE_NAME}
     POST_BUILD
     # COMMENT "copying ${CMAKE_SOURCE_DIR}/${file_i} to  include/Core/${file_i}"
     COMMAND ${CMAKE_COMMAND}

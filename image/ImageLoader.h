@@ -1,21 +1,38 @@
 #pragma once
 
-#include <memory>
+#include <IL/il.h>
 #include <string>
-#include <unordered_map>
-#include "RawImage.h"
+
+#include "../common/types.h"
+#include "../common/debug.h"
+#include "../common/Exception.h"
 
 namespace Core {
-  class ImageLoader {
-  public:
-    virtual std::shared_ptr<RawImage> loadJPEG(const std::string& name, Bool fromAssets = true) = 0;
 
-  private:
-    std::unordered_map<std::string, std::shared_ptr<RawImage>> cache;
-    
-  protected:
-    void addImageToCache(std::shared_ptr<RawImage> image, const std::string& name);
-    std::shared_ptr<RawImage> getCachedImage(const std::string& name);
-    Bool isImageInCache(const std::string& name);
-  };
+    //forward declarations
+    class RawImage;
+
+    enum ImageLoaderError {
+        GeneralLoadError = 1
+    };
+
+    class ImageLoaderException: Exception {
+    public:
+        ImageLoaderException(const std::string& msg): Exception(msg) {}
+        ImageLoaderException(const char* msg): Exception(msg) {}
+    };
+
+    class ImageLoader {
+        static Bool ilInitialized;
+        static Bool initialize();
+
+    public:
+
+        static RawImage * loadImageU(const std::string& fullPath);
+        static RawImage * loadImageU(const std::string& fullPath, Bool reverseOrigin);
+        static RawImage * getRawImageFromILData(const ILubyte * data, UInt32 width, UInt32 height);
+        static void destroyRawImage(RawImage * image);
+        static std::string getFileExtension(const std::string& filePath);
+    };
+
 }

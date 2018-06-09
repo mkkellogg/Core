@@ -19,4 +19,16 @@ namespace Core {
         AssertionFailedException(const char* msg): Exception(msg) {}
     };
 
+    class AllocationException: Exception {
+    public:
+        AllocationException(const std::string& msg): Exception(msg) {}
+        AllocationException(const char* msg): Exception(msg) {}
+    };
+
+    class OutOfRangeException: Exception {
+    public:
+        OutOfRangeException(const std::string& msg): Exception(msg) {}
+        OutOfRangeException(const char* msg): Exception(msg) {}
+    };
+
 }
