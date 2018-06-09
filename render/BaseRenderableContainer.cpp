@@ -2,5 +2,8 @@
 
 namespace Core {
 
+    BaseRenderableContainer::~BaseRenderableContainer() {
+        
+    }
 
 }

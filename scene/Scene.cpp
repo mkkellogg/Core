@@ -4,8 +4,7 @@
 namespace Core {
 
   Scene::Scene() {
-    std::shared_ptr<Object3D> root = std::make_shared<Object3D>();
-    this->root = root;
+    this->root = std::shared_ptr<Object3D>(new Object3D());
   }
 
   std::weak_ptr<Object3D> Scene::getRoot() {

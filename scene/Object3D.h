@@ -17,10 +17,12 @@ namespace Core {
   // forward declarations
   class Mesh;
   class MeshRenderer;
+  class Scene;
 
   class Object3D {
+    friend class Scene;
+
   public:
-    Object3D();
     virtual ~Object3D();
 
     Transform& getTransform();
@@ -30,13 +32,16 @@ namespace Core {
     void addObject(std::weak_ptr<Object3D> object);
     void removeObject(std::weak_ptr<Object3D> object);
     std::weak_ptr<Object3D> getParent();
-
-  private:
-    std::vector<std::shared_ptr<Object3D>> children;
-    std::weak_ptr<Object3D> parent;
   
   protected:
+    Object3D();
+    
     Transform transform;
+
+  private:
+  
+    std::vector<std::shared_ptr<Object3D>> children;
+    std::weak_ptr<Object3D> parent;
   };
 
 }

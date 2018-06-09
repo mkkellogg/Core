@@ -12,17 +12,18 @@
 
 namespace Core {
 
+  // forward declaration
+  class Scene;
+
   template <typename T, typename Enable = void>
   class RenderableContainer;
 
   template <typename T>
   class RenderableContainer<T, Core::enable_if_t<std::is_base_of<Renderable<T>, T>::value>> : public BaseRenderableContainer {
-  public:
+    friend class Scene;
 
-    RenderableContainer() {
-      
-    }
-    
+  public:
+   
     void addRenderable(std::shared_ptr<T> renderable) {
       renderables.push_back(renderable);
     }
@@ -48,6 +49,11 @@ namespace Core {
     }
 
   private:
+
+    RenderableContainer() {
+      
+    }
+
     std::vector<std::shared_ptr<T>> renderables;
   };
 }

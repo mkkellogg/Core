@@ -8,6 +8,7 @@ namespace Core {
   class BaseRenderableContainer : public Object3D {
   public:
 
+    virtual ~BaseRenderableContainer() = 0;
     std::shared_ptr<BaseObjectRenderer> getBaseRenderer() {
       return renderer;
     }

@@ -14,7 +14,7 @@ namespace Core  {
 
   class MeshRenderer : public ObjectRenderer<Mesh>{
   public:
-    MeshRenderer(std::shared_ptr<Material> material, std::shared_ptr<Object3D> owner);
+    MeshRenderer(std::shared_ptr<Material> material, std::weak_ptr<Object3D> owner);
     virtual void render(std::shared_ptr<Camera> camera) override;
     virtual void renderObject(std::shared_ptr<Camera> camera, std::shared_ptr<Mesh> mesh) override;
 

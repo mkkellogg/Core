@@ -58,6 +58,7 @@ namespace Core {
 
     std::weak_ptr<Core::Scene> scene = engine.createScene();
     engine.setActiveScene(scene);
+    ValidWeakPointer<Core::Scene> scenePtr(scene);
 
     std::shared_ptr<Core::Mesh> skyboxMesh = std::make_shared<Core::Mesh>(36, false);
     Core::Real vertexPositions[] = {
@@ -89,12 +90,13 @@ namespace Core {
     this->skyboxMaterial = std::make_shared<Core::BasicMaterial>();
     this->skyboxMaterial->build();
 
-    std::shared_ptr<Core::RenderableContainer<Mesh>> skyboxObj = std::make_shared<Core::RenderableContainer<Mesh>>();
-    std::shared_ptr<Core::MeshRenderer> skyboxRenderer = std::make_shared<Core::MeshRenderer>(this->skyboxMaterial, skyboxObj);
-    skyboxObj->addRenderable(skyboxMesh);
-    skyboxObj->setRenderer(skyboxRenderer);
+    std::weak_ptr<Core::RenderableContainer<Mesh>> skyboxObj = scenePtr->createObject3D<Core::RenderableContainer<Mesh>>();
+    ValidWeakPointer<Core::RenderableContainer<Mesh>> skyboxObjPtr = ValidWeakPointer<Core::RenderableContainer<Mesh>>(skyboxObj);
 
-    ValidWeakPointer<Core::Scene> scenePtr(scene);
+    std::shared_ptr<Core::MeshRenderer> skyboxRenderer = std::make_shared<Core::MeshRenderer>(this->skyboxMaterial, skyboxObj);
+    skyboxObjPtr->addRenderable(skyboxMesh);
+    skyboxObjPtr->setRenderer(skyboxRenderer);
+
     ValidWeakPointer<Object3D> sceneRootPtr = ValidWeakPointer<Object3D>(scenePtr->getRoot());
     sceneRootPtr->addObject(skyboxObj);
 
