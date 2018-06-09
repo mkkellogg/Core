@@ -12,7 +12,7 @@ namespace Core {
 
     std::vector<std::shared_ptr<RawImage>> skyboxImages;
     std::shared_ptr<CubeTexture> skyboxTexture;
-    std::shared_ptr<BasicMaterial> skyboxMaterial;
+    std::weak_ptr<BasicMaterial> skyboxMaterial;
 
     std::shared_ptr<Core::ImageLoader> imageLoader;
     std::shared_ptr<Core::AssetLoader> assetLoader;

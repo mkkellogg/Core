@@ -61,6 +61,13 @@ namespace Core {
       return rendererPtr;
     }
 
+    template <typename T>
+    std::weak_ptr<typename std::enable_if<std::is_base_of<Material, T>::value, T>::type> createMaterial() {
+      std::shared_ptr<T> materialPtr = std::shared_ptr<T>(new T());
+      this->materials.push_back(materialPtr);
+      return materialPtr;
+    }
+
     void setImageLoader(std::weak_ptr<ImageLoader> imageLoader);
     std::weak_ptr<ImageLoader> getImageLoader();
     void setAssetLoader(std::weak_ptr<AssetLoader> assetLoader);
@@ -74,6 +81,7 @@ namespace Core {
     std::shared_ptr<Scene> activeScene;
     std::vector<std::shared_ptr<Camera>> cameras;
     std::vector<std::shared_ptr<Object3D>> sceneObjects;
+    std::vector<std::shared_ptr<Material>> materials;
 
     std::weak_ptr<ImageLoader> imageLoader;
     std::weak_ptr<AssetLoader> assetLoader;

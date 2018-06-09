@@ -6,6 +6,12 @@
 
 namespace Core {
 
+    class ValidWeakPointerAssertionFailure: AssertionFailedException {
+    public:
+        ValidWeakPointerAssertionFailure(const std::string& msg): AssertionFailedException(msg) {}
+        ValidWeakPointerAssertionFailure(const char* msg): AssertionFailedException(msg) {}
+    };
+
     template <typename T>
     class ValidWeakPointer {
     public:
@@ -17,7 +23,7 @@ namespace Core {
         static std::shared_ptr<T> expectValidWeakPointer(std::weak_ptr<T> ptr) {
             std::shared_ptr<T> sharedPtr = ptr.lock();
             if (!sharedPtr) {
-                throw new AssertionFailedException("Expected valid weak pointer.");
+                throw new ValidWeakPointerAssertionFailure("Expected valid weak pointer.");
             }
             return sharedPtr;
         }

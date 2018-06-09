@@ -87,8 +87,9 @@ namespace Core {
     ASSERT(positionInited, "Unable to initialize skybox mesh vertex positions.");
     skyboxMesh->getVertexPositions()->store(vertexPositions);
 
-    this->skyboxMaterial = std::make_shared<Core::BasicMaterial>();
-    this->skyboxMaterial->build();
+    this->skyboxMaterial = engine.createMaterial<Core::BasicMaterial>();
+    ValidWeakPointer<Core::BasicMaterial> skyboxMaterialPtr(this->skyboxMaterial);
+    skyboxMaterialPtr->build();
 
     std::weak_ptr<Core::RenderableContainer<Mesh>> skyboxObj = engine.createObject3D<Core::RenderableContainer<Mesh>>();
     ValidWeakPointer<Core::RenderableContainer<Mesh>> skyboxObjPtr = ValidWeakPointer<Core::RenderableContainer<Mesh>>(skyboxObj);
