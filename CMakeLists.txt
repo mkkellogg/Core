@@ -21,6 +21,8 @@ set(INCLUDE_DIRS
     common)
 
 set(INCLUDE_FILES
+    filesys/FileSystem.h
+    filesys/FileSystemIX.h
     geometry/Box3.h
     geometry/Vector2Components.h
     geometry/Vector2.h
@@ -63,6 +65,7 @@ set(INCLUDE_FILES
     color/Color.h
     color/Color4Components.h
     util/Time.h
+    util/String.h
     util/ValidWeakPointer.h
     math/Math.h
     math/Quaternion.h
@@ -78,6 +81,8 @@ set(INCLUDE_FILES
 set(SOURCE_FILES
     common/Debug.cpp
     asset/AssetLoader.cpp
+    filesys/FileSystem.cpp
+    filesys/FileSystemIX.cpp
     gl3stub_wrapper.c
     image/ImageLoader.cpp
     image/RawImage.cpp
@@ -107,6 +112,7 @@ set(SOURCE_FILES
     math/Matrix4x4.cpp
     math/Quaternion.cpp
     util/Time.cpp
+    util/String.cpp
     Engine.cpp
     Demo.cpp)
     #RendererES3.cpp)
