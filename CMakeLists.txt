@@ -89,6 +89,7 @@ set(SOURCE_FILES
     image/ImageLoader.cpp
     image/RawImage.cpp
     image/Texture.cpp
+    image/TextureAttr.cpp
     image/CubeTexture.cpp
     geometry/Mesh.cpp
     geometry/Box3.cpp

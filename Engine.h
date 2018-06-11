@@ -46,7 +46,7 @@ namespace Core {
 
     std::weak_ptr<Camera> createCamera();
 
-    template <typename T>
+    template <typename T = Object3D>
     std::weak_ptr<typename std::enable_if<std::is_base_of<Object3D, T>::value, T>::type> createObject3D() {
       std::shared_ptr<T> objPtr = std::shared_ptr<T>(new T());
       this->sceneObjects.push_back(objPtr);
