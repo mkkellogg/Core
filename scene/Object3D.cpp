@@ -29,9 +29,9 @@ namespace Core {
   }
 
   void Object3D::addObject(std::weak_ptr<Object3D> object) {
-    if (!object.expired()) {
+    if (ValidWeakPointer<Object3D>::isInitialized(object)) {
       ValidWeakPointer<Object3D> objPtr(object);
-      if(!objPtr->parent.expired()) {
+      if(ValidWeakPointer<Object3D>::isInitialized(objPtr->parent)) {
         ValidWeakPointer<Object3D> parentPtr(objPtr->parent);
         parentPtr->removeObject(object);
         Transform& parentTransform = parentPtr->getTransform();

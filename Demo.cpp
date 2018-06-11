@@ -30,7 +30,7 @@ namespace Core {
     this->engine.onUpdate([this, camera](Engine& engine) {
 
       static Core::Real rotationAngle = 0.0;
-      if (!camera.expired()) {
+      if (ValidWeakPointer<Camera>::isInitialized(camera)) {
         ValidWeakPointer<Camera> cameraPtr(camera);
         rotationAngle += 0.01;
         if (rotationAngle >= Core::Math::TwoPI) rotationAngle -= Core::Math::TwoPI;

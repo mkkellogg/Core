@@ -49,7 +49,7 @@ namespace Core {
   void Transform::updateWorldMatrix() {
     this->worldMatrix.copy(localMatrix);
     std::weak_ptr<Object3D> parent = const_cast<Object3D&>(target).getParent();
-    while(!parent.expired()) {
+    while(ValidWeakPointer<Object3D>::isInitialized(parent)) {
       ValidWeakPointer<Object3D> parentPtr(parent);
       this->worldMatrix.preMultiply(parentPtr->getTransform().getLocalMatrix());
       parent = parentPtr->getParent();
