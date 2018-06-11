@@ -39,6 +39,7 @@ set(INCLUDE_FILES
     scene/Octree.h
     Engine.h
     asset/AssetLoader.h
+    asset/ModelLoader.h
     material/BasicMaterial.h
     material/Material.h
     material/StandardUniforms.h
@@ -81,6 +82,7 @@ set(INCLUDE_FILES
 set(SOURCE_FILES
     common/Debug.cpp
     asset/AssetLoader.cpp
+    asset/ModelLoader.cpp
     filesys/FileSystem.cpp
     filesys/FileSystemIX.cpp
     gl3stub_wrapper.c
@@ -121,14 +123,13 @@ add_library(${EXECUTABLE_NAME} ${SOURCE_FILES})
 
 target_link_libraries(${EXECUTABLE_NAME} ${OPENGL_LIBRARIES})
 
-#Find DevIL
-find_package(DevIL REQUIRED)
-if(IL_FOUND)
-    include_directories(${IL_INCLUDE_DIR})
-    target_link_libraries(${EXECUTABLE_NAME} ${IL_LIBRARY})
-    target_link_libraries(${EXECUTABLE_NAME} ${ILU_LIBRARY})
-    target_link_libraries(${EXECUTABLE_NAME} ${ILUT_LIBRARY})
-endif()
+include_directories(../../DevIL/DevIl/include)
+target_link_libraries(${EXECUTABLE_NAME} ../../DevIL/DevIL/build/lib/x64/libIL.a)
+target_link_libraries(${EXECUTABLE_NAME} ../../DevIL/DevIL/build/lib/x64/libILU.a)
+target_link_libraries(${EXECUTABLE_NAME} ../../DevIL/DevIL/build/lib/x64/libILUT.a)
+
+include_directories(../../assimp/build/include)
+include_directories(../../assimp/include)
 
 add_custom_target(MakeIncludeDir ALL COMMAND ${CMAKE_COMMAND} -E make_directory "include")
 add_custom_target(MakeIncludeCoreDir ALL COMMAND ${CMAKE_COMMAND} -E make_directory "include/Core")
