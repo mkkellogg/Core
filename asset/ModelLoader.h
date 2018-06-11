@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
 #include "assimp/scene.h"
 #include "assimp/Importer.hpp"
@@ -26,12 +27,12 @@ namespace Core {
         void loadModel(const std::string& filePath);
 
     private:
-        Assimp::Importer * importer;
-        
+        std::shared_ptr<Assimp::Importer> importer;
+
         ModelLoader();
 
         void initImporter();
-        const aiScene * loadAIScene(const std::string& filePath, Bool preserveFBXPivots);
+        std::shared_ptr<const aiScene> loadAIScene(const std::string& filePath, Bool preserveFBXPivots);
     };
 
 }

@@ -17,19 +17,16 @@ namespace Core {
     }
 
     ModelLoader::~ModelLoader() {
-        if(this->importer != nullptr) {
-            delete this->importer;
-            this->importer = nullptr;
-        }
+        
     }
 
     void ModelLoader::initImporter() {
-        if (this->importer == nullptr) {
-            this->importer = new(std::nothrow) Assimp::Importer();
+        if (!this->importer) {
+            this->importer = std::make_shared<Assimp::Importer>();
         }
 
-        if (this->importer == nullptr) {
-            throw ModelLoaderException("ModeLoader::initImporter -> importer is null.");
+        if (!this->importer) {
+            throw ModelLoaderException("ModeLoader::initImporter -> Unable to create Assimp::Importer.");
         }
     }
 
@@ -38,9 +35,9 @@ namespace Core {
      * compatible path, so the the engine's FileSystem singleton should be used to derive the correct platform-specific
      * path before calling this method.
      */
-    const aiScene * ModelLoader::loadAIScene(const std::string& filePath, Bool preserveFBXPivots) {
+     std::shared_ptr<const aiScene> ModelLoader::loadAIScene(const std::string& filePath, Bool preserveFBXPivots) {
         // the global Assimp scene object
-        const aiScene* scene = nullptr;
+        std::shared_ptr<const aiScene> scene;
 
         // Create an instance of the Assimp Importer class
         this->initImporter();
@@ -59,13 +56,12 @@ namespace Core {
         importer->SetPropertyInteger(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, preserveFBXPivots ? 1 : 0);
 
         // read the model file in from disk
-        scene = importer->ReadFile(filePath, aiProcessPreset_TargetRealtime_Quality);
+        scene = std::shared_ptr<const aiScene>(importer->ReadFile(filePath, aiProcessPreset_TargetRealtime_Quality));
 
         // If the import failed, report it
         if (!scene) {
             std::string msg = std::string("ModeLoader::loadAIScene -> Could not import file: ") + std::string(importer->GetErrorString());
             throw ModelLoaderException(msg);
-            return nullptr;
         }
 
         return scene;
