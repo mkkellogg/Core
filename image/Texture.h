@@ -7,12 +7,20 @@
 
 namespace Core {
 
+  // forward declaration
+  class Engine;
+
   class Texture {
+    friend class Engine;
+
   public:
+    ~Texture();
+
     GLuint getTextureID();
-    static std::shared_ptr<Texture> createTexture(RawImage *imageData);
+    static void createTexture(RawImage *imageData, std::weak_ptr<Texture> texture);
 
   protected:
+    Texture();
     GLuint textureId;
   };
 

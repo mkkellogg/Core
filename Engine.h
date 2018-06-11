@@ -13,6 +13,7 @@
 #include "render/BaseObjectRenderer.h"
 #include "render/RenderableContainer.h"
 #include "material/Material.h"
+#include "image/Texture.h"
 #include "geometry/Mesh.h"
 #include "util/ValidWeakPointer.h"
 
@@ -76,6 +77,13 @@ namespace Core {
       return materialPtr;
     }
 
+    template <typename T>
+    std::weak_ptr<typename std::enable_if<std::is_base_of<Texture, T>::value, T>::type> createTexture() {
+      std::shared_ptr<T> texturePtr = std::shared_ptr<T>(new T());
+      this->textures.push_back(texturePtr);
+      return texturePtr;
+    }
+
     void setImageLoader(std::weak_ptr<ImageLoader> imageLoader);
     std::weak_ptr<ImageLoader> getImageLoader();
     void setAssetLoader(std::weak_ptr<AssetLoader> assetLoader);
@@ -90,6 +98,7 @@ namespace Core {
     std::vector<std::shared_ptr<Camera>> cameras;
     std::vector<std::shared_ptr<Object3D>> sceneObjects;
     std::vector<std::shared_ptr<Material>> materials;
+    std::vector<std::shared_ptr<Texture>> textures;
     std::vector<std::shared_ptr<Mesh>> meshes;
 
     std::weak_ptr<ImageLoader> imageLoader;

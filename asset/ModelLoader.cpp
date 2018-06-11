@@ -327,7 +327,7 @@ namespace Core {
         texFound = assimpMaterial.GetTexture(textureType, 0, &aiTexturePath);
 
         if (texFound != AI_SUCCESS) {
-            throw ModelLoaderException("ModelImporter::LoadAITexture -> Assimp material does not have desired texture type.");
+            throw ModelLoaderException("ModelLoader::loadAITexture -> Assimp material does not have desired texture type.");
         }
 
         // build the full path to the texture image as specified by the Assimp material

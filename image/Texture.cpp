@@ -1,5 +1,6 @@
 #include "Texture.h"
 #include "../common/assert.h"
+#include "../util/ValidWeakPointer.h"
 
 namespace Core {
 
@@ -7,7 +8,7 @@ namespace Core {
     return this->textureId;
   }
 
-  std::shared_ptr<Texture> Texture::createTexture(RawImage *imageData) {
+  void Texture::createTexture(RawImage *imageData, std::weak_ptr<Texture> texture) {
     //glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
     GLuint tex;
@@ -29,9 +30,8 @@ namespace Core {
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    std::shared_ptr<Texture> texture = std::make_shared<Texture>();
-    texture->textureId = tex;
-    return texture;
+    ValidWeakPointer<Texture> validTexture(texture);
+    validTexture->textureId = tex;
   }
 
 };
