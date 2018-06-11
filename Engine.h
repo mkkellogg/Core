@@ -6,7 +6,6 @@
 #include "scene/Scene.h"
 #include "render/Camera.h"
 #include "render/Renderer.h"
-#include "render/RendererGL.h"
 #include "image/ImageLoader.h"
 #include "asset/AssetLoader.h"
 #include "geometry/Vector4.h"
@@ -16,6 +15,7 @@
 #include "image/Texture.h"
 #include "geometry/Mesh.h"
 #include "util/ValidWeakPointer.h"
+#include "Graphics.h"
 
 namespace Core {
 
@@ -23,19 +23,12 @@ namespace Core {
 
   public:
 
-    enum class GLVersion {
-      Two = 2,
-      Three = 3,
-    };
-
-    Engine(GLVersion version);
+    Engine();
     virtual ~Engine();
 
     void init();
     void update();
     void render();
-
-    std::weak_ptr<Renderer> getRenderer();
 
     void setRenderSize(UInt32 width, UInt32 height, Bool updateViewport = true);
     void setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
@@ -92,7 +85,9 @@ namespace Core {
     void onUpdate(std::function<void(Engine&)> func);
 
   private:
-    GLVersion glVersion;
+    
+    std::shared_ptr<Graphics> graphics;
+
     std::vector<std::shared_ptr<Scene>> scenes;
     std::shared_ptr<Scene> activeScene;
     std::vector<std::shared_ptr<Camera>> cameras;
@@ -103,7 +98,6 @@ namespace Core {
 
     std::weak_ptr<ImageLoader> imageLoader;
     std::weak_ptr<AssetLoader> assetLoader;
-    std::shared_ptr<Renderer> renderer;
     std::vector<std::function<void(Engine&)>> updateCallbacks;
 
     void cleanup();

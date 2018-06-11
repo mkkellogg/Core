@@ -37,7 +37,6 @@ set(INCLUDE_FILES
     scene/Object3DComponent.h
     scene/Transform.h
     scene/Octree.h
-    Engine.h
     asset/AssetLoader.h
     asset/ModelLoader.h
     material/BasicMaterial.h
@@ -77,7 +76,8 @@ set(INCLUDE_FILES
     common/assert.h
     common/types.h
     common/debug.h
-    common/Exception.h)
+    common/Exception.h
+    Engine.h)
 
 set(SOURCE_FILES
     common/Debug.cpp
@@ -103,7 +103,6 @@ set(SOURCE_FILES
     render/MeshRenderer.cpp
     render/Camera.cpp
     render/Renderer.cpp
-    render/RendererGL.cpp
     render/ObjectRenderers.cpp
     material/Material.cpp
     material/BasicMaterial.cpp
@@ -117,7 +116,10 @@ set(SOURCE_FILES
     util/Time.cpp
     util/String.cpp
     Engine.cpp
-    Demo.cpp)
+    Demo.cpp
+    Graphics.cpp
+    GL/GraphicsGL.cpp
+    GL/RendererGL.cpp)
     #RendererES3.cpp)
 
 add_library(${EXECUTABLE_NAME} ${SOURCE_FILES})

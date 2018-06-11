@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../common/gl.h"
 #include "../common/debug.h"
 #include "../scene/Scene.h"
 #include "../scene/Object3D.h"

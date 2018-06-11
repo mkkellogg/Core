@@ -3,9 +3,15 @@
 #include "../render/RenderableContainer.h"
 #include "../render/BaseRenderableContainer.h"
 
+#if !defined(DYNAMIC_ES3)
+static GLboolean gl3stubInit() {
+  return GL_TRUE;
+}
+#endif
+
 namespace Core {
 
-  RendererGL::RendererGL() {
+  RendererGL::RendererGL(GLVersion version): glVersion(version)  {
 
   }
 
