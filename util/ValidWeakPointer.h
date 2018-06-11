@@ -23,7 +23,7 @@ namespace Core {
         static std::shared_ptr<T> expectValidWeakPointer(std::weak_ptr<T> ptr) {
             std::shared_ptr<T> sharedPtr = ptr.lock();
             if (!sharedPtr) {
-                throw new ValidWeakPointerAssertionFailure("Expected valid weak pointer.");
+                throw ValidWeakPointerAssertionFailure("Expected valid weak pointer.");
             }
             return sharedPtr;
         }

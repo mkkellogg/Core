@@ -9,7 +9,7 @@ namespace Core {
     Bool ImageLoader::initialize() {
         if (!ImageLoader::ilInitialized) {
             if (ilGetInteger(IL_VERSION_NUM) >= IL_VERSION ) {
-              throw new ImageLoaderException("ImageLoader::initialize -> Invalid IL version.");
+              throw ImageLoaderException("ImageLoader::initialize -> Invalid IL version.");
             }
 
             ilInit(); /// Initialization of DevIL
@@ -27,7 +27,7 @@ namespace Core {
 
     RawImage * ImageLoader::loadImageU(const std::string& fullPath, Bool reverseOrigin) {
         if (!initialize()) {
-              throw new ImageLoaderException("ImageLoader::LoadImageU -> Error occurred while initializing image loader.");
+              throw ImageLoaderException("ImageLoader::LoadImageU -> Error occurred while initializing image loader.");
         }
 
         if (reverseOrigin) {
@@ -50,7 +50,7 @@ namespace Core {
             if (!success) {
                 // Error occurred
                 ilDeleteImages(1, imageIds);
-                throw new ImageLoaderException("ImageLoader::LoadImageU -> Couldn't convert image.");
+                throw ImageLoaderException("ImageLoader::LoadImageU -> Couldn't convert image.");
             }
 
             rawImage = getRawImageFromILData(ilGetData(), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
@@ -65,7 +65,7 @@ namespace Core {
             }
 
             ilDeleteImages(1, imageIds);
-            throw new ImageLoaderException(msg);
+            throw ImageLoaderException(msg);
 
             return nullptr;
         }
@@ -82,18 +82,18 @@ namespace Core {
 
     RawImage * ImageLoader::getRawImageFromILData(const ILubyte * data, UInt32 width, UInt32 height) {
         if (data == nullptr) {
-          throw new ImageLoaderException("ImportUtil::getRawImageFromILData -> [data] is null.");
+          throw ImageLoaderException("ImportUtil::getRawImageFromILData -> [data] is null.");
         }
 
         RawImage * rawImage = new(std::nothrow) RawImage(width, height);
         if (rawImage == nullptr) {
-          throw new ImageLoaderException("ImportUtil::GetRawImageFromILData -> Could not allocate RawImage.");
+          throw ImageLoaderException("ImportUtil::GetRawImageFromILData -> Could not allocate RawImage.");
         }
 
         Bool initSuccess = rawImage->init();
         if (!initSuccess) {
             delete rawImage;
-            throw new ImageLoaderException("ImportUtil::GetRawImageFromILData -> Could not init RawImage.");
+            throw ImageLoaderException("ImportUtil::GetRawImageFromILData -> Could not init RawImage.");
         }
 
         for (UInt32 i = 0; i < width * height * 4; i++) {
@@ -105,7 +105,7 @@ namespace Core {
 
     void ImageLoader::destroyRawImage(RawImage * image) {
         if (image == nullptr) {
-          throw new ImageLoaderException("ImageLoader::DestroyRawImage -> 'image' is null.");
+          throw ImageLoaderException("ImageLoader::DestroyRawImage -> 'image' is null.");
         }
         delete image;
     }
