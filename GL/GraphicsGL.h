@@ -22,6 +22,7 @@ namespace Core {
         ~GraphicsGL();
         void init() override;
         std::weak_ptr<Renderer> getRenderer() override;
+        
     private:
         GraphicsGL(GLVersion version);
         GLVersion glVersion;

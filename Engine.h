@@ -28,11 +28,13 @@ namespace Core {
 
     void init();
     void update();
-    void render();
 
+    void render();
     void setRenderSize(UInt32 width, UInt32 height, Bool updateViewport = true);
     void setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
     void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
+
+    std::shared_ptr<Graphics> getGraphicsSystem();
 
     void setActiveScene(std::weak_ptr<Scene> scene);
     std::weak_ptr<Scene> getActiveScene();

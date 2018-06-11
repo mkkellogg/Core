@@ -18,7 +18,8 @@ set(INCLUDE_DIRS
     color
     math
     util
-    common)
+    common
+    GL)
 
 set(INCLUDE_FILES
     filesys/FileSystem.h
@@ -76,6 +77,9 @@ set(INCLUDE_FILES
     common/types.h
     common/debug.h
     common/Exception.h
+    GL/GraphicsGL.h
+    GL/RendererGL.h
+    Graphics.h
     Engine.h)
 
 set(SOURCE_FILES

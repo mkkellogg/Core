@@ -38,31 +38,25 @@ namespace Core {
   }
 
   void Engine::render() {
-    ValidWeakPointer<Renderer> renderer(this->graphics->getRenderer());
     if (this->activeScene) {
-      renderer->render(this->activeScene);
+      this->graphics->render(this->activeScene);
     }
   }
 
   void Engine::setRenderSize(UInt32 width, UInt32 height, Bool updateViewport) {
-    ValidWeakPointer<Renderer> renderer(this->graphics->getRenderer());
-    if (ValidWeakPointer<Renderer>::isInitialized(renderer)) {
-      renderer->setRenderSize(width, height, updateViewport);
-    }
+    this->graphics->setRenderSize(width, height, updateViewport);
   }
 
   void Engine::setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32  viewPortHeight) {
-    ValidWeakPointer<Renderer> renderer(this->graphics->getRenderer());
-    if (ValidWeakPointer<Renderer>::isInitialized(renderer)) {
-      renderer->setRenderSize(width, height, hOffset, vOffset, viewPortWidth, viewPortHeight);
-    }
+    this->graphics->setRenderSize(width, height, hOffset, vOffset, viewPortWidth, viewPortHeight);
   }
 
   void Engine::setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) {
-    ValidWeakPointer<Renderer> renderer(this->graphics->getRenderer());
-    if (ValidWeakPointer<Renderer>::isInitialized(renderer)) {
-      renderer->setViewport(hOffset, vOffset, viewPortWidth, viewPortHeight);
-    }
+   this->graphics->setViewport(hOffset, vOffset, viewPortWidth, viewPortHeight);
+  }
+
+  std::shared_ptr<Graphics> Engine::getGraphicsSystem() {
+    return this->graphics;
   }
 
   void Engine::setActiveScene(std::weak_ptr<Scene> scene) {
