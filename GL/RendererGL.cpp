@@ -11,7 +11,7 @@ static GLboolean gl3stubInit() {
 
 namespace Core {
 
-  RendererGL::RendererGL(GLVersion version): glVersion(version)  {
+  RendererGL::RendererGL() {
 
   }
 
@@ -24,7 +24,7 @@ namespace Core {
 
   }
 
-  Renderer* RendererGL::createRenderer() {
+  RendererGL* RendererGL::createRenderer() {
     RendererGL *renderer = new RendererGL;
     if (!renderer->init()) {
       delete renderer;

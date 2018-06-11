@@ -87,8 +87,8 @@ namespace Core {
         std::weak_ptr<Texture> loadAITexture(aiMaterial& assimpMaterial, aiTextureType textureType, const std::string& modelPath) const;
         void getImportDetails(const aiMaterial* mtl, MaterialImportDescriptor& materialImportDesc, const aiScene& scene) const;
 
-        std::shared_ptr<Assimp::Importer> importer;
         Engine& engine;
+        std::shared_ptr<Assimp::Importer> importer; 
     };
 
 }

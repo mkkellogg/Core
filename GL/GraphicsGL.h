@@ -2,12 +2,15 @@
 
 #include <memory>
 
+#include "../Graphics.h"
+#include "RendererGL.h"
+
 namespace Core {
 
     // forward declarations
     class Engine;
 
-    class GraphicsGL final {
+    class GraphicsGL final: public Graphics {
         friend class Engine;
 
     public:
@@ -16,11 +19,11 @@ namespace Core {
             Three = 3,
         };
 
-        ~GraphicsGL() override;
+        ~GraphicsGL();
         void init() override;
         std::weak_ptr<Renderer> getRenderer() override;
     private:
-        GraphicsGL();
+        GraphicsGL(GLVersion version);
         GLVersion glVersion;
         std::shared_ptr<RendererGL> renderer;
     };

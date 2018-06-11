@@ -25,7 +25,8 @@ namespace Core {
 
   void Engine::init() {
     cleanup();
-    this->graphics = std::shared_ptr<Graphics>(new GraphicsGL(GraphicsGL::GLVersion::Three));
+    std::shared_ptr<GraphicsGL> graphicsSystem(new GraphicsGL(GraphicsGL::GLVersion::Three));
+    this->graphics = std::static_pointer_cast<Graphics>(graphicsSystem);
     this->graphics->init();
   }
 
