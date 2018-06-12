@@ -2,30 +2,31 @@
 
 #include <memory>
 
-#include "../common/types.h"
 #include "../common/Exception.h"
+#include "../common/types.h"
 
 namespace Core {
 
-    class ValidWeakPointerAssertionFailure: AssertionFailedException {
+    class ValidWeakPointerAssertionFailure : AssertionFailedException {
     public:
-        ValidWeakPointerAssertionFailure(const std::string& msg): AssertionFailedException(msg) {}
-        ValidWeakPointerAssertionFailure(const char* msg): AssertionFailedException(msg) {}
+        ValidWeakPointerAssertionFailure(const std::string &msg) : AssertionFailedException(msg) {
+        }
+        ValidWeakPointerAssertionFailure(const char *msg) : AssertionFailedException(msg) {
+        }
     };
 
     template <typename T>
-    class ValidWeakPointer: public std::weak_ptr<T> {
+    class ValidWeakPointer : public std::weak_ptr<T> {
     public:
-
-        ValidWeakPointer(std::weak_ptr<T> ptr): std::weak_ptr<T>(ptr) {
-            this->lockedPointer = expectValidWeakPointer(*this); 
+        ValidWeakPointer(std::weak_ptr<T> ptr) : std::weak_ptr<T>(ptr) {
+            this->lockedPointer = expectValidWeakPointer(*this);
         }
 
-        T* operator->() {
+        T *operator->() {
             return this->get();
         }
 
-        T* get() {
+        T *get() {
             return this->lockedPointer.get();
         }
 
@@ -45,12 +46,12 @@ namespace Core {
             return sharedPtr;
         }
 
-        static Bool isUninitialized(std::weak_ptr<T> const& weak) {
+        static Bool isUninitialized(std::weak_ptr<T> const &weak) {
             using wt = std::weak_ptr<T>;
             return !weak.owner_before(wt{}) && !wt{}.owner_before(weak);
         }
 
-        static Bool isInitialized(std::weak_ptr<T> const& weak) {
+        static Bool isInitialized(std::weak_ptr<T> const &weak) {
             using wt = std::weak_ptr<T>;
             return weak.owner_before(wt{}) || wt{}.owner_before(weak);
         }
@@ -58,5 +59,4 @@ namespace Core {
     private:
         std::shared_ptr<T> lockedPointer;
     };
-
 }
