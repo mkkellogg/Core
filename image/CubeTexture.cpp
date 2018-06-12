@@ -2,8 +2,8 @@
 #include <vector>
 #include "../common/gl.h"
 #include "CubeTexture.h"
-#include "../common/assert.h"
 #include "RawImage.h"
+#include "../common/Exception.h"
 
 namespace Core {
 
@@ -17,7 +17,9 @@ namespace Core {
 
     // generate the OpenGL cube texture
     glGenTextures(1, &tex);
-    ASSERT(tex > 0, "CubeTexture::createCubeTexture -> Unable to generate texture");
+    if (!tex) {
+        throw AllocationException("CubeTexture::createCubeTexture -> Unable to generate texture");
+    }
     glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
 
     std::vector<RawImage *> images = {front, back, top, bottom, left, right};

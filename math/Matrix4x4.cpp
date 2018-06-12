@@ -2,7 +2,7 @@
 #include "Matrix4x4.h"
 #include "Quaternion.h"
 #include "../common/debug.h"
-#include "../common/assert.h"
+#include "../common/Exception.h"
 
 namespace Core {
 
@@ -61,7 +61,7 @@ namespace Core {
   }
 
   void Matrix4x4::setIdentity(Real *target) {
-    ASSERT(target != nullptr, "Matrix4x4::setIdentity -> 'target' is null.");
+    if (target == nullptr) throw NullPointerException("Matrix4x4::setIdentity -> 'target' is null.");
 
     for (Int32 i = 0; i < SIZE_MATRIX_4X4; i++) {
       target[i] = 0;
@@ -93,7 +93,7 @@ namespace Core {
    * Copy existing matrix data (from a Real array) to this one
    */
   void Matrix4x4::copy(const Real *sourceData) {
-    ASSERT(sourceData != nullptr, "Matrix4x4::copy -> 'srcData' is null");
+    if (sourceData == nullptr) throw NullPointerException("Matrix4x4::copy -> 'srcData' is null");
     memcpy(this->data, sourceData, sizeof(Real) * SIZE_MATRIX_4X4);
   }
 
@@ -110,8 +110,8 @@ namespace Core {
    * Transpose the 4x4 matrix pointed to by [source] and store in [dest].
    */
   void Matrix4x4::transpose(const Real *source, Real *dest) {
-    ASSERT(source != nullptr, "Matrix4x4::transpose -> 'source' is null.");
-    ASSERT(dest != nullptr, "Matrix4x4::transpose -> 'dest' is null.");
+    if (source == nullptr) throw NullPointerException("Matrix4x4::transpose -> 'source' is null.");
+    if (dest == nullptr) throw NullPointerException("Matrix4x4::transpose -> 'dest' is null.");
 
     for (Int32 i = 0; i < ROWSIZE_MATRIX_4X4; i++) {
       Int32 mBase = i * ROWSIZE_MATRIX_4X4;
@@ -157,8 +157,8 @@ namespace Core {
     // result in a non-affine matrix
     Bool isAffine = Matrix4x4::isAffine(source);
 
-    ASSERT(source != nullptr, "Matrix4x4::invert -> 'source' is null.");
-    ASSERT(dest != nullptr, "Matrix4x4::invert -> 'dest' is null.");
+    if (source == nullptr) throw NullPointerException("Matrix4x4::invert -> 'source' is null.");
+    if (dest == nullptr) throw NullPointerException("Matrix4x4::invert -> 'dest' is null.");
 
     Real adjoin[SIZE_MATRIX_4X4];
     Real det = Matrix4x4::calculateDeterminant(source, adjoin);
@@ -213,7 +213,7 @@ namespace Core {
 
   void
   Matrix4x4::decompose(Vector3Components<Real>& translation, Quaternion &rotation, Vector3Components<Real>& scale) const {
-    ASSERT(isAffine(), "Matrix4x4::decompose -> Matrix is not affine.");
+    if (!isAffine()) throw NullPointerException("Matrix4x4::decompose -> Matrix is not affine.");
 
     Matrix4x4 rotMatrix;
 
@@ -449,7 +449,7 @@ namespace Core {
    * Transform [vector4f] by this matrix
    */
   void Matrix4x4::transform(Real * vector4f) const {
-    ASSERT(vector4f != nullptr, "Matrix4x4::transform(Real *) -> 'vector4f' is null.");
+    if (vector4f == nullptr) throw NullPointerException("Matrix4x4::transform(Real *) -> 'vector4f' is null.");
     Real temp[ROWSIZE_MATRIX_4X4];
     Matrix4x4::multiplyMV(this->data, vector4f, temp);
     memcpy(vector4f, temp, sizeof(Real) * ROWSIZE_MATRIX_4X4);
@@ -501,9 +501,9 @@ namespace Core {
    * and store the result in [out]
    */
   void Matrix4x4::multiplyMV(const Real *lhsMat, const Real *rhsVec, Real *out) {
-    ASSERT(lhsMat != nullptr, "Matrix4x4::multiplyMV -> 'lhsMat' is null.");
-    ASSERT(rhsVec != nullptr, "Matrix4x4::multiplyMV -> 'rhsVec' is null.");
-    ASSERT(out != nullptr, "Matrix4x4::multiplyMV -> 'out' is null.");
+    if (lhsMat == nullptr) throw NullPointerException("Matrix4x4::multiplyMV -> 'lhsMat' is null.");
+    if (rhsVec == nullptr) throw NullPointerException("Matrix4x4::multiplyMV -> 'rhsVec' is null.");
+    if (out == nullptr) throw NullPointerException("Matrix4x4::multiplyMV -> 'out' is null.");
     Matrix4x4::mx4transform(rhsVec[0], rhsVec[1], rhsVec[2], rhsVec[3], lhsMat, out);
   }
 
@@ -512,8 +512,8 @@ namespace Core {
    * and store the result in [pDest]
    */
   void Matrix4x4::mx4transform(Real x, Real y, Real z, Real w, const Real *matrix, Real *pDest) {
-    ASSERT(matrix != nullptr, "Matrix4x4::mx4transform -> 'lhsMat' is null.");
-    ASSERT(pDest != nullptr, "Matrix4x4::mx4transform -> 'pDest' is null.");
+    if (matrix == nullptr) throw NullPointerException("Matrix4x4::mx4transform -> 'lhsMat' is null.");
+    if (pDest == nullptr) throw NullPointerException("Matrix4x4::mx4transform -> 'pDest' is null.");
 
     pDest[0] = matrix[0 + ROWSIZE_MATRIX_4X4 * 0] * x + matrix[0 + ROWSIZE_MATRIX_4X4 * 1] * y +
                matrix[0 + ROWSIZE_MATRIX_4X4 * 2] * z + matrix[0 + ROWSIZE_MATRIX_4X4 * 3] * w;
@@ -626,7 +626,7 @@ namespace Core {
    * [source] by a translation matrix
    */
   void Matrix4x4::translate(const Real * source, Real * dest, Real x, Real y, Real z) {
-    ASSERT(source != nullptr, "Matrix4x4::Translate -> 'source' is null.");
+    if (source == nullptr) throw NullPointerException("Matrix4x4::translate -> 'source' is null.");
 
     if (source != dest) {
       for (Int32 i = 0; i < 12; i++) {
@@ -727,7 +727,7 @@ namespace Core {
    * Set the 4x4 matrix [rm] to be a rotation matrix, around axis [x], [y], [z] by [a] degrees
    */
   void Matrix4x4::setRotate(Real * rm, Real x, Real y, Real z, Real a) {
-    ASSERT(rm != nullptr, "Matrix4x4::setRotate -> 'rm' is null.");
+    if (rm == nullptr) throw NullPointerException("Matrix4x4::setRotate -> 'rm' is null.");
 
     rm[3] = 0;
     rm[7] = 0;
@@ -792,7 +792,7 @@ namespace Core {
    * Set the matrix [rm] to be a rotation matrix, with Euler angles [x], [y], [z]
    */
   void Matrix4x4::setRotateEuler(Real * rm, Real x, Real y, Real z) {
-    ASSERT(rm != nullptr, "Matrix4x4::setRotateEuler -> 'rm' is null.");
+    if (rm == nullptr) throw NullPointerException("Matrix4x4::setRotateEuler -> 'rm' is null.");
 
     x *= Math::DegreesToRads;
     y *= Math::DegreesToRads;
@@ -879,8 +879,8 @@ namespace Core {
    * [source] by a scale matrix
    */
   void Matrix4x4::scale(const Real * source, Real * dest, Real x, Real y, Real z) {
-    ASSERT(source != nullptr, "Matrix4x4::scale -> 'source' is null.");
-    ASSERT(dest != nullptr, "Matrix4x4::scale -> 'dest' is null.");
+    if (source == nullptr) throw NullPointerException("Matrix4x4::scale -> 'source' is null.");
+    if (dest == nullptr) throw NullPointerException("Matrix4x4::scale -> 'dest' is null.");
 
     for (Int32 i = 0; i < ROWSIZE_MATRIX_4X4; i++) {
       Int32 smi = i;
@@ -900,8 +900,8 @@ namespace Core {
    * [source] by a scale matrix
    */
   void Matrix4x4::preScale(const Real * source, Real * dest, Real x, Real y, Real z) {
-    ASSERT(source != nullptr, "Matrix4x4::preScale -> 'source' is null.");
-    ASSERT(dest != nullptr, "Matrix4x4::preScale -> 'dest' is null.");
+    if (source == nullptr) throw NullPointerException("Matrix4x4::preScale -> 'source' is null.");
+    if (dest == nullptr) throw NullPointerException("Matrix4x4::preScale -> 'dest' is null.");
 
     for (Int32 i = 0; i < ROWSIZE_MATRIX_4X4; i++) {
       Int32 smi = i;

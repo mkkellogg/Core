@@ -1,5 +1,5 @@
 #include "Texture.h"
-#include "../common/assert.h"
+#include "../common/Exception.h"
 #include "../util/ValidWeakPointer.h"
 
 namespace Core {
@@ -15,7 +15,9 @@ namespace Core {
 
     // generate the OpenGL cube texture
     glGenTextures(1, &tex);
-    ASSERT(tex > 0, "Texture::createTexture -> Unable to generate texture");
+    if (!tex) {
+        throw AllocationException("Texture::createTexture -> Unable to generate texture");
+    }
     glBindTexture(GL_TEXTURE_2D, tex);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageData->getWidth(), imageData->getHeight(), 0,

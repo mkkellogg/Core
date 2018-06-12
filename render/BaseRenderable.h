@@ -2,10 +2,7 @@
 
 namespace Core {
 
-  class BaseRenderable {
-  public:
-
-
-  };
-
+    class BaseRenderable {
+    public:
+    };
 }

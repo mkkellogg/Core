@@ -3,6 +3,7 @@
 #include <string.h>
 #include <new>
 
+#include "../common/Exception.h"
 #include "../common/assert.h"
 #include "../common/gl.h"
 #include "../common/types.h"
@@ -106,10 +107,14 @@ namespace Core {
             this->deallocate();
 
             this->storage = new (std::nothrow) typename T::ComponentType[this->attributeCount * T::ComponentCount];
-            ASSERT(this->storage != nullptr, "AttributeArray::allocate() -> Unable to allocate storage!");
+            if (this->storage == nullptr) {
+                throw AllocationException("AttributeArray::allocate() -> Unable to allocate storage!");
+            }
 
             Byte* tempAttributes = (Byte*)(::operator new(this->attributeCount * sizeof(T)));
-            ASSERT(tempAttributes != nullptr, "AttributeArray::allocate() -> Unable to allocate attributes!");
+            if (tempAttributes == nullptr) {
+                throw AllocationException("AttributeArray::allocate() -> Unable to allocate attributes!");
+            }
 
             this->attributes = reinterpret_cast<T*>(tempAttributes);
             for (UInt32 i = 0; i < this->attributeCount; i++) {

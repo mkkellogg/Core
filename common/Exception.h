@@ -13,6 +13,12 @@ namespace Core {
         std::string msg;
     };
 
+    class NullPointerException: Exception {
+    public:
+        NullPointerException(const std::string& msg): Exception(msg) {}
+        NullPointerException(const char* msg): Exception(msg) {}
+    };
+
     class AssertionFailedException: Exception {
     public:
         AssertionFailedException(const std::string& msg): Exception(msg) {}
