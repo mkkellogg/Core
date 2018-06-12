@@ -1,9 +1,11 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "../Graphics.h"
 #include "RendererGL.h"
+#include "TextureGL.h"
 
 namespace Core {
 
@@ -22,10 +24,12 @@ namespace Core {
         ~GraphicsGL();
         void init() override;
         std::weak_ptr<Renderer> getRenderer() override;
+        std::weak_ptr<Texture> createTexture() override;
 
     private:
         GraphicsGL(GLVersion version);
         GLVersion glVersion;
         std::shared_ptr<RendererGL> renderer;
+        std::vector<std::shared_ptr<TextureGL>> textures;
     };
 }

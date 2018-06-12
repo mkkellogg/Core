@@ -78,6 +78,10 @@ namespace Core {
         return newCamera;
     }
 
+    std::weak_ptr<Texture> Engine::createTexture() {
+        return this->graphics->createTexture();
+    }
+
     void Engine::setImageLoader(std::weak_ptr<ImageLoader> imageLoader) {
         this->imageLoader = imageLoader;
     }

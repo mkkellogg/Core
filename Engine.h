@@ -72,12 +72,7 @@ namespace Core {
       return materialPtr;
     }
 
-    template <typename T>
-    std::weak_ptr<typename std::enable_if<std::is_base_of<Texture, T>::value, T>::type> createTexture() {
-      std::shared_ptr<T> texturePtr = std::shared_ptr<T>(new T());
-      this->textures.push_back(texturePtr);
-      return texturePtr;
-    }
+    std::weak_ptr<Texture> createTexture();
 
     void setImageLoader(std::weak_ptr<ImageLoader> imageLoader);
     std::weak_ptr<ImageLoader> getImageLoader();

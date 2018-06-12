@@ -7,9 +7,9 @@ namespace Core {
 
   class CubeTexture : public Texture {
   public:
-    static std::shared_ptr<CubeTexture> createCubeTexture(RawImage *frontData, RawImage *backData,
-                                      RawImage *topData, RawImage *bottomData,
-                                      RawImage *leftData, RawImage *rightData);
+    std::weak_ptr<CubeTexture> build(RawImage *frontData, RawImage *backData,
+                                     RawImage *topData, RawImage *bottomData,
+                                     RawImage *leftData, RawImage *rightData);
   };
 
 }
