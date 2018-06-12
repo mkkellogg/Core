@@ -86,6 +86,10 @@ namespace Core {
         return this->graphics->createCubeTexture();
     }
 
+    std::weak_ptr<Mesh> Engine::createMesh(UInt32 size, Bool indexed) {
+        return this->graphics->createMesh(size, indexed);
+    }
+
     void Engine::setImageLoader(std::weak_ptr<ImageLoader> imageLoader) {
         this->imageLoader = imageLoader;
     }

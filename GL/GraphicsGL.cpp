@@ -53,4 +53,10 @@ namespace Core {
         return std::static_pointer_cast<CubeTexture>(newTexture);
     }
 
+    std::weak_ptr<Mesh> GraphicsGL::createMesh(UInt32 size, Bool indexed) {
+        std::shared_ptr<MeshGL> newMesh = std::shared_ptr<MeshGL>(new MeshGL(size, indexed));
+        this->meshes.push_back(newMesh);
+        return std::static_pointer_cast<Mesh>(newMesh);
+    }
+
 }

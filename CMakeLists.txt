@@ -82,6 +82,7 @@ set(INCLUDE_FILES
     GL/RendererGL.h
     GL/Texture2DGL.h
     GL/CubeTextureGL.h
+    GL/MeshGL.h
     Graphics.h
     Engine.h)
 
@@ -128,7 +129,8 @@ set(SOURCE_FILES
     GL/GraphicsGL.cpp
     GL/RendererGL.cpp
     GL/Texture2DGL.cpp
-    GL/CubeTextureGL.cpp)
+    GL/CubeTextureGL.cpp
+    GL/MeshGL.cpp)
     #RendererES3.cpp)
 
 add_library(${EXECUTABLE_NAME} ${SOURCE_FILES})

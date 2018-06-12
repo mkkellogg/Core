@@ -1,6 +1,7 @@
 #include "MeshRenderer.h"
 #include "../common/gl.h"
 #include "RenderableContainer.h"
+#include "../GL/MeshGL.h"
 
 namespace Core {
 
@@ -42,7 +43,8 @@ namespace Core {
     materialPtr->sendCustomUniformsToShader();
 
     if (mesh->isIndexed()) {
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->getIndexBuffer());
+       std::shared_ptr<MeshGL> meshGL = std::dynamic_pointer_cast<MeshGL>(mesh);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshGL->getIndexBuffer());
       glDrawElements(GL_TRIANGLES, mesh->getSize(), GL_UNSIGNED_INT, (void *) (0));
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     } else {

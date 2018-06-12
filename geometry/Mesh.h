@@ -15,33 +15,27 @@
 
 namespace Core {
 
-  // forward declarations
-  class Engine;
-
   class Mesh : public Renderable<Mesh>  {
-    friend class Engine;
-
   public:
 
     virtual ~Mesh();
 
     UInt32 getSize() const;
 
-    AttributeArray<Vector3rs>* getVertexPositions();
-    AttributeArray<ColorS>* getVertexColors();
-    AttributeArray<Vector2rs>* getVertexUVs();
+    virtual AttributeArray<Vector3rs>* getVertexPositions() = 0;
+    virtual AttributeArray<ColorS>* getVertexColors() = 0;
+    virtual AttributeArray<Vector2rs>* getVertexUVs() = 0;
 
-    Bool initVertexPositions(UInt32 size);
-    Bool initVertexColors(UInt32 size);
-    Bool initVertexUVs(UInt32 size);
+    virtual Bool initVertexPositions(UInt32 size) = 0;
+    virtual Bool initVertexColors(UInt32 size) = 0;
+    virtual Bool initVertexUVs(UInt32 size) = 0;
 
     void enableAttribute(StandardAttributes attribute);
     void disableAttribute(StandardAttributes attribute);
     Bool isAttributeEnabled(StandardAttributes attribute);
 
-    void setIndices(UInt32 * indices);
+    virtual void setIndices(UInt32 * indices)  = 0;
     Bool isIndexed();
-    GLuint getIndexBuffer();
 
     void calculateBoundingBox();
     const Box3& getBoundingBox() const;
@@ -49,15 +43,11 @@ namespace Core {
   protected:
     Mesh(UInt32 size, Bool indexed);
     void initAttributes();
-    void initIndices();
+    virtual void initIndices() = 0;
 
     Bool enabledAttributes[(UInt32)StandardAttributes::_Count];
     UInt32 size;
     Bool indexed;
-    AttributeArray<Vector3rs>* vertexPositions;
-    AttributeArray<ColorS>* vertexColors;
-    AttributeArray<Vector2rs>* vertexUVs;
-    GLuint indexBuffer;
     Box3 boundingBox;
   };
 

@@ -60,13 +60,6 @@ namespace Core {
     }
 
     template <typename T>
-    std::weak_ptr<typename std::enable_if<std::is_base_of<Mesh, T>::value, T>::type> createMesh(UInt32 size, Bool indexed) {
-      std::shared_ptr<T> meshPtr = std::shared_ptr<T>(new T(size, indexed));
-      this->meshes.push_back(meshPtr);
-      return meshPtr;
-    }
-
-    template <typename T>
     std::weak_ptr<typename std::enable_if<std::is_base_of<Material, T>::value, T>::type> createMaterial() {
       std::shared_ptr<T> materialPtr = std::shared_ptr<T>(new T());
       this->materials.push_back(materialPtr);
@@ -75,6 +68,7 @@ namespace Core {
 
     std::weak_ptr<Texture2D> createTexture2D();
     std::weak_ptr<CubeTexture> createCubeTexture();
+    std::weak_ptr<Mesh> createMesh(UInt32 size, Bool indexed);
 
     void setImageLoader(std::weak_ptr<ImageLoader> imageLoader);
     std::weak_ptr<ImageLoader> getImageLoader();

@@ -60,7 +60,7 @@ namespace Core {
     engine.setActiveScene(scene);
     ValidWeakPointer<Core::Scene> scenePtr(scene);
 
-    ValidWeakPointer<Core::Mesh> skyboxMesh(engine.createMesh<Core::Mesh>(36, false));
+    ValidWeakPointer<Core::Mesh> skyboxMesh(engine.createMesh(36, false));
 
     Core::Real vertexPositions[] = {
         // back
