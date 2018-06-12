@@ -5,8 +5,18 @@
 
 namespace Core {
 
-    class CubeTextureGL : public CubeTexture {
+    // forward declaration
+    class GraphicsGL;
+
+    class CubeTextureGL final : public CubeTexture {
+        friend class GraphicsGL;
+
     public:
+        ~CubeTextureGL();
         void build(RawImage *frontData, RawImage *backData, RawImage *topData, RawImage *bottomData, RawImage *leftData, RawImage *rightData) override;
+
+    private:
+
+        CubeTextureGL();
     };
 }

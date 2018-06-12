@@ -13,7 +13,8 @@
 #include "render/BaseObjectRenderer.h"
 #include "render/RenderableContainer.h"
 #include "material/Material.h"
-#include "image/Texture.h"
+#include "image/Texture2D.h"
+#include "image/CubeTexture.h"
 #include "geometry/Mesh.h"
 #include "util/ValidWeakPointer.h"
 
@@ -72,7 +73,8 @@ namespace Core {
       return materialPtr;
     }
 
-    std::weak_ptr<Texture> createTexture();
+    std::weak_ptr<Texture2D> createTexture2D();
+    std::weak_ptr<CubeTexture> createCubeTexture();
 
     void setImageLoader(std::weak_ptr<ImageLoader> imageLoader);
     std::weak_ptr<ImageLoader> getImageLoader();

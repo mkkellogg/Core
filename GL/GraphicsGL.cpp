@@ -41,10 +41,16 @@ namespace Core {
         return std::static_pointer_cast<Renderer>(this->renderer);
     }
 
-    std::weak_ptr<Texture> GraphicsGL::createTexture() {
+    std::weak_ptr<Texture2D> GraphicsGL::createTexture2D() {
         std::shared_ptr<Texture2DGL> newTexture = std::shared_ptr<Texture2DGL>(new Texture2DGL());
-        this->textures.push_back(newTexture);
-        return std::static_pointer_cast<Texture>(newTexture);
+        this->textures2D.push_back(newTexture);
+        return std::static_pointer_cast<Texture2D>(newTexture);
+    }
+
+    std::weak_ptr<CubeTexture> GraphicsGL::createCubeTexture() {
+        std::shared_ptr<CubeTextureGL> newTexture = std::shared_ptr<CubeTextureGL>(new CubeTextureGL());
+        this->cubeTextures.push_back(newTexture);
+        return std::static_pointer_cast<CubeTexture>(newTexture);
     }
 
 }

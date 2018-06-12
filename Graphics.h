@@ -3,7 +3,8 @@
 #include <memory>
 
 #include "render/Renderer.h"
-#include "image/Texture.h"
+#include "image/Texture2D.h"
+#include "image/CubeTexture.h"
 
 namespace Core {
 
@@ -18,6 +19,7 @@ namespace Core {
         void setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
         void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
 
-        virtual std::weak_ptr<Texture> createTexture() = 0;
+        virtual std::weak_ptr<Texture2D> createTexture2D() = 0;
+        virtual std::weak_ptr<CubeTexture> createCubeTexture() = 0;
     };
 }

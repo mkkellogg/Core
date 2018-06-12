@@ -4,6 +4,14 @@
 
 namespace Core {
 
+    Texture2DGL::Texture2DGL() {
+
+    }
+
+    Texture2DGL::~Texture2DGL() {
+
+    }
+
     void Texture2DGL::build(RawImage *imageData) {
         // glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
@@ -28,4 +36,5 @@ namespace Core {
         glBindTexture(GL_TEXTURE_2D, 0);
         this->textureId = (Int32)tex;
     }
+    
 };

@@ -8,6 +8,14 @@
 
 namespace Core {
 
+    CubeTextureGL::CubeTextureGL() {
+
+    }
+
+    CubeTextureGL::~CubeTextureGL() {
+        
+    }
+
     void CubeTextureGL::build(RawImage *front, RawImage *back, RawImage *top, 
                               RawImage *bottom, RawImage *left, RawImage *right) {
         // glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
