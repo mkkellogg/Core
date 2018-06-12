@@ -4,6 +4,7 @@
 #include "../math/Math.h"
 #include "../math/Quaternion.h"
 #include "../math/Matrix4x4.h"
+#include "../util/ValidWeakPointer.h"
 
 namespace Core {
 
@@ -59,28 +60,38 @@ namespace Core {
     Vector3r::cross(vRight, toTarget, vUp);
     vUp.normalize();
 
-    Matrix4x4& local = this->transform.getLocalMatrix();
-    auto view = local.getData();
+    Matrix4x4 full = this->transform.getLocalMatrix();
+    auto fullMat = full.getData();
 
-    view[0] = vRight.x;
-    view[1] = vRight.y;
-    view[2] = vRight.z;
-    view[3] = 0.0f;
+    fullMat[0] = vRight.x;
+    fullMat[1] = vRight.y;
+    fullMat[2] = vRight.z;
+    fullMat[3] = 0.0f;
 
-    view[4] = vUp.x;
-    view[5] = vUp.y;
-    view[6] = vUp.z;
-    view[7] = 0.0f;
+    fullMat[4] = vUp.x;
+    fullMat[5] = vUp.y;
+    fullMat[6] = vUp.z;
+    fullMat[7] = 0.0f;
 
-    view[8] = -toTarget.x;
-    view[9] = -toTarget.y;
-    view[10] = -toTarget.z;
-    view[11] = 0.0f;
+    fullMat[8] = -toTarget.x;
+    fullMat[9] = -toTarget.y;
+    fullMat[10] = -toTarget.z;
+    fullMat[11] = 0.0f;
 
-    view[12] = cameraPos.x;
-    view[13] = cameraPos.y;
-    view[14] = cameraPos.z;
-    view[15] = 1.0f;
+    fullMat[12] = cameraPos.x;
+    fullMat[13] = cameraPos.y;
+    fullMat[14] = cameraPos.z;
+    fullMat[15] = 1.0f;
+
+    if (ValidWeakPointer<Object3D>::isInitialized(this->parent)) {
+        ValidWeakPointer<Object3D> parent(this->parent);
+        parent->getTransform().updateWorldMatrix();
+        Matrix4x4 parentMat = parent->getTransform().getWorldMatrix();
+        parentMat.invert();
+        full.preMultiply(parentMat);
+    }
+
+    this->transform.getLocalMatrix().copy(fullMat);
   }
 
   void Camera::project(Vector3Base<Real>& vec) {

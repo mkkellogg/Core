@@ -37,11 +37,9 @@ namespace Core {
     Object3D();
     
     Transform transform;
-
-  private:
-  
     std::vector<std::shared_ptr<Object3D>> children;
     std::weak_ptr<Object3D> parent;
+  
   };
 
 }
