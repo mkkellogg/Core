@@ -50,20 +50,37 @@ namespace Core {
     Vector3r toTarget = target - cameraPos;
     toTarget.normalize();
 
-    Vector3r toTargetXZ = toTarget;
-    toTargetXZ.y = 0;
-    toTargetXZ.normalize();
+    Vector3r vUp(0, 1, 0);
+    Vector3r vRight;
 
-    Quaternion a = Quaternion::getRotation(Vector3r::Forward, toTargetXZ);
-    Quaternion b = Quaternion::getRotation(toTargetXZ, toTarget);
-    
+    Vector3r::cross(toTarget, vUp, vRight);
+    vRight.normalize();
+
+    Vector3r::cross(vRight, toTarget, vUp);
+    vUp.normalize();
+
     Matrix4x4& local = this->transform.getLocalMatrix();
-    local.copy(a.rotationMatrix());
-    local.preMultiply(b.rotationMatrix());
-    auto matData = local.getData();
-    matData[12] = cameraPos.x;
-    matData[13] = cameraPos.y;
-    matData[14] = cameraPos.z;
+    auto view = local.getData();
+
+    view[0] = vRight.x;
+    view[1] = vRight.y;
+    view[2] = vRight.z;
+    view[3] = 0.0f;
+
+    view[4] = vUp.x;
+    view[5] = vUp.y;
+    view[6] = vUp.z;
+    view[7] = 0.0f;
+
+    view[8] = -toTarget.x;
+    view[9] = -toTarget.y;
+    view[10] = -toTarget.z;
+    view[11] = 0.0f;
+
+    view[12] = cameraPos.x;
+    view[13] = cameraPos.y;
+    view[14] = cameraPos.z;
+    view[15] = 1.0f;
   }
 
   void Camera::project(Vector3Base<Real>& vec) {
