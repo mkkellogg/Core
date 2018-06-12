@@ -48,20 +48,17 @@ namespace Core {
 
   protected:
     Mesh(UInt32 size, Bool indexed);
-
-    UInt32 size;
-    Bool indexed;
+    void initAttributes();
+    void initIndices();
 
     Bool enabledAttributes[(UInt32)StandardAttributes::_Count];
+    UInt32 size;
+    Bool indexed;
     AttributeArray<Vector3rs>* vertexPositions;
     AttributeArray<ColorS>* vertexColors;
     AttributeArray<Vector2rs>* vertexUVs;
     GLuint indexBuffer;
-
     Box3 boundingBox;
-
-    void initAttributes();
-    void initIndices();
   };
 
 }

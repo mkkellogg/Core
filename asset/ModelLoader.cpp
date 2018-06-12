@@ -117,6 +117,8 @@ namespace Core {
         if (!processMaterialsSuccess) {
             throw ModelLoaderException("ModelLoader::processModelScene -> processMaterials() returned an error.");
         }
+
+        return root;
     }
 
     /**

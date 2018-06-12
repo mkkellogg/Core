@@ -3,8 +3,11 @@
 
 namespace Core {
 
-  Mesh::Mesh(UInt32 size, Bool indexed):
-    size(size),  vertexPositions(nullptr), vertexColors(nullptr), vertexUVs(nullptr), indexed(indexed) {
+  Mesh::Mesh(UInt32 size, Bool indexed): size(size), indexed(indexed) {
+    this->vertexPositions = nullptr;
+    this->vertexColors = nullptr;
+    this->vertexUVs = nullptr;
+    this->indexBuffer = 0;
     initAttributes();
     if (indexed) this->initIndices();
   }
