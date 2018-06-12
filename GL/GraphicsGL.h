@@ -5,7 +5,7 @@
 
 #include "../Graphics.h"
 #include "RendererGL.h"
-#include "TextureGL.h"
+#include "Texture2DGL.h"
 
 namespace Core {
 
@@ -30,6 +30,6 @@ namespace Core {
         GraphicsGL(GLVersion version);
         GLVersion glVersion;
         std::shared_ptr<RendererGL> renderer;
-        std::vector<std::shared_ptr<TextureGL>> textures;
+        std::vector<std::shared_ptr<Texture2DGL>> textures;
     };
 }

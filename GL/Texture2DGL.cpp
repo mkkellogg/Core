@@ -1,10 +1,10 @@
-#include "TextureGL.h"
+#include "Texture2DGL.h"
 #include "../common/Exception.h"
 #include "../util/ValidWeakPointer.h"
 
 namespace Core {
 
-    void TextureGL::build(RawImage *imageData) {
+    void Texture2DGL::build(RawImage *imageData) {
         // glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
         GLuint tex;

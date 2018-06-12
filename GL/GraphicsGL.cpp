@@ -42,7 +42,7 @@ namespace Core {
     }
 
     std::weak_ptr<Texture> GraphicsGL::createTexture() {
-        std::shared_ptr<TextureGL> newTexture = std::shared_ptr<TextureGL>(new TextureGL());
+        std::shared_ptr<Texture2DGL> newTexture = std::shared_ptr<Texture2DGL>(new Texture2DGL());
         this->textures.push_back(newTexture);
         return std::static_pointer_cast<Texture>(newTexture);
     }

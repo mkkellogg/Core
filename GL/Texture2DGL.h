@@ -2,7 +2,7 @@
 
 #include <memory>
 #include "../common/gl.h"
-#include "../image/Texture.h"
+#include "../image/Texture2D.h"
 #include "../image/RawImage.h"
 
 namespace Core {
@@ -10,16 +10,16 @@ namespace Core {
   // forward declaration
   class GraphicsGL;
 
-  class TextureGL final: public Texture {
+  class Texture2DGL final: public Texture2D {
     friend class GraphicsGL;
 
   public:
-    ~TextureGL();
+    ~Texture2DGL();
 
-    void build(RawImage *imageData);
+    void build(RawImage *imageData) override;
 
   protected:
-    TextureGL();
+    Texture2DGL();
 
   };
 

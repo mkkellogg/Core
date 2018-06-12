@@ -60,6 +60,7 @@ set(INCLUDE_FILES
     render/MeshRenderer.h
     image/ImageLoader.h
     image/CubeTexture.h
+    image/Texture2D.h
     image/Texture.h
     image/RawImage.h
     color/Color.h
@@ -79,6 +80,8 @@ set(INCLUDE_FILES
     common/Exception.h
     GL/GraphicsGL.h
     GL/RendererGL.h
+    GL/Texture2DGL.h
+    GL/CubeTextureGL.h
     Graphics.h
     Engine.h)
 
@@ -92,6 +95,7 @@ set(SOURCE_FILES
     image/ImageLoader.cpp
     image/RawImage.cpp
     image/Texture.cpp
+    image/Texture2D.cpp
     image/TextureAttr.cpp
     image/CubeTexture.cpp
     geometry/Mesh.cpp
@@ -122,7 +126,9 @@ set(SOURCE_FILES
     Demo.cpp
     Graphics.cpp
     GL/GraphicsGL.cpp
-    GL/RendererGL.cpp)
+    GL/RendererGL.cpp
+    GL/Texture2DGL.cpp
+    GL/CubeTextureGL.cpp)
     #RendererES3.cpp)
 
 add_library(${EXECUTABLE_NAME} ${SOURCE_FILES})
