@@ -61,6 +61,7 @@ namespace Core {
     ValidWeakPointer<Core::Scene> scenePtr(scene);
 
     ValidWeakPointer<Core::Mesh> skyboxMesh(engine.createMesh(36, false));
+    skyboxMesh->init();
 
     Core::Real vertexPositions[] = {
         // back

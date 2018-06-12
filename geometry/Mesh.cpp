@@ -4,13 +4,17 @@
 
 namespace Core {
 
-    Mesh::Mesh(UInt32 size, Bool indexed) : size(size), indexed(indexed) {
+    Mesh::Mesh(UInt32 size, Bool indexed): initialized(false), size(size), indexed(indexed) {
         initAttributes();
-        if (indexed) this->initIndices();
     }
 
     Mesh::~Mesh() {
 
+    }
+
+    void Mesh::init() {
+        if (indexed) this->initIndices();
+        initialized = true;
     }
 
     UInt32 Mesh::getSize() const {

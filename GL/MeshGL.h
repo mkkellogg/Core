@@ -21,7 +21,7 @@ namespace Core {
   // forward declarations
   class GraphicsGL;
 
-  class MeshGL : public Mesh  {
+  class MeshGL final: public Mesh  {
     friend class GraphicsGL;
 
   public:

@@ -20,6 +20,8 @@ namespace Core {
 
     virtual ~Mesh();
 
+    virtual void init();
+
     UInt32 getSize() const;
 
     virtual AttributeArray<Vector3rs>* getVertexPositions() = 0;
@@ -45,6 +47,7 @@ namespace Core {
     void initAttributes();
     virtual void initIndices() = 0;
 
+    Bool initialized;
     Bool enabledAttributes[(UInt32)StandardAttributes::_Count];
     UInt32 size;
     Bool indexed;
