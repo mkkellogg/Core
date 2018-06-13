@@ -15,17 +15,13 @@ namespace Core {
     public:
         AttributeArray(UInt32 attributeCount) : storage(nullptr), attributes(nullptr), attributeCount(attributeCount) {
             allocate();
-            buildGPUBuffer();
         }
 
-        ~AttributeArray() {
-            destroyGPUBuffer();
+        virtual ~AttributeArray() {
             deallocate();
         }
 
-        GLuint getGLBufferID() const {
-            return this->bufferID;
-        }
+        virtual Int32 getBufferID() const = 0;
 
         UInt32 getComponentCount() const {
             return this->componentCount;
@@ -96,12 +92,17 @@ namespace Core {
             return iterator(this, this->getAttributeCount());
         }
 
-    private:
+    protected:
         typename T::ComponentType* storage;
         T* attributes;
         UInt32 attributeCount;
         const UInt32 componentCount = T::ComponentCount;
-        GLuint bufferID;
+
+        UInt32 getSize() const {
+            return this->attributeCount * T::ComponentCount * sizeof(typename T::ComponentType);
+        }
+
+        virtual void updateBufferData() = 0;
 
         void allocate() {
             this->deallocate();
@@ -134,25 +135,6 @@ namespace Core {
                 delete this->storage;
                 this->storage = nullptr;
             }
-        }
-
-        void buildGPUBuffer() {
-            glGenBuffers(1, &this->bufferID);
-            this->updateBufferData();
-        }
-
-        void destroyGPUBuffer() {
-            glDeleteBuffers(1, &this->bufferID);
-        }
-
-        UInt32 getSize() const {
-            return this->attributeCount * T::ComponentCount * sizeof(typename T::ComponentType);
-        }
-
-        void updateBufferData() {
-            glBindBuffer(GL_ARRAY_BUFFER, this->bufferID);
-            glBufferData(GL_ARRAY_BUFFER, this->getSize(), this->storage, GL_DYNAMIC_DRAW);
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
         }
     };
 }

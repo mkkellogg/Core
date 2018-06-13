@@ -83,6 +83,7 @@ set(INCLUDE_FILES
     GL/Texture2DGL.h
     GL/CubeTextureGL.h
     GL/MeshGL.h
+    GL/AttributeArrayGL.h
     Graphics.h
     Engine.h)
 

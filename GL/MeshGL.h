@@ -3,11 +3,11 @@
 #include <new>
 #include <unordered_map>
 
+#include "AttributeArrayGL.h"
 #include "../common/gl.h"
 #include "../geometry/Mesh.h"
 #include "../geometry/Vector3.h"
 #include "../geometry/Vector2.h"
-#include "../geometry/AttributeArray.h"
 #include "../geometry/Box3.h"
 #include "../common/assert.h"
 #include "../common/types.h"
@@ -44,9 +44,9 @@ namespace Core {
     MeshGL(UInt32 size, Bool indexed);
     void initIndices() override;
 
-    AttributeArray<Vector3rs>* vertexPositions;
-    AttributeArray<ColorS>* vertexColors;
-    AttributeArray<Vector2rs>* vertexUVs;
+    AttributeArrayGL<Vector3rs>* vertexPositions;
+    AttributeArrayGL<ColorS>* vertexColors;
+    AttributeArrayGL<Vector2rs>* vertexUVs;
     GLuint indexBuffer;
 
   };

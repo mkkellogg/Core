@@ -36,7 +36,7 @@ namespace Core  {
       WeakPointer<Material> materialPtr(this->material);
       GLuint shaderLocation = materialPtr->getShaderLocation(attribute);
       if (shaderLocation >= 0) {
-        glBindBuffer(GL_ARRAY_BUFFER, array->getGLBufferID());
+        glBindBuffer(GL_ARRAY_BUFFER, array->getBufferID());
         glVertexAttribPointer(shaderLocation, array->getComponentCount(), type, normalize, stride, pointer);
         glEnableVertexAttribArray(shaderLocation);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
