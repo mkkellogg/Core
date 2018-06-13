@@ -3,7 +3,7 @@
 #include "../math/Math.h"
 #include "../math/Matrix4x4.h"
 #include "../math/Quaternion.h"
-#include "../util/ValidWeakPointer.h"
+#include "../util/WeakPointer.h"
 #include "string.h"
 
 namespace Core {
@@ -81,8 +81,8 @@ namespace Core {
         fullMat[14] = cameraPos.z;
         fullMat[15] = 1.0f;
 
-        if (ValidWeakPointer<Object3D>::isInitialized(this->parent)) {
-            ValidWeakPointer<Object3D> parent(this->parent);
+        if (WeakPointer<Object3D>::isInitialized(this->parent)) {
+            WeakPointer<Object3D> parent(this->parent);
             parent->getTransform().updateWorldMatrix();
             Matrix4x4 parentMat = parent->getTransform().getWorldMatrix();
             parentMat.invert();

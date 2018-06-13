@@ -1,6 +1,6 @@
 #include "Object3D.h"
 #include "Transform.h"
-#include "../util/ValidWeakPointer.h"
+#include "../util/WeakPointer.h"
 
 namespace Core {
 
@@ -29,10 +29,10 @@ namespace Core {
   }
 
   void Object3D::addObject(std::weak_ptr<Object3D> object) {
-    if (ValidWeakPointer<Object3D>::isInitialized(object)) {
-      ValidWeakPointer<Object3D> objPtr(object);
-      if(ValidWeakPointer<Object3D>::isInitialized(objPtr->parent)) {
-        ValidWeakPointer<Object3D> parentPtr(objPtr->parent);
+    if (WeakPointer<Object3D>::isInitialized(object)) {
+      WeakPointer<Object3D> objPtr(object);
+      if(WeakPointer<Object3D>::isInitialized(objPtr->parent)) {
+        WeakPointer<Object3D> parentPtr(objPtr->parent);
         parentPtr->removeObject(object);
         Transform& parentTransform = parentPtr->getTransform();
         parentTransform.updateWorldMatrix();
@@ -46,7 +46,7 @@ namespace Core {
 
   void Object3D::removeObject(std::weak_ptr<Object3D> object) {
     std::vector<std::shared_ptr<Object3D>>::iterator result = this->children.end();
-    ValidWeakPointer<Object3D> objectPtr(object);
+    WeakPointer<Object3D> objectPtr(object);
     for (auto itr = this->children.begin(); itr != this->children.end(); ++itr) {
       if (*itr == objectPtr.getLockedPointer()) {
         result = itr;

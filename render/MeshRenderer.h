@@ -6,7 +6,7 @@
 #include "../geometry/Mesh.h"
 #include "../material/Material.h"
 #include "../render/Camera.h"
-#include "../util/ValidWeakPointer.h"
+#include "../util/WeakPointer.h"
 
 namespace Core  {
 
@@ -33,7 +33,7 @@ namespace Core  {
                                                     AttributeArray<T>* array, GLenum type, GLboolean normalize,
                                                     GLsizei stride, const GLvoid * pointer) {
     if (mesh->isAttributeEnabled(attribute)) {
-      ValidWeakPointer<Material> materialPtr(this->material);
+      WeakPointer<Material> materialPtr(this->material);
       GLuint shaderLocation = materialPtr->getShaderLocation(attribute);
       if (shaderLocation >= 0) {
         glBindBuffer(GL_ARRAY_BUFFER, array->getGLBufferID());

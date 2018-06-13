@@ -9,7 +9,7 @@
 #include "assimp/LogStream.hpp"
 
 #include "ModelLoader.h"
-#include "../util/ValidWeakPointer.h"
+#include "../util/WeakPointer.h"
 #include "../filesys/FileSystem.h"
 #include "../image/Texture.h"
 #include "../material/ShaderMaterialCharacteristic.h"
@@ -105,7 +105,7 @@ namespace Core {
         // verify that we have a valid scene
         if (scene.mRootNode == nullptr) throw new ModelLoaderException("ModelLoader::processModelScene -> Assimp scene root is null.");
         std::weak_ptr<Object3D> root = engine.createObject3D();
-        if (ValidWeakPointer<Object3D>::isUninitialized(root)) throw ModelLoaderException("ModelLoader::processModelScene -> Could not create root object.");
+        if (WeakPointer<Object3D>::isUninitialized(root)) throw ModelLoaderException("ModelLoader::processModelScene -> Could not create root object.");
       
         std::shared_ptr<FileSystem> fileSystem = FileSystem::getInstance();
         std::string fixedModelPath = fileSystem->fixupPathForLocalFilesystem(modelPath);

@@ -7,19 +7,19 @@
 
 namespace Core {
 
-    class ValidWeakPointerAssertionFailure : AssertionFailedException {
+    class WeakPointerAssertionFailure : AssertionFailedException {
     public:
-        ValidWeakPointerAssertionFailure(const std::string &msg) : AssertionFailedException(msg) {
+        WeakPointerAssertionFailure(const std::string &msg) : AssertionFailedException(msg) {
         }
-        ValidWeakPointerAssertionFailure(const char *msg) : AssertionFailedException(msg) {
+        WeakPointerAssertionFailure(const char *msg) : AssertionFailedException(msg) {
         }
     };
 
     template <typename T>
-    class ValidWeakPointer : public std::weak_ptr<T> {
+    class WeakPointer : public std::weak_ptr<T> {
     public:
-        ValidWeakPointer(std::weak_ptr<T> ptr) : std::weak_ptr<T>(ptr) {
-            this->lockedPointer = expectValidWeakPointer(*this);
+        WeakPointer(std::weak_ptr<T> ptr) : std::weak_ptr<T>(ptr) {
+            this->lockedPointer = expectWeakPointer(*this);
         }
 
         T *operator->() {
@@ -38,10 +38,10 @@ namespace Core {
             return isInitialized(*this);
         }
 
-        static std::shared_ptr<T> expectValidWeakPointer(std::weak_ptr<T> ptr) {
+        static std::shared_ptr<T> expectWeakPointer(std::weak_ptr<T> ptr) {
             std::shared_ptr<T> sharedPtr = ptr.lock();
             if (!sharedPtr) {
-                throw ValidWeakPointerAssertionFailure("Expected valid weak pointer.");
+                throw WeakPointerAssertionFailure("Expected valid weak pointer.");
             }
             return sharedPtr;
         }

@@ -11,8 +11,8 @@ namespace Core {
   }
 
   void MeshRenderer::renderObject(std::shared_ptr<Camera> camera, std::shared_ptr<Mesh> mesh) {
-    ValidWeakPointer<Object3D> ownerPtr(owner);
-    ValidWeakPointer<Material> materialPtr(this->material);
+    WeakPointer<Object3D> ownerPtr(owner);
+    WeakPointer<Material> materialPtr(this->material);
 
     glUseProgram(materialPtr->getShader()->getProgram());
 
@@ -53,12 +53,12 @@ namespace Core {
   }
 
   void MeshRenderer::render(std::shared_ptr<Camera> camera) {
-    ValidWeakPointer<Object3D> ownerPtr(owner);
+    WeakPointer<Object3D> ownerPtr(owner);
     std::shared_ptr<RenderableContainer<Mesh>> thisContainer = std::dynamic_pointer_cast<RenderableContainer<Mesh>>(ownerPtr.getLockedPointer());
     if (thisContainer) {
       auto renderables = thisContainer->getRenderables();
       for (auto mesh : renderables) {
-        ValidWeakPointer<Mesh> meshPtr(mesh);
+        WeakPointer<Mesh> meshPtr(mesh);
         this->renderObject(camera, meshPtr.getLockedPointer());
       }
     }

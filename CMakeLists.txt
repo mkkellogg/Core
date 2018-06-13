@@ -67,7 +67,7 @@ set(INCLUDE_FILES
     color/Color4Components.h
     util/Time.h
     util/String.h
-    util/ValidWeakPointer.h
+    util/WeakPointer.h
     math/Math.h
     math/Quaternion.h
     math/Matrix4x4.h
@@ -137,7 +137,7 @@ add_library(${EXECUTABLE_NAME} ${SOURCE_FILES})
 
 target_link_libraries(${EXECUTABLE_NAME} ${OPENGL_LIBRARIES})
 
-include_directories(../../DevIL/DevIl/include)
+include_directories(../../DevIL/DevIL/include)
 target_link_libraries(${EXECUTABLE_NAME} ../../DevIL/DevIL/build/lib/x64/libIL.a)
 target_link_libraries(${EXECUTABLE_NAME} ../../DevIL/DevIL/build/lib/x64/libILU.a)
 target_link_libraries(${EXECUTABLE_NAME} ../../DevIL/DevIL/build/lib/x64/libILUT.a)

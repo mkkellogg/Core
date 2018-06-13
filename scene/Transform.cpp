@@ -1,5 +1,5 @@
 #include "Object3D.h"
-#include "../util/ValidWeakPointer.h"
+#include "../util/WeakPointer.h"
 
 namespace Core {
 
@@ -49,8 +49,8 @@ namespace Core {
   void Transform::updateWorldMatrix() {
     this->worldMatrix.copy(localMatrix);
     std::weak_ptr<Object3D> parent = const_cast<Object3D&>(target).getParent();
-    while(ValidWeakPointer<Object3D>::isInitialized(parent)) {
-      ValidWeakPointer<Object3D> parentPtr(parent);
+    while(WeakPointer<Object3D>::isInitialized(parent)) {
+      WeakPointer<Object3D> parentPtr(parent);
       this->worldMatrix.preMultiply(parentPtr->getTransform().getLocalMatrix());
       parent = parentPtr->getParent();
     }

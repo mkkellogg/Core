@@ -15,7 +15,7 @@
 #include "material/StandardAttributes.h"
 #include "image/RawImage.h"
 #include "image/CubeTexture.h"
-#include "util/ValidWeakPointer.h"
+#include "util/WeakPointer.h"
 
 namespace Core {
 
@@ -30,8 +30,8 @@ namespace Core {
     this->engine.onUpdate([this, camera](Engine& engine) {
 
       static Core::Real rotationAngle = 0.0;
-      if (ValidWeakPointer<Camera>::isInitialized(camera)) {
-        ValidWeakPointer<Camera> cameraPtr(camera);
+      if (WeakPointer<Camera>::isInitialized(camera)) {
+        WeakPointer<Camera> cameraPtr(camera);
         rotationAngle += 0.01;
         if (rotationAngle >= Core::Math::TwoPI) rotationAngle -= Core::Math::TwoPI;
 
@@ -58,9 +58,9 @@ namespace Core {
 
     std::weak_ptr<Core::Scene> scene = engine.createScene();
     engine.setActiveScene(scene);
-    ValidWeakPointer<Core::Scene> scenePtr(scene);
+    WeakPointer<Core::Scene> scenePtr(scene);
 
-    ValidWeakPointer<Core::Mesh> skyboxMesh(engine.createMesh(36, false));
+    WeakPointer<Core::Mesh> skyboxMesh(engine.createMesh(36, false));
     skyboxMesh->init();
 
     Core::Real vertexPositions[] = {
@@ -90,16 +90,16 @@ namespace Core {
     skyboxMesh->getVertexPositions()->store(vertexPositions);
 
     this->skyboxMaterial = engine.createMaterial<Core::BasicMaterial>();
-    ValidWeakPointer<Core::BasicMaterial> skyboxMaterialPtr(this->skyboxMaterial);
+    WeakPointer<Core::BasicMaterial> skyboxMaterialPtr(this->skyboxMaterial);
     skyboxMaterialPtr->build();
 
     std::weak_ptr<Core::RenderableContainer<Mesh>> skyboxObj = engine.createObject3D<Core::RenderableContainer<Mesh>>();
-    ValidWeakPointer<Core::RenderableContainer<Mesh>> skyboxObjPtr = ValidWeakPointer<Core::RenderableContainer<Mesh>>(skyboxObj);
+    WeakPointer<Core::RenderableContainer<Mesh>> skyboxObjPtr = WeakPointer<Core::RenderableContainer<Mesh>>(skyboxObj);
 
     std::weak_ptr<Core::MeshRenderer> skyboxRenderer = engine.createRenderer<Core::MeshRenderer>(this->skyboxMaterial, skyboxObj);
     skyboxObjPtr->addRenderable(skyboxMesh);
 
-    ValidWeakPointer<Object3D> sceneRootPtr = ValidWeakPointer<Object3D>(scenePtr->getRoot());
+    WeakPointer<Object3D> sceneRootPtr = WeakPointer<Object3D>(scenePtr->getRoot());
     sceneRootPtr->addObject(skyboxObj);
 
     camera = engine.createCamera();
