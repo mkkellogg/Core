@@ -7,7 +7,6 @@
 #include "scene/Scene.h"
 #include "render/Camera.h"
 #include "render/Renderer.h"
-#include "image/ImageLoader.h"
 #include "asset/AssetLoader.h"
 #include "geometry/Vector4.h"
 #include "render/BaseObjectRenderer.h"
@@ -19,6 +18,9 @@
 #include "util/WeakPointer.h"
 
 namespace Core {
+
+  // forward declarations
+  class ImageLoader;
 
   class Engine {
 
