@@ -24,23 +24,14 @@ namespace Core  {
   private:
     MeshRenderer(std::weak_ptr<Material> material, std::weak_ptr<Object3D> owner);
     std::weak_ptr<Material> material;
-    template <typename T> void checkAndSetShaderAttribute(std::shared_ptr<Mesh> mesh, StandardAttributes attribute,
-                                                          AttributeArray<T>* array, GLenum type, GLboolean normalize,
-                                                          GLsizei stride, const GLvoid * pointer);
+    template <typename T> void checkAndSetShaderAttribute(std::shared_ptr<Mesh> mesh, StandardAttributes attribute, AttributeArray<T>* array);
   };
 
-  template <typename T> void MeshRenderer::checkAndSetShaderAttribute(std::shared_ptr<Mesh> mesh, StandardAttributes attribute,
-                                                    AttributeArray<T>* array, GLenum type, GLboolean normalize,
-                                                    GLsizei stride, const GLvoid * pointer) {
+  template <typename T> void MeshRenderer::checkAndSetShaderAttribute(std::shared_ptr<Mesh> mesh, StandardAttributes attribute, AttributeArray<T>* array) {
     if (mesh->isAttributeEnabled(attribute)) {
       WeakPointer<Material> materialPtr(this->material);
       GLuint shaderLocation = materialPtr->getShaderLocation(attribute);
-      if (shaderLocation >= 0) {
-        glBindBuffer(GL_ARRAY_BUFFER, array->getBufferID());
-        glVertexAttribPointer(shaderLocation, array->getComponentCount(), type, normalize, stride, pointer);
-        glEnableVertexAttribArray(shaderLocation);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-      }
+      array->sendToShader(shaderLocation);
     }
   }
 }

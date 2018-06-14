@@ -22,6 +22,7 @@ namespace Core {
         }
 
         virtual Int32 getBufferID() const = 0;
+        virtual void sendToShader(UInt32 location) = 0;
 
         UInt32 getComponentCount() const {
             return this->componentCount;

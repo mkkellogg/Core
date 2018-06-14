@@ -14,9 +14,9 @@ namespace Core {
 
         glUseProgram(materialPtr->getShader()->getProgram());
 
-        this->checkAndSetShaderAttribute(mesh, StandardAttributes::Position, mesh->getVertexPositions(), GL_FLOAT, GL_FALSE, 0, 0);
-        this->checkAndSetShaderAttribute(mesh, StandardAttributes::Color, mesh->getVertexColors(), GL_FLOAT, GL_FALSE, 0, 0);
-        this->checkAndSetShaderAttribute(mesh, StandardAttributes::UV, mesh->getVertexUVs(), GL_FLOAT, GL_FALSE, 0, 0);
+        this->checkAndSetShaderAttribute(mesh, StandardAttributes::Position, mesh->getVertexPositions());
+        this->checkAndSetShaderAttribute(mesh, StandardAttributes::Color, mesh->getVertexColors());
+        this->checkAndSetShaderAttribute(mesh, StandardAttributes::UV, mesh->getVertexUVs());
 
         GLint projectionLoc = materialPtr->getShaderLocation(StandardUniforms::ProjectionMatrix);
         GLint viewMatrixLoc = materialPtr->getShaderLocation(StandardUniforms::ViewMatrix);

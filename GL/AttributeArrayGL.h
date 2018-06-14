@@ -36,6 +36,13 @@ namespace Core {
             return stride;
         }
 
+        void sendToShader(UInt32 location) override {
+            glBindBuffer(GL_ARRAY_BUFFER, this->bufferID);
+            glVertexAttribPointer(location, this->componentCount, this->type, this->normalize, this->stride, 0);
+            glEnableVertexAttribArray(location);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+        }
+
     private:
         GLuint bufferID;
         GLenum type;
