@@ -42,7 +42,7 @@ namespace Core {
 
         if (mesh->isIndexed()) {
             std::shared_ptr<MeshGL> meshGL = std::dynamic_pointer_cast<MeshGL>(mesh);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshGL->getIndexBuffer());
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshGL->getIndexBuffer()->getBufferID());
             glDrawElements(GL_TRIANGLES, mesh->getSize(), GL_UNSIGNED_INT, (void *)(0));
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         } else {

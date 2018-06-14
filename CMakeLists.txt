@@ -33,6 +33,7 @@ set(INCLUDE_FILES
     geometry/Vector4Components.h
     geometry/Vector4.h
     geometry/AttributeArray.h
+    geometry/IndexBuffer.h
     scene/Object3D.h
     scene/Scene.h
     scene/Object3DComponent.h
@@ -84,6 +85,7 @@ set(INCLUDE_FILES
     GL/CubeTextureGL.h
     GL/MeshGL.h
     GL/AttributeArrayGL.h
+    GL/IndexBufferGL.h
     Graphics.h
     Engine.h)
 
@@ -100,6 +102,7 @@ set(SOURCE_FILES
     image/Texture2D.cpp
     image/TextureAttr.cpp
     image/CubeTexture.cpp
+    geometry/IndexBuffer.cpp
     geometry/Mesh.cpp
     geometry/Box3.cpp
     scene/Object3D.cpp
@@ -131,7 +134,8 @@ set(SOURCE_FILES
     GL/RendererGL.cpp
     GL/Texture2DGL.cpp
     GL/CubeTextureGL.cpp
-    GL/MeshGL.cpp)
+    GL/MeshGL.cpp
+    GL/IndexBufferGL.cpp)
     #RendererES3.cpp)
 
 add_library(${EXECUTABLE_NAME} ${SOURCE_FILES})

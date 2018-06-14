@@ -10,6 +10,7 @@
 #include "Vector2.h"
 #include "../color/Color.h"
 #include "AttributeArray.h"
+#include "IndexBuffer.h"
 #include "../material/StandardAttributes.h"
 #include "Box3.h"
 
@@ -27,6 +28,7 @@ namespace Core {
     virtual AttributeArray<Vector3rs>* getVertexPositions() = 0;
     virtual AttributeArray<ColorS>* getVertexColors() = 0;
     virtual AttributeArray<Vector2rs>* getVertexUVs() = 0;
+    virtual IndexBuffer* getIndexBuffer() = 0;
 
     virtual Bool initVertexPositions(UInt32 size) = 0;
     virtual Bool initVertexColors(UInt32 size) = 0;
@@ -35,8 +37,6 @@ namespace Core {
     void enableAttribute(StandardAttributes attribute);
     void disableAttribute(StandardAttributes attribute);
     Bool isAttributeEnabled(StandardAttributes attribute);
-
-    virtual void setIndices(UInt32 * indices)  = 0;
     Bool isIndexed();
 
     void calculateBoundingBox();
@@ -45,7 +45,7 @@ namespace Core {
   protected:
     Mesh(UInt32 size, Bool indexed);
     void initAttributes();
-    virtual void initIndices() = 0;
+    virtual Bool initIndices() = 0;
 
     Bool initialized;
     Bool enabledAttributes[(UInt32)StandardAttributes::_Count];

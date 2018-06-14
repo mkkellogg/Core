@@ -4,6 +4,7 @@
 #include <unordered_map>
 
 #include "AttributeArrayGL.h"
+#include "IndexBufferGL.h"
 #include "../common/gl.h"
 #include "../geometry/Mesh.h"
 #include "../geometry/Vector3.h"
@@ -31,23 +32,20 @@ namespace Core {
     AttributeArray<Vector3rs>* getVertexPositions() override;
     AttributeArray<ColorS>* getVertexColors() override;
     AttributeArray<Vector2rs>* getVertexUVs() override;
+    IndexBuffer* getIndexBuffer() override;
 
     Bool initVertexPositions(UInt32 size) override;
     Bool initVertexColors(UInt32 size) override;
     Bool initVertexUVs(UInt32 size) override;
 
-    void setIndices(UInt32 * indices) override;
-
-    GLuint getIndexBuffer();
-
   protected:
-    MeshGL(UInt32 size, Bool indexed);
-    void initIndices() override;
+    MeshGL(UInt32 size, Bool indexed);  
+    Bool initIndices() override;  
 
     AttributeArrayGL<Vector3rs>* vertexPositions;
     AttributeArrayGL<ColorS>* vertexColors;
     AttributeArrayGL<Vector2rs>* vertexUVs;
-    GLuint indexBuffer;
+    IndexBufferGL* indexBuffer;
 
   };
 
