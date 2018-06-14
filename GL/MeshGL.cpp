@@ -34,7 +34,7 @@ namespace Core {
 
     Bool MeshGL::initVertexPositions(UInt32 size) {
         if (this->vertexPositions) delete this->vertexPositions;
-        this->vertexPositions = new (std::nothrow) AttributeArrayGL<Vector3rs>(size);
+        this->vertexPositions = new (std::nothrow) AttributeArrayGL<Vector3rs>(size, GL_FLOAT, GL_FALSE, 0);
         if (this->vertexPositions == nullptr) {
             throw AllocationException("Mesh::initVertexPositions() -> Unable to allocate positions array.");
         } 
@@ -43,7 +43,7 @@ namespace Core {
 
     Bool MeshGL::initVertexColors(UInt32 size) {
         if (this->vertexColors) delete this->vertexColors;
-        this->vertexColors = new (std::nothrow) AttributeArrayGL<ColorS>(size);
+        this->vertexColors = new (std::nothrow) AttributeArrayGL<ColorS>(size, GL_FLOAT, GL_FALSE, 0);
         if (this->vertexColors == nullptr) {
             throw AllocationException("Mesh::initVertexColors() -> Unable to allocate colors array.");
         }
@@ -52,7 +52,7 @@ namespace Core {
 
     Bool MeshGL::initVertexUVs(UInt32 size) {
         if (this->vertexUVs) delete this->vertexUVs;
-        this->vertexUVs = new (std::nothrow) AttributeArrayGL<Vector2rs>(size);
+        this->vertexUVs = new (std::nothrow) AttributeArrayGL<Vector2rs>(size, GL_FLOAT, GL_FALSE, 0);
         if (this->vertexUVs == nullptr) {
             throw AllocationException("Mesh::initVertexUVs() -> Unable to allocate uvs array.");
         }
