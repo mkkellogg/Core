@@ -1,4 +1,5 @@
 #include "GraphicsGL.h"
+#include "../util/WeakPointer.h"
 
 namespace Core {
 
@@ -63,6 +64,11 @@ namespace Core {
         return ws;
     }
 
+    void GraphicsGL::activateShader(std::weak_ptr<Shader> shader) {
+        WeakPointer<Shader> shaderPtr(shader);
+        glUseProgram(shaderPtr->getProgram());
+    }
+
     std::shared_ptr<AttributeArrayGPUStorage> GraphicsGL::createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) const {
         AttributeArrayGPUStorageGL* gpuStorage =
             new (std::nothrow) AttributeArrayGPUStorageGL(size, componentCount, convertAttributeType(type), normalize ? GL_TRUE : GL_FALSE, 0);
@@ -80,6 +86,17 @@ namespace Core {
         }
         std::shared_ptr<IndexBuffer> bufferPtr(indexBuffer);
         return bufferPtr;
+    }
+
+    void GraphicsGL::drawBoundVertexBuffer(UInt32 vertexCount) {
+        glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+    }
+
+    void GraphicsGL::drawBoundVertexBuffer(UInt32 vertexCount, std::weak_ptr<IndexBuffer> indices) {
+        WeakPointer<IndexBuffer> indexPtr(indices);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexPtr->getBufferID());
+        glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, (void *)(0));
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
     GLuint GraphicsGL::convertAttributeType(AttributeType type) {
