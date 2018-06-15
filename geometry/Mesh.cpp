@@ -4,7 +4,7 @@
 
 namespace Core {
 
-    Mesh::Mesh(UInt32 size, Bool indexed): initialized(false), size(size), indexed(indexed) {
+    Mesh::Mesh(UInt32 vertexCount, Bool indexed): initialized(false), vertexCount(vertexCount), indexed(indexed) {
         initAttributes();
     }
 
@@ -17,8 +17,8 @@ namespace Core {
         initialized = true;
     }
 
-    UInt32 Mesh::getSize() const {
-        return this->size;
+    UInt32 Mesh::getVertexCount() const {
+        return this->vertexCount;
     }
 
     void Mesh::initAttributes() {

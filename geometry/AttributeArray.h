@@ -7,22 +7,26 @@
 #include "../common/assert.h"
 #include "../common/gl.h"
 #include "../common/types.h"
+#include "AttributeArrayGPUStorage.h"
 
 namespace Core {
 
     template <typename T>
     class AttributeArray {
     public:
-        AttributeArray(UInt32 attributeCount) : storage(nullptr), attributes(nullptr), attributeCount(attributeCount) {
+        
+        enum class AttributeType {
+            Int = 1,
+            Float = 2,
+        };
+
+        AttributeArray(UInt32 attributeCount) : storage(nullptr), attributes(nullptr), attributeCount(attributeCount), gpuStorage(nullptr) {
             allocate();
         }
 
         virtual ~AttributeArray() {
             deallocate();
         }
-
-        virtual Int32 getBufferID() const = 0;
-        virtual void sendToShader(UInt32 location) = 0;
 
         UInt32 getComponentCount() const {
             return this->componentCount;
@@ -46,7 +50,16 @@ namespace Core {
 
         void store(const typename T::ComponentType* data) {
             memcpy(this->storage, data, this->getSize());
-            this->updateBufferData();
+            this->updateGPUStorageData();
+        }
+
+        void setGPUStorage(std::shared_ptr<AttributeArrayGPUStorage> storage) { 
+            this->gpuStorage = storage;
+            this->updateGPUStorageData();
+        }
+
+        std::weak_ptr<AttributeArrayGPUStorage> getGPUStorage() {
+            return this->gpuStorage;
         }
 
         class iterator {
@@ -93,17 +106,22 @@ namespace Core {
             return iterator(this, this->getAttributeCount());
         }
 
+        UInt32 getSize() const {
+            return this->attributeCount * T::ComponentCount * sizeof(typename T::ComponentType);
+        }
+
     protected:
         typename T::ComponentType* storage;
         T* attributes;
         UInt32 attributeCount;
         const UInt32 componentCount = T::ComponentCount;
+        std::shared_ptr<AttributeArrayGPUStorage> gpuStorage;
 
-        UInt32 getSize() const {
-            return this->attributeCount * T::ComponentCount * sizeof(typename T::ComponentType);
+        void updateGPUStorageData() {
+            if (this->gpuStorage) {
+                this->gpuStorage->updateBufferData((void *)this->storage);
+            }
         }
-
-        virtual void updateBufferData() = 0;
 
         void allocate() {
             this->deallocate();

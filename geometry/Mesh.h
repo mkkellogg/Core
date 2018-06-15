@@ -23,16 +23,16 @@ namespace Core {
 
     virtual void init();
 
-    UInt32 getSize() const;
+    UInt32 getVertexCount() const;
 
     virtual AttributeArray<Vector3rs>* getVertexPositions() = 0;
     virtual AttributeArray<ColorS>* getVertexColors() = 0;
     virtual AttributeArray<Vector2rs>* getVertexUVs() = 0;
     virtual IndexBuffer* getIndexBuffer() = 0;
 
-    virtual Bool initVertexPositions(UInt32 size) = 0;
-    virtual Bool initVertexColors(UInt32 size) = 0;
-    virtual Bool initVertexUVs(UInt32 size) = 0;
+    virtual Bool initVertexPositions(UInt32 vertexCount) = 0;
+    virtual Bool initVertexColors(UInt32 vertexCount) = 0;
+    virtual Bool initVertexUVs(UInt32 vertexCount) = 0;
 
     void enableAttribute(StandardAttributes attribute);
     void disableAttribute(StandardAttributes attribute);
@@ -43,13 +43,13 @@ namespace Core {
     const Box3& getBoundingBox() const;
 
   protected:
-    Mesh(UInt32 size, Bool indexed);
+    Mesh(UInt32 vertexCount, Bool indexed);
     void initAttributes();
     virtual Bool initIndices() = 0;
 
     Bool initialized;
     Bool enabledAttributes[(UInt32)StandardAttributes::_Count];
-    UInt32 size;
+    UInt32 vertexCount;
     Bool indexed;
     Box3 boundingBox;
   };

@@ -3,20 +3,20 @@
 #include <string.h>
 #include <new>
 
-#include "../geometry/AttributeArray.h"
+#include "../geometry/AttributeArrayGPUStorage.h"
+#include "../common/types.h"
 #include "../common/gl.h"
 
 namespace Core {
 
-    template <typename T>
-    class AttributeArrayGL final: public AttributeArray<T> {
+    class AttributeArrayGPUStorageGL final: public AttributeArrayGPUStorage {
     public:
-        AttributeArrayGL(UInt32 attributeCount, GLenum type, GLboolean normalize, GLsizei stride): 
-            AttributeArray<T>(attributeCount), type(type), normalize(normalize), stride(stride) {
+        AttributeArrayGPUStorageGL(UInt32 size, UInt32 componentCount, GLenum type, GLboolean normalize, GLsizei stride): 
+            size(size), componentCount(componentCount), type(type), normalize(normalize), stride(stride) {
             buildGPUBuffer();
         }
 
-        ~AttributeArrayGL() {
+        ~AttributeArrayGPUStorageGL() {
             destroyGPUBuffer();
         }
 
@@ -38,12 +38,20 @@ namespace Core {
 
         void sendToShader(UInt32 location) override {
             glBindBuffer(GL_ARRAY_BUFFER, this->bufferID);
-            glVertexAttribPointer(location, this->componentCount, this->type, this->normalize, this->stride, 0);
             glEnableVertexAttribArray(location);
+            glVertexAttribPointer(location, this->componentCount, this->type, this->normalize, this->stride, 0);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+        }
+
+        void updateBufferData(void * data) override {
+            glBindBuffer(GL_ARRAY_BUFFER, this->bufferID);
+            glBufferData(GL_ARRAY_BUFFER, this->size, data, GL_DYNAMIC_DRAW);
             glBindBuffer(GL_ARRAY_BUFFER, 0);
         }
 
     private:
+        UInt32 size;
+        UInt32 componentCount;
         GLuint bufferID;
         GLenum type;
         GLboolean normalize;
@@ -51,17 +59,11 @@ namespace Core {
 
         void buildGPUBuffer() {
             glGenBuffers(1, &this->bufferID);
-            this->updateBufferData();
         }
 
         void destroyGPUBuffer() {
             glDeleteBuffers(1, &this->bufferID);
         }
 
-        void updateBufferData() override {
-            glBindBuffer(GL_ARRAY_BUFFER, this->bufferID);
-            glBufferData(GL_ARRAY_BUFFER, this->getSize(), this->storage, GL_DYNAMIC_DRAW);
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-        }
     };
 }

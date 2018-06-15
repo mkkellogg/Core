@@ -3,7 +3,7 @@
 #include <new>
 #include <unordered_map>
 
-#include "AttributeArrayGL.h"
+#include "AttributeArrayGPUStorageGL.h"
 #include "IndexBufferGL.h"
 #include "../common/gl.h"
 #include "../geometry/Mesh.h"
@@ -39,12 +39,12 @@ namespace Core {
     Bool initVertexUVs(UInt32 size) override;
 
   protected:
-    MeshGL(UInt32 size, Bool indexed);  
+    MeshGL(UInt32 vertexCount, Bool indexed);  
     Bool initIndices() override;  
 
-    AttributeArrayGL<Vector3rs>* vertexPositions;
-    AttributeArrayGL<ColorS>* vertexColors;
-    AttributeArrayGL<Vector2rs>* vertexUVs;
+    AttributeArray<Vector3rs>* vertexPositions;
+    AttributeArray<ColorS>* vertexColors;
+    AttributeArray<Vector2rs>* vertexUVs;
     IndexBufferGL* indexBuffer;
 
   };

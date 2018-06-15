@@ -5,6 +5,7 @@
 #include "render/Renderer.h"
 #include "image/Texture2D.h"
 #include "image/CubeTexture.h"
+#include "geometry/AttributeArray.h"
 
 namespace Core {
 
@@ -22,5 +23,6 @@ namespace Core {
         virtual std::weak_ptr<Texture2D> createTexture2D() = 0;
         virtual std::weak_ptr<CubeTexture> createCubeTexture() = 0;
         virtual std::weak_ptr<Mesh> createMesh(UInt32 size, Bool indexed) = 0;
+
     };
 }
