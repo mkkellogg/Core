@@ -59,4 +59,17 @@ namespace Core {
             }
         }
     }
+
+    void MeshRenderer::checkAndSetShaderAttribute(std::shared_ptr<Mesh> mesh, StandardAttributes attribute,
+                                                  AttributeArrayBase* array) {
+        if (mesh->isAttributeEnabled(attribute)) {
+            WeakPointer<Material> materialPtr(this->material);
+            GLuint shaderLocation = materialPtr->getShaderLocation(attribute);
+
+            WeakPointer<AttributeArrayGPUStorage> gpuStoragePtr(array->getGPUStorage());
+            if (gpuStoragePtr.isInitialized()) {
+                gpuStoragePtr->sendToShader(shaderLocation);
+            }
+        }
+    }
 }

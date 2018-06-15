@@ -2,6 +2,7 @@
 
 #include <memory>
 #include "../geometry/AttributeArray.h"
+#include "../geometry/AttributeArrayGPUStorage.h"
 #include "../render/ObjectRenderer.h"
 #include "../geometry/Mesh.h"
 #include "../material/Material.h"
@@ -25,19 +26,7 @@ namespace Core  {
   private:
     MeshRenderer(std::weak_ptr<Material> material, std::weak_ptr<Object3D> owner);
     std::weak_ptr<Material> material;
-    template <typename T> void checkAndSetShaderAttribute(std::shared_ptr<Mesh> mesh, StandardAttributes attribute, AttributeArray<T>* array);
+    void checkAndSetShaderAttribute(std::shared_ptr<Mesh> mesh, StandardAttributes attribute, AttributeArrayBase* array);
   };
-
-  template <typename T> void MeshRenderer::checkAndSetShaderAttribute(std::shared_ptr<Mesh> mesh, StandardAttributes attribute, AttributeArray<T>* array) {
-    if (mesh->isAttributeEnabled(attribute)) {
-      WeakPointer<Material> materialPtr(this->material);
-      GLuint shaderLocation = materialPtr->getShaderLocation(attribute);
-      WeakPointer<AttributeArrayGPUStorage> gpuBuffer(array->getGPUStorage());
-
-      if (gpuBuffer.isInitialized()) {
-        gpuBuffer->sendToShader(shaderLocation);
-      }
-    }
-  }
 
 }

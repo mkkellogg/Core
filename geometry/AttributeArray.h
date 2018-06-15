@@ -11,16 +11,13 @@
 
 namespace Core {
 
-    template <typename T>
-    class AttributeArray {
+    class AttributeArrayBase {
     public:
-
-        AttributeArray(UInt32 attributeCount) : storage(nullptr), attributes(nullptr), attributeCount(attributeCount), gpuStorage(nullptr) {
-            allocate();
+        AttributeArrayBase(UInt32 attributeCount,  UInt32 componentCount): attributeCount(attributeCount), componentCount(componentCount) {
         }
 
-        virtual ~AttributeArray() {
-            deallocate();
+        virtual ~AttributeArrayBase() {
+         
         }
 
         UInt32 getComponentCount() const {
@@ -29,6 +26,28 @@ namespace Core {
 
         UInt32 getAttributeCount() const {
             return this->attributeCount;
+        }
+
+        std::weak_ptr<AttributeArrayGPUStorage> getGPUStorage() {
+            return this->gpuStorage;
+        }
+
+    protected:
+        UInt32 attributeCount;
+        UInt32 componentCount;
+        std::shared_ptr<AttributeArrayGPUStorage> gpuStorage;
+    };
+
+    template <typename T>
+    class AttributeArray: public AttributeArrayBase {
+    public:
+
+        AttributeArray(UInt32 attributeCount) : AttributeArrayBase(attributeCount, T::ComponentCount), storage(nullptr), attributes(nullptr) {
+            allocate();
+        }
+
+        virtual ~AttributeArray() {
+            deallocate();
         }
 
         typename T::ComponentType* getStorage() {
@@ -51,10 +70,6 @@ namespace Core {
         void setGPUStorage(std::shared_ptr<AttributeArrayGPUStorage> storage) { 
             this->gpuStorage = storage;
             this->updateGPUStorageData();
-        }
-
-        std::weak_ptr<AttributeArrayGPUStorage> getGPUStorage() {
-            return this->gpuStorage;
         }
 
         class iterator {
@@ -108,9 +123,6 @@ namespace Core {
     protected:
         typename T::ComponentType* storage;
         T* attributes;
-        UInt32 attributeCount;
-        const UInt32 componentCount = T::ComponentCount;
-        std::shared_ptr<AttributeArrayGPUStorage> gpuStorage;
 
         void updateGPUStorageData() {
             if (this->gpuStorage) {
