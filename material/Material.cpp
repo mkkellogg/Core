@@ -6,10 +6,10 @@
 
 namespace Core {
 
-    Material::Material(std::shared_ptr<Graphics> graphics) : graphics(graphics), ready(false) {
+    Material::Material(std::weak_ptr<Graphics> graphics) : graphics(graphics), ready(false) {
     }
 
-    Material::Material(std::shared_ptr<Graphics> graphics, std::weak_ptr<Shader> shader): Material(graphics) {
+    Material::Material(std::weak_ptr<Graphics> graphics, std::weak_ptr<Shader> shader): Material(graphics) {
         this->setShader(shader);
         WeakPointer<Shader> shaderPtr(shader);
         this->ready = shaderPtr.isInitialized() && shaderPtr->isReady();
@@ -24,7 +24,8 @@ namespace Core {
     }
 
     Bool Material::buildFromSource(const std::string& vertexSource, const std::string& fragmentSource) {
-        std::weak_ptr<Shader> shader = this->graphics->createShader(vertexSource, fragmentSource);
+         WeakPointer<Graphics> graphicsPtr(this->graphics);
+        std::weak_ptr<Shader> shader = graphicsPtr->createShader(vertexSource, fragmentSource);
         WeakPointer<Shader> shaderPtr(shader);
         Bool success = shaderPtr->build();
         if (!success) {

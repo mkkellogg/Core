@@ -1,10 +1,11 @@
 #include "Mesh.h"
 #include "../common/Exception.h"
 #include "../common/types.h"
+#include "../util/WeakPointer.h"
 
 namespace Core {
 
-    Mesh::Mesh(std::shared_ptr<Graphics> graphics, UInt32 vertexCount, Bool indexed): graphics(graphics), initialized(false), vertexCount(vertexCount), indexed(indexed) {
+    Mesh::Mesh(std::weak_ptr<Graphics> graphics, UInt32 vertexCount, Bool indexed): graphics(graphics), initialized(false), vertexCount(vertexCount), indexed(indexed) {
         this->vertexPositions = nullptr;
         this->vertexColors = nullptr;
         this->vertexUVs = nullptr;
@@ -109,7 +110,8 @@ namespace Core {
             throw AllocationException("MeshGL::initVertexPositions() -> Unable to allocate positions array.");
         } 
 
-        std::shared_ptr<AttributeArrayGPUStorage> gpuStorage = this->graphics->createGPUStorage(this->vertexPositions->getSize(), Vector3rs::ComponentCount, AttributeType::Float, false);
+        WeakPointer<Graphics> graphicsPtr(this->graphics);
+        std::shared_ptr<AttributeArrayGPUStorage> gpuStorage = graphicsPtr->createGPUStorage(this->vertexPositions->getSize(), Vector3rs::ComponentCount, AttributeType::Float, false);
         this->vertexPositions->setGPUStorage(gpuStorage);
 
         return true;
@@ -123,7 +125,8 @@ namespace Core {
             throw AllocationException("MeshGL::initVertexColors() -> Unable to allocate colors array.");
         }
 
-        std::shared_ptr<AttributeArrayGPUStorage> gpuStorage = this->graphics->createGPUStorage(this->vertexPositions->getSize(), ColorS::ComponentCount, AttributeType::Float, false);
+        WeakPointer<Graphics> graphicsPtr(this->graphics);
+        std::shared_ptr<AttributeArrayGPUStorage> gpuStorage = graphicsPtr->createGPUStorage(this->vertexPositions->getSize(), ColorS::ComponentCount, AttributeType::Float, false);
         this->vertexColors->setGPUStorage(gpuStorage);
         return true;
     }
@@ -136,13 +139,15 @@ namespace Core {
             throw AllocationException("MeshGL::initVertexUVs() -> Unable to allocate uvs array.");
         }
 
-        std::shared_ptr<AttributeArrayGPUStorage> gpuStorage = this->graphics->createGPUStorage(this->vertexPositions->getSize(), Vector2rs::ComponentCount, AttributeType::Float, false);
+        WeakPointer<Graphics> graphicsPtr(this->graphics);
+        std::shared_ptr<AttributeArrayGPUStorage> gpuStorage = graphicsPtr->createGPUStorage(this->vertexPositions->getSize(), Vector2rs::ComponentCount, AttributeType::Float, false);
         this->vertexUVs->setGPUStorage(gpuStorage);
         return true;
     }
 
     Bool Mesh::initIndices() {
-        this->indexBuffer = this->graphics->createIndexBuffer(vertexCount);
+        WeakPointer<Graphics> graphicsPtr(this->graphics);
+        this->indexBuffer = graphicsPtr->createIndexBuffer(vertexCount);
         return true;
     }
 

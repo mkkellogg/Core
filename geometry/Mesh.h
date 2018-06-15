@@ -49,11 +49,11 @@ namespace Core {
     const Box3& getBoundingBox() const;
 
   protected:
-    Mesh(std::shared_ptr<Graphics> graphics, UInt32 vertexCount, Bool indexed);
+    Mesh(std::weak_ptr<Graphics> graphics, UInt32 vertexCount, Bool indexed);
     void initAttributes();
     Bool initIndices();
 
-    std::shared_ptr<Graphics> graphics;
+    std::weak_ptr<Graphics> graphics;
     Bool initialized;
     Bool enabledAttributes[(UInt32)StandardAttributes::_Count];
     UInt32 vertexCount;

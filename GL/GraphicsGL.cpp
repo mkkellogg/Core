@@ -91,5 +91,6 @@ namespace Core {
             case AttributeType::Int:
                 return GL_INT;
         }
+        return 0;
     }
 }

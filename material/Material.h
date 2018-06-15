@@ -9,8 +9,8 @@
 namespace Core {
   class Material {
   public:
-    Material(std::shared_ptr<Graphics> graphics);
-    Material(std::shared_ptr<Graphics> graphics, std::weak_ptr<Shader> shader);
+    Material(std::weak_ptr<Graphics> graphics);
+    Material(std::weak_ptr<Graphics> graphics, std::weak_ptr<Shader> shader);
     std::weak_ptr<Shader> getShader();
     virtual Bool build() = 0;
 
@@ -19,7 +19,7 @@ namespace Core {
     virtual void sendCustomUniformsToShader() = 0;
 
   protected:
-    std::shared_ptr<Graphics> graphics;
+    std::weak_ptr<Graphics> graphics;
     std::weak_ptr<Shader> shader;
     Bool ready;
     Bool buildFromSource(const std::string& vertexSource, const std::string& fragmentSource);
