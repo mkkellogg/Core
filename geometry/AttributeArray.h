@@ -5,7 +5,6 @@
 
 #include "../common/Exception.h"
 #include "../common/assert.h"
-#include "../common/gl.h"
 #include "../common/types.h"
 #include "AttributeArrayGPUStorage.h"
 
