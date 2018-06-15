@@ -57,7 +57,7 @@ namespace Core {
     template <typename T, typename R>
     std::weak_ptr<typename std::enable_if<std::is_base_of<ObjectRenderer<R>, T>::value, T>::type> 
     createRenderer(std::weak_ptr<Material> material, std::weak_ptr<RenderableContainer<R>> owner) {
-      std::shared_ptr<T> rendererPtr = std::shared_ptr<T>(new T(material, owner));
+      std::shared_ptr<T> rendererPtr = std::shared_ptr<T>(new T(this->graphics, material, owner));
       WeakPointer<RenderableContainer<R>> ownerPtr(owner);
       ownerPtr->setRenderer(rendererPtr);
       return rendererPtr;

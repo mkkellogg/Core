@@ -8,7 +8,6 @@
 #include "../material/Material.h"
 #include "../render/Camera.h"
 #include "../util/WeakPointer.h"
-#include "../common/gl.h"
 
 namespace Core  {
 
@@ -24,9 +23,10 @@ namespace Core  {
     virtual void renderObject(std::shared_ptr<Camera> camera, std::shared_ptr<Mesh> mesh) override;
 
   private:
-    MeshRenderer(std::weak_ptr<Material> material, std::weak_ptr<Object3D> owner);
-    std::weak_ptr<Material> material;
+    MeshRenderer(std::weak_ptr<Graphics> graphics, std::weak_ptr<Material> material, std::weak_ptr<Object3D> owner);
     void checkAndSetShaderAttribute(std::shared_ptr<Mesh> mesh, StandardAttributes attribute, AttributeArrayBase* array);
+
+    std::weak_ptr<Material> material;
   };
 
 }

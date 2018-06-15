@@ -1,51 +1,51 @@
 #include "MeshRenderer.h"
-#include "../common/gl.h"
 #include "RenderableContainer.h"
 
 namespace Core {
 
-    MeshRenderer::MeshRenderer(std::weak_ptr<Material> material, std::weak_ptr<Object3D> owner) : ObjectRenderer<Mesh>(owner), material(material) {
+    MeshRenderer::MeshRenderer(std::weak_ptr<Graphics> graphics, 
+                               std::weak_ptr<Material> material, 
+                               std::weak_ptr<Object3D> owner): ObjectRenderer<Mesh>(graphics, owner), material(material) {
     }
 
     void MeshRenderer::renderObject(std::shared_ptr<Camera> camera, std::shared_ptr<Mesh> mesh) {
         WeakPointer<Object3D> ownerPtr(owner);
         WeakPointer<Material> materialPtr(this->material);
         WeakPointer<Shader> shaderPtr(materialPtr->getShader());
+        WeakPointer<Graphics> graphicsPtr(this->graphics);
 
-        glUseProgram(shaderPtr->getProgram());
+        graphicsPtr->activateShader(materialPtr->getShader());
 
         this->checkAndSetShaderAttribute(mesh, StandardAttributes::Position, mesh->getVertexPositions());
         this->checkAndSetShaderAttribute(mesh, StandardAttributes::Color, mesh->getVertexColors());
         this->checkAndSetShaderAttribute(mesh, StandardAttributes::UV, mesh->getVertexUVs());
 
-        GLint projectionLoc = materialPtr->getShaderLocation(StandardUniforms::ProjectionMatrix);
-        GLint viewMatrixLoc = materialPtr->getShaderLocation(StandardUniforms::ViewMatrix);
-        GLint modelMatrixLoc = materialPtr->getShaderLocation(StandardUniforms::ModelMatrix);
+        Int32 projectionLoc = materialPtr->getShaderLocation(StandardUniforms::ProjectionMatrix);
+        Int32 viewMatrixLoc = materialPtr->getShaderLocation(StandardUniforms::ViewMatrix);
+        Int32 modelMatrixLoc = materialPtr->getShaderLocation(StandardUniforms::ModelMatrix);
 
         if (projectionLoc >= 0) {
-            const Matrix4x4 &matrix = camera->getProjectionMatrix();
-            glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, matrix.getConstData());
+            const Matrix4x4 &projMatrix = camera->getProjectionMatrix();
+            shaderPtr->setUniformMatrix4(projectionLoc, projMatrix);
         }
 
         if (viewMatrixLoc >= 0) {
             Matrix4x4 viewMatrix = camera->getTransform().getWorldMatrix();
             viewMatrix.invert();
-            glUniformMatrix4fv(viewMatrixLoc, 1, GL_FALSE, viewMatrix.getConstData());
+            shaderPtr->setUniformMatrix4(viewMatrixLoc, viewMatrix);
         }
 
         if (modelMatrixLoc >= 0) {
             Matrix4x4 modelmatrix = ownerPtr->getTransform().getWorldMatrix();
-            glUniformMatrix4fv(modelMatrixLoc, 1, GL_FALSE, modelmatrix.getConstData());
+            shaderPtr->setUniformMatrix4(modelMatrixLoc, modelmatrix);
         }
 
         materialPtr->sendCustomUniformsToShader();
 
         if (mesh->isIndexed()) {
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->getIndexBuffer()->getBufferID());
-            glDrawElements(GL_TRIANGLES, mesh->getVertexCount(), GL_UNSIGNED_INT, (void *)(0));
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+            graphicsPtr->drawBoundVertexBuffer(mesh->getVertexCount(), mesh->getIndexBuffer());
         } else {
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+            graphicsPtr->drawBoundVertexBuffer(mesh->getVertexCount());
         }
     }
 
@@ -61,11 +61,10 @@ namespace Core {
         }
     }
 
-    void MeshRenderer::checkAndSetShaderAttribute(std::shared_ptr<Mesh> mesh, StandardAttributes attribute,
-                                                  AttributeArrayBase* array) {
+    void MeshRenderer::checkAndSetShaderAttribute(std::shared_ptr<Mesh> mesh, StandardAttributes attribute, AttributeArrayBase *array) {
         if (mesh->isAttributeEnabled(attribute)) {
             WeakPointer<Material> materialPtr(this->material);
-            GLuint shaderLocation = materialPtr->getShaderLocation(attribute);
+            Int32 shaderLocation = materialPtr->getShaderLocation(attribute);
 
             WeakPointer<AttributeArrayGPUStorage> gpuStoragePtr(array->getGPUStorage());
             if (gpuStoragePtr.isInitialized()) {
