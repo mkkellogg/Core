@@ -1,6 +1,7 @@
 #include "BasicMaterial.h"
 #include "StandardAttributes.h"
 #include "StandardUniforms.h"
+#include "../util/WeakPointer.h"
 
 static const char vertexShader[] =
     "#version 100\n"
@@ -26,7 +27,7 @@ static const char fragmentShader[] =
 
 namespace Core {
 
-  BasicMaterial::BasicMaterial() {
+  BasicMaterial::BasicMaterial(std::shared_ptr<Graphics> graphics): Material(graphics) {
 
   }
 
@@ -37,11 +38,13 @@ namespace Core {
     if (!ready) {
       return false;
     }
-    this->positionLocation = glGetAttribLocation(this->shader->getProgram(), "pos");
-    this->colorLocation = glGetAttribLocation(this->shader->getProgram(), "color");
-    this->projectionMatrixLocation = glGetUniformLocation(this->shader->getProgram(), "projection");
-    this->viewMatrixLocation = glGetUniformLocation(this->shader->getProgram(), "viewMatrix");
-    this->modelMatrixLocation = glGetUniformLocation(this->shader->getProgram(), "modelMatrix");
+
+    WeakPointer<Shader> shaderPtr(this->shader);
+    this->positionLocation = glGetAttribLocation(shaderPtr->getProgram(), "pos");
+    this->colorLocation = glGetAttribLocation(shaderPtr->getProgram(), "color");
+    this->projectionMatrixLocation = glGetUniformLocation(shaderPtr->getProgram(), "projection");
+    this->viewMatrixLocation = glGetUniformLocation(shaderPtr->getProgram(), "viewMatrix");
+    this->modelMatrixLocation = glGetUniformLocation(shaderPtr->getProgram(), "modelMatrix");
     return true;
   }
 

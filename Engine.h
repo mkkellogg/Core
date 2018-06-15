@@ -63,7 +63,7 @@ namespace Core {
 
     template <typename T>
     std::weak_ptr<typename std::enable_if<std::is_base_of<Material, T>::value, T>::type> createMaterial() {
-      std::shared_ptr<T> materialPtr = std::shared_ptr<T>(new T());
+      std::shared_ptr<T> materialPtr = std::shared_ptr<T>(new T(this->graphics));
       this->materials.push_back(materialPtr);
       return materialPtr;
     }

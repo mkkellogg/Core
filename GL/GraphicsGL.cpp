@@ -7,16 +7,13 @@ namespace Core {
         Debug::PrintMessage("GL %s: %s\n", name, v);
     }
 
-    GraphicsGL::GraphicsGL(GLVersion version): glVersion(version) {
-
+    GraphicsGL::GraphicsGL(GLVersion version) : glVersion(version) {
     }
 
     GraphicsGL::~GraphicsGL() {
-
     }
 
     void GraphicsGL::init() {
-
         printGlString("Version", GL_VERSION);
         printGlString("Vendor", GL_VENDOR);
         printGlString("Renderer", GL_RENDERER);
@@ -34,7 +31,6 @@ namespace Core {
         glEnable(GL_DEPTH_TEST);
         glDepthMask(GL_TRUE);
         glDepthFunc(GL_LEQUAL);
-
     }
 
     std::weak_ptr<Renderer> GraphicsGL::getRenderer() {
@@ -53,11 +49,26 @@ namespace Core {
         return std::static_pointer_cast<CubeTexture>(newTexture);
     }
 
+    std::weak_ptr<Shader> GraphicsGL::createShader(const std::string& vertex, const std::string& fragment) {
+        std::shared_ptr<ShaderGL> shader(new ShaderGL(vertex, fragment));
+        shaders.push_back(shader);
+        std::weak_ptr<Shader> ws = std::static_pointer_cast<Shader>(shader);
+        return ws;
+    }
+
+    std::weak_ptr<Shader> GraphicsGL::createShader(const char vertex[], const char fragment[]) {
+        std::shared_ptr<ShaderGL> shader(new ShaderGL(vertex, fragment));
+        shaders.push_back(shader);
+        std::weak_ptr<Shader> ws = std::static_pointer_cast<Shader>(shader);
+        return ws;
+    }
+
     std::shared_ptr<AttributeArrayGPUStorage> GraphicsGL::createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) const {
-         AttributeArrayGPUStorageGL* gpuStorage = new (std::nothrow) AttributeArrayGPUStorageGL(size, componentCount, convertAttributeType(type), normalize ? GL_TRUE : GL_FALSE, 0);
+        AttributeArrayGPUStorageGL* gpuStorage =
+            new (std::nothrow) AttributeArrayGPUStorageGL(size, componentCount, convertAttributeType(type), normalize ? GL_TRUE : GL_FALSE, 0);
         if (gpuStorage == nullptr) {
             throw AllocationException("GraphicsGL::createGPUStorage() -> Unable to allocate gpu buffer.");
-        } 
+        }
         std::shared_ptr<AttributeArrayGPUStorageGL> gpuStoragePtr(gpuStorage);
         return gpuStoragePtr;
     }
@@ -81,5 +92,4 @@ namespace Core {
                 return GL_INT;
         }
     }
-
 }

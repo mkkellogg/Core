@@ -4,9 +4,15 @@
 #include "../image/CubeTexture.h"
 
 namespace Core {
+
+  // forward declarations
+  class Engine;
+
   class BasicCubeMaterial : public Material {
+    friend class Engine;
+
   public:
-    BasicCubeMaterial();
+    
     virtual Bool build() override;
     virtual GLint getShaderLocation(StandardAttributes attribute) override;
     virtual GLint getShaderLocation(StandardUniforms uniform) override;
@@ -14,6 +20,7 @@ namespace Core {
     void setSkyboxTexture(std::shared_ptr<CubeTexture> texture);
     
   private:
+    BasicCubeMaterial(std::shared_ptr<Graphics> graphics);
     GLint positionLocation;
     GLint colorLocation;
     GLint skyboxLocation;

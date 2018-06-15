@@ -10,8 +10,9 @@ namespace Core {
     void MeshRenderer::renderObject(std::shared_ptr<Camera> camera, std::shared_ptr<Mesh> mesh) {
         WeakPointer<Object3D> ownerPtr(owner);
         WeakPointer<Material> materialPtr(this->material);
+        WeakPointer<Shader> shaderPtr(materialPtr->getShader());
 
-        glUseProgram(materialPtr->getShader()->getProgram());
+        glUseProgram(shaderPtr->getProgram());
 
         this->checkAndSetShaderAttribute(mesh, StandardAttributes::Position, mesh->getVertexPositions());
         this->checkAndSetShaderAttribute(mesh, StandardAttributes::Color, mesh->getVertexColors());

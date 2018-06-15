@@ -85,6 +85,7 @@ set(INCLUDE_FILES
     GL/RendererGL.h
     GL/Texture2DGL.h
     GL/CubeTextureGL.h
+    GL/ShaderGL.h
     GL/AttributeArrayGPUStorageGL.h
     GL/IndexBufferGL.h
     Graphics.h
@@ -136,6 +137,7 @@ set(SOURCE_FILES
     GL/RendererGL.cpp
     GL/Texture2DGL.cpp
     GL/CubeTextureGL.cpp
+    GL/ShaderGL.cpp
     GL/IndexBufferGL.cpp)
     #RendererES3.cpp)
 

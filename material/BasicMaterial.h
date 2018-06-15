@@ -5,7 +5,7 @@
 
 namespace Core {
 
-  // forward declaration
+  // forward declarations
   class Engine;
 
   class BasicMaterial : public Material {
@@ -18,7 +18,7 @@ namespace Core {
     virtual void sendCustomUniformsToShader() override;
   
   private:
-    BasicMaterial();
+    BasicMaterial(std::shared_ptr<Graphics> graphics);
     GLint positionLocation;
     GLint colorLocation;
     GLint uvLocation;

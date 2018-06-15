@@ -1,6 +1,7 @@
 #include "BasicTexturedMaterial.h"
 #include "StandardAttributes.h"
 #include "StandardUniforms.h"
+#include "../util/WeakPointer.h"
 
 static const char vertexShader[] =
     "#version 100\n"
@@ -30,7 +31,7 @@ static const char fragmentShader[] =
 
 namespace Core {
 
-  BasicTexturedMaterial::BasicTexturedMaterial() {
+  BasicTexturedMaterial::BasicTexturedMaterial(std::shared_ptr<Graphics> graphics): Material(graphics) {
 
   }
 
@@ -41,12 +42,13 @@ namespace Core {
     if (!ready) {
       return false;
     }
-    this->positionLocation = glGetAttribLocation(this->shader->getProgram(), "pos");
-    this->colorLocation = glGetAttribLocation(this->shader->getProgram(), "color");
-    this->textureLocation = glGetAttribLocation(this->shader->getProgram(), "textureA");
-    this->projectionMatrixLocation = glGetUniformLocation(this->shader->getProgram(), "projection");
-    this->viewMatrixLocation = glGetUniformLocation(this->shader->getProgram(), "viewMatrix");
-    this->uvLocation = glGetAttribLocation(this->shader->getProgram(), "uv");
+    WeakPointer<Shader> shaderPtr(this->shader);
+    this->positionLocation = glGetAttribLocation(shaderPtr->getProgram(), "pos");
+    this->colorLocation = glGetAttribLocation(shaderPtr->getProgram(), "color");
+    this->textureLocation = glGetAttribLocation(shaderPtr->getProgram(), "textureA");
+    this->projectionMatrixLocation = glGetUniformLocation(shaderPtr->getProgram(), "projection");
+    this->viewMatrixLocation = glGetUniformLocation(shaderPtr->getProgram(), "viewMatrix");
+    this->uvLocation = glGetAttribLocation(shaderPtr->getProgram(), "uv");
     return true;
   }
 

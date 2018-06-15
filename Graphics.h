@@ -5,6 +5,7 @@
 #include "render/Renderer.h"
 #include "image/Texture2D.h"
 #include "image/CubeTexture.h"
+#include "material/Shader.h"
 #include "geometry/IndexBuffer.h"
 #include "geometry/AttributeArray.h"
 #include "geometry/AttributeType.h"
@@ -25,6 +26,9 @@ namespace Core {
 
         virtual std::weak_ptr<Texture2D> createTexture2D() = 0;
         virtual std::weak_ptr<CubeTexture> createCubeTexture() = 0;
+
+        virtual std::weak_ptr<Shader> createShader(const std::string& vertex, const std::string& fragment) = 0;
+        virtual std::weak_ptr<Shader> createShader(const char vertex[], const char fragment[]) = 0;
         std::weak_ptr<Mesh> createMesh(UInt32 size, Bool indexed);
     
         virtual std::shared_ptr<AttributeArrayGPUStorage> createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) const = 0;
