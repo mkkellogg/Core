@@ -6,7 +6,7 @@
 
 namespace Core {
 
-    Material::Material(std::shared_ptr<Graphics> graphics) : ready(false), graphics(graphics) {
+    Material::Material(std::shared_ptr<Graphics> graphics) : graphics(graphics), ready(false) {
     }
 
     Material::Material(std::shared_ptr<Graphics> graphics, std::weak_ptr<Shader> shader): Material(graphics) {

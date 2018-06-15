@@ -26,6 +26,46 @@ namespace Core {
         return program ? true : false;
     }
 
+    Int32 ShaderGL::getUniformLocation(const std::string &var) const {
+        return (Int32)glGetUniformLocation(this->glProgram, var.c_str());
+    }
+
+    Int32 ShaderGL::getAttributeLocation(const std::string &var) const {
+        return (Int32)glGetAttribLocation(this->glProgram, var.c_str());
+    }
+
+    Int32 ShaderGL::getUniformLocation(const char var[]) const {
+        return (Int32)glGetUniformLocation(this->glProgram, var);
+    }
+
+    Int32 ShaderGL::getAttributeLocation(const char var[]) const {
+        return (Int32)glGetAttribLocation(this->glProgram, var);
+    }
+
+    void ShaderGL::setTexture2D(UInt32 slot, UInt32 textureID) {
+        static UInt32 slots[] = {GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2};
+
+        if (slot >= 3) {
+            throw Shader::ShaderVariableException("ShaderGL::setTexture2D() value for [slot] is too high.");
+        }
+        glActiveTexture(slots[slot]);
+        glBindTexture(GL_TEXTURE_2D, textureID);
+    }
+
+    void ShaderGL::setTextureCube(UInt32 slot, UInt32 textureID) {
+        static UInt32 slots[] = {GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2};
+
+        if (slot >= 3) {
+            throw Shader::ShaderVariableException("ShaderGL::setTextureCube() value for [slot] is too high.");
+        }
+        glActiveTexture(slots[slot]);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+    }
+
+    void ShaderGL::setUniform1i(UInt32 location, Int32 val) {
+        glUniform1i(location, 0);
+    }
+
     Bool ShaderGL::checkGlError(const char *funcName) {
         GLint err = glGetError();
         if (err != GL_NO_ERROR) {

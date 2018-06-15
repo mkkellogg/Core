@@ -47,15 +47,15 @@ namespace Core {
     }
 
     WeakPointer<Shader> shaderPtr(this->shader);
-    this->positionLocation = glGetAttribLocation(shaderPtr->getProgram(), "pos");
-    this->colorLocation = glGetAttribLocation(shaderPtr->getProgram(), "color");
-    this->skyboxLocation = glGetAttribLocation(shaderPtr->getProgram(), "skybox");
-    this->projectionMatrixLocation = glGetUniformLocation(shaderPtr->getProgram(), "projection");
-    this->viewMatrixLocation = glGetUniformLocation(shaderPtr->getProgram(), "viewMatrix");
+    this->positionLocation = shaderPtr->getAttributeLocation("pos");
+    this->colorLocation = shaderPtr->getAttributeLocation("color");
+    this->skyboxLocation = shaderPtr->getUniformLocation("skybox");
+    this->projectionMatrixLocation = shaderPtr->getUniformLocation("projection");
+    this->viewMatrixLocation = shaderPtr->getUniformLocation("viewMatrix");
     return true;
   }
 
-  GLint BasicCubeMaterial::getShaderLocation(StandardAttributes attribute) {
+  Int32 BasicCubeMaterial::getShaderLocation(StandardAttributes attribute) {
     switch(attribute) {
       case StandardAttributes::Position:
         return this->positionLocation;
@@ -66,7 +66,7 @@ namespace Core {
     }
   }
 
-  GLint BasicCubeMaterial::getShaderLocation(StandardUniforms uniform) {
+  Int32 BasicCubeMaterial::getShaderLocation(StandardUniforms uniform) {
     switch(uniform) {
       case StandardUniforms::ProjectionMatrix:
         return this->projectionMatrixLocation;
@@ -82,8 +82,8 @@ namespace Core {
   }
 
   void BasicCubeMaterial::sendCustomUniformsToShader() {
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, this->skyboxTexture->getTextureID());
-    glUniform1i(skyboxLocation, 0);
+    WeakPointer<Shader> shaderPtr(this->shader);
+    shaderPtr->setTextureCube(0, this->skyboxTexture->getTextureID());
+    shaderPtr->setUniform1i(skyboxLocation, 0);
   }
 }

@@ -20,6 +20,14 @@ namespace Core {
     Bool isReady() const;
     Bool build() override;
     UInt32 getProgram() const override;
+    Int32 getUniformLocation(const std::string& var) const override;
+    Int32 getAttributeLocation(const std::string& var) const override;
+    Int32 getUniformLocation(const char var[]) const override;
+    Int32 getAttributeLocation(const char var[]) const override;
+
+    void setTexture2D(UInt32 slot, UInt32 textureID) override;
+    void setTextureCube(UInt32 slot, UInt32 textureID) override;
+    void setUniform1i(UInt32 location, Int32 val) override;
 
   protected:
     ShaderGL();

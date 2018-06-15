@@ -13,8 +13,9 @@ namespace Core {
     Material(std::shared_ptr<Graphics> graphics, std::weak_ptr<Shader> shader);
     std::weak_ptr<Shader> getShader();
     virtual Bool build() = 0;
-    virtual GLint getShaderLocation(StandardAttributes attribute) = 0;
-    virtual GLint getShaderLocation(StandardUniforms uniform) = 0;
+
+    virtual Int32 getShaderLocation(StandardAttributes attribute) = 0;
+    virtual Int32 getShaderLocation(StandardUniforms uniform) = 0;
     virtual void sendCustomUniformsToShader() = 0;
 
   protected:

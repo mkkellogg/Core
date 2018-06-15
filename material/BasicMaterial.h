@@ -13,8 +13,8 @@ namespace Core {
     
   public:
     virtual Bool build() override;
-    virtual GLint getShaderLocation(StandardAttributes attribute) override;
-    virtual GLint getShaderLocation(StandardUniforms uniform) override;
+    virtual Int32 getShaderLocation(StandardAttributes attribute) override;
+    virtual Int32 getShaderLocation(StandardUniforms uniform) override;
     virtual void sendCustomUniformsToShader() override;
   
   private:

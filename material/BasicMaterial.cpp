@@ -40,15 +40,15 @@ namespace Core {
     }
 
     WeakPointer<Shader> shaderPtr(this->shader);
-    this->positionLocation = glGetAttribLocation(shaderPtr->getProgram(), "pos");
-    this->colorLocation = glGetAttribLocation(shaderPtr->getProgram(), "color");
-    this->projectionMatrixLocation = glGetUniformLocation(shaderPtr->getProgram(), "projection");
-    this->viewMatrixLocation = glGetUniformLocation(shaderPtr->getProgram(), "viewMatrix");
-    this->modelMatrixLocation = glGetUniformLocation(shaderPtr->getProgram(), "modelMatrix");
+    this->positionLocation = shaderPtr->getAttributeLocation("pos");
+    this->colorLocation = shaderPtr->getAttributeLocation("color");
+    this->projectionMatrixLocation = shaderPtr->getUniformLocation("projection");
+    this->viewMatrixLocation = shaderPtr->getUniformLocation("viewMatrix");
+    this->modelMatrixLocation = shaderPtr->getUniformLocation("modelMatrix");
     return true;
   }
 
-  GLint BasicMaterial::getShaderLocation(StandardAttributes attribute) {
+  Int32 BasicMaterial::getShaderLocation(StandardAttributes attribute) {
     switch(attribute) {
       case StandardAttributes::Position:
         return this->positionLocation;
@@ -61,7 +61,7 @@ namespace Core {
     }
   }
 
-  GLint BasicMaterial::getShaderLocation(StandardUniforms uniform) {
+  Int32 BasicMaterial::getShaderLocation(StandardUniforms uniform) {
     switch(uniform) {
       case StandardUniforms::ProjectionMatrix:
         return this->projectionMatrixLocation;

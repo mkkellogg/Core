@@ -43,16 +43,16 @@ namespace Core {
       return false;
     }
     WeakPointer<Shader> shaderPtr(this->shader);
-    this->positionLocation = glGetAttribLocation(shaderPtr->getProgram(), "pos");
-    this->colorLocation = glGetAttribLocation(shaderPtr->getProgram(), "color");
-    this->textureLocation = glGetAttribLocation(shaderPtr->getProgram(), "textureA");
-    this->projectionMatrixLocation = glGetUniformLocation(shaderPtr->getProgram(), "projection");
-    this->viewMatrixLocation = glGetUniformLocation(shaderPtr->getProgram(), "viewMatrix");
-    this->uvLocation = glGetAttribLocation(shaderPtr->getProgram(), "uv");
+    this->positionLocation = shaderPtr->getAttributeLocation("pos");
+    this->colorLocation = shaderPtr->getAttributeLocation("color");
+    this->textureLocation = shaderPtr->getAttributeLocation("textureA");
+    this->projectionMatrixLocation = shaderPtr->getUniformLocation("projection");
+    this->viewMatrixLocation = shaderPtr->getUniformLocation("viewMatrix");
+    this->uvLocation = shaderPtr->getUniformLocation("uv");
     return true;
   }
 
-  GLint BasicTexturedMaterial::getShaderLocation(StandardAttributes attribute) {
+  Int32 BasicTexturedMaterial::getShaderLocation(StandardAttributes attribute) {
     switch(attribute) {
       case StandardAttributes::Position:
         return this->positionLocation;
@@ -65,7 +65,7 @@ namespace Core {
     }
   }
 
-  GLint BasicTexturedMaterial::getShaderLocation(StandardUniforms uniform) {
+  Int32 BasicTexturedMaterial::getShaderLocation(StandardUniforms uniform) {
     switch(uniform) {
       case StandardUniforms::ProjectionMatrix:
         return this->projectionMatrixLocation;
@@ -82,9 +82,9 @@ namespace Core {
 
   void BasicTexturedMaterial::sendCustomUniformsToShader() {
     if (this->texture) {
-      glActiveTexture(GL_TEXTURE0);
-      glBindTexture(GL_TEXTURE_2D, this->texture->getTextureID());
-      glUniform1i(textureLocation, 0);
+      WeakPointer<Shader> shaderPtr(this->shader);
+      shaderPtr->setTexture2D(0, this->texture->getTextureID());
+      shaderPtr->setUniform1i(textureLocation, 0);
     }
   }
 }

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include "../common/gl.h"
 #include "RawImage.h"
 #include "Texture.h"
 
