@@ -18,10 +18,10 @@
 namespace Core {
 
   // forward declarations
-  class Graphics;
+  class Engine;
 
   class Mesh : public Renderable<Mesh>  {
-    friend class Graphics;
+    friend class Engine;
 
   public:
 
@@ -49,11 +49,11 @@ namespace Core {
     const Box3& getBoundingBox() const;
 
   protected:
-    Mesh(Graphics& graphics, UInt32 vertexCount, Bool indexed);
+    Mesh(std::shared_ptr<Graphics> graphics, UInt32 vertexCount, Bool indexed);
     void initAttributes();
     Bool initIndices();
 
-    Graphics& graphics;
+    std::shared_ptr<Graphics> graphics;
     Bool initialized;
     Bool enabledAttributes[(UInt32)StandardAttributes::_Count];
     UInt32 vertexCount;

@@ -34,10 +34,4 @@ namespace Core {
             renderer->setViewport(hOffset, vOffset, viewPortWidth, viewPortHeight);
         }
     }
-
-    std::weak_ptr<Mesh> Graphics::createMesh(UInt32 size, Bool indexed) {
-        std::shared_ptr<Mesh> newMesh = std::shared_ptr<Mesh>(new Mesh(*this, size, indexed));
-        this->meshes.push_back(newMesh);
-        return std::static_pointer_cast<Mesh>(newMesh);
-    }
 }

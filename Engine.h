@@ -52,6 +52,8 @@ namespace Core {
       return objPtr;
     }
 
+    std::weak_ptr<Mesh> createMesh(UInt32 size, Bool indexed);
+
     template <typename T, typename R>
     std::weak_ptr<typename std::enable_if<std::is_base_of<ObjectRenderer<R>, T>::value, T>::type> 
     createRenderer(std::weak_ptr<Material> material, std::weak_ptr<RenderableContainer<R>> owner) {
@@ -70,7 +72,6 @@ namespace Core {
 
     std::weak_ptr<Texture2D> createTexture2D();
     std::weak_ptr<CubeTexture> createCubeTexture();
-    std::weak_ptr<Mesh> createMesh(UInt32 size, Bool indexed);
 
     void setImageLoader(std::weak_ptr<ImageLoader> imageLoader);
     std::weak_ptr<ImageLoader> getImageLoader();

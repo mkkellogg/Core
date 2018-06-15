@@ -72,6 +72,12 @@ namespace Core {
         return newScene;
     }
 
+    std::weak_ptr<Mesh> Engine::createMesh(UInt32 size, Bool indexed) {
+        std::shared_ptr<Mesh> newMesh = std::shared_ptr<Mesh>(new Mesh(this->graphics, size, indexed));
+        this->meshes.push_back(newMesh);
+        return std::static_pointer_cast<Mesh>(newMesh);
+    }
+
     std::weak_ptr<Camera> Engine::createCamera() {
         std::shared_ptr<Camera> newCamera = std::shared_ptr<Camera>(new Camera());
         this->cameras.push_back(newCamera);
@@ -84,10 +90,6 @@ namespace Core {
 
     std::weak_ptr<CubeTexture> Engine::createCubeTexture() {
         return this->graphics->createCubeTexture();
-    }
-
-    std::weak_ptr<Mesh> Engine::createMesh(UInt32 size, Bool indexed) {
-        return this->graphics->createMesh(size, indexed);
     }
 
     void Engine::setImageLoader(std::weak_ptr<ImageLoader> imageLoader) {
