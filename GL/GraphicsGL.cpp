@@ -59,4 +59,24 @@ namespace Core {
         return std::static_pointer_cast<Mesh>(newMesh);
     }
 
+    std::shared_ptr<AttributeArrayGPUStorage> GraphicsGL::createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) const {
+         AttributeArrayGPUStorageGL* gpuStorage = new (std::nothrow) AttributeArrayGPUStorageGL(size, componentCount, convertAttributeType(type), normalize ? GL_TRUE : GL_FALSE, 0);
+        if (gpuStorage == nullptr) {
+            throw AllocationException("GraphicsGL::createGPUStorage() -> Unable to allocate gpu buffer.");
+        } 
+        std::shared_ptr<AttributeArrayGPUStorageGL> gpuStoragePtr(gpuStorage);
+        return gpuStoragePtr;
+    }
+
+    GLuint GraphicsGL::convertAttributeType(AttributeType type) {
+        switch (type) {
+            case AttributeType::Float:
+                return GL_FLOAT;
+            case AttributeType::UnsignedInt:
+                return GL_UNSIGNED_INT;
+            case AttributeType::Int:
+                return GL_INT;
+        }
+    }
+
 }

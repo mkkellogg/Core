@@ -6,6 +6,8 @@
 #include "image/Texture2D.h"
 #include "image/CubeTexture.h"
 #include "geometry/AttributeArray.h"
+#include "geometry/AttributeType.h"
+#include "geometry/AttributeArrayGPUStorage.h"
 
 namespace Core {
 
@@ -23,6 +25,8 @@ namespace Core {
         virtual std::weak_ptr<Texture2D> createTexture2D() = 0;
         virtual std::weak_ptr<CubeTexture> createCubeTexture() = 0;
         virtual std::weak_ptr<Mesh> createMesh(UInt32 size, Bool indexed) = 0;
+    
+        virtual std::shared_ptr<AttributeArrayGPUStorage> createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) const = 0;
 
     };
 }

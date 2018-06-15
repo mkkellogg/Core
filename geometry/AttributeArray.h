@@ -14,11 +14,6 @@ namespace Core {
     template <typename T>
     class AttributeArray {
     public:
-        
-        enum class AttributeType {
-            Int = 1,
-            Float = 2,
-        };
 
         AttributeArray(UInt32 attributeCount) : storage(nullptr), attributes(nullptr), attributeCount(attributeCount), gpuStorage(nullptr) {
             allocate();
