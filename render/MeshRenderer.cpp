@@ -1,13 +1,10 @@
 #include "MeshRenderer.h"
-#include "../GL/MeshGL.h"
 #include "../common/gl.h"
 #include "RenderableContainer.h"
 
 namespace Core {
 
     MeshRenderer::MeshRenderer(std::weak_ptr<Material> material, std::weak_ptr<Object3D> owner) : ObjectRenderer<Mesh>(owner), material(material) {
-        glGenBuffers(1, &pBuf);
-        glGenBuffers(1, &cBuf);
     }
 
     void MeshRenderer::renderObject(std::shared_ptr<Camera> camera, std::shared_ptr<Mesh> mesh) {
@@ -43,8 +40,7 @@ namespace Core {
         materialPtr->sendCustomUniformsToShader();
 
         if (mesh->isIndexed()) {
-            std::shared_ptr<MeshGL> meshGL = std::dynamic_pointer_cast<MeshGL>(mesh);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshGL->getIndexBuffer()->getBufferID());
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->getIndexBuffer()->getBufferID());
             glDrawElements(GL_TRIANGLES, mesh->getVertexCount(), GL_UNSIGNED_INT, (void *)(0));
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         } else {

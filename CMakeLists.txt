@@ -33,6 +33,7 @@ set(INCLUDE_FILES
     geometry/Vector4Components.h
     geometry/Vector4.h
     geometry/AttributeArray.h
+    geometry/AttributeType.h
     geometry/AttributeArrayGPUStorage.h
     geometry/IndexBuffer.h
     scene/Object3D.h
@@ -84,7 +85,6 @@ set(INCLUDE_FILES
     GL/RendererGL.h
     GL/Texture2DGL.h
     GL/CubeTextureGL.h
-    GL/MeshGL.h
     GL/AttributeArrayGPUStorageGL.h
     GL/IndexBufferGL.h
     Graphics.h
@@ -136,7 +136,6 @@ set(SOURCE_FILES
     GL/RendererGL.cpp
     GL/Texture2DGL.cpp
     GL/CubeTextureGL.cpp
-    GL/MeshGL.cpp
     GL/IndexBufferGL.cpp)
     #RendererES3.cpp)
 

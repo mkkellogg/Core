@@ -1,6 +1,7 @@
 #include "Graphics.h"
 #include "scene/Scene.h"
 #include "util/WeakPointer.h"
+#include "geometry/Mesh.h"
 
 namespace Core {
 
@@ -32,5 +33,11 @@ namespace Core {
         if (renderer.isInitialized()) {
             renderer->setViewport(hOffset, vOffset, viewPortWidth, viewPortHeight);
         }
+    }
+
+    std::weak_ptr<Mesh> Graphics::createMesh(UInt32 size, Bool indexed) {
+        std::shared_ptr<Mesh> newMesh = std::shared_ptr<Mesh>(new Mesh(*this, size, indexed));
+        this->meshes.push_back(newMesh);
+        return std::static_pointer_cast<Mesh>(newMesh);
     }
 }

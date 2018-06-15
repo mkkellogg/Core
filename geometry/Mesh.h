@@ -13,10 +13,16 @@
 #include "IndexBuffer.h"
 #include "../material/StandardAttributes.h"
 #include "Box3.h"
+#include "../Graphics.h"
 
 namespace Core {
 
+  // forward declarations
+  class Graphics;
+
   class Mesh : public Renderable<Mesh>  {
+    friend class Graphics;
+
   public:
 
     virtual ~Mesh();
@@ -25,14 +31,14 @@ namespace Core {
 
     UInt32 getVertexCount() const;
 
-    virtual AttributeArray<Vector3rs>* getVertexPositions() = 0;
-    virtual AttributeArray<ColorS>* getVertexColors() = 0;
-    virtual AttributeArray<Vector2rs>* getVertexUVs() = 0;
-    virtual IndexBuffer* getIndexBuffer() = 0;
+    AttributeArray<Vector3rs>* getVertexPositions();
+    AttributeArray<ColorS>* getVertexColors();
+    AttributeArray<Vector2rs>* getVertexUVs();
+    std::shared_ptr<IndexBuffer> getIndexBuffer();
 
-    virtual Bool initVertexPositions(UInt32 vertexCount) = 0;
-    virtual Bool initVertexColors(UInt32 vertexCount) = 0;
-    virtual Bool initVertexUVs(UInt32 vertexCount) = 0;
+    Bool initVertexPositions(UInt32 vertexCount);
+    Bool initVertexColors(UInt32 vertexCount);
+    Bool initVertexUVs(UInt32 vertexCount);
 
     void enableAttribute(StandardAttributes attribute);
     void disableAttribute(StandardAttributes attribute);
@@ -43,15 +49,21 @@ namespace Core {
     const Box3& getBoundingBox() const;
 
   protected:
-    Mesh(UInt32 vertexCount, Bool indexed);
+    Mesh(Graphics& graphics, UInt32 vertexCount, Bool indexed);
     void initAttributes();
-    virtual Bool initIndices() = 0;
+    Bool initIndices();
 
+    Graphics& graphics;
     Bool initialized;
     Bool enabledAttributes[(UInt32)StandardAttributes::_Count];
     UInt32 vertexCount;
     Bool indexed;
     Box3 boundingBox;
+
+    AttributeArray<Vector3rs>* vertexPositions;
+    AttributeArray<ColorS>* vertexColors;
+    AttributeArray<Vector2rs>* vertexUVs;
+    std::shared_ptr<IndexBuffer> indexBuffer;
   };
 
 }

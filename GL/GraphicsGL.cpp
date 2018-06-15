@@ -53,12 +53,6 @@ namespace Core {
         return std::static_pointer_cast<CubeTexture>(newTexture);
     }
 
-    std::weak_ptr<Mesh> GraphicsGL::createMesh(UInt32 size, Bool indexed) {
-        std::shared_ptr<MeshGL> newMesh = std::shared_ptr<MeshGL>(new MeshGL(size, indexed));
-        this->meshes.push_back(newMesh);
-        return std::static_pointer_cast<Mesh>(newMesh);
-    }
-
     std::shared_ptr<AttributeArrayGPUStorage> GraphicsGL::createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) const {
          AttributeArrayGPUStorageGL* gpuStorage = new (std::nothrow) AttributeArrayGPUStorageGL(size, componentCount, convertAttributeType(type), normalize ? GL_TRUE : GL_FALSE, 0);
         if (gpuStorage == nullptr) {
@@ -66,6 +60,15 @@ namespace Core {
         } 
         std::shared_ptr<AttributeArrayGPUStorageGL> gpuStoragePtr(gpuStorage);
         return gpuStoragePtr;
+    }
+
+    std::shared_ptr<IndexBuffer> GraphicsGL::createIndexBuffer(UInt32 size) const {
+        IndexBufferGL* indexBuffer = new (std::nothrow) IndexBufferGL(size);
+        if (indexBuffer == nullptr) {
+            throw AllocationException("GraphicsGL::createIndexBuffer() -> Unable to allocate index buffer.");
+        }
+        std::shared_ptr<IndexBuffer> bufferPtr(indexBuffer);
+        return bufferPtr;
     }
 
     GLuint GraphicsGL::convertAttributeType(AttributeType type) {
