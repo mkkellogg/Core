@@ -1,6 +1,5 @@
 #include "Renderer.h"
 #include "../math/Matrix4x4.h"
-#include "../util/WeakPointer.h"
 
 namespace Core {
 
@@ -14,16 +13,16 @@ namespace Core {
         return true;
     }
 
-    void Renderer::processScene(std::weak_ptr<Scene> scene, std::vector<std::weak_ptr<Object3D>>& outObjects,
-                                std::vector<std::weak_ptr<Camera>>& outCameras) {
+    void Renderer::processScene(WeakPointer<Scene> scene, std::vector<WeakPointer<Object3D>>& outObjects,
+                                std::vector<WeakPointer<Camera>>& outCameras) {
         Matrix4x4 rootTransform;
         WeakPointer<Scene> scenePtr = WeakPointer<Scene>(scene);
         WeakPointer<Object3D> sceneRootPtr = WeakPointer<Object3D>(scenePtr->getRoot());
         processSceneStep(sceneRootPtr.getLockedPointer(), rootTransform, outObjects, outCameras);
     }
 
-    void Renderer::processSceneStep(const std::weak_ptr<Object3D> object, const Matrix4x4& curTransform, std::vector<std::weak_ptr<Object3D>>& outObjects,
-                                    std::vector<std::weak_ptr<Camera>>& outCameras) {
+    void Renderer::processSceneStep(const WeakPointer<Object3D> object, const Matrix4x4& curTransform, std::vector<WeakPointer<Object3D>>& outObjects,
+                                    std::vector<WeakPointer<Camera>>& outCameras) {
                                     WeakPointer<Object3D> objectPtr(object);
         for (auto itr = objectPtr->beginIterateChildren(); itr != objectPtr->endIterateChildren(); ++itr) {
             const std::shared_ptr<Object3D> obj = *itr;
@@ -36,7 +35,7 @@ namespace Core {
             outObjects.push_back(obj);
 
             for (auto compItr = obj->beginIterateComponents(); compItr != obj->endIterateComponents(); ++compItr) {
-                std::weak_ptr<Object3DComponent> comp = *compItr;
+                WeakPointer<Object3DComponent> comp = *compItr;
                 WeakPointer<Object3DComponent> compPtr(comp);
 
                 if (compPtr) {

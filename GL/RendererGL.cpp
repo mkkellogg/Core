@@ -36,10 +36,10 @@ namespace Core {
         glViewport(hOffset, vOffset, viewPortWidth, viewPortHeight);
     }
 
-    void RendererGL::render(std::weak_ptr<Scene> scene) {
+    void RendererGL::render(WeakPointer<Scene> scene) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        std::vector<std::weak_ptr<Object3D>> objectList;
-        std::vector<std::weak_ptr<Camera>> cameraList;
+        std::vector<WeakPointer<Object3D>> objectList;
+        std::vector<WeakPointer<Camera>> cameraList;
         this->processScene(scene, objectList, cameraList);
         for (auto camera : cameraList) {
             WeakPointer<Camera> cameraPtr(camera);
@@ -48,7 +48,7 @@ namespace Core {
         }
     }
 
-    void RendererGL::render(std::weak_ptr<Scene> scene, std::weak_ptr<Camera> camera, std::vector<std::weak_ptr<Object3D>>& objectList) {
+    void RendererGL::render(WeakPointer<Scene> scene, WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objectList) {
         for (auto object : objectList) {
             WeakPointer<Object3D> objectPtr(object);
 
@@ -56,7 +56,7 @@ namespace Core {
                 std::shared_ptr<Object3D> objectShared = objectPtr.getLockedPointer();
                 std::shared_ptr<BaseRenderableContainer> containerPtr = std::dynamic_pointer_cast<BaseRenderableContainer>(objectShared);
                 if (containerPtr) {
-                    std::weak_ptr<BaseObjectRenderer> objectRenderer = containerPtr->getBaseRenderer();
+                    WeakPointer<BaseObjectRenderer> objectRenderer = containerPtr->getBaseRenderer();
                     WeakPointer<BaseObjectRenderer> objectRendererPtr(objectRenderer);
                     if (objectRendererPtr) {
                         objectRendererPtr->render(camera);
