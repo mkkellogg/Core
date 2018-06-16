@@ -24,16 +24,16 @@ namespace Core {
         }
 
         WeakPointer(std::weak_ptr<T> ptr) : std::weak_ptr<T>(ptr) {
-            this->lockedPointer = expectWeakPointer(*this);
+            this->lockedPointer = expectValidWeakPointer(*this);
         }
 
         WeakPointer(std::shared_ptr<T> ptr) : std::weak_ptr<T>(ptr) {
-            this->lockedPointer = expectWeakPointer(*this);
+            this->lockedPointer = ptr;
         }
 
         template <typename U>
-        WeakPointer(const WeakPointer<U>& ptr) : std::weak_ptr<T>(ptr) {
-            this->lockedPointer = expectWeakPointer(*this);
+        WeakPointer(WeakPointer<U>& ptr) : std::weak_ptr<T>(ptr) {
+            this->lockedPointer = std::static_pointer_cast<T>(ptr.getLockedPointer());
         }
 
         WeakPointer& operator =(const WeakPointer other) {
@@ -67,7 +67,7 @@ namespace Core {
             return this->isValid();
         }
 
-        static std::shared_ptr<T> expectWeakPointer(std::weak_ptr<T> ptr) {
+        static std::shared_ptr<T> expectValidWeakPointer(std::weak_ptr<T> ptr) {
             std::shared_ptr<T> sharedPtr = ptr.lock();
             if (!sharedPtr) {
                 throw WeakPointerAssertionFailure("Expected valid weak pointer.");
