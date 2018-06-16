@@ -65,6 +65,7 @@ set(INCLUDE_FILES
     image/CubeTexture.h
     image/Texture2D.h
     image/Texture.h
+    image/TextureAttr.h
     image/RawImage.h
     color/Color.h
     color/Color4Components.h

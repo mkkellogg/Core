@@ -28,12 +28,12 @@ namespace Core {
     return this->children.size();
   }
 
-  void Object3D::addObject(std::weak_ptr<Object3D> object) {
+  void Object3D::addChild(std::weak_ptr<Object3D> object) {
     if (WeakPointer<Object3D>::isInitialized(object)) {
       WeakPointer<Object3D> objPtr(object);
       if(WeakPointer<Object3D>::isInitialized(objPtr->parent)) {
         WeakPointer<Object3D> parentPtr(objPtr->parent);
-        parentPtr->removeObject(object);
+        parentPtr->removeChild(object);
         Transform& parentTransform = parentPtr->getTransform();
         parentTransform.updateWorldMatrix();
         Matrix4x4 inverse(parentTransform.getWorldMatrix());
@@ -44,7 +44,7 @@ namespace Core {
     }
   }
 
-  void Object3D::removeObject(std::weak_ptr<Object3D> object) {
+  void Object3D::removeChild(std::weak_ptr<Object3D> object) {
     std::vector<std::shared_ptr<Object3D>>::iterator result = this->children.end();
     WeakPointer<Object3D> objectPtr(object);
     for (auto itr = this->children.begin(); itr != this->children.end(); ++itr) {

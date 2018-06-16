@@ -100,10 +100,10 @@ namespace Core {
     skyboxObjPtr->addRenderable(skyboxMesh);
 
     WeakPointer<Object3D> sceneRootPtr = WeakPointer<Object3D>(scenePtr->getRoot());
-    sceneRootPtr->addObject(skyboxObj);
+    sceneRootPtr->addChild(skyboxObj);
 
     camera = engine.createCamera();
-    sceneRootPtr->addObject(camera);
+    sceneRootPtr->addChild(camera);
 
   }
 
