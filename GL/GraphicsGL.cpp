@@ -34,37 +34,37 @@ namespace Core {
         glDepthFunc(GL_LEQUAL);
     }
 
-    std::weak_ptr<Renderer> GraphicsGL::getRenderer() {
+    WeakPointer<Renderer> GraphicsGL::getRenderer() {
         return std::static_pointer_cast<Renderer>(this->renderer);
     }
 
-    std::weak_ptr<Texture2D> GraphicsGL::createTexture2D(const TextureAttributes& attributes) {
+    WeakPointer<Texture2D> GraphicsGL::createTexture2D(const TextureAttributes& attributes) {
         std::shared_ptr<Texture2DGL> newTexture = std::shared_ptr<Texture2DGL>(new Texture2DGL(attributes));
         this->textures2D.push_back(newTexture);
         return std::static_pointer_cast<Texture2D>(newTexture);
     }
 
-    std::weak_ptr<CubeTexture> GraphicsGL::createCubeTexture(const TextureAttributes& attributes) {
+    WeakPointer<CubeTexture> GraphicsGL::createCubeTexture(const TextureAttributes& attributes) {
         std::shared_ptr<CubeTextureGL> newTexture = std::shared_ptr<CubeTextureGL>(new CubeTextureGL(attributes));
         this->cubeTextures.push_back(newTexture);
         return std::static_pointer_cast<CubeTexture>(newTexture);
     }
 
-    std::weak_ptr<Shader> GraphicsGL::createShader(const std::string& vertex, const std::string& fragment) {
-        std::shared_ptr<ShaderGL> shader(new ShaderGL(vertex, fragment));
-        shaders.push_back(shader);
-        std::weak_ptr<Shader> ws = std::static_pointer_cast<Shader>(shader);
-        return ws;
+    WeakPointer<Shader> GraphicsGL::createShader(const std::string& vertex, const std::string& fragment) {
+        std::shared_ptr<ShaderGL> shaderGL(new ShaderGL(vertex, fragment));
+        shaders.push_back(shaderGL);
+        std::shared_ptr<Shader> shader = std::static_pointer_cast<Shader>(shaderGL);
+        return shader;
     }
 
-    std::weak_ptr<Shader> GraphicsGL::createShader(const char vertex[], const char fragment[]) {
-        std::shared_ptr<ShaderGL> shader(new ShaderGL(vertex, fragment));
-        shaders.push_back(shader);
-        std::weak_ptr<Shader> ws = std::static_pointer_cast<Shader>(shader);
-        return ws;
+    WeakPointer<Shader> GraphicsGL::createShader(const char vertex[], const char fragment[]) {
+        std::shared_ptr<ShaderGL> shaderGL(new ShaderGL(vertex, fragment));
+        shaders.push_back(shaderGL);
+        std::shared_ptr<Shader> shader = std::static_pointer_cast<Shader>(shaderGL);
+        return shader;
     }
 
-    void GraphicsGL::activateShader(std::weak_ptr<Shader> shader) {
+    void GraphicsGL::activateShader(WeakPointer<Shader> shader) {
         WeakPointer<Shader> shaderPtr(shader);
         glUseProgram(shaderPtr->getProgram());
     }
@@ -92,7 +92,7 @@ namespace Core {
         glDrawArrays(GL_TRIANGLES, 0, vertexCount);
     }
 
-    void GraphicsGL::drawBoundVertexBuffer(UInt32 vertexCount, std::weak_ptr<IndexBuffer> indices) {
+    void GraphicsGL::drawBoundVertexBuffer(UInt32 vertexCount, WeakPointer<IndexBuffer> indices) {
         WeakPointer<IndexBuffer> indexPtr(indices);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexPtr->getBufferID());
         glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, (void *)(0));

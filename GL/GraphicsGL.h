@@ -28,20 +28,20 @@ namespace Core {
 
         ~GraphicsGL();
         void init() override;
-        std::weak_ptr<Renderer> getRenderer() override;
+        WeakPointer<Renderer> getRenderer() override;
         
-        std::weak_ptr<Texture2D> createTexture2D(const TextureAttributes& attributes) override;
-        std::weak_ptr<CubeTexture> createCubeTexture(const TextureAttributes& attributes) override;
+        WeakPointer<Texture2D> createTexture2D(const TextureAttributes& attributes) override;
+        WeakPointer<CubeTexture> createCubeTexture(const TextureAttributes& attributes) override;
         
-        std::weak_ptr<Shader> createShader(const std::string& vertex, const std::string& fragment) override;
-        std::weak_ptr<Shader> createShader(const char vertex[], const char fragment[]) override;
-        void activateShader(std::weak_ptr<Shader> shader) override;
+        WeakPointer<Shader> createShader(const std::string& vertex, const std::string& fragment) override;
+        WeakPointer<Shader> createShader(const char vertex[], const char fragment[]) override;
+        void activateShader(WeakPointer<Shader> shader) override;
 
         std::shared_ptr<AttributeArrayGPUStorage> createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) const override;
         std::shared_ptr<IndexBuffer> createIndexBuffer(UInt32 size) const override;
 
         void drawBoundVertexBuffer(UInt32 vertexCount) override;
-        void drawBoundVertexBuffer(UInt32 vertexCount, std::weak_ptr<IndexBuffer> indices) override;
+        void drawBoundVertexBuffer(UInt32 vertexCount, WeakPointer<IndexBuffer> indices) override;
 
     private:
         GraphicsGL(GLVersion version);
