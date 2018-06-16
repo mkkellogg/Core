@@ -40,11 +40,11 @@ namespace Core {
 
     WeakPointer<Graphics> getGraphicsSystem();
 
-    void setActiveScene(std::weak_ptr<Scene> scene);
+    void setActiveScene(WeakPointer<Scene> scene);
     WeakPointer<Scene> getActiveScene();
     WeakPointer<Scene> createScene();
 
-    WeakPointer<Camera> createCamera(std::weak_ptr<Object3D> owner);
+    WeakPointer<Camera> createCamera(WeakPointer<Object3D> owner);
 
     template <typename T = Object3D>
     WeakPointer<typename std::enable_if<std::is_base_of<Object3D, T>::value, T>::type> createObject3D() {
@@ -57,7 +57,7 @@ namespace Core {
 
     template <typename T, typename R>
     WeakPointer<typename std::enable_if<std::is_base_of<ObjectRenderer<R>, T>::value, T>::type> 
-    createRenderer(std::weak_ptr<Material> material, std::weak_ptr<RenderableContainer<R>> owner) {
+    createRenderer(WeakPointer<Material> material, WeakPointer<RenderableContainer<R>> owner) {
       std::shared_ptr<T> objectRenderer = std::shared_ptr<T>(new T(this->graphics, material, owner));
       WeakPointer<RenderableContainer<R>> ownerPtr(owner);
       ownerPtr->setRenderer(objectRenderer);
@@ -75,10 +75,10 @@ namespace Core {
     WeakPointer<Texture2D> createTexture2D(const TextureAttributes& attributes);
     WeakPointer<CubeTexture> createCubeTexture(const TextureAttributes& attributes);
 
-    void setImageLoader(std::weak_ptr<ImageLoader> imageLoader);
-    std::weak_ptr<ImageLoader> getImageLoader();
-    void setAssetLoader(std::weak_ptr<AssetLoader> assetLoader);
-    std::weak_ptr<AssetLoader> getAssetLoader();
+    void setImageLoader(WeakPointer<ImageLoader> imageLoader);
+    WeakPointer<ImageLoader> getImageLoader();
+    void setAssetLoader(WeakPointer<AssetLoader> assetLoader);
+    WeakPointer<AssetLoader> getAssetLoader();
 
     void onUpdate(std::function<void(Engine&)> func);
 
@@ -95,8 +95,8 @@ namespace Core {
     std::vector<std::shared_ptr<BaseObjectRenderer>> objectRenderers;
     std::vector<std::shared_ptr<Mesh>> meshes;
 
-    std::weak_ptr<ImageLoader> imageLoader;
-    std::weak_ptr<AssetLoader> assetLoader;
+    WeakPointer<ImageLoader> imageLoader;
+    WeakPointer<AssetLoader> assetLoader;
     std::vector<std::function<void(Engine&)>> updateCallbacks;
 
     void cleanup();

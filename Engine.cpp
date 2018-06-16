@@ -57,7 +57,7 @@ namespace Core {
         return this->graphics;
     }
 
-    void Engine::setActiveScene(std::weak_ptr<Scene> scene) {
+    void Engine::setActiveScene(WeakPointer<Scene> scene) {
         this->activeScene = scene.lock();
     }
 
@@ -66,7 +66,7 @@ namespace Core {
     }
 
     WeakPointer<Scene> Engine::createScene() {
-        std::weak_ptr<Object3D> newRoot = this->createObject3D<Object3D>();
+        WeakPointer<Object3D> newRoot = this->createObject3D<Object3D>();
         std::shared_ptr<Scene> newScene = std::shared_ptr<Scene>(new Scene(newRoot));
         this->scenes.push_back(newScene);
         return newScene;
@@ -75,10 +75,10 @@ namespace Core {
     WeakPointer<Mesh> Engine::createMesh(UInt32 size, Bool indexed) {
         std::shared_ptr<Mesh> newMesh = std::shared_ptr<Mesh>(new Mesh(this->graphics, size, indexed));
         this->meshes.push_back(newMesh);
-        return std::static_pointer_cast<Mesh>(newMesh);
+        return newMesh;
     }
 
-    WeakPointer<Camera> Engine::createCamera(std::weak_ptr<Object3D> owner) {
+    WeakPointer<Camera> Engine::createCamera(WeakPointer<Object3D> owner) {
         std::shared_ptr<Camera> newCamera = std::shared_ptr<Camera>(new Camera(owner));
         WeakPointer<Object3D> ownerPtr(owner);
         ownerPtr->addComponent(newCamera);
@@ -94,19 +94,19 @@ namespace Core {
         return this->graphics->createCubeTexture(attributes);
     }
 
-    void Engine::setImageLoader(std::weak_ptr<ImageLoader> imageLoader) {
+    void Engine::setImageLoader(WeakPointer<ImageLoader> imageLoader) {
         this->imageLoader = imageLoader;
     }
 
-    std::weak_ptr<ImageLoader> Engine::getImageLoader() {
+    WeakPointer<ImageLoader> Engine::getImageLoader() {
         return this->imageLoader;
     }
 
-    void Engine::setAssetLoader(std::weak_ptr<AssetLoader> assetLoader) {
+    void Engine::setAssetLoader(WeakPointer<AssetLoader> assetLoader) {
         this->assetLoader = assetLoader;
     }
 
-    std::weak_ptr<AssetLoader> Engine::getAssetLoader() {
+    WeakPointer<AssetLoader> Engine::getAssetLoader() {
         return this->assetLoader;
     }
 
