@@ -19,7 +19,7 @@ namespace Core {
     class WeakPointer : public std::weak_ptr<T> {
     public:
 
-        WeakPointer()  {
+        WeakPointer(): std::weak_ptr<T>()  {
             
         }
 
@@ -38,6 +38,7 @@ namespace Core {
 
         WeakPointer& operator =(const WeakPointer other) {
             if (&other == this) return *this;
+            std::weak_ptr<T>::operator=(other);
             this->lockedPointer = other.lockedPointer;
             return *this;
         }
