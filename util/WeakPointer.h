@@ -22,6 +22,14 @@ namespace Core {
             this->lockedPointer = expectWeakPointer(*this);
         }
 
+        WeakPointer(std::shared_ptr<T> ptr) : std::weak_ptr<T>(ptr) {
+            this->lockedPointer = expectWeakPointer(*this);
+        }
+
+        Bool operator ==(const WeakPointer<T> other) {
+            return this.lockedPointer == other.lockedPointer;
+        }
+
         T *operator->() {
             return this->get();
         }
@@ -51,8 +59,7 @@ namespace Core {
         }
 
         static Bool isInvalid(std::weak_ptr<T> const &weak) {
-            using wt = std::weak_ptr<T>;
-            return !weak.owner_before(wt{}) && !wt{}.owner_before(weak);
+            return !isValid(weak);
         }
 
         static Bool isValid(std::weak_ptr<T> const &weak) {
