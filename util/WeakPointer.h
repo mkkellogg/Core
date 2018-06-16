@@ -38,6 +38,10 @@ namespace Core {
             return isInitialized(*this);
         }
 
+        operator bool() const { 
+            return this->isInitialized();
+        }
+
         static std::shared_ptr<T> expectWeakPointer(std::weak_ptr<T> ptr) {
             std::shared_ptr<T> sharedPtr = ptr.lock();
             if (!sharedPtr) {
