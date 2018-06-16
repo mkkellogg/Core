@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+
+#include "../util/WeakPointer.h"
 #include "../scene/Object3DComponent.h"
 #include "BaseRenderable.h"
 
@@ -12,8 +14,8 @@ namespace Core {
 
     class BaseObjectRenderer : public Object3DComponent {
     public:
-        BaseObjectRenderer(std::weak_ptr<Object3D> owner) : Object3DComponent(owner) {
+        BaseObjectRenderer(WeakPointer<Object3D> owner) : Object3DComponent(owner) {
         }
-        virtual void render(std::weak_ptr<Camera> camera) = 0;
+        virtual void render(WeakPointer<Camera> camera) = 0;
     };
 }

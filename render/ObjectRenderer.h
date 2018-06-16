@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "../util/WeakPointer.h"
 #include "BaseObjectRenderer.h"
 
 namespace Core  {
@@ -13,9 +14,9 @@ namespace Core  {
   template <typename T>
   class ObjectRenderer : public BaseObjectRenderer {
   public:
-    ObjectRenderer(std::weak_ptr<Graphics> graphics, std::weak_ptr<Object3D> owner): BaseObjectRenderer(owner), graphics(graphics){}
-    virtual void renderObject(std::weak_ptr<Camera> camera, std::weak_ptr<T> renderable) = 0;
+    ObjectRenderer(WeakPointer<Graphics> graphics, WeakPointer<Object3D> owner): BaseObjectRenderer(owner), graphics(graphics){}
+    virtual void renderObject(WeakPointer<Camera> camera, WeakPointer<T> renderable) = 0;
   protected:
-    std::weak_ptr<Graphics> graphics;
+    WeakPointer<Graphics> graphics;
   };
 }

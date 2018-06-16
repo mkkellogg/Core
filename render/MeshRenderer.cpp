@@ -3,12 +3,12 @@
 
 namespace Core {
 
-    MeshRenderer::MeshRenderer(std::weak_ptr<Graphics> graphics, 
-                               std::weak_ptr<Material> material, 
-                               std::weak_ptr<Object3D> owner): ObjectRenderer<Mesh>(graphics, owner), material(material) {
+    MeshRenderer::MeshRenderer(WeakPointer<Graphics> graphics, 
+                               WeakPointer<Material> material, 
+                               WeakPointer<Object3D> owner): ObjectRenderer<Mesh>(graphics, owner), material(material) {
     }
 
-    void MeshRenderer::renderObject(std::weak_ptr<Camera> camera, std::weak_ptr<Mesh> mesh) {
+    void MeshRenderer::renderObject(WeakPointer<Camera> camera, WeakPointer<Mesh> mesh) {
         WeakPointer<Object3D> ownerPtr(owner);
         WeakPointer<Material> materialPtr(this->material);
         WeakPointer<Shader> shaderPtr(materialPtr->getShader());
@@ -52,7 +52,7 @@ namespace Core {
         }
     }
 
-    void MeshRenderer::render(std::weak_ptr<Camera> camera) {
+    void MeshRenderer::render(WeakPointer<Camera> camera) {
         WeakPointer<Object3D> ownerPtr(owner);
         std::shared_ptr<RenderableContainer<Mesh>> thisContainer = std::dynamic_pointer_cast<RenderableContainer<Mesh>>(ownerPtr.getLockedPointer());
         if (thisContainer) {
