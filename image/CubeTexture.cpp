@@ -11,4 +11,7 @@ namespace Core {
 
     }
 
+    CubeTexture::CubeTexture(const TextureAttributes& attributes): Texture(attributes) {
+
+    }
 }

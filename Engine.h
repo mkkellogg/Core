@@ -14,6 +14,7 @@
 #include "material/Material.h"
 #include "image/Texture2D.h"
 #include "image/CubeTexture.h"
+#include "image/TextureAttr.h"
 #include "geometry/Mesh.h"
 #include "util/WeakPointer.h"
 
@@ -70,8 +71,8 @@ namespace Core {
       return materialPtr;
     }
 
-    std::weak_ptr<Texture2D> createTexture2D();
-    std::weak_ptr<CubeTexture> createCubeTexture();
+    std::weak_ptr<Texture2D> createTexture2D(const TextureAttributes& attributes);
+    std::weak_ptr<CubeTexture> createCubeTexture(const TextureAttributes& attributes);
 
     void setImageLoader(std::weak_ptr<ImageLoader> imageLoader);
     std::weak_ptr<ImageLoader> getImageLoader();

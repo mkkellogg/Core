@@ -19,7 +19,7 @@ namespace Core {
     void build(RawImage *imageData) override;
 
   protected:
-    Texture2DGL();
+    Texture2DGL(const TextureAttributes& attributes);
 
   };
 

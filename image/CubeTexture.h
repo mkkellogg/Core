@@ -9,5 +9,8 @@ namespace Core {
     public:
         virtual ~CubeTexture();
         virtual void build(RawImage *frontData, RawImage *backData, RawImage *topData, RawImage *bottomData, RawImage *leftData, RawImage *rightData) = 0;
+
+    protected:
+        CubeTexture(const TextureAttributes& attributes);
     };
 }

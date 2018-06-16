@@ -14,6 +14,7 @@
 #include "../material/Material.h"
 #include "../base/BitMask.h"
 #include "../image/Texture.h"
+#include "../image/ImageLoader.h"
 
 namespace Core {
 
@@ -88,7 +89,8 @@ namespace Core {
         void getImportDetails(const aiMaterial* mtl, MaterialImportDescriptor& materialImportDesc, const aiScene& scene) const;
 
         Engine& engine;
-        std::shared_ptr<Assimp::Importer> importer; 
+        std::shared_ptr<Assimp::Importer> importer;
+        ImageLoader imageLoader; 
     };
 
 }

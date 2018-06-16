@@ -170,13 +170,10 @@ namespace Core {
 
             // get diffuse texture (for now support only 1)
             texFound = assimpMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &aiTexturePath);
-            /*if (texFound == AI_SUCCESS) diffuseTexture = this->loadAITexture(*assimpMaterial, aiTextureType_DIFFUSE, fixedModelPath);
-            if (!diffuseTexture.IsValid()) {
-                std::string msg = "ModelImporter::ProcessMaterials -> Could not load diffuse texture: ";
-                msg += aiTexturePath.C_Str();
-                throw ModelLoaderException(msg);
-            }*/
-
+            if (texFound == AI_SUCCESS) {
+                diffuseTexture = this->loadAITexture(*assimpMaterial, aiTextureType_DIFFUSE, fixedModelPath);
+            }
+   
             // loop through each mesh in the scene and check if it uses [material]. If so,
             // create a unique Material object for the mesh and attach it to [materialImportDescriptor]
             //
@@ -316,7 +313,7 @@ namespace Core {
      */
     std::weak_ptr<Texture> ModelLoader::loadAITexture(aiMaterial& assimpMaterial, aiTextureType textureType, const std::string& modelPath) const {
         // temp variables
-        std::weak_ptr<Texture> texture;
+        std::weak_ptr<Texture2D> texture;
         aiString aiTexturePath;
         aiReturn texFound = AI_SUCCESS;
 
@@ -340,32 +337,38 @@ namespace Core {
         texAttributes.FilterMode = TextureFilter::TriLinear;
         texAttributes.MipMapLevel = 4;
 
-        /*
+        RawImage* textureImage = nullptr;
         // check if the file specified by the full path in the Assimp material exists
         if (fileSystem->fileExists(fullTextureFilePath)) {
-            texture = engineObjectManager->CreateTexture(fullTextureFilePath.c_str(), texAttributes);
+            //texture = engineObjectManager->CreateTexture(fullTextureFilePath.c_str(), texAttributes);
+            textureImage = ImageLoader::loadImageU(fullTextureFilePath);
+            texture = this->engine.getGraphicsSystem()->createTexture2D(texAttributes);
         }
         // if it does not exist, try looking for the texture image file in the model's directory
         else {
             // get just the filename portion of the path
-            std::string filename = fileSystem->GetFileName(fullTextureFilePath);
+            std::string filename = fileSystem->getFileName(fullTextureFilePath);
             if (!(filename.length() <= 0)) {
                 // concatenate the file name with the model's directory location
-                filename = fileSystem->ConcatenatePaths(modelDirectory, filename);
+                filename = fileSystem->concatenatePaths(modelDirectory, filename);
 
                 // check if the image file is in the same directory as the model and if so, load it
-                if (fileSystem->FileExists(filename)) {
-                    texture = engineObjectManager->CreateTexture(filename.c_str(), texAttributes);
+                if (fileSystem->fileExists(filename)) {
+                    textureImage = ImageLoader::loadImageU(filename.c_str());
+                    texture = this->engine.getGraphicsSystem()->createTexture2D(texAttributes);
                 }
             }
         }
 
+        WeakPointer<Texture2D> texturePtr(texture);
+        if (textureImage && texturePtr.isInitialized()) {
+            texturePtr->build(textureImage);
+        }
         // did texture fail to load?
-        if (!texture.IsValid()) {
+        if (!textureImage || !texturePtr.isInitialized() || !texturePtr->isBuilt()) {
             std::string msg = std::string("ModelImporter::LoadAITexture -> Could not load texture file: ") + fullTextureFilePath;
-            Engine::Instance()->GetErrorManager()->SetAndReportError(ModelImporterErrorCodes::TextureFileLoadFailed, msg);
-            return TextureSharedPtr::Null();
-        }*/
+            throw ModelLoaderException(msg);
+        }
 
         return texture;
     }

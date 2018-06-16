@@ -16,7 +16,6 @@ namespace Core {
         void build(RawImage *frontData, RawImage *backData, RawImage *topData, RawImage *bottomData, RawImage *leftData, RawImage *rightData) override;
 
     private:
-
-        CubeTextureGL();
+        CubeTextureGL(const TextureAttributes& attributes);
     };
 }

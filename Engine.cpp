@@ -84,12 +84,12 @@ namespace Core {
         return newCamera;
     }
 
-    std::weak_ptr<Texture2D> Engine::createTexture2D() {
-        return this->graphics->createTexture2D();
+    std::weak_ptr<Texture2D> Engine::createTexture2D(const TextureAttributes& attributes) {
+        return this->graphics->createTexture2D(attributes);
     }
 
-    std::weak_ptr<CubeTexture> Engine::createCubeTexture() {
-        return this->graphics->createCubeTexture();
+    std::weak_ptr<CubeTexture> Engine::createCubeTexture(const TextureAttributes& attributes) {
+        return this->graphics->createCubeTexture(attributes);
     }
 
     void Engine::setImageLoader(std::weak_ptr<ImageLoader> imageLoader) {

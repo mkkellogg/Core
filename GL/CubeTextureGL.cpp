@@ -8,7 +8,7 @@
 
 namespace Core {
 
-    CubeTextureGL::CubeTextureGL() {
+    CubeTextureGL::CubeTextureGL(const TextureAttributes& attributes): CubeTexture(attributes) {
 
     }
 
@@ -47,7 +47,6 @@ namespace Core {
 
         glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
-        std::shared_ptr<CubeTextureGL> texture = std::shared_ptr<CubeTextureGL>(new CubeTextureGL());
         this->textureId = (Int32)tex;
     }
 }

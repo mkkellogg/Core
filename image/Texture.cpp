@@ -4,7 +4,7 @@
 
 namespace Core {
 
-    Texture::Texture(): textureId(-1) {
+    Texture::Texture(const TextureAttributes& attributes): textureId(-1), attributes(attributes) {
 
     }
 
@@ -14,6 +14,10 @@ namespace Core {
 
     Int32 Texture::getTextureID() {
         return this->textureId;
+    }
+
+    Bool Texture::isBuilt() const {
+        return this->textureId > 0;
     }
 
 };

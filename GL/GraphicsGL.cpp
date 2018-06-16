@@ -38,14 +38,14 @@ namespace Core {
         return std::static_pointer_cast<Renderer>(this->renderer);
     }
 
-    std::weak_ptr<Texture2D> GraphicsGL::createTexture2D() {
-        std::shared_ptr<Texture2DGL> newTexture = std::shared_ptr<Texture2DGL>(new Texture2DGL());
+    std::weak_ptr<Texture2D> GraphicsGL::createTexture2D(const TextureAttributes& attributes) {
+        std::shared_ptr<Texture2DGL> newTexture = std::shared_ptr<Texture2DGL>(new Texture2DGL(attributes));
         this->textures2D.push_back(newTexture);
         return std::static_pointer_cast<Texture2D>(newTexture);
     }
 
-    std::weak_ptr<CubeTexture> GraphicsGL::createCubeTexture() {
-        std::shared_ptr<CubeTextureGL> newTexture = std::shared_ptr<CubeTextureGL>(new CubeTextureGL());
+    std::weak_ptr<CubeTexture> GraphicsGL::createCubeTexture(const TextureAttributes& attributes) {
+        std::shared_ptr<CubeTextureGL> newTexture = std::shared_ptr<CubeTextureGL>(new CubeTextureGL(attributes));
         this->cubeTextures.push_back(newTexture);
         return std::static_pointer_cast<CubeTexture>(newTexture);
     }

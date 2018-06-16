@@ -13,6 +13,6 @@ namespace Core {
         virtual void build(RawImage *imageData) = 0;
 
     protected:
-        Texture2D();
+        Texture2D(const TextureAttributes& attributes);
     };
 }

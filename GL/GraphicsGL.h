@@ -30,8 +30,8 @@ namespace Core {
         void init() override;
         std::weak_ptr<Renderer> getRenderer() override;
         
-        std::weak_ptr<Texture2D> createTexture2D() override;
-        std::weak_ptr<CubeTexture> createCubeTexture() override;
+        std::weak_ptr<Texture2D> createTexture2D(const TextureAttributes& attributes) override;
+        std::weak_ptr<CubeTexture> createCubeTexture(const TextureAttributes& attributes) override;
         
         std::weak_ptr<Shader> createShader(const std::string& vertex, const std::string& fragment) override;
         std::weak_ptr<Shader> createShader(const char vertex[], const char fragment[]) override;

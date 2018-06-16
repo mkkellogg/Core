@@ -4,7 +4,7 @@
 
 namespace Core {
 
-    Texture2D::Texture2D() {
+    Texture2D::Texture2D(const TextureAttributes& attributes): Texture(attributes) {
 
     }
 
