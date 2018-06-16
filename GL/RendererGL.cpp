@@ -55,9 +55,10 @@ namespace Core {
     for (auto object : objectList) {
       std::shared_ptr<BaseRenderableContainer> renderableContainer = std::dynamic_pointer_cast<BaseRenderableContainer>(object);
       if(renderableContainer) {
-        std::shared_ptr<BaseObjectRenderer> objectRenderer = renderableContainer->getBaseRenderer();
-        if(objectRenderer) {
-          objectRenderer->render(camera);
+        std::weak_ptr<BaseObjectRenderer> objectRenderer = renderableContainer->getBaseRenderer();
+        WeakPointer<BaseObjectRenderer> objectRendererPtr(objectRenderer);
+        if(objectRendererPtr.isInitialized()) {
+          objectRendererPtr->render(camera);
         }
       }
     }

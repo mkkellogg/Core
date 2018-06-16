@@ -5,6 +5,7 @@
 #include <typeinfo>
 #include <unordered_map>
 
+#include "Object3DComponent.h"
 #include "../common/assert.h"
 #include "Transform.h"
 #include "../render/BaseRenderable.h"
@@ -32,6 +33,7 @@ namespace Core {
     void addChild(std::weak_ptr<Object3D> object);
     void removeChild(std::weak_ptr<Object3D> object);
     std::weak_ptr<Object3D> getParent();
+    void addComponent(std::shared_ptr<Object3DComponent> component);
   
   protected:
     Object3D();
@@ -39,6 +41,7 @@ namespace Core {
     Transform transform;
     std::vector<std::shared_ptr<Object3D>> children;
     std::weak_ptr<Object3D> parent;
+    std::vector<std::shared_ptr<Object3DComponent>> components;
   
   };
 
