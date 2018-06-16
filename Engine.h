@@ -38,25 +38,25 @@ namespace Core {
     void setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
     void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
 
-    std::shared_ptr<Graphics> getGraphicsSystem();
+    WeakPointer<Graphics> getGraphicsSystem();
 
     void setActiveScene(std::weak_ptr<Scene> scene);
-    std::weak_ptr<Scene> getActiveScene();
-    std::weak_ptr<Scene> createScene();
+    WeakPointer<Scene> getActiveScene();
+    WeakPointer<Scene> createScene();
 
-    std::weak_ptr<Camera> createCamera(std::weak_ptr<Object3D> owner);
+    WeakPointer<Camera> createCamera(std::weak_ptr<Object3D> owner);
 
     template <typename T = Object3D>
-    std::weak_ptr<typename std::enable_if<std::is_base_of<Object3D, T>::value, T>::type> createObject3D() {
+    WeakPointer<typename std::enable_if<std::is_base_of<Object3D, T>::value, T>::type> createObject3D() {
       std::shared_ptr<T> objPtr = std::shared_ptr<T>(new T());
       this->sceneObjects.push_back(objPtr);
       return objPtr;
     }
 
-    std::weak_ptr<Mesh> createMesh(UInt32 size, Bool indexed);
+    WeakPointer<Mesh> createMesh(UInt32 size, Bool indexed);
 
     template <typename T, typename R>
-    std::weak_ptr<typename std::enable_if<std::is_base_of<ObjectRenderer<R>, T>::value, T>::type> 
+    WeakPointer<typename std::enable_if<std::is_base_of<ObjectRenderer<R>, T>::value, T>::type> 
     createRenderer(std::weak_ptr<Material> material, std::weak_ptr<RenderableContainer<R>> owner) {
       std::shared_ptr<T> objectRenderer = std::shared_ptr<T>(new T(this->graphics, material, owner));
       WeakPointer<RenderableContainer<R>> ownerPtr(owner);
@@ -66,14 +66,14 @@ namespace Core {
     }
 
     template <typename T>
-    std::weak_ptr<typename std::enable_if<std::is_base_of<Material, T>::value, T>::type> createMaterial() {
+    WeakPointer<typename std::enable_if<std::is_base_of<Material, T>::value, T>::type> createMaterial() {
       std::shared_ptr<T> materialPtr = std::shared_ptr<T>(new T(this->graphics));
       this->materials.push_back(materialPtr);
       return materialPtr;
     }
 
-    std::weak_ptr<Texture2D> createTexture2D(const TextureAttributes& attributes);
-    std::weak_ptr<CubeTexture> createCubeTexture(const TextureAttributes& attributes);
+    WeakPointer<Texture2D> createTexture2D(const TextureAttributes& attributes);
+    WeakPointer<CubeTexture> createCubeTexture(const TextureAttributes& attributes);
 
     void setImageLoader(std::weak_ptr<ImageLoader> imageLoader);
     std::weak_ptr<ImageLoader> getImageLoader();

@@ -53,7 +53,7 @@ namespace Core {
         this->graphics->setViewport(hOffset, vOffset, viewPortWidth, viewPortHeight);
     }
 
-    std::shared_ptr<Graphics> Engine::getGraphicsSystem() {
+    WeakPointer<Graphics> Engine::getGraphicsSystem() {
         return this->graphics;
     }
 
@@ -61,24 +61,24 @@ namespace Core {
         this->activeScene = scene.lock();
     }
 
-    std::weak_ptr<Scene> Engine::getActiveScene() {
+    WeakPointer<Scene> Engine::getActiveScene() {
         return this->activeScene;
     }
 
-    std::weak_ptr<Scene> Engine::createScene() {
+    WeakPointer<Scene> Engine::createScene() {
         std::weak_ptr<Object3D> newRoot = this->createObject3D<Object3D>();
         std::shared_ptr<Scene> newScene = std::shared_ptr<Scene>(new Scene(newRoot));
         this->scenes.push_back(newScene);
         return newScene;
     }
 
-    std::weak_ptr<Mesh> Engine::createMesh(UInt32 size, Bool indexed) {
+    WeakPointer<Mesh> Engine::createMesh(UInt32 size, Bool indexed) {
         std::shared_ptr<Mesh> newMesh = std::shared_ptr<Mesh>(new Mesh(this->graphics, size, indexed));
         this->meshes.push_back(newMesh);
         return std::static_pointer_cast<Mesh>(newMesh);
     }
 
-    std::weak_ptr<Camera> Engine::createCamera(std::weak_ptr<Object3D> owner) {
+    WeakPointer<Camera> Engine::createCamera(std::weak_ptr<Object3D> owner) {
         std::shared_ptr<Camera> newCamera = std::shared_ptr<Camera>(new Camera(owner));
         WeakPointer<Object3D> ownerPtr(owner);
         ownerPtr->addComponent(newCamera);
@@ -86,11 +86,11 @@ namespace Core {
         return newCamera;
     }
 
-    std::weak_ptr<Texture2D> Engine::createTexture2D(const TextureAttributes& attributes) {
+    WeakPointer<Texture2D> Engine::createTexture2D(const TextureAttributes& attributes) {
         return this->graphics->createTexture2D(attributes);
     }
 
-    std::weak_ptr<CubeTexture> Engine::createCubeTexture(const TextureAttributes& attributes) {
+    WeakPointer<CubeTexture> Engine::createCubeTexture(const TextureAttributes& attributes) {
         return this->graphics->createCubeTexture(attributes);
     }
 

@@ -18,12 +18,28 @@ namespace Core {
     template <typename T>
     class WeakPointer : public std::weak_ptr<T> {
     public:
+
+        WeakPointer()  {
+            
+        }
+
         WeakPointer(std::weak_ptr<T> ptr) : std::weak_ptr<T>(ptr) {
             this->lockedPointer = expectWeakPointer(*this);
         }
 
         WeakPointer(std::shared_ptr<T> ptr) : std::weak_ptr<T>(ptr) {
             this->lockedPointer = expectWeakPointer(*this);
+        }
+
+        template <typename U>
+        WeakPointer(const WeakPointer<U>& ptr) : std::weak_ptr<T>(ptr) {
+            this->lockedPointer = expectWeakPointer(*this);
+        }
+
+        WeakPointer& operator =(const WeakPointer other) {
+            if (&other == this) return *this;
+            this->lockedPointer = other.lockedPointer;
+            return *this;
         }
 
         Bool operator ==(const WeakPointer<T> other) {

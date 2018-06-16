@@ -3,6 +3,7 @@
 #include <string.h>
 #include <new>
 
+#include "../util/WeakPointer.h"
 #include "../common/Exception.h"
 #include "../common/assert.h"
 #include "../common/types.h"
@@ -27,7 +28,7 @@ namespace Core {
             return this->attributeCount;
         }
 
-        std::weak_ptr<AttributeArrayGPUStorage> getGPUStorage() {
+        WeakPointer<AttributeArrayGPUStorage> getGPUStorage() {
             return this->gpuStorage;
         }
 
