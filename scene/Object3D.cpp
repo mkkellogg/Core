@@ -13,19 +13,19 @@ namespace Core {
         return this->transform;
     }
 
-    std::vector<std::shared_ptr<Object3D>>::iterator Object3D::beginIterateChildren() {
+    ValueIterator<std::vector<std::shared_ptr<Object3D>>::iterator> Object3D::beginIterateChildren() {
         return this->children.begin();
     }
 
-    std::vector<std::shared_ptr<Object3D>>::iterator Object3D::endIterateChildren() {
+    ValueIterator<std::vector<std::shared_ptr<Object3D>>::iterator> Object3D::endIterateChildren() {
         return this->children.end();
     }
 
-    std::vector<WeakPointer<Object3DComponent>>::iterator Object3D::beginIterateComponents() {
+    ValueIterator<std::vector<WeakPointer<Object3DComponent>>::iterator> Object3D::beginIterateComponents() {
         return this->components.begin();
     }
 
-    std::vector<WeakPointer<Object3DComponent>>::iterator Object3D::endIterateComponents() {
+    ValueIterator<std::vector<WeakPointer<Object3DComponent>>::iterator> Object3D::endIterateComponents() {
         return this->components.end();
     }
 

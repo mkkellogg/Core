@@ -5,7 +5,8 @@
 #include <typeinfo>
 #include <unordered_map>
 
-#include "../util/WeakPointer.h"
+#include "../util/PersistentWeakPointer.h"
+#include "../util/ValueIterator.h"
 #include "Object3DComponent.h"
 #include "../common/assert.h"
 #include "Transform.h"
@@ -28,10 +29,10 @@ namespace Core {
     virtual ~Object3D();
 
     Transform& getTransform();
-    std::vector<std::shared_ptr<Object3D>>::iterator beginIterateChildren();
-    std::vector<std::shared_ptr<Object3D>>::iterator endIterateChildren();
-    std::vector<WeakPointer<Object3DComponent>>::iterator beginIterateComponents();
-    std::vector<WeakPointer<Object3DComponent>>::iterator endIterateComponents();
+    ValueIterator<std::vector<std::shared_ptr<Object3D>>::iterator> beginIterateChildren();
+    ValueIterator<std::vector<std::shared_ptr<Object3D>>::iterator> endIterateChildren();
+    ValueIterator<std::vector<WeakPointer<Object3DComponent>>::iterator> beginIterateComponents();
+    ValueIterator<std::vector<WeakPointer<Object3DComponent>>::iterator> endIterateComponents();
     UInt32 size() const;
     void addChild(WeakPointer<Object3D> object);
     void removeChild(WeakPointer<Object3D> object);
@@ -43,7 +44,7 @@ namespace Core {
     
     Transform transform;
     std::vector<std::shared_ptr<Object3D>> children;
-    WeakPointer<Object3D> parent;
+    PersistentWeakPointer<Object3D> parent;
     std::vector<WeakPointer<Object3DComponent>> components;
   
   };

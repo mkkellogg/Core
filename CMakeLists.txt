@@ -72,6 +72,8 @@ set(INCLUDE_FILES
     util/Time.h
     util/String.h
     util/WeakPointer.h
+    util/PersistentWeakPointer.h
+    util/ValueIterator.h
     math/Math.h
     math/Quaternion.h
     math/Matrix4x4.h

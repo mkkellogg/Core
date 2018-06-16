@@ -19,16 +19,16 @@ namespace Core {
     class WeakPointer : public std::weak_ptr<T> {
     public:
 
-        WeakPointer(): std::weak_ptr<T>(), _ptr(nullptr)  {
+        WeakPointer(Bool cacheShared = true): std::weak_ptr<T>(), _ptr(nullptr), _cacheShared(cacheShared)  {
             
         }
 
-        WeakPointer(std::shared_ptr<T> ptr) : std::weak_ptr<T>(ptr), _ptr(nullptr) {
+        WeakPointer(std::shared_ptr<T> ptr, Bool cacheShared = true) : std::weak_ptr<T>(ptr), _ptr(nullptr), _cacheShared(cacheShared) {
             this->_ptr = ptr.get();
         }
 
         template <typename U>
-        WeakPointer(WeakPointer<U>& ptr) : std::weak_ptr<T>(ptr), _ptr(nullptr) {
+        WeakPointer(WeakPointer<U>& ptr, Bool cacheShared = true) : std::weak_ptr<T>(ptr), _ptr(nullptr), _cacheShared(cacheShared) {
             this->_ptr = static_cast<T*>(ptr.get());
         }
 
@@ -44,6 +44,7 @@ namespace Core {
             return this->_ptr == other._ptr;
         }
 
+        // TODO: Make this thread-safe. The following code is only valid in a SINGLE THREADED context!
         T *operator->() {
             if (!this->_ptr) {
                 std::shared_ptr<T> temp = this->lock();
@@ -90,7 +91,8 @@ namespace Core {
             return weak.owner_before(wt{}) || wt{}.owner_before(weak);
         }
 
-    private:
+    protected:
         T * _ptr;
+        Bool _cacheShared;
     };
 }

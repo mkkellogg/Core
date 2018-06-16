@@ -2,6 +2,7 @@
 
 #include <type_traits>
 
+#include "../util/ValueIterator.h"
 #include "../common/types.h"
 #include "../geometry/Vector3.h"
 #include "../math/Matrix4x4.h"
@@ -35,11 +36,11 @@ namespace Core {
             return renderer;
         }
 
-        typename std::vector<WeakPointer<T>>::iterator begin() {
+        ValueIterator<typename std::vector<WeakPointer<T>>::iterator> begin() {
             return this->renderables.begin();
         }
 
-        typename std::vector<WeakPointer<T>>::iterator end() {
+        ValueIterator<typename std::vector<WeakPointer<T>>::iterator> end() {
             return this->renderables.end();
         }
 

@@ -3,7 +3,7 @@
 #include <functional>
 #include <memory>
 
-#include "util/WeakPointer.h"
+#include "util/PersistentWeakPointer.h"
 #include "GL/GraphicsGL.h"
 #include "scene/Scene.h"
 #include "render/Camera.h"
@@ -94,8 +94,8 @@ namespace Core {
     std::vector<std::shared_ptr<BaseObjectRenderer>> objectRenderers;
     std::vector<std::shared_ptr<Mesh>> meshes;
 
-    WeakPointer<ImageLoader> imageLoader;
-    WeakPointer<AssetLoader> assetLoader;
+    PersistentWeakPointer<ImageLoader> imageLoader;
+    PersistentWeakPointer<AssetLoader> assetLoader;
     std::vector<std::function<void(Engine&)>> updateCallbacks;
 
     void cleanup();
