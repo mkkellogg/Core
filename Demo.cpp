@@ -26,7 +26,7 @@ namespace Core {
 
   void Demo::run() {
 
-    std::weak_ptr<Core::Camera> camera;
+    WeakPointer<Core::Camera> camera;
     this->engine.onUpdate([this, camera](Engine& engine) {
 
       static Core::Real rotationAngle = 0.0;
@@ -57,7 +57,7 @@ namespace Core {
 
     });
 
-    std::weak_ptr<Core::Scene> scene = engine.createScene();
+    WeakPointer<Core::Scene> scene = engine.createScene();
     engine.setActiveScene(scene);
     WeakPointer<Core::Scene> scenePtr(scene);
 
@@ -103,7 +103,7 @@ namespace Core {
     WeakPointer<Object3D> sceneRootPtr = WeakPointer<Object3D>(scenePtr->getRoot());
     sceneRootPtr->addChild(skyboxObj);
 
-    std::weak_ptr<Core::Object3D> cameraObj = engine.createObject3D<Core::Object3D>();
+    WeakPointer<Core::Object3D> cameraObj = engine.createObject3D<Core::Object3D>();
     camera = engine.createCamera(cameraObj);
     sceneRootPtr->addChild(cameraObj);
 

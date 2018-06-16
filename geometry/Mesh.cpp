@@ -5,7 +5,7 @@
 
 namespace Core {
 
-    Mesh::Mesh(std::weak_ptr<Graphics> graphics, UInt32 vertexCount, Bool indexed): graphics(graphics), initialized(false), vertexCount(vertexCount), indexed(indexed) {
+    Mesh::Mesh(WeakPointer<Graphics> graphics, UInt32 vertexCount, Bool indexed): graphics(graphics), initialized(false), vertexCount(vertexCount), indexed(indexed) {
         this->vertexPositions = nullptr;
         this->vertexColors = nullptr;
         this->vertexUVs = nullptr;
