@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "../util/WeakPointer.h"
+#include "../util/PersistentWeakPointer.h"
 #include "../Graphics.h"
 #include "Shader.h"
 #include "StandardAttributes.h"
@@ -21,8 +21,8 @@ namespace Core {
     virtual void sendCustomUniformsToShader() = 0;
 
   protected:
-    WeakPointer<Graphics> graphics;
-    WeakPointer<Shader> shader;
+    PersistentWeakPointer<Graphics> graphics;
+    PersistentWeakPointer<Shader> shader;
     Bool ready;
     Bool buildFromSource(const std::string& vertexSource, const std::string& fragmentSource);
     void setShader(WeakPointer<Shader> shader);

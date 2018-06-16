@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "../util/WeakPointer.h"
+#include "../util/PersistentWeakPointer.h"
 #include "BaseObjectRenderer.h"
 
 namespace Core  {
@@ -17,6 +17,6 @@ namespace Core  {
     ObjectRenderer(WeakPointer<Graphics> graphics, WeakPointer<Object3D> owner): BaseObjectRenderer(owner), graphics(graphics){}
     virtual void renderObject(WeakPointer<Camera> camera, WeakPointer<T> renderable) = 0;
   protected:
-    WeakPointer<Graphics> graphics;
+    PersistentWeakPointer<Graphics> graphics;
   };
 }

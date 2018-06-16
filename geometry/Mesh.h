@@ -55,7 +55,7 @@ namespace Core {
     void initAttributes();
     Bool initIndices();
 
-    WeakPointer<Graphics> graphics;
+    PersistentWeakPointer<Graphics> graphics;
     Bool initialized;
     Bool enabledAttributes[(UInt32)StandardAttributes::_Count];
     UInt32 vertexCount;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../util/WeakPointer.h"
+#include "../util/PersistentWeakPointer.h"
 #include "../scene/Object3D.h"
 #include "BaseObjectRenderer.h"
 
@@ -13,6 +13,6 @@ namespace Core {
         void setBaseRenderer(WeakPointer<BaseObjectRenderer> renderer);
 
     private:
-        WeakPointer<BaseObjectRenderer> renderer;
+        PersistentWeakPointer<BaseObjectRenderer> renderer;
     };
 }

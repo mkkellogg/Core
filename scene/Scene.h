@@ -4,6 +4,7 @@
 #include <memory>
 #include <type_traits>
 
+#include "../util/PersistentWeakPointer.h"
 #include "../common/types.h"
 #include "Object3D.h"
 
@@ -21,7 +22,7 @@ namespace Core {
   private:
     Scene(WeakPointer<Object3D> root);
 
-    WeakPointer<Object3D> root;
+    PersistentWeakPointer<Object3D> root;
   };
 
 }

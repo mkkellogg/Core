@@ -21,11 +21,11 @@ namespace Core {
         return this->children.end();
     }
 
-    ValueIterator<std::vector<WeakPointer<Object3DComponent>>::iterator> Object3D::beginIterateComponents() {
+    ValueIterator<std::vector<PersistentWeakPointer<Object3DComponent>>::iterator> Object3D::beginIterateComponents() {
         return this->components.begin();
     }
 
-    ValueIterator<std::vector<WeakPointer<Object3DComponent>>::iterator> Object3D::endIterateComponents() {
+    ValueIterator<std::vector<PersistentWeakPointer<Object3DComponent>>::iterator> Object3D::endIterateComponents() {
         return this->components.end();
     }
 

@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "../util/WeakPointer.h"
+#include "../util/PersistentWeakPointer.h"
 #include "../geometry/AttributeArray.h"
 #include "../geometry/AttributeArrayGPUStorage.h"
 #include "../render/ObjectRenderer.h"
@@ -27,7 +27,7 @@ namespace Core  {
     MeshRenderer(WeakPointer<Graphics> graphics, WeakPointer<Material> material, WeakPointer<Object3D> owner);
     void checkAndSetShaderAttribute(WeakPointer<Mesh> mesh, StandardAttributes attribute, AttributeArrayBase* array);
 
-    WeakPointer<Material> material;
+    PersistentWeakPointer<Material> material;
   };
 
 }

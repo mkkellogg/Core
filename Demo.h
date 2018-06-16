@@ -1,6 +1,6 @@
 #pragma once
 
-#include "util/WeakPointer.h"
+#include "util/PersistentWeakPointer.h"
 #include "Engine.h"
 #include "image/RawImage.h"
 #include "image/CubeTexture.h"
@@ -13,7 +13,7 @@ namespace Core {
 
     std::vector<std::shared_ptr<RawImage>> skyboxImages;
     std::shared_ptr<CubeTexture> skyboxTexture;
-    WeakPointer<BasicMaterial> skyboxMaterial;
+    PersistentWeakPointer<BasicMaterial> skyboxMaterial;
 
     std::shared_ptr<Core::ImageLoader> imageLoader;
     std::shared_ptr<Core::AssetLoader> assetLoader;
