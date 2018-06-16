@@ -18,12 +18,12 @@ namespace Core {
     const Real Camera::DEFAULT_NEARP = 0.1;
     const Real Camera::DEFAULT_FARP = 100.0;
 
-    Camera::Camera(std::weak_ptr<Object3D> owner)
+    Camera::Camera(WeakPointer<Object3D> owner)
         : Object3DComponent(owner), fov(Camera::DEFAULT_FOV), aspectRatio(Camera::DEFAULT_RATIO), nearP(Camera::DEFAULT_NEARP), farP(Camera::DEFAULT_FARP) {
         this->updateProjection(this->fov, this->aspectRatio, this->nearP, this->farP);
     }
 
-    Camera::Camera(std::weak_ptr<Object3D> owner, Real fov, Real ratio, Real nearP, Real farP)
+    Camera::Camera(WeakPointer<Object3D> owner, Real fov, Real ratio, Real nearP, Real farP)
         : Object3DComponent(owner), fov(fov), aspectRatio(ratio), nearP(nearP), farP(farP) {
         this->updateProjection(this->fov, this->aspectRatio, this->nearP, this->farP);
     }

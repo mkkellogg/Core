@@ -6,11 +6,11 @@ namespace Core {
         
     }
 
-    std::weak_ptr<BaseObjectRenderer> BaseRenderableContainer::getBaseRenderer() {
+    WeakPointer<BaseObjectRenderer> BaseRenderableContainer::getBaseRenderer() {
        return  this->renderer;
     }
 
-    void BaseRenderableContainer::setBaseRenderer(std::shared_ptr<BaseObjectRenderer> renderer) {
+    void BaseRenderableContainer::setBaseRenderer(WeakPointer<BaseObjectRenderer> renderer) {
         if (this->addComponent(renderer)) {
             this->renderer = renderer;
         }

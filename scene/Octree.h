@@ -51,9 +51,9 @@ namespace Core {
               Vector3r newMax(maxX, maxY, maxZ);
               Box3 childBounds(newMin, newMax);
 
-              std::shared_ptr<OctreeNode> newNode = std::make_shared<OctreeNode>(childBounds, this->level + 1);
-              this->childNodes.push_back(newNode);
-              this->addChild(newNode);
+             // std::shared_ptr<OctreeNode> newNode = std::make_shared<OctreeNode>(childBounds, this->level + 1);
+             // this->childNodes.push_back(newNode);
+             // this->addChild(newNode);
             }
           }
         }

@@ -32,8 +32,8 @@ namespace Core {
         static void buildPerspectiveProjectionMatrix(Real fov, Real ratio, Real nearP, Real farP, Matrix4x4& out);
 
     private:
-        Camera(std::weak_ptr<Object3D> owner);
-        Camera(std::weak_ptr<Object3D> owner, Real fov, Real ratio, Real nearP, Real farP);
+        Camera(WeakPointer<Object3D> owner);
+        Camera(WeakPointer<Object3D> owner, Real fov, Real ratio, Real nearP, Real farP);
 
         Real fov;
         Real aspectRatio;

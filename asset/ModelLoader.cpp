@@ -80,7 +80,7 @@ namespace Core {
      *
      * [importScale] - Allows for the adjustment of the model's scale
      */
-     std::weak_ptr<Object3D> ModelLoader::loadModel(const std::string& modelPath, Real importScale, Bool preserveFBXPivots) {
+     WeakPointer<Object3D> ModelLoader::loadModel(const std::string& modelPath, Real importScale, Bool preserveFBXPivots) {
         std::shared_ptr<FileSystem> fileSystem = FileSystem::getInstance();
         std::string fixedModelPath = fileSystem->fixupPathForLocalFilesystem(modelPath);
 
@@ -89,7 +89,7 @@ namespace Core {
 
         if (scene) {
             // the model has been loaded from disk into Assimp data structures, now convert to engine-native structures
-            std::weak_ptr<Object3D> result = processModelScene(fixedModelPath, *scene, importScale);
+            WeakPointer<Object3D> result = processModelScene(fixedModelPath, *scene, importScale);
             return result;
         }
         else {
@@ -97,14 +97,14 @@ namespace Core {
         }
     }
 
-    std::weak_ptr<Object3D> ModelLoader::processModelScene(const std::string& modelPath, const aiScene& scene, Real importScale) const {
+    WeakPointer<Object3D> ModelLoader::processModelScene(const std::string& modelPath, const aiScene& scene, Real importScale) const {
         // container for MaterialImportDescriptor instances that describe the engine-native
         // materials that get created during the call to ProcessMaterials()
         std::vector<MaterialImportDescriptor> materialImportDescriptors;
 
         // verify that we have a valid scene
         if (scene.mRootNode == nullptr) throw new ModelLoaderException("ModelLoader::processModelScene -> Assimp scene root is null.");
-        std::weak_ptr<Object3D> root = engine.createObject3D();
+        WeakPointer<Object3D> root = engine.createObject3D();
         if (WeakPointer<Object3D>::isInvalid(root)) throw ModelLoaderException("ModelLoader::processModelScene -> Could not create root object.");
       
         std::shared_ptr<FileSystem> fileSystem = FileSystem::getInstance();
@@ -164,7 +164,7 @@ namespace Core {
 
             aiReturn texFound = AI_SUCCESS;
 
-            std::weak_ptr<Texture> diffuseTexture;
+            WeakPointer<Texture> diffuseTexture;
             //	TextureRef bumpTexture;
             //	TextureRef specularTexture;
 
@@ -311,9 +311,9 @@ namespace Core {
      * [assimpMaterial] - The Assimp material.
      * [textureType] - The type of texture to look for (diffuse, specular, normal map, etc...)
      */
-    std::weak_ptr<Texture> ModelLoader::loadAITexture(aiMaterial& assimpMaterial, aiTextureType textureType, const std::string& modelPath) const {
+    WeakPointer<Texture> ModelLoader::loadAITexture(aiMaterial& assimpMaterial, aiTextureType textureType, const std::string& modelPath) const {
         // temp variables
-        std::weak_ptr<Texture2D> texture;
+        WeakPointer<Texture2D> texture;
         aiString aiTexturePath;
         aiReturn texFound = AI_SUCCESS;
 

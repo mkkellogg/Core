@@ -16,12 +16,12 @@ namespace Core {
     friend class Engine;
 
   public:
-    std::weak_ptr<Object3D> getRoot();
+    WeakPointer<Object3D> getRoot();
 
   private:
-    Scene(std::weak_ptr<Object3D> root);
+    Scene(WeakPointer<Object3D> root);
 
-    std::weak_ptr<Object3D> root;
+    WeakPointer<Object3D> root;
   };
 
 }

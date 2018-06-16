@@ -23,11 +23,11 @@ namespace Core {
         friend class Engine;
 
     public:
-        void addRenderable(std::weak_ptr<T> renderable) {
+        void addRenderable(WeakPointer<T> renderable) {
             renderables.push_back(renderable);
         }
 
-        const std::vector<std::weak_ptr<T>> getRenderables() {
+        const std::vector<WeakPointer<T>> getRenderables() {
             return renderables;
         }
 
@@ -35,11 +35,11 @@ namespace Core {
             return renderer;
         }
 
-        typename std::vector<std::weak_ptr<T>>::iterator begin() {
+        typename std::vector<WeakPointer<T>>::iterator begin() {
             return this->renderables.begin();
         }
 
-        typename std::vector<std::weak_ptr<T>>::iterator end() {
+        typename std::vector<WeakPointer<T>>::iterator end() {
             return this->renderables.end();
         }
 
@@ -51,6 +51,6 @@ namespace Core {
             this->setBaseRenderer(std::static_pointer_cast<BaseObjectRenderer>(renderer));
         }
 
-        std::vector<std::weak_ptr<T>> renderables;
+        std::vector<WeakPointer<T>> renderables;
     };
 }

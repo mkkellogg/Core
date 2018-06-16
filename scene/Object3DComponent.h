@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include "../util/WeakPointer.h"
+
 namespace Core {
 
     // forward declaration
@@ -9,14 +11,14 @@ namespace Core {
 
     class Object3DComponent {
     public:
-        Object3DComponent(std::weak_ptr<Object3D> owner);
+        Object3DComponent(WeakPointer<Object3D> owner);
         virtual ~Object3DComponent();
 
-        std::weak_ptr<Object3D> getOwner() {
+        WeakPointer<Object3D> getOwner() {
             return this->owner;
         }
 
     protected:
-        std::weak_ptr<Object3D> owner;
+        WeakPointer<Object3D> owner;
     };
 }

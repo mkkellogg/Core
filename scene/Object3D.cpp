@@ -22,11 +22,11 @@ namespace Core {
         return this->children.end();
     }
 
-    std::vector<std::weak_ptr<Object3DComponent>>::iterator Object3D::beginIterateComponents() {
+    std::vector<WeakPointer<Object3DComponent>>::iterator Object3D::beginIterateComponents() {
         return this->components.begin();
     }
 
-    std::vector<std::weak_ptr<Object3DComponent>>::iterator Object3D::endIterateComponents() {
+    std::vector<WeakPointer<Object3DComponent>>::iterator Object3D::endIterateComponents() {
         return this->components.end();
     }
 
@@ -34,7 +34,7 @@ namespace Core {
         return this->children.size();
     }
 
-    void Object3D::addChild(std::weak_ptr<Object3D> object) {
+    void Object3D::addChild(WeakPointer<Object3D> object) {
         if (WeakPointer<Object3D>::isValid(object)) {
             WeakPointer<Object3D> objPtr(object);
             if (WeakPointer<Object3D>::isValid(objPtr->parent)) {
@@ -50,7 +50,7 @@ namespace Core {
         }
     }
 
-    void Object3D::removeChild(std::weak_ptr<Object3D> object) {
+    void Object3D::removeChild(WeakPointer<Object3D> object) {
         std::vector<std::shared_ptr<Object3D>>::iterator result = this->children.end();
         WeakPointer<Object3D> objectPtr(object);
         for (auto itr = this->children.begin(); itr != this->children.end(); ++itr) {
@@ -67,14 +67,14 @@ namespace Core {
         }
     }
 
-    std::weak_ptr<Object3D> Object3D::getParent() {
+    WeakPointer<Object3D> Object3D::getParent() {
         return this->parent;
     }
 
-    Bool Object3D::addComponent(std::weak_ptr<Object3DComponent> component) {
+    Bool Object3D::addComponent(WeakPointer<Object3DComponent> component) {
         WeakPointer<Object3DComponent> componentPtr(component);
         for(auto itr = this->components.begin(); itr != this->components.end(); ++itr) {
-            std::weak_ptr<Object3DComponent> otherComp = *itr;
+            WeakPointer<Object3DComponent> otherComp = *itr;
             WeakPointer<Object3DComponent> otherCompPtr(otherComp);
 
             // don't add component if it already is present in list

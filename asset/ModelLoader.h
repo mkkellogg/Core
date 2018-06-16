@@ -33,7 +33,7 @@ namespace Core {
         };
 
         ~ModelLoader();
-        std::weak_ptr<Object3D> loadModel(const std::string& filePath, Real importScale, Bool preserveFBXPivots);
+        WeakPointer<Object3D> loadModel(const std::string& filePath, Real importScale, Bool preserveFBXPivots);
 
     private:
         enum class TextureType {
@@ -52,7 +52,7 @@ namespace Core {
 
             Int32 vertexColorsIndex;
             LongMask shaderProperties;
-            std::weak_ptr<Material> material;
+            WeakPointer<Material> material;
             Bool invertVCoords;
             std::map<TextureType, int> uvMapping;
 
@@ -83,9 +83,9 @@ namespace Core {
 
         void initImporter();
         std::shared_ptr<const aiScene> loadAIScene(const std::string& filePath, Bool preserveFBXPivots);
-        std::weak_ptr<Object3D> processModelScene(const std::string& modelPath, const aiScene& scene, Real importScale) const;
+        WeakPointer<Object3D> processModelScene(const std::string& modelPath, const aiScene& scene, Real importScale) const;
         Bool processMaterials(const std::string& modelPath, const aiScene& scene, std::vector<MaterialImportDescriptor>& materialImportDescriptors) const;
-        std::weak_ptr<Texture> loadAITexture(aiMaterial& assimpMaterial, aiTextureType textureType, const std::string& modelPath) const;
+        WeakPointer<Texture> loadAITexture(aiMaterial& assimpMaterial, aiTextureType textureType, const std::string& modelPath) const;
         void getImportDetails(const aiMaterial* mtl, MaterialImportDescriptor& materialImportDesc, const aiScene& scene) const;
 
         Engine& engine;

@@ -3,11 +3,11 @@
 
 namespace Core {
 
-  Scene::Scene(std::weak_ptr<Object3D> root): root(root) {
+  Scene::Scene(WeakPointer<Object3D> root): root(root) {
     
   }
 
-  std::weak_ptr<Object3D> Scene::getRoot() {
+  WeakPointer<Object3D> Scene::getRoot() {
     return this->root;
   }
 

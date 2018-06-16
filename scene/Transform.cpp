@@ -48,7 +48,7 @@ namespace Core {
 
   void Transform::updateWorldMatrix() {
     this->worldMatrix.copy(localMatrix);
-    std::weak_ptr<Object3D> parent = const_cast<Object3D&>(target).getParent();
+    WeakPointer<Object3D> parent = const_cast<Object3D&>(target).getParent();
     while(WeakPointer<Object3D>::isValid(parent)) {
       WeakPointer<Object3D> parentPtr(parent);
       this->worldMatrix.preMultiply(parentPtr->getTransform().getLocalMatrix());
@@ -104,7 +104,7 @@ namespace Core {
         fullMat[14] = cameraPos.z;
         fullMat[15] = 1.0f;
 
-        std::weak_ptr<Object3D> parent = const_cast<Object3D&>(this->target).getParent();
+        WeakPointer<Object3D> parent = const_cast<Object3D&>(this->target).getParent();
 
         if (WeakPointer<Object3D>::isValid(parent)) {
             WeakPointer<Object3D> parent(parent);
