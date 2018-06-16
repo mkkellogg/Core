@@ -109,8 +109,7 @@ namespace Core {
             throw AllocationException("MeshGL::initVertexPositions() -> Unable to allocate positions array.");
         } 
 
-        WeakPointer<Graphics> graphicsPtr(this->graphics);
-        std::shared_ptr<AttributeArrayGPUStorage> gpuStorage = graphicsPtr->createGPUStorage(this->vertexPositions->getSize(), Vector3rs::ComponentCount, AttributeType::Float, false);
+        std::shared_ptr<AttributeArrayGPUStorage> gpuStorage = this->graphics->createGPUStorage(this->vertexPositions->getSize(), Vector3rs::ComponentCount, AttributeType::Float, false);
         this->vertexPositions->setGPUStorage(gpuStorage);
 
         return true;
@@ -124,8 +123,7 @@ namespace Core {
             throw AllocationException("MeshGL::initVertexColors() -> Unable to allocate colors array.");
         }
 
-        WeakPointer<Graphics> graphicsPtr(this->graphics);
-        std::shared_ptr<AttributeArrayGPUStorage> gpuStorage = graphicsPtr->createGPUStorage(this->vertexPositions->getSize(), ColorS::ComponentCount, AttributeType::Float, false);
+        std::shared_ptr<AttributeArrayGPUStorage> gpuStorage = this->graphics->createGPUStorage(this->vertexPositions->getSize(), ColorS::ComponentCount, AttributeType::Float, false);
         this->vertexColors->setGPUStorage(gpuStorage);
         return true;
     }
@@ -138,15 +136,13 @@ namespace Core {
             throw AllocationException("MeshGL::initVertexUVs() -> Unable to allocate uvs array.");
         }
 
-        WeakPointer<Graphics> graphicsPtr(this->graphics);
-        std::shared_ptr<AttributeArrayGPUStorage> gpuStorage = graphicsPtr->createGPUStorage(this->vertexPositions->getSize(), Vector2rs::ComponentCount, AttributeType::Float, false);
+        std::shared_ptr<AttributeArrayGPUStorage> gpuStorage = this->graphics->createGPUStorage(this->vertexPositions->getSize(), Vector2rs::ComponentCount, AttributeType::Float, false);
         this->vertexUVs->setGPUStorage(gpuStorage);
         return true;
     }
 
     Bool Mesh::initIndices() {
-        WeakPointer<Graphics> graphicsPtr(this->graphics);
-        this->indexBuffer = graphicsPtr->createIndexBuffer(vertexCount);
+        this->indexBuffer = this->graphics->createIndexBuffer(vertexCount);
         return true;
     }
 

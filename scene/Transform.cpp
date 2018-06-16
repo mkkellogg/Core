@@ -49,10 +49,9 @@ namespace Core {
   void Transform::updateWorldMatrix() {
     this->worldMatrix.copy(localMatrix);
     WeakPointer<Object3D> parent = const_cast<Object3D&>(target).getParent();
-    while(WeakPointer<Object3D>::isValid(parent)) {
-      WeakPointer<Object3D> parentPtr(parent);
-      this->worldMatrix.preMultiply(parentPtr->getTransform().getLocalMatrix());
-      parent = parentPtr->getParent();
+    while(parent.isValid()) {
+      this->worldMatrix.preMultiply(parent->getTransform().getLocalMatrix());
+      parent = parent->getParent();
     }
   }
 
@@ -106,8 +105,7 @@ namespace Core {
 
         WeakPointer<Object3D> parent = const_cast<Object3D&>(this->target).getParent();
 
-        if (WeakPointer<Object3D>::isValid(parent)) {
-            WeakPointer<Object3D> parent(parent);
+        if (parent.isValid()) {
             parent->getTransform().updateWorldMatrix();
             Matrix4x4 parentMat = parent->getTransform().getWorldMatrix();
             parentMat.invert();

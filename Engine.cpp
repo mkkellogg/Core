@@ -80,9 +80,8 @@ namespace Core {
     WeakPointer<Camera> Engine::createCamera(WeakPointer<Object3D> owner) {
         std::shared_ptr<Camera> newCamera = std::shared_ptr<Camera>(new Camera(owner));
         this->cameras.push_back(newCamera);
-        WeakPointer<Object3D> ownerPtr(owner);
         WeakPointer<Camera> cameraPtr(newCamera);
-        ownerPtr->addComponent(cameraPtr);
+        owner->addComponent(cameraPtr);
         return cameraPtr;
     }
 

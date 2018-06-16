@@ -42,25 +42,19 @@ namespace Core {
         std::vector<WeakPointer<Camera>> cameraList;
         this->processScene(scene, objectList, cameraList);
         for (auto camera : cameraList) {
-            WeakPointer<Camera> cameraPtr(camera);
-            cameraPtr->setAspectRatioFromDimensions(this->renderSize.x, this->renderSize.y);
+            camera->setAspectRatioFromDimensions(this->renderSize.x, this->renderSize.y);
             render(scene, camera, objectList);
         }
     }
 
     void RendererGL::render(WeakPointer<Scene> scene, WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objectList) {
         for (auto object : objectList) {
-            WeakPointer<Object3D> objectPtr(object);
-
-            if (objectPtr) {
-                std::shared_ptr<Object3D> objectShared = objectPtr.getLockedPointer();
-                std::shared_ptr<BaseRenderableContainer> containerPtr = std::dynamic_pointer_cast<BaseRenderableContainer>(objectShared);
-                if (containerPtr) {
-                    WeakPointer<BaseObjectRenderer> objectRenderer = containerPtr->getBaseRenderer();
-                    WeakPointer<BaseObjectRenderer> objectRendererPtr(objectRenderer);
-                    if (objectRendererPtr) {
-                        objectRendererPtr->render(camera);
-                    }
+            std::shared_ptr<Object3D> objectShared = object.getLockedPointer();
+            std::shared_ptr<BaseRenderableContainer> containerPtr = std::dynamic_pointer_cast<BaseRenderableContainer>(objectShared);
+            if (containerPtr) {
+                WeakPointer<BaseObjectRenderer> objectRenderer = containerPtr->getBaseRenderer();
+                if (objectRenderer) {
+                    objectRenderer->render(camera);
                 }
             }
         }

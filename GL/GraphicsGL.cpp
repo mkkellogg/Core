@@ -64,8 +64,7 @@ namespace Core {
     }
 
     void GraphicsGL::activateShader(WeakPointer<Shader> shader) {
-        WeakPointer<Shader> shaderPtr(shader);
-        glUseProgram(shaderPtr->getProgram());
+        glUseProgram(shader->getProgram());
     }
 
     std::shared_ptr<AttributeArrayGPUStorage> GraphicsGL::createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) const {
@@ -92,8 +91,7 @@ namespace Core {
     }
 
     void GraphicsGL::drawBoundVertexBuffer(UInt32 vertexCount, WeakPointer<IndexBuffer> indices) {
-        WeakPointer<IndexBuffer> indexPtr(indices);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexPtr->getBufferID());
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices->getBufferID());
         glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, (void *)(0));
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }

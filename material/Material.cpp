@@ -10,8 +10,7 @@ namespace Core {
 
     Material::Material(WeakPointer<Graphics> graphics, WeakPointer<Shader> shader): Material(graphics) {
         this->setShader(shader);
-        WeakPointer<Shader> shaderPtr(shader);
-        this->ready = shaderPtr && shaderPtr->isReady();
+        this->ready = this->shader && this->shader->isReady();
     }
 
     void Material::setShader(WeakPointer<Shader> shader) {
@@ -23,10 +22,8 @@ namespace Core {
     }
 
     Bool Material::buildFromSource(const std::string& vertexSource, const std::string& fragmentSource) {
-         WeakPointer<Graphics> graphicsPtr(this->graphics);
-        WeakPointer<Shader> shader = graphicsPtr->createShader(vertexSource, fragmentSource);
-        WeakPointer<Shader> shaderPtr(shader);
-        Bool success = shaderPtr->build();
+        WeakPointer<Shader> shader = this->graphics->createShader(vertexSource, fragmentSource);
+        Bool success = shader->build();
         if (!success) {
             this->ready = false;
             return false;

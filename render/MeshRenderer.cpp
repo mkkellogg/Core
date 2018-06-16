@@ -9,69 +9,58 @@ namespace Core {
     }
 
     void MeshRenderer::renderObject(WeakPointer<Camera> camera, WeakPointer<Mesh> mesh) {
-        WeakPointer<Object3D> ownerPtr(owner);
-        WeakPointer<Material> materialPtr(this->material);
-        WeakPointer<Shader> shaderPtr(materialPtr->getShader());
-        WeakPointer<Graphics> graphicsPtr(this->graphics);
-        WeakPointer<Mesh> meshPtr(mesh);
-        WeakPointer<Camera> cameraPtr(camera);
+        WeakPointer<Shader> shader = this->material->getShader();
 
-        graphicsPtr->activateShader(materialPtr->getShader());
+        this->graphics->activateShader(this->material->getShader());
 
-        this->checkAndSetShaderAttribute(meshPtr, StandardAttributes::Position, meshPtr->getVertexPositions());
-        this->checkAndSetShaderAttribute(meshPtr, StandardAttributes::Color, meshPtr->getVertexColors());
-        this->checkAndSetShaderAttribute(meshPtr, StandardAttributes::UV, meshPtr->getVertexUVs());
+        this->checkAndSetShaderAttribute(mesh, StandardAttributes::Position, mesh->getVertexPositions());
+        this->checkAndSetShaderAttribute(mesh, StandardAttributes::Color, mesh->getVertexColors());
+        this->checkAndSetShaderAttribute(mesh, StandardAttributes::UV, mesh->getVertexUVs());
 
-        Int32 projectionLoc = materialPtr->getShaderLocation(StandardUniforms::ProjectionMatrix);
-        Int32 viewMatrixLoc = materialPtr->getShaderLocation(StandardUniforms::ViewMatrix);
-        Int32 modelMatrixLoc = materialPtr->getShaderLocation(StandardUniforms::ModelMatrix);
+        Int32 projectionLoc = this->material->getShaderLocation(StandardUniforms::ProjectionMatrix);
+        Int32 viewMatrixLoc = this->material->getShaderLocation(StandardUniforms::ViewMatrix);
+        Int32 modelMatrixLoc = this->material->getShaderLocation(StandardUniforms::ModelMatrix);
 
         if (projectionLoc >= 0) {
-            const Matrix4x4 &projMatrix = cameraPtr->getProjectionMatrix();
-            shaderPtr->setUniformMatrix4(projectionLoc, projMatrix);
+            const Matrix4x4 &projMatrix = camera->getProjectionMatrix();
+            shader->setUniformMatrix4(projectionLoc, projMatrix);
         }
 
-        if (viewMatrixLoc >= 0) {
-            WeakPointer<Object3D> cameraOwner(cameraPtr->getOwner());
-            Matrix4x4 viewMatrix = cameraOwner->getTransform().getWorldMatrix();
+        if (viewMatrixLoc >= 0) {;
+            Matrix4x4 viewMatrix = camera->getOwner()->getTransform().getWorldMatrix();
             viewMatrix.invert();
-            shaderPtr->setUniformMatrix4(viewMatrixLoc, viewMatrix);
+            shader->setUniformMatrix4(viewMatrixLoc, viewMatrix);
         }
 
         if (modelMatrixLoc >= 0) {
-            Matrix4x4 modelmatrix = ownerPtr->getTransform().getWorldMatrix();
-            shaderPtr->setUniformMatrix4(modelMatrixLoc, modelmatrix);
+            Matrix4x4 modelmatrix = this->owner->getTransform().getWorldMatrix();
+            shader->setUniformMatrix4(modelMatrixLoc, modelmatrix);
         }
 
-        materialPtr->sendCustomUniformsToShader();
+        this->material->sendCustomUniformsToShader();
 
-        if (meshPtr->isIndexed()) {
-            graphicsPtr->drawBoundVertexBuffer(meshPtr->getVertexCount(), meshPtr->getIndexBuffer());
+        if (mesh->isIndexed()) {
+            this->graphics->drawBoundVertexBuffer(mesh->getVertexCount(), mesh->getIndexBuffer());
         } else {
-            graphicsPtr->drawBoundVertexBuffer(meshPtr->getVertexCount());
+            this->graphics->drawBoundVertexBuffer(mesh->getVertexCount());
         }
     }
 
     void MeshRenderer::render(WeakPointer<Camera> camera) {
-        WeakPointer<Object3D> ownerPtr(owner);
-        std::shared_ptr<RenderableContainer<Mesh>> thisContainer = std::dynamic_pointer_cast<RenderableContainer<Mesh>>(ownerPtr.getLockedPointer());
+        std::shared_ptr<RenderableContainer<Mesh>> thisContainer = std::dynamic_pointer_cast<RenderableContainer<Mesh>>(this->owner.getLockedPointer());
         if (thisContainer) {
             auto renderables = thisContainer->getRenderables();
             for (auto mesh : renderables) {
-                WeakPointer<Mesh> meshPtr(mesh);
-                this->renderObject(camera, meshPtr.getLockedPointer());
+                this->renderObject(camera, mesh);
             }
         }
     }
 
     void MeshRenderer::checkAndSetShaderAttribute(WeakPointer<Mesh> mesh, StandardAttributes attribute, AttributeArrayBase *array) {
         if (mesh->isAttributeEnabled(attribute)) {
-            WeakPointer<Material> materialPtr(this->material);
-            Int32 shaderLocation = materialPtr->getShaderLocation(attribute);
-
-            WeakPointer<AttributeArrayGPUStorage> gpuStoragePtr(array->getGPUStorage());
-            if (gpuStoragePtr) {
-                gpuStoragePtr->sendToShader(shaderLocation);
+            Int32 shaderLocation = this->material->getShaderLocation(attribute);
+            if (array->getGPUStorage()) {
+                array->getGPUStorage()->sendToShader(shaderLocation);
             }
         }
     }

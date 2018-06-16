@@ -42,13 +42,12 @@ namespace Core {
     if (!ready) {
       return false;
     }
-    WeakPointer<Shader> shaderPtr(this->shader);
-    this->positionLocation = shaderPtr->getAttributeLocation("pos");
-    this->colorLocation = shaderPtr->getAttributeLocation("color");
-    this->textureLocation = shaderPtr->getAttributeLocation("textureA");
-    this->projectionMatrixLocation = shaderPtr->getUniformLocation("projection");
-    this->viewMatrixLocation = shaderPtr->getUniformLocation("viewMatrix");
-    this->uvLocation = shaderPtr->getUniformLocation("uv");
+    this->positionLocation = this->shader->getAttributeLocation("pos");
+    this->colorLocation = this->shader->getAttributeLocation("color");
+    this->textureLocation = this->shader->getAttributeLocation("textureA");
+    this->projectionMatrixLocation = this->shader->getUniformLocation("projection");
+    this->viewMatrixLocation = this->shader->getUniformLocation("viewMatrix");
+    this->uvLocation = this->shader->getUniformLocation("uv");
     return true;
   }
 
@@ -82,9 +81,8 @@ namespace Core {
 
   void BasicTexturedMaterial::sendCustomUniformsToShader() {
     if (this->texture) {
-      WeakPointer<Shader> shaderPtr(this->shader);
-      shaderPtr->setTexture2D(0, this->texture->getTextureID());
-      shaderPtr->setUniform1i(textureLocation, 0);
+      this->shader->setTexture2D(0, this->texture->getTextureID());
+      this->shader->setUniform1i(textureLocation, 0);
     }
   }
 }

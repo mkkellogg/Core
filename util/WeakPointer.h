@@ -44,7 +44,7 @@ namespace Core {
         }
 
         Bool operator ==(const WeakPointer<T> other) {
-            return this.lockedPointer == other.lockedPointer;
+            return this->lockedPointer == other.lockedPointer;
         }
 
         T *operator->() {

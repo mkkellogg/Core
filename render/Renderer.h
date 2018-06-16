@@ -33,7 +33,7 @@ namespace Core {
     Vector4u getViewport();
     
   private:
-    void processSceneStep(const WeakPointer<Object3D> object,
+    void processSceneStep(WeakPointer<Object3D> object,
                           const Matrix4x4& curTransform,
                           std::vector<WeakPointer<Object3D>>& outObjects,
                           std::vector<WeakPointer<Camera>>& outCameras);

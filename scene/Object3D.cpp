@@ -34,32 +34,27 @@ namespace Core {
     }
 
     void Object3D::addChild(WeakPointer<Object3D> object) {
-        if (WeakPointer<Object3D>::isValid(object)) {
-            WeakPointer<Object3D> objPtr(object);
-            if (WeakPointer<Object3D>::isValid(objPtr->parent)) {
-                WeakPointer<Object3D> parentPtr(objPtr->parent);
-                parentPtr->removeChild(object);
-                Transform& parentTransform = parentPtr->getTransform();
-                parentTransform.updateWorldMatrix();
-                Matrix4x4 inverse(parentTransform.getWorldMatrix());
-                inverse.invert();
-                objPtr->getTransform().getLocalMatrix().preMultiply(inverse);
-            }
-            this->children.push_back(objPtr.getLockedPointer());
+        if (object->parent.isValid()) {
+            object->parent->removeChild(object);
+            Transform& parentTransform = object->parent->getTransform();
+            parentTransform.updateWorldMatrix();
+            Matrix4x4 inverse(parentTransform.getWorldMatrix());
+            inverse.invert();
+            object->getTransform().getLocalMatrix().preMultiply(inverse);
         }
+        this->children.push_back(object.getLockedPointer());
     }
 
     void Object3D::removeChild(WeakPointer<Object3D> object) {
         std::vector<std::shared_ptr<Object3D>>::iterator result = this->children.end();
-        WeakPointer<Object3D> objectPtr(object);
         for (auto itr = this->children.begin(); itr != this->children.end(); ++itr) {
-            if (*itr == objectPtr.getLockedPointer()) {
+            if (*itr == object.getLockedPointer()) {
                 result = itr;
                 break;
             }
         }
         if (result != this->children.end()) {
-            Transform& transform = objectPtr->getTransform();
+            Transform& transform = object->getTransform();
             transform.updateWorldMatrix();
             transform.getLocalMatrix().copy(transform.getWorldMatrix());
             this->children.erase(result);
@@ -71,13 +66,9 @@ namespace Core {
     }
 
     Bool Object3D::addComponent(WeakPointer<Object3DComponent> component) {
-        WeakPointer<Object3DComponent> componentPtr(component);
         for(auto itr = this->components.begin(); itr != this->components.end(); ++itr) {
-            WeakPointer<Object3DComponent> otherComp = *itr;
-            WeakPointer<Object3DComponent> otherCompPtr(otherComp);
-
             // don't add component if it already is present in list
-            if (otherCompPtr.getLockedPointer() == componentPtr.getLockedPointer()) {
+            if (component == *itr) {
                 return false;
             }
         }

@@ -13,38 +13,28 @@ namespace Core {
         return true;
     }
 
-    void Renderer::processScene(WeakPointer<Scene> scene, std::vector<WeakPointer<Object3D>>& outObjects,
-                                std::vector<WeakPointer<Camera>>& outCameras) {
+    void Renderer::processScene(WeakPointer<Scene> scene, std::vector<WeakPointer<Object3D>>& outObjects, std::vector<WeakPointer<Camera>>& outCameras) {
         Matrix4x4 rootTransform;
-        WeakPointer<Scene> scenePtr = WeakPointer<Scene>(scene);
-        WeakPointer<Object3D> sceneRootPtr = WeakPointer<Object3D>(scenePtr->getRoot());
-        processSceneStep(sceneRootPtr.getLockedPointer(), rootTransform, outObjects, outCameras);
+        processSceneStep(scene->getRoot(), rootTransform, outObjects, outCameras);
     }
 
-    void Renderer::processSceneStep(const WeakPointer<Object3D> object, const Matrix4x4& curTransform, std::vector<WeakPointer<Object3D>>& outObjects,
+    void Renderer::processSceneStep(WeakPointer<Object3D> object, const Matrix4x4& curTransform, std::vector<WeakPointer<Object3D>>& outObjects,
                                     std::vector<WeakPointer<Camera>>& outCameras) {
-                                    WeakPointer<Object3D> objectPtr(object);
-        for (auto itr = objectPtr->beginIterateChildren(); itr != objectPtr->endIterateChildren(); ++itr) {
+        for (auto itr = object->beginIterateChildren(); itr != object->endIterateChildren(); ++itr) {
             const std::shared_ptr<Object3D> obj = *itr;
 
             Matrix4x4 nextTransform = curTransform;
-
             Transform& objTransform = obj->getTransform();
             nextTransform.multiply(objTransform.getLocalMatrix());
             objTransform.getWorldMatrix().copy(nextTransform);
             outObjects.push_back(obj);
 
             for (auto compItr = obj->beginIterateComponents(); compItr != obj->endIterateComponents(); ++compItr) {
-                WeakPointer<Object3DComponent> comp = *compItr;
-                WeakPointer<Object3DComponent> compPtr(comp);
-
-                if (compPtr) {
-                  // check if this component is a camera
-                  std::shared_ptr<Object3DComponent> compShared = compPtr.getLockedPointer();
-                  std::shared_ptr<Camera> camShared = std::dynamic_pointer_cast<Camera>(compShared);
-                  if (camShared) {
-                      outCameras.push_back(camShared);
-                  }
+                // check if this component is a camera
+                std::shared_ptr<Object3DComponent> compShared = (*compItr).getLockedPointer();
+                std::shared_ptr<Camera> camShared = std::dynamic_pointer_cast<Camera>(compShared);
+                if (camShared) {
+                    outCameras.push_back(camShared);
                 }
             }
 

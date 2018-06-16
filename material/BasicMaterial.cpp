@@ -39,12 +39,11 @@ namespace Core {
       return false;
     }
 
-    WeakPointer<Shader> shaderPtr(this->shader);
-    this->positionLocation = shaderPtr->getAttributeLocation("pos");
-    this->colorLocation = shaderPtr->getAttributeLocation("color");
-    this->projectionMatrixLocation = shaderPtr->getUniformLocation("projection");
-    this->viewMatrixLocation = shaderPtr->getUniformLocation("viewMatrix");
-    this->modelMatrixLocation = shaderPtr->getUniformLocation("modelMatrix");
+    this->positionLocation = this->shader->getAttributeLocation("pos");
+    this->colorLocation = this->shader->getAttributeLocation("color");
+    this->projectionMatrixLocation = this->shader->getUniformLocation("projection");
+    this->viewMatrixLocation = this->shader->getUniformLocation("viewMatrix");
+    this->modelMatrixLocation = this->shader->getUniformLocation("modelMatrix");
     return true;
   }
 
