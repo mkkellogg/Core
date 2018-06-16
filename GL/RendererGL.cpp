@@ -57,7 +57,7 @@ namespace Core {
       if(renderableContainer) {
         std::weak_ptr<BaseObjectRenderer> objectRenderer = renderableContainer->getBaseRenderer();
         WeakPointer<BaseObjectRenderer> objectRendererPtr(objectRenderer);
-        if(objectRendererPtr.isInitialized()) {
+        if(objectRendererPtr) {
           objectRendererPtr->render(camera);
         }
       }

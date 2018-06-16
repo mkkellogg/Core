@@ -34,12 +34,12 @@ namespace Core {
             return this->lockedPointer;
         }
 
-        Bool isInitialized() {
-            return isInitialized(*this);
+        Bool isValid() const {
+            return isValid(*this);
         }
 
         operator bool() const { 
-            return this->isInitialized();
+            return this->isValid();
         }
 
         static std::shared_ptr<T> expectWeakPointer(std::weak_ptr<T> ptr) {
@@ -50,12 +50,12 @@ namespace Core {
             return sharedPtr;
         }
 
-        static Bool isUninitialized(std::weak_ptr<T> const &weak) {
+        static Bool isInvalid(std::weak_ptr<T> const &weak) {
             using wt = std::weak_ptr<T>;
             return !weak.owner_before(wt{}) && !wt{}.owner_before(weak);
         }
 
-        static Bool isInitialized(std::weak_ptr<T> const &weak) {
+        static Bool isValid(std::weak_ptr<T> const &weak) {
             using wt = std::weak_ptr<T>;
             return weak.owner_before(wt{}) || wt{}.owner_before(weak);
         }

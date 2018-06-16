@@ -67,7 +67,7 @@ namespace Core {
             Int32 shaderLocation = materialPtr->getShaderLocation(attribute);
 
             WeakPointer<AttributeArrayGPUStorage> gpuStoragePtr(array->getGPUStorage());
-            if (gpuStoragePtr.isInitialized()) {
+            if (gpuStoragePtr) {
                 gpuStoragePtr->sendToShader(shaderLocation);
             }
         }

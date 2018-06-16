@@ -105,7 +105,7 @@ namespace Core {
         // verify that we have a valid scene
         if (scene.mRootNode == nullptr) throw new ModelLoaderException("ModelLoader::processModelScene -> Assimp scene root is null.");
         std::weak_ptr<Object3D> root = engine.createObject3D();
-        if (WeakPointer<Object3D>::isUninitialized(root)) throw ModelLoaderException("ModelLoader::processModelScene -> Could not create root object.");
+        if (WeakPointer<Object3D>::isInvalid(root)) throw ModelLoaderException("ModelLoader::processModelScene -> Could not create root object.");
       
         std::shared_ptr<FileSystem> fileSystem = FileSystem::getInstance();
         std::string fixedModelPath = fileSystem->fixupPathForLocalFilesystem(modelPath);
@@ -361,11 +361,11 @@ namespace Core {
         }
 
         WeakPointer<Texture2D> texturePtr(texture);
-        if (textureImage && texturePtr.isInitialized()) {
+        if (textureImage && texturePtr) {
             texturePtr->build(textureImage);
         }
         // did texture fail to load?
-        if (!textureImage || !texturePtr.isInitialized() || !texturePtr->isBuilt()) {
+        if (!textureImage || !texturePtr || !texturePtr->isBuilt()) {
             std::string msg = std::string("ModelImporter::LoadAITexture -> Could not load texture file: ") + fullTextureFilePath;
             throw ModelLoaderException(msg);
         }

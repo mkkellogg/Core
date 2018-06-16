@@ -81,7 +81,7 @@ namespace Core {
         fullMat[14] = cameraPos.z;
         fullMat[15] = 1.0f;
 
-        if (WeakPointer<Object3D>::isInitialized(this->parent)) {
+        if (WeakPointer<Object3D>::isValid(this->parent)) {
             WeakPointer<Object3D> parent(this->parent);
             parent->getTransform().updateWorldMatrix();
             Matrix4x4 parentMat = parent->getTransform().getWorldMatrix();

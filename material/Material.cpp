@@ -12,7 +12,7 @@ namespace Core {
     Material::Material(std::weak_ptr<Graphics> graphics, std::weak_ptr<Shader> shader): Material(graphics) {
         this->setShader(shader);
         WeakPointer<Shader> shaderPtr(shader);
-        this->ready = shaderPtr.isInitialized() && shaderPtr->isReady();
+        this->ready = shaderPtr && shaderPtr->isReady();
     }
 
     void Material::setShader(std::weak_ptr<Shader> shader) {

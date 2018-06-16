@@ -27,9 +27,9 @@ namespace Core {
     }
 
     void Object3D::addChild(std::weak_ptr<Object3D> object) {
-        if (WeakPointer<Object3D>::isInitialized(object)) {
+        if (WeakPointer<Object3D>::isValid(object)) {
             WeakPointer<Object3D> objPtr(object);
-            if (WeakPointer<Object3D>::isInitialized(objPtr->parent)) {
+            if (WeakPointer<Object3D>::isValid(objPtr->parent)) {
                 WeakPointer<Object3D> parentPtr(objPtr->parent);
                 parentPtr->removeChild(object);
                 Transform& parentTransform = parentPtr->getTransform();
