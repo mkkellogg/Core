@@ -53,7 +53,7 @@ namespace Core {
 
             Int32 vertexColorsIndex;
             LongMask shaderProperties;
-            WeakPointer<Material> material;
+           // WeakPointer<Material> material;
             Bool invertVCoords;
             std::map<TextureType, int> uvMapping;
 

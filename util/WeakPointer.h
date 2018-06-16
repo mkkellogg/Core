@@ -19,44 +19,50 @@ namespace Core {
     class WeakPointer : public std::weak_ptr<T> {
     public:
 
-        WeakPointer(): std::weak_ptr<T>()  {
+        WeakPointer(): std::weak_ptr<T>(), _ptr(nullptr)  {
             
         }
 
-        WeakPointer(std::weak_ptr<T> ptr) : std::weak_ptr<T>(ptr) {
-            this->lockedPointer = expectValidWeakPointer(*this);
-        }
-
-        WeakPointer(std::shared_ptr<T> ptr) : std::weak_ptr<T>(ptr) {
-            this->lockedPointer = ptr;
+        WeakPointer(std::shared_ptr<T> ptr) : std::weak_ptr<T>(ptr), _ptr(nullptr) {
+            this->_ptr = ptr.get();
         }
 
         template <typename U>
-        WeakPointer(WeakPointer<U>& ptr) : std::weak_ptr<T>(ptr) {
-            this->lockedPointer = std::static_pointer_cast<T>(ptr.getLockedPointer());
+        WeakPointer(WeakPointer<U>& ptr) : std::weak_ptr<T>(ptr), _ptr(nullptr) {
+            this->_ptr = static_cast<T*>(ptr.get());
         }
 
-        WeakPointer& operator =(const WeakPointer other) {
+        WeakPointer& operator =(const WeakPointer& other) {
             if (&other == this) return *this;
             std::weak_ptr<T>::operator=(other);
-            this->lockedPointer = other.lockedPointer;
+            this->_ptr = other._ptr;
             return *this;
         }
 
-        Bool operator ==(const WeakPointer<T> other) {
-            return this->lockedPointer == other.lockedPointer;
+        Bool operator ==(const WeakPointer<T>& other) {
+            if (!this->_ptr || !other._ptr)return false;
+            return this->_ptr == other._ptr;
         }
 
         T *operator->() {
-            return this->get();
+            if (!this->_ptr) {
+                std::shared_ptr<T> temp = this->lock();
+                if (!temp) {
+                    throw WeakPointerAssertionFailure("Tried to use null weak pointer (1st try).");
+                }
+                this->_ptr = temp.get();
+            }
+            if (!this->_ptr) {
+                throw WeakPointerAssertionFailure("Tried to use null weak pointer (2nd try).");
+            }
+            if (!this->isValid()) {
+                throw WeakPointerAssertionFailure("Tried to use invalid weak pointer.");
+            }
+            return this->_ptr;
         }
 
         T *get() {
-            return this->lockedPointer.get();
-        }
-
-        std::shared_ptr<T> getLockedPointer() {
-            return this->lockedPointer;
+            return this->_ptr;
         }
 
         Bool isValid() const {
@@ -85,6 +91,6 @@ namespace Core {
         }
 
     private:
-        std::shared_ptr<T> lockedPointer;
+        T * _ptr;
     };
 }

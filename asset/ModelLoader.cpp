@@ -163,7 +163,7 @@ namespace Core {
 
             aiReturn texFound = AI_SUCCESS;
 
-            WeakPointer<Texture> diffuseTexture;
+            /*WeakPointer<Texture> diffuseTexture;
             //	TextureRef bumpTexture;
             //	TextureRef specularTexture;
 
@@ -171,7 +171,7 @@ namespace Core {
             texFound = assimpMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &aiTexturePath);
             if (texFound == AI_SUCCESS) {
                 diffuseTexture = this->loadAITexture(*assimpMaterial, aiTextureType_DIFFUSE, fixedModelPath);
-            }
+            }*/
    
             // loop through each mesh in the scene and check if it uses [material]. If so,
             // create a unique Material object for the mesh and attach it to [materialImportDescriptor]
@@ -312,7 +312,7 @@ namespace Core {
      */
     WeakPointer<Texture> ModelLoader::loadAITexture(aiMaterial& assimpMaterial, aiTextureType textureType, const std::string& modelPath) const {
         // temp variables
-        WeakPointer<Texture2D> texture;
+       /* WeakPointer<Texture2D> texture;
         aiString aiTexturePath;
         aiReturn texFound = AI_SUCCESS;
 
@@ -369,7 +369,7 @@ namespace Core {
             throw ModelLoaderException(msg);
         }
 
-        return texture;
+        return texture;*/
     }
 
 }

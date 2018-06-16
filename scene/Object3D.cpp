@@ -42,13 +42,13 @@ namespace Core {
             inverse.invert();
             object->getTransform().getLocalMatrix().preMultiply(inverse);
         }
-        this->children.push_back(object.getLockedPointer());
+        this->children.push_back(object.lock());
     }
 
     void Object3D::removeChild(WeakPointer<Object3D> object) {
         std::vector<std::shared_ptr<Object3D>>::iterator result = this->children.end();
         for (auto itr = this->children.begin(); itr != this->children.end(); ++itr) {
-            if (*itr == object.getLockedPointer()) {
+            if (*itr == object.lock()) {
                 result = itr;
                 break;
             }

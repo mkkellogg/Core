@@ -31,7 +31,7 @@ namespace Core {
 
             for (auto compItr = obj->beginIterateComponents(); compItr != obj->endIterateComponents(); ++compItr) {
                 // check if this component is a camera
-                std::shared_ptr<Object3DComponent> compShared = (*compItr).getLockedPointer();
+                std::shared_ptr<Object3DComponent> compShared = (*compItr).lock();
                 std::shared_ptr<Camera> camShared = std::dynamic_pointer_cast<Camera>(compShared);
                 if (camShared) {
                     outCameras.push_back(camShared);
