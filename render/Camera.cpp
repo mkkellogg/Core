@@ -1,10 +1,13 @@
+#include "string.h"
+
 #include "Camera.h"
 #include "../common/types.h"
 #include "../math/Math.h"
 #include "../math/Matrix4x4.h"
 #include "../math/Quaternion.h"
 #include "../util/WeakPointer.h"
-#include "string.h"
+#include "../scene/Object3D.h"
+
 
 namespace Core {
 
@@ -15,11 +18,13 @@ namespace Core {
     const Real Camera::DEFAULT_NEARP = 0.1;
     const Real Camera::DEFAULT_FARP = 100.0;
 
-    Camera::Camera() : fov(Camera::DEFAULT_FOV), aspectRatio(Camera::DEFAULT_RATIO), nearP(Camera::DEFAULT_NEARP), farP(Camera::DEFAULT_FARP) {
+    Camera::Camera(std::weak_ptr<Object3D> owner)
+        : Object3DComponent(owner), fov(Camera::DEFAULT_FOV), aspectRatio(Camera::DEFAULT_RATIO), nearP(Camera::DEFAULT_NEARP), farP(Camera::DEFAULT_FARP) {
         this->updateProjection(this->fov, this->aspectRatio, this->nearP, this->farP);
     }
 
-    Camera::Camera(Real fov, Real ratio, Real nearP, Real farP) : fov(fov), aspectRatio(ratio), nearP(nearP), farP(farP) {
+    Camera::Camera(std::weak_ptr<Object3D> owner, Real fov, Real ratio, Real nearP, Real farP)
+        : Object3DComponent(owner), fov(fov), aspectRatio(ratio), nearP(nearP), farP(farP) {
         this->updateProjection(this->fov, this->aspectRatio, this->nearP, this->farP);
     }
 
@@ -42,54 +47,8 @@ namespace Core {
     }
 
     void Camera::lookAt(const Point3r& target) {
-        Point3r cameraPos;
-        this->transform.updateWorldMatrix();
-        this->transform.transform(cameraPos, true);
-
-        Vector3r toTarget = target - cameraPos;
-        toTarget.normalize();
-
-        Vector3r vUp(0, 1, 0);
-        Vector3r vRight;
-
-        Vector3r::cross(toTarget, vUp, vRight);
-        vRight.normalize();
-
-        Vector3r::cross(vRight, toTarget, vUp);
-        vUp.normalize();
-
-        Matrix4x4 full = this->transform.getLocalMatrix();
-        auto fullMat = full.getData();
-
-        fullMat[0] = vRight.x;
-        fullMat[1] = vRight.y;
-        fullMat[2] = vRight.z;
-        fullMat[3] = 0.0f;
-
-        fullMat[4] = vUp.x;
-        fullMat[5] = vUp.y;
-        fullMat[6] = vUp.z;
-        fullMat[7] = 0.0f;
-
-        fullMat[8] = -toTarget.x;
-        fullMat[9] = -toTarget.y;
-        fullMat[10] = -toTarget.z;
-        fullMat[11] = 0.0f;
-
-        fullMat[12] = cameraPos.x;
-        fullMat[13] = cameraPos.y;
-        fullMat[14] = cameraPos.z;
-        fullMat[15] = 1.0f;
-
-        if (WeakPointer<Object3D>::isValid(this->parent)) {
-            WeakPointer<Object3D> parent(this->parent);
-            parent->getTransform().updateWorldMatrix();
-            Matrix4x4 parentMat = parent->getTransform().getWorldMatrix();
-            parentMat.invert();
-            full.preMultiply(parentMat);
-        }
-
-        this->transform.getLocalMatrix().copy(fullMat);
+        WeakPointer<Object3D> owner(this->getOwner());
+        owner->getTransform().lookAt(target);
     }
 
     void Camera::project(Vector3Base<Real>& vec) {

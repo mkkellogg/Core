@@ -40,25 +40,31 @@ namespace Core {
 
   void RendererGL::render(std::weak_ptr<Scene> scene) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    std::vector<std::shared_ptr<Object3D>> objectList;
-    std::vector<std::shared_ptr<Camera>> cameraList;
+    std::vector<std::weak_ptr<Object3D>> objectList;
+    std::vector<std::weak_ptr<Camera>> cameraList;
     this->processScene(scene, objectList, cameraList);
     for(auto camera: cameraList) {
-      camera->setAspectRatioFromDimensions(this->renderSize.x, this->renderSize.y);
+      WeakPointer<Camera> cameraPtr(camera);
+      cameraPtr->setAspectRatioFromDimensions(this->renderSize.x, this->renderSize.y);
       render(scene, camera, objectList);
     }
   }
 
   void RendererGL::render(std::weak_ptr<Scene> scene, 
-                          std::shared_ptr<Camera> camera,
-                          std::vector<std::shared_ptr<Object3D>>& objectList) {
+                          std::weak_ptr<Camera> camera,
+                          std::vector<std::weak_ptr<Object3D>>& objectList) {
     for (auto object : objectList) {
-      std::shared_ptr<BaseRenderableContainer> renderableContainer = std::dynamic_pointer_cast<BaseRenderableContainer>(object);
-      if(renderableContainer) {
-        std::weak_ptr<BaseObjectRenderer> objectRenderer = renderableContainer->getBaseRenderer();
-        WeakPointer<BaseObjectRenderer> objectRendererPtr(objectRenderer);
-        if(objectRendererPtr) {
-          objectRendererPtr->render(camera);
+      WeakPointer<Object3D> objectPtr(object);
+
+      if (objectPtr) {
+        std::shared_ptr<Object3D> objectShared = objectPtr.getLockedPointer();
+        std::shared_ptr<BaseRenderableContainer> containerPtr = std::dynamic_pointer_cast<BaseRenderableContainer>(objectShared);
+        if(containerPtr) {
+          std::weak_ptr<BaseObjectRenderer> objectRenderer = containerPtr->getBaseRenderer();
+          WeakPointer<BaseObjectRenderer> objectRendererPtr(objectRenderer);
+          if(objectRendererPtr) {
+            objectRendererPtr->render(camera);
+          }
         }
       }
     }

@@ -51,7 +51,8 @@ namespace Core {
         worldMatrix.translate(0, 12, 15);
         worldMatrix.multiply(rotationMatrixB);
 
-        cameraPtr->getTransform().getLocalMatrix().copy(worldMatrix);
+        WeakPointer<Object3D> cameraOwner(cameraPtr->getOwner());
+        cameraOwner->getTransform().getLocalMatrix().copy(worldMatrix);
       }
 
     });
@@ -102,8 +103,9 @@ namespace Core {
     WeakPointer<Object3D> sceneRootPtr = WeakPointer<Object3D>(scenePtr->getRoot());
     sceneRootPtr->addChild(skyboxObj);
 
-    camera = engine.createCamera();
-    sceneRootPtr->addChild(camera);
+    std::weak_ptr<Core::Object3D> cameraObj = engine.createObject3D<Core::Object3D>();
+    camera = engine.createCamera(cameraObj);
+    sceneRootPtr->addChild(cameraObj);
 
   }
 

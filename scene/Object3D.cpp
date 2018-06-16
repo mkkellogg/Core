@@ -14,12 +14,20 @@ namespace Core {
         return this->transform;
     }
 
-    std::vector<std::shared_ptr<Object3D>>::const_iterator Object3D::beginIterateChildren() {
+    std::vector<std::shared_ptr<Object3D>>::iterator Object3D::beginIterateChildren() {
         return this->children.begin();
     }
 
-    std::vector<std::shared_ptr<Object3D>>::const_iterator Object3D::endIterateChildren() {
+    std::vector<std::shared_ptr<Object3D>>::iterator Object3D::endIterateChildren() {
         return this->children.end();
+    }
+
+    std::vector<std::weak_ptr<Object3DComponent>>::iterator Object3D::beginIterateComponents() {
+        return this->components.begin();
+    }
+
+    std::vector<std::weak_ptr<Object3DComponent>>::iterator Object3D::endIterateComponents() {
+        return this->components.end();
     }
 
     UInt32 Object3D::size() const {
@@ -63,7 +71,18 @@ namespace Core {
         return this->parent;
     }
 
-    void Object3D::addComponent(std::shared_ptr<Object3DComponent> component) {
+    Bool Object3D::addComponent(std::weak_ptr<Object3DComponent> component) {
+        WeakPointer<Object3DComponent> componentPtr(component);
+        for(auto itr = this->components.begin(); itr != this->components.end(); ++itr) {
+            std::weak_ptr<Object3DComponent> otherComp = *itr;
+            WeakPointer<Object3DComponent> otherCompPtr(otherComp);
+
+            // don't add component if it already is present in list
+            if (otherCompPtr.getLockedPointer() == componentPtr.getLockedPointer()) {
+                return false;
+            }
+        }
         this->components.push_back(component);
+        return true;
     }
 }

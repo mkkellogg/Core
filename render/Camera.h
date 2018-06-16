@@ -3,14 +3,14 @@
 #include "../common/types.h"
 #include "../geometry/Vector3.h"
 #include "../math/Matrix4x4.h"
-#include "../scene/Object3D.h"
+#include "../scene/Object3DComponent.h"
 
 namespace Core {
 
     // forward declarations
     class Engine;
 
-    class Camera : public Object3D {
+    class Camera : public Object3DComponent {
         friend class Engine;
 
     public:
@@ -32,8 +32,8 @@ namespace Core {
         static void buildPerspectiveProjectionMatrix(Real fov, Real ratio, Real nearP, Real farP, Matrix4x4& out);
 
     private:
-        Camera();
-        Camera(Real fov, Real ratio, Real nearP, Real farP);
+        Camera(std::weak_ptr<Object3D> owner);
+        Camera(std::weak_ptr<Object3D> owner, Real fov, Real ratio, Real nearP, Real farP);
 
         Real fov;
         Real aspectRatio;

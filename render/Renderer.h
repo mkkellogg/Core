@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../scene/Object3DComponent.h"
 #include "../common/debug.h"
 #include "../scene/Scene.h"
 #include "../scene/Object3D.h"
@@ -19,11 +20,11 @@ namespace Core {
     virtual Bool init();
     virtual void render(std::weak_ptr<Scene> scene) = 0;
     virtual void render(std::weak_ptr<Scene> scene, 
-                        std::shared_ptr<Camera> camera,
-                        std::vector<std::shared_ptr<Object3D>>& objectList) = 0;
+                        std::weak_ptr<Camera> camera,
+                        std::vector<std::weak_ptr<Object3D>>& objectList) = 0;
     void processScene(std::weak_ptr<Scene> scene, 
-                      std::vector<std::shared_ptr<Object3D>>& outObjects,
-                      std::vector<std::shared_ptr<Camera>>& outCamerast);
+                      std::vector<std::weak_ptr<Object3D>>& outObjects,
+                      std::vector<std::weak_ptr<Camera>>& outCamerast);
 
     void setRenderSize(UInt32 width, UInt32 height,Bool updateViewport = true);    
     void setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
@@ -31,10 +32,10 @@ namespace Core {
     Vector4u getViewport();
     
   private:
-    void processSceneStep(const std::shared_ptr<Object3D> object,
+    void processSceneStep(const std::weak_ptr<Object3D> object,
                           const Matrix4x4& curTransform,
-                          std::vector<std::shared_ptr<Object3D>>& outObjects,
-                          std::vector<std::shared_ptr<Camera>>& outCameras);
+                          std::vector<std::weak_ptr<Object3D>>& outObjects,
+                          std::vector<std::weak_ptr<Camera>>& outCameras);
   protected:
     Renderer();
 

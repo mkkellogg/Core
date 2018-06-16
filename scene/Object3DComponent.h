@@ -4,14 +4,19 @@
 
 namespace Core {
 
-  // forward declaration
-  class Object3D;
+    // forward declaration
+    class Object3D;
 
-  class Object3DComponent {
-  public:
-    Object3DComponent(std::weak_ptr<Object3D> owner);
+    class Object3DComponent {
+    public:
+        Object3DComponent(std::weak_ptr<Object3D> owner);
+        virtual ~Object3DComponent();
 
-  protected:
-    std::weak_ptr<Object3D> owner;
-  };
+        std::weak_ptr<Object3D> getOwner() {
+            return this->owner;
+        }
+
+    protected:
+        std::weak_ptr<Object3D> owner;
+    };
 }

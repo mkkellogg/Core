@@ -14,6 +14,6 @@ namespace Core {
     public:
         BaseObjectRenderer(std::weak_ptr<Object3D> owner) : Object3DComponent(owner) {
         }
-        virtual void render(std::shared_ptr<Camera> camera) = 0;
+        virtual void render(std::weak_ptr<Camera> camera) = 0;
     };
 }

@@ -19,12 +19,12 @@ namespace Core  {
     friend class Engine;
 
   public:
-    virtual void render(std::shared_ptr<Camera> camera) override;
-    virtual void renderObject(std::shared_ptr<Camera> camera, std::shared_ptr<Mesh> mesh) override;
+    virtual void render(std::weak_ptr<Camera> camera) override;
+    virtual void renderObject(std::weak_ptr<Camera> camera, std::weak_ptr<Mesh> mesh) override;
 
   private:
     MeshRenderer(std::weak_ptr<Graphics> graphics, std::weak_ptr<Material> material, std::weak_ptr<Object3D> owner);
-    void checkAndSetShaderAttribute(std::shared_ptr<Mesh> mesh, StandardAttributes attribute, AttributeArrayBase* array);
+    void checkAndSetShaderAttribute(WeakPointer<Mesh> mesh, StandardAttributes attribute, AttributeArrayBase* array);
 
     std::weak_ptr<Material> material;
   };

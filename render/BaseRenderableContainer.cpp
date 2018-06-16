@@ -11,8 +11,9 @@ namespace Core {
     }
 
     void BaseRenderableContainer::setBaseRenderer(std::shared_ptr<BaseObjectRenderer> renderer) {
-        this->addComponent(renderer);
-        this->renderer = renderer;
+        if (this->addComponent(renderer)) {
+            this->renderer = renderer;
+        }
     }
 
 }
