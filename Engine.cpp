@@ -7,7 +7,6 @@
 #include "math/Math.h"
 #include "math/Quaternion.h"
 #include "util/Time.h"
-#include "util/WeakPointer.h"
 
 namespace Core {
 

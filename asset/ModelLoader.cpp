@@ -9,7 +9,6 @@
 #include "assimp/LogStream.hpp"
 
 #include "ModelLoader.h"
-#include "../util/WeakPointer.h"
 #include "../filesys/FileSystem.h"
 #include "../image/Texture.h"
 #include "../material/ShaderMaterialCharacteristic.h"

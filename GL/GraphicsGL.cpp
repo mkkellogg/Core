@@ -1,5 +1,4 @@
 #include "GraphicsGL.h"
-#include "../util/WeakPointer.h"
 
 namespace Core {
 

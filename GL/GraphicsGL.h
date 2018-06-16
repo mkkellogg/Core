@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 
+#include "../util/WeakPointer.h"
 #include "../Graphics.h"
 #include "RendererGL.h"
 #include "Texture2DGL.h"

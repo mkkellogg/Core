@@ -3,6 +3,7 @@
 #include <functional>
 #include <memory>
 
+#include "util/WeakPointer.h"
 #include "GL/GraphicsGL.h"
 #include "scene/Scene.h"
 #include "render/Camera.h"
@@ -16,7 +17,6 @@
 #include "image/CubeTexture.h"
 #include "image/TextureAttr.h"
 #include "geometry/Mesh.h"
-#include "util/WeakPointer.h"
 
 namespace Core {
 

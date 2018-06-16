@@ -2,6 +2,8 @@
 
 #include <new>
 #include <unordered_map>
+
+#include "../util/WeakPointer.h"
 #include "../common/assert.h"
 #include "../common/types.h"
 #include "../render/Renderable.h"

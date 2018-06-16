@@ -8,6 +8,7 @@
 #include "assimp/scene.h"
 #include "assimp/Importer.hpp"
 
+#include "../util/WeakPointer.h"
 #include "../common/types.h"
 #include "../common/Exception.h"
 #include "../scene/Object3D.h"

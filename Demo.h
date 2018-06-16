@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util/WeakPointer.h"
 #include "Engine.h"
 #include "image/RawImage.h"
 #include "image/CubeTexture.h"

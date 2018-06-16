@@ -1,7 +1,6 @@
 #include "Mesh.h"
 #include "../common/Exception.h"
 #include "../common/types.h"
-#include "../util/WeakPointer.h"
 
 namespace Core {
 

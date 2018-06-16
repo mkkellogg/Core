@@ -1,5 +1,4 @@
 #include "Object3D.h"
-#include "../util/WeakPointer.h"
 #include "Transform.h"
 
 namespace Core {

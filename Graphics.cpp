@@ -1,6 +1,5 @@
 #include "Graphics.h"
 #include "scene/Scene.h"
-#include "util/WeakPointer.h"
 #include "geometry/Mesh.h"
 
 namespace Core {

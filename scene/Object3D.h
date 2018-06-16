@@ -5,6 +5,7 @@
 #include <typeinfo>
 #include <unordered_map>
 
+#include "../util/WeakPointer.h"
 #include "Object3DComponent.h"
 #include "../common/assert.h"
 #include "Transform.h"

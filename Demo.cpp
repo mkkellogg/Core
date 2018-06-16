@@ -1,4 +1,5 @@
 #include <memory>
+
 #include "Demo.h"
 #include "common/types.h"
 #include "math/Math.h"
@@ -15,7 +16,6 @@
 #include "material/StandardAttributes.h"
 #include "image/RawImage.h"
 #include "image/CubeTexture.h"
-#include "util/WeakPointer.h"
 
 namespace Core {
 

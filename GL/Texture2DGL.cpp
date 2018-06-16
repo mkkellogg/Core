@@ -1,6 +1,5 @@
 #include "Texture2DGL.h"
 #include "../common/Exception.h"
-#include "../util/WeakPointer.h"
 
 namespace Core {
 
