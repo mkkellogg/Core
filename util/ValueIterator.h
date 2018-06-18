@@ -5,7 +5,7 @@ namespace Core {
     template <typename T>
     class ValueIterator {
     public:
-        ValueIterator(T src): src(src) {
+        ValueIterator(const T& src): src(src) {
 
         }
 
@@ -20,6 +20,10 @@ namespace Core {
         ValueIterator operator ++() {
             ++src;
             return *this;
+        }
+
+        T& getSrc() {
+            return this->src;
         }
 
     private:

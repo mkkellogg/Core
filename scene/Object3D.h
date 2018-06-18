@@ -29,8 +29,8 @@ namespace Core {
     virtual ~Object3D();
 
     Transform& getTransform();
-    ValueIterator<std::vector<std::shared_ptr<Object3D>>::iterator> beginIterateChildren();
-    ValueIterator<std::vector<std::shared_ptr<Object3D>>::iterator> endIterateChildren();
+    ValueIterator<std::vector<PersistentWeakPointer<Object3D>>::iterator> beginIterateChildren();
+    ValueIterator<std::vector<PersistentWeakPointer<Object3D>>::iterator> endIterateChildren();
     ValueIterator<std::vector<PersistentWeakPointer<Object3DComponent>>::iterator> beginIterateComponents();
     ValueIterator<std::vector<PersistentWeakPointer<Object3DComponent>>::iterator> endIterateComponents();
     UInt32 size() const;
@@ -43,7 +43,7 @@ namespace Core {
     Object3D();
     
     Transform transform;
-    std::vector<std::shared_ptr<Object3D>> children;
+    std::vector<PersistentWeakPointer<Object3D>> children;
     PersistentWeakPointer<Object3D> parent;
     std::vector<PersistentWeakPointer<Object3DComponent>> components;
   
