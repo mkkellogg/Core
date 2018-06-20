@@ -3,7 +3,7 @@
 
 namespace Core {
 
-    Object3D::Object3D() : transform(*this) {
+    Object3D::Object3D() : transform(*this), active(true) {
     }
 
     Object3D::~Object3D() {
@@ -77,5 +77,9 @@ namespace Core {
         }
         this->components.push_back(component);
         return true;
+    }
+
+    void Object3D::setActive(Bool active) {
+        this->active = active;
     }
 }

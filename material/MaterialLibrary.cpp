@@ -15,4 +15,15 @@ namespace Core {
         }
     }
 
+    Bool MaterialLibrary::hasMaterial(LongMask shaderMaterialChacteristics) {
+        return this->entries.find(shaderMaterialChacteristics) != this->entries.end();
+    }
+
+    WeakPointer<Material> MaterialLibrary::getMaterial(LongMask shaderMaterialChacteristics) {
+        if (this->hasMaterial(shaderMaterialChacteristics)) {
+            return this->entries[shaderMaterialChacteristics].material;
+        }
+        return WeakPointer<Material>();
+    }
+
 }

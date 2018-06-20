@@ -16,14 +16,14 @@ namespace Core {
     
     virtual Bool build() override;
     virtual Int32 getShaderLocation(StandardAttributes attribute) override;
-    virtual Int32 getShaderLocation(StandardUniforms uniform) override;
+    virtual Int32 getShaderLocation(StandardUniform uniform) override;
     virtual void sendCustomUniformsToShader() override;
-    void setTexture(std::shared_ptr<Texture> texture);
+    void setTexture(WeakPointer<Texture> texture);
 
   private:
     BasicTexturedMaterial(WeakPointer<Graphics> graphics);
     
-    std::shared_ptr<Texture> texture;
+    WeakPointer<Texture> texture;
     Int32 positionLocation;
     Int32 colorLocation;
     Int32 textureLocation;

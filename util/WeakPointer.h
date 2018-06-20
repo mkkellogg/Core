@@ -117,6 +117,13 @@ namespace Core {
             return weak.owner_before(wt{}) || wt{}.owner_before(weak);
         }
 
+        template<typename U> 
+        static WeakPointer<U> dynamicPointerCast(const WeakPointer& src) {
+            T* s1 = const_cast<WeakPointer&>(src).get();
+            U* s2 = dynamic_cast<U*>(s1);
+            return s2 != nullptr ? src : WeakPointer<U>();
+        }
+
     protected:
         T * _ptr;
 

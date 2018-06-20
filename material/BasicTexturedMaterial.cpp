@@ -64,18 +64,18 @@ namespace Core {
     }
   }
 
-  Int32 BasicTexturedMaterial::getShaderLocation(StandardUniforms uniform) {
+  Int32 BasicTexturedMaterial::getShaderLocation(StandardUniform uniform) {
     switch(uniform) {
-      case StandardUniforms::ProjectionMatrix:
+      case StandardUniform::ProjectionMatrix:
         return this->projectionMatrixLocation;
-      case StandardUniforms::ViewMatrix:
+      case StandardUniform::ViewMatrix:
         return this->viewMatrixLocation;
       default:
         return -1;
     }
   }
 
-  void BasicTexturedMaterial::setTexture(std::shared_ptr<Texture> texture) {
+  void BasicTexturedMaterial::setTexture(WeakPointer<Texture> texture) {
     this->texture = texture;
   }
 

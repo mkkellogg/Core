@@ -17,9 +17,9 @@ namespace Core {
         this->checkAndSetShaderAttribute(mesh, StandardAttributes::Color, mesh->getVertexColors());
         this->checkAndSetShaderAttribute(mesh, StandardAttributes::UV, mesh->getVertexUVs());
 
-        Int32 projectionLoc = this->material->getShaderLocation(StandardUniforms::ProjectionMatrix);
-        Int32 viewMatrixLoc = this->material->getShaderLocation(StandardUniforms::ViewMatrix);
-        Int32 modelMatrixLoc = this->material->getShaderLocation(StandardUniforms::ModelMatrix);
+        Int32 projectionLoc = this->material->getShaderLocation(StandardUniform::ProjectionMatrix);
+        Int32 viewMatrixLoc = this->material->getShaderLocation(StandardUniform::ViewMatrix);
+        Int32 modelMatrixLoc = this->material->getShaderLocation(StandardUniform::ModelMatrix);
 
         if (projectionLoc >= 0) {
             const Matrix4x4 &projMatrix = camera->getProjectionMatrix();

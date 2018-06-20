@@ -39,6 +39,7 @@ namespace Core {
         void removeChild(WeakPointer<Object3D> object);
         WeakPointer<Object3D> getParent();
         Bool addComponent(WeakPointer<Object3DComponent> component);
+        void setActive(Bool active);
 
     protected:
         Object3D();
@@ -47,5 +48,6 @@ namespace Core {
         std::vector<PersistentWeakPointer<Object3D>> children;
         PersistentWeakPointer<Object3D> parent;
         std::vector<PersistentWeakPointer<Object3DComponent>> components;
+        Bool active;
     };
 }

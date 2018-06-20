@@ -60,13 +60,13 @@ namespace Core {
     }
   }
 
-  Int32 BasicMaterial::getShaderLocation(StandardUniforms uniform) {
+  Int32 BasicMaterial::getShaderLocation(StandardUniform uniform) {
     switch(uniform) {
-      case StandardUniforms::ProjectionMatrix:
+      case StandardUniform::ProjectionMatrix:
         return this->projectionMatrixLocation;
-      case StandardUniforms::ViewMatrix:
+      case StandardUniform::ViewMatrix:
         return this->viewMatrixLocation;
-      case StandardUniforms::ModelMatrix:
+      case StandardUniform::ModelMatrix:
         return this->modelMatrixLocation;
       default:
         return -1;
