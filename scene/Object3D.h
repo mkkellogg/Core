@@ -28,11 +28,14 @@ namespace Core {
   public:
     virtual ~Object3D();
 
+    typedef ValueIterator<std::vector<PersistentWeakPointer<Object3D>>::iterator, WeakPointer<Object3D>> ChildIterator;
+    typedef ValueIterator<std::vector<PersistentWeakPointer<Object3DComponent>>::iterator, WeakPointer<Object3DComponent>> ComponentIterator;
+
     Transform& getTransform();
-    ValueIterator<std::vector<PersistentWeakPointer<Object3D>>::iterator> beginIterateChildren();
-    ValueIterator<std::vector<PersistentWeakPointer<Object3D>>::iterator> endIterateChildren();
-    ValueIterator<std::vector<PersistentWeakPointer<Object3DComponent>>::iterator> beginIterateComponents();
-    ValueIterator<std::vector<PersistentWeakPointer<Object3DComponent>>::iterator> endIterateComponents();
+    ChildIterator beginIterateChildren();
+    ChildIterator endIterateChildren();
+    ComponentIterator beginIterateComponents();
+    ComponentIterator endIterateComponents();
     UInt32 size() const;
     void addChild(WeakPointer<Object3D> object);
     void removeChild(WeakPointer<Object3D> object);

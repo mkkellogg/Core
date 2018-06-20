@@ -13,20 +13,20 @@ namespace Core {
         return this->transform;
     }
 
-    ValueIterator<std::vector<PersistentWeakPointer<Object3D>>::iterator> Object3D::beginIterateChildren() {
-        return this->children.begin();
+    Object3D::ChildIterator Object3D::beginIterateChildren() {
+        return  Object3D::ChildIterator(this->children.begin());
     }
 
-    ValueIterator<std::vector<PersistentWeakPointer<Object3D>>::iterator> Object3D::endIterateChildren() {
-        return this->children.end();
+    Object3D::ChildIterator Object3D::endIterateChildren() {
+        return Object3D::ChildIterator(this->children.end());
     }
 
-    ValueIterator<std::vector<PersistentWeakPointer<Object3DComponent>>::iterator> Object3D::beginIterateComponents() {
-        return this->components.begin();
+    Object3D::ComponentIterator Object3D::beginIterateComponents() {
+        return Object3D::ComponentIterator(this->components.begin());
     }
 
-    ValueIterator<std::vector<PersistentWeakPointer<Object3DComponent>>::iterator> Object3D::endIterateComponents() {
-        return this->components.end();
+    Object3D::ComponentIterator Object3D::endIterateComponents() {
+        return Object3D::ComponentIterator(this->components.end());
     }
 
     UInt32 Object3D::size() const {
@@ -46,9 +46,9 @@ namespace Core {
     }
 
     void Object3D::removeChild(WeakPointer<Object3D> object) {
-        ValueIterator<std::vector<PersistentWeakPointer<Object3D>>::iterator> end = this->endIterateChildren();
-        ValueIterator<std::vector<PersistentWeakPointer<Object3D>>::iterator> result = end;
-        for (auto itr = this->beginIterateChildren(); itr != end; ++itr) {
+        auto end = this->endIterateChildren();
+        auto result = end;
+        for (Object3D::ChildIterator itr = this->beginIterateChildren(); itr != end; ++itr) {
             if (*itr == object) {
                 result = itr;
                 break;
@@ -67,9 +67,9 @@ namespace Core {
     }
 
     Bool Object3D::addComponent(WeakPointer<Object3DComponent> component) {
-        ValueIterator<std::vector<PersistentWeakPointer<Object3DComponent>>::iterator> end = this->endIterateComponents();
-        ValueIterator<std::vector<PersistentWeakPointer<Object3DComponent>>::iterator> result = end;
-        for(auto itr = this->beginIterateComponents(); itr != end; ++itr) {
+        Object3D::ComponentIterator end = this->endIterateComponents();
+        Object3D::ComponentIterator result = end;
+        for(Object3D::ComponentIterator itr = this->beginIterateComponents(); itr != end; ++itr) {
             // don't add component if it already is present in list
             if (component == *itr) {
                 return false;

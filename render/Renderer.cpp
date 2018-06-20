@@ -20,7 +20,7 @@ namespace Core {
 
     void Renderer::processSceneStep(WeakPointer<Object3D> object, const Matrix4x4& curTransform, std::vector<WeakPointer<Object3D>>& outObjects,
                                     std::vector<WeakPointer<Camera>>& outCameras) {
-        for (auto itr = object->beginIterateChildren(); itr != object->endIterateChildren(); ++itr) {
+        for (Object3D::ChildIterator itr = object->beginIterateChildren(); itr != object->endIterateChildren(); ++itr) {
             WeakPointer<Object3D> obj = *itr;
 
             Matrix4x4 nextTransform = curTransform;

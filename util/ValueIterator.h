@@ -2,14 +2,14 @@
 
 namespace Core {
 
-    template <typename T>
+    template <typename T, typename U = typename T::value_type>
     class ValueIterator {
     public:
         ValueIterator(const T& src): src(src) {
 
         }
 
-        typename T::value_type operator*() {
+        U operator*() {
             return *src;
         }
 
