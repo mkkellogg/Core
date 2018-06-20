@@ -93,6 +93,7 @@ namespace Core {
         static Bool hasOddReflections(Matrix4x4& mat);                           
         static const std::string* getBuiltinVariableNameForTextureType(TextureType textureType);
         static StandardUniform mapTextureTypeToUniform(TextureType textureType);  
+        static StandardAttribute mapTextureTypeToAttribute(TextureType textureType);
         static void convertAssimpMatrix(const aiMatrix4x4& source, Matrix4x4& dest);                  
 
         Engine& engine;

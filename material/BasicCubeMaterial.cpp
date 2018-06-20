@@ -54,11 +54,11 @@ namespace Core {
     return true;
   }
 
-  Int32 BasicCubeMaterial::getShaderLocation(StandardAttributes attribute) {
+  Int32 BasicCubeMaterial::getShaderLocation(StandardAttribute attribute) {
     switch(attribute) {
-      case StandardAttributes::Position:
+      case StandardAttribute::Position:
         return this->positionLocation;
-      case StandardAttributes::Color:
+      case StandardAttribute::Color:
         return this->colorLocation;
       default:
         return -1;

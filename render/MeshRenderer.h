@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "../util/PersistentWeakPointer.h"
+#include "../material/StandardAttributes.h"
 #include "../geometry/AttributeArray.h"
 #include "../geometry/AttributeArrayGPUStorage.h"
 #include "../render/ObjectRenderer.h"
@@ -25,7 +26,7 @@ namespace Core  {
 
   private:
     MeshRenderer(WeakPointer<Graphics> graphics, WeakPointer<Material> material, WeakPointer<Object3D> owner);
-    void checkAndSetShaderAttribute(WeakPointer<Mesh> mesh, StandardAttributes attribute, AttributeArrayBase* array);
+    void checkAndSetShaderAttribute(WeakPointer<Mesh> mesh, StandardAttribute attribute, AttributeArrayBase* array);
 
     PersistentWeakPointer<Material> material;
   };

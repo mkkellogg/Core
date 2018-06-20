@@ -52,8 +52,7 @@ namespace Core {
         std::ifstream fin(filePath.c_str());
         if (!fin.fail()) {
             fin.close();
-        } 
-        else {
+        } else {
             std::string msg = std::string("ModeLoader -> Could not find file: ") + filePath;
             throw ModelLoaderException(msg);
         }
@@ -80,7 +79,8 @@ namespace Core {
      *
      * [importScale] - Allows for the adjustment of the model's scale
      */
-    WeakPointer<Object3D> ModelLoader::loadModel(const std::string& modelPath, Real importScale,  Bool castShadows, Bool receiveShadows, Bool preserveFBXPivots) {
+    WeakPointer<Object3D> ModelLoader::loadModel(const std::string& modelPath, Real importScale, Bool castShadows, Bool receiveShadows,
+                                                 Bool preserveFBXPivots) {
         std::shared_ptr<FileSystem> fileSystem = FileSystem::getInstance();
         std::string fixedModelPath = fileSystem->fixupPathForLocalFilesystem(modelPath);
 
@@ -91,13 +91,13 @@ namespace Core {
             // the model has been loaded from disk into Assimp data structures, now convert to engine-native structures
             WeakPointer<Object3D> result = processModelScene(fixedModelPath, *scene, importScale, castShadows, receiveShadows);
             return result;
-        } 
-        else {
+        } else {
             throw ModelLoaderException("ModelLoder::loadModel() -> Error occured while loading Assimp scene.");
         }
     }
 
-    WeakPointer<Object3D> ModelLoader::processModelScene(const std::string& modelPath, const aiScene& scene, Real importScale, Bool castShadows, Bool receiveShadows) const {
+    WeakPointer<Object3D> ModelLoader::processModelScene(const std::string& modelPath, const aiScene& scene, Real importScale, Bool castShadows,
+                                                         Bool receiveShadows) const {
         // container for MaterialImportDescriptor instances that describe the engine-native
         // materials that get created during the call to ProcessMaterials()
         std::vector<MaterialImportDescriptor> materialImportDescriptors;
@@ -118,11 +118,6 @@ namespace Core {
             throw ModelLoaderException("ModelLoader::processModelScene -> processMaterials() returned an error.");
         }
 
-        
-        
-        
-        
-        
         // deactivate the root scene object so that it is not immediately
         // active or visible in the scene after it has been loaded
         root->setActive(false);
@@ -143,47 +138,46 @@ namespace Core {
         for (UInt32 s = 0; s < createdSceneObjects.size(); s++) {
             // does the SceneObject instance have a SkinnedMesh3DRenderer ?
 
-          /*  SkinnedMesh3DRendererSharedPtr skinnedRenderer = GTE::DynamicCastEngineObject<GTE::Renderer, GTE::SkinnedMesh3DRenderer>(createdSceneObjects[s]->GetRenderer());
-            if (skinnedRenderer.IsValid()) {
-                // clone [skeleton]
-                SkeletonSharedPtr skeletonClone = objectManager->CloneSkeleton(skeleton);
-                if (!skeletonClone.IsValid()) {
-                    Debug::PrintWarning("ModelImporter::ProcessModelScene -> Could not clone scene skeleton.");
-                    continue;
-                }
+            /*  SkinnedMesh3DRendererSharedPtr skinnedRenderer = GTE::DynamicCastEngineObject<GTE::Renderer,
+              GTE::SkinnedMesh3DRenderer>(createdSceneObjects[s]->GetRenderer()); if (skinnedRenderer.IsValid()) {
+                  // clone [skeleton]
+                  SkeletonSharedPtr skeletonClone = objectManager->CloneSkeleton(skeleton);
+                  if (!skeletonClone.IsValid()) {
+                      Debug::PrintWarning("ModelImporter::ProcessModelScene -> Could not clone scene skeleton.");
+                      continue;
+                  }
 
-                // assign the clones skeleton to [renderer]
-                skinnedRenderer->SetSkeleton(skeletonClone);
+                  // assign the clones skeleton to [renderer]
+                  skinnedRenderer->SetSkeleton(skeletonClone);
 
-                Matrix4x4 mat;
-                createdSceneObjects[s]->GetTransform().CopyMatrix(mat);
+                  Matrix4x4 mat;
+                  createdSceneObjects[s]->GetTransform().CopyMatrix(mat);
 
-                // if the transformation matrix for this scene object has an inverted scale, we need to process the
-                // vertex bone map in reverse order. we pass the [reverseVertexOrder] flag to SetupVertexBoneMapForRenderer()
-                Bool reverseVertexOrder = HasOddReflections(mat);
-                SetupVertexBoneMapForRenderer(scene, skeletonClone, skinnedRenderer, reverseVertexOrder);
-            }*/
+                  // if the transformation matrix for this scene object has an inverted scale, we need to process the
+                  // vertex bone map in reverse order. we pass the [reverseVertexOrder] flag to SetupVertexBoneMapForRenderer()
+                  Bool reverseVertexOrder = HasOddReflections(mat);
+                  SetupVertexBoneMapForRenderer(scene, skeletonClone, skinnedRenderer, reverseVertexOrder);
+              }*/
         }
 
         return root;
     }
 
-    void ModelLoader::recursiveProcessModelScene(const aiScene& scene, const aiNode& node, Real scale, WeakPointer<Object3D> parent, std::vector<MaterialImportDescriptor>& materialImportDescriptors,
+    void ModelLoader::recursiveProcessModelScene(const aiScene& scene, const aiNode& node, Real scale, WeakPointer<Object3D> parent,
+                                                 std::vector<MaterialImportDescriptor>& materialImportDescriptors,
                                                  std::vector<WeakPointer<Object3D>>& createdSceneObjects, Bool castShadows, Bool receiveShadows) const {
-
         Matrix4x4 mat;
         aiMatrix4x4 matBaseTransformation = node.mTransformation;
         ModelLoader::convertAssimpMatrix(matBaseTransformation, mat);
 
         // create new scene object to hold the Mesh3D object and its renderer
         WeakPointer<Object3D> sceneObject = engine.createObject3D();
-        if(!sceneObject.isValid()) {
+        if (!sceneObject.isValid()) {
             throw ModelLoaderException("ModelLoader::recursiveProcessModelScene -> Could not create scene object.");
         };
 
         // are there any meshes in the model/scene?
         if (node.mNumMeshes > 0) {
-
             // loop through each Assimp mesh attached to the current Assimp node and
             // create a Mesh instance for it
             for (UInt32 n = 0; n < node.mNumMeshes; n++) {
@@ -199,22 +193,22 @@ namespace Core {
                 Int32 materialIndex = mesh->mMaterialIndex;
                 MaterialImportDescriptor& materialImportDescriptor = materialImportDescriptors[materialIndex];
                 WeakPointer<Material> material = materialImportDescriptor.meshSpecificProperties[sceneMeshIndex].material;
-                if(!material.isValid()) {
+                if (!material.isValid()) {
                     throw ModelLoaderException("ModelLoader::recursiveProcessModelScene -> nullptr Material object encountered.");
                 }
 
                 // add the material to the mesh renderer
-                //rendererPtr->AddMultiMaterial(material);
+                // rendererPtr->AddMultiMaterial(material);
 
                 // if the transformation matrix for this node has an inverted scale, we need to process the mesh
                 // differently or else it won't display correctly. we pass the [invert] flag to ConvertAssimpMesh()
                 Bool invert = ModelLoader::hasOddReflections(mat);
                 // convert Assimp mesh to a Mesh3D object
                 WeakPointer<Mesh> subMesh = this->convertAssimpMesh(sceneMeshIndex, scene, materialImportDescriptor, invert);
-                //NONFATAL_ASSERT(subMesh3D.IsValid(), "ModelImporter::RecursiveProcessModelScene -> Could not convert Assimp mesh.", false);
+                // NONFATAL_ASSERT(subMesh3D.IsValid(), "ModelImporter::RecursiveProcessModelScene -> Could not convert Assimp mesh.", false);
 
                 // add the mesh to the newly created scene object
-                //mesh3D->SetSubMesh(subMesh3D, n);
+                // mesh3D->SetSubMesh(subMesh3D, n);
             }
 
             /*Mesh3DFilterSharedPtr filter = engineObjectManager->CreateMesh3DFilter();
@@ -230,20 +224,21 @@ namespace Core {
         }
 
         // update the scene object's local transform
-       /* sceneObject->GetTransform().SetTo(mat);
+        /* sceneObject->GetTransform().SetTo(mat);
 
-        std::string nodeName(node.mName.C_Str());
-        sceneObject->SetName(nodeName);
-        parent->AddChild(sceneObject);
-        createdSceneObjects.push_back(sceneObject);
+         std::string nodeName(node.mName.C_Str());
+         sceneObject->SetName(nodeName);
+         parent->AddChild(sceneObject);
+         createdSceneObjects.push_back(sceneObject);
 
-        for (UInt32 i = 0; i < node.mNumChildren; i++) {
-            const aiNode *childNode = node.mChildren[i];
-            if (childNode != nullptr)RecursiveProcessModelScene(scene, *childNode, scale, sceneObject, materialImportDescriptors, skeleton, createdSceneObjects, castShadows, receiveShadows);
-        }          */ 
+         for (UInt32 i = 0; i < node.mNumChildren; i++) {
+             const aiNode *childNode = node.mChildren[i];
+             if (childNode != nullptr)RecursiveProcessModelScene(scene, *childNode, scale, sceneObject, materialImportDescriptors, skeleton,
+         createdSceneObjects, castShadows, receiveShadows);
+         }          */
     }
 
-        /**
+    /**
      * Convert an Assimp mesh to an engine-native SubMesh3D instance.
      *
      * [meshIndex] - The index of the target Assimp mesh in the scene's list of meshes
@@ -251,64 +246,75 @@ namespace Core {
      * [materialImportDescriptor] - Descriptor for the mesh's material.
      * [invert] - If true it means the mesh has an inverted scale transformation to deal with
      */
-    WeakPointer<Mesh> ModelLoader::convertAssimpMesh(UInt32 meshIndex, const aiScene& scene, MaterialImportDescriptor& materialImportDescriptor, Bool invert) const {
+    WeakPointer<Mesh> ModelLoader::convertAssimpMesh(UInt32 meshIndex, const aiScene& scene, MaterialImportDescriptor& materialImportDescriptor,
+                                                     Bool invert) const {
         if (meshIndex >= scene.mNumMeshes) {
             throw ModelLoaderException("ModelImporter::ConvertAssimpMesh -> mesh index is out of range.");
         }
 
-        UInt32 vertexCount = 0;
-        aiMesh & mesh = *scene.mMeshes[meshIndex];
-        
-        /*NONFATAL_ASSERT_RTRN(meshIndex < scene.mNumMeshes, "ModelImporter::ConvertAssimpMesh -> mesh index is out of range.", SubMesh3DSharedPtr::Null(), true);
+        aiMesh& mesh = *scene.mMeshes[meshIndex];
 
-        UInt32 vertexCount = 0;
-        aiMesh & mesh = *scene.mMeshes[meshIndex];
-
-        // get the vertex count for the mesh
-        vertexCount = mesh.mNumFaces * 3;
+        UInt32 vertexCount = mesh.mNumFaces * 3;
 
         // create a set of standard attributes that will dictate the standard attributes
-        // to be used by the Mesh3D object created by this function.
-        StandardAttributeSet meshAttributes = StandardAttributes::CreateAttributeSet();
+        // to be used by the function object created by this function.
+        StandardAttributeSet meshAttributes = StandardAttributes::createAttributeSet();
 
         // all meshes must have vertex positions
-        StandardAttributes::AddAttribute(&meshAttributes, StandardAttribute::Position);
+        StandardAttributes::addAttribute(&meshAttributes, StandardAttribute::Position);
 
         Int32 diffuseTextureUVIndex = -1;
         // update the StandardAttributeSet to contain appropriate attributes (UV coords) for a diffuse texture
-        if (materialImportDescriptor.meshSpecificProperties[meshIndex].UVMappingHasKey(TextureType::Diffuse)) {
-            StandardAttributes::AddAttribute(&meshAttributes, MapTextureTypeToAttribute(TextureType::Diffuse));
+        if (materialImportDescriptor.meshSpecificProperties[meshIndex].uvMappingHasKey(TextureType::Diffuse)) {
+            StandardAttributes::addAttribute(&meshAttributes, ModelLoader::mapTextureTypeToAttribute(TextureType::Diffuse));
             diffuseTextureUVIndex = materialImportDescriptor.meshSpecificProperties[meshIndex].uvMapping[TextureType::Diffuse];
         }
 
         // add normals & tangents regardless of whether the mesh has them or not. if the mesh does not
         // have them, they can be calculated
-        StandardAttributes::AddAttribute(&meshAttributes, StandardAttribute::Normal);
-        StandardAttributes::AddAttribute(&meshAttributes, StandardAttribute::Tangent);
-        StandardAttributes::AddAttribute(&meshAttributes, StandardAttribute::FaceNormal);
+        StandardAttributes::addAttribute(&meshAttributes, StandardAttribute::Normal);
+        StandardAttributes::addAttribute(&meshAttributes, StandardAttribute::Tangent);
+        StandardAttributes::addAttribute(&meshAttributes, StandardAttribute::FaceNormal);
 
         // if the Assimp mesh's material specifies vertex colors, add vertex colors
         // to the StandardAttributeSet
         if (materialImportDescriptor.meshSpecificProperties[meshIndex].vertexColorsIndex >= 0) {
-            StandardAttributes::AddAttribute(&meshAttributes, StandardAttribute::VertexColor);
+            StandardAttributes::addAttribute(&meshAttributes, StandardAttribute::Color);
         }
-
-        EngineObjectManager * engineObjectManager = Engine::Instance()->GetEngineObjectManager();
 
         // create Mesh3D object with the constructed StandardAttributeSet
-        SubMesh3DSharedPtr mesh3D = engineObjectManager->CreateSubMesh3D(meshAttributes);
-        NONFATAL_ASSERT_RTRN(mesh3D.IsValid(), "ModelImporter::ConvertAssimpMesh -> Could not create Mesh3D object.", SubMesh3DSharedPtr::Null(), false);
-
-        Bool initSuccess = mesh3D->Init(vertexCount);
-
-        // make sure allocation of required number of vertex attributes is successful
-        if (!initSuccess) {
-            engineObjectManager->DestroySubMesh3D(mesh3D);
-            Debug::PrintError("ModelImporter::ConvertAssimpMesh -> Could not init mesh.");
-            return SubMesh3DSharedPtr::Null();
+        WeakPointer<Mesh> coreMesh = engine.createMesh(vertexCount, false);
+        if (!coreMesh.isValid()) {
+            throw ModelLoaderException("ModeLoader::convertAssimpMesh -> Could not create Mesh3D object.");
         }
 
-        Int32 vertexIndex = 0;
+        coreMesh->init();
+
+        Bool hasNormals = false;
+        Bool hasColors = false;
+        Bool hasUVs = false;
+
+        std::vector<Real> positions;
+        positions.reserve(mesh.mNumFaces * 12);
+        
+        std::vector<Real> normals;
+        if (mesh.mNormals != nullptr) {
+            normals.reserve(mesh.mNumFaces * 12);
+            hasNormals = true;
+        }
+
+        std::vector<Real> colors;
+        Int32 colorsIndex = materialImportDescriptor.meshSpecificProperties[meshIndex].vertexColorsIndex;
+        if (colorsIndex >= 0) {
+            colors.reserve(mesh.mNumFaces * 12);
+            hasColors = true;
+        }
+
+        std::vector<Real> uvs;
+        if (diffuseTextureUVIndex >= 0) {
+            uvs.reserve(mesh.mNumFaces * 6);
+            hasUVs = true;
+        }
 
         // loop through each face in the mesh and copy relevant vertex attributes
         // into the newly created Mesh3D object
@@ -317,10 +323,13 @@ namespace Core {
 
             Int32 start, end, inc;
             if (!invert) {
-                start = face->mNumIndices - 1; end = -1; inc = -1;
-            }
-            else {
-                start = 0; end = face->mNumIndices; inc = 1;
+                start = face->mNumIndices - 1;
+                end = -1;
+                inc = -1;
+            } else {
+                start = 0;
+                end = face->mNumIndices;
+                inc = 1;
             }
 
             // ** IMPORTANT ** Normally we iterate through face vertices in reverse order. This is
@@ -332,34 +341,52 @@ namespace Core {
                 aiVector3D srcPosition = mesh.mVertices[vIndex];
 
                 // copy vertex position
-                mesh3D->GetPositions().GetElement(vertexIndex)->Set(srcPosition.x, srcPosition.y, srcPosition.z);
+                positions.push_back(srcPosition.x);
+                positions.push_back(srcPosition.y);
+                positions.push_back(srcPosition.z);
+                positions.push_back(1.0f);
 
                 // copy mesh normals
-                if (mesh.mNormals != nullptr) {
+                if (hasNormals) {
                     aiVector3D& srcNormal = mesh.mNormals[vIndex];
-                    Vector3 normalCopy(srcNormal.x, srcNormal.y, srcNormal.z);
-                    mesh3D->GetVertexNormals().GetElement(vertexIndex)->Set(normalCopy.x, normalCopy.y, normalCopy.z);
+                    normals.push_back(srcNormal.x);
+                    normals.push_back(srcNormal.y);
+                    normals.push_back(srcNormal.z);
+                    normals.push_back(0.0f);
                 }
 
                 // copy vertex colors (if present)
-                Int32 c = materialImportDescriptor.meshSpecificProperties[meshIndex].vertexColorsIndex;
-                if (c >= 0) {
-                    mesh3D->GetColors().GetElement(vertexIndex)->Set(mesh.mColors[c]->r, mesh.mColors[c]->g, mesh.mColors[c]->b, mesh.mColors[c]->a);
+                if (hasColors) {
+                    auto color = mesh.mColors[colorsIndex];
+                    normals.push_back(color->r);
+                    normals.push_back(color->g);
+                    normals.push_back(color->b);
+                    normals.push_back(color->a);
                 }
 
                 // copy relevant data for diffuse texture (UV coords)
-                if (diffuseTextureUVIndex >= 0) {
-                    UV2Array* uvs = GetMeshUVArrayForShaderMaterialCharacteristic(*mesh3D, ShaderMaterialCharacteristic::DiffuseTextured);
-                    if (materialImportDescriptor.meshSpecificProperties[meshIndex].invertVCoords)uvs->GetElement(vertexIndex)->Set(mesh.mTextureCoords[diffuseTextureUVIndex][vIndex].x, 1 - mesh.mTextureCoords[diffuseTextureUVIndex][vIndex].y);
-                    else uvs->GetElement(vertexIndex)->Set(mesh.mTextureCoords[diffuseTextureUVIndex][vIndex].x, mesh.mTextureCoords[diffuseTextureUVIndex][vIndex].y);
+                if (hasUVs) {
+                   
+                    uvs.push_back(mesh.mTextureCoords[diffuseTextureUVIndex][vIndex].x);
+                    if (materialImportDescriptor.meshSpecificProperties[meshIndex].invertVCoords) {
+                        uvs.push_back(1 - mesh.mTextureCoords[diffuseTextureUVIndex][vIndex].y);
+                    }
+                    else {
+                        uvs.push_back(mesh.mTextureCoords[diffuseTextureUVIndex][vIndex].y);
+                    }
                 }
-
-                vertexIndex++;
             }
         }
-        if (invert)mesh3D->SetInvertNormals(true);
-        mesh3D->SetNormalsSmoothingThreshold(80);
-        return mesh3D;*/
+
+        coreMesh->getVertexPositions()->store(positions.data());
+       // if (hasNormals) coreMesh->getVertexNormals()->store(normals.data());
+        if (hasColors) coreMesh->getVertexColors()->store(colors.data());
+        if (hasUVs) coreMesh->getVertexUVs()->store(uvs.data());
+
+       // if (invert) mesh3D->SetInvertNormals(true);
+       // mesh3D->SetNormalsSmoothingThreshold(80);
+        return coreMesh;
+        
     }
 
     /**
@@ -678,6 +705,19 @@ namespace Core {
         else if (aiTextureKey == aiTextureType_DIFFUSE)
             textureType = TextureType::Diffuse;
         return textureType;
+    }
+
+    StandardAttribute ModelLoader::mapTextureTypeToAttribute(TextureType textureType) {
+        switch (textureType) {
+            case TextureType::Diffuse:
+                return StandardAttribute::UV0;
+                break;
+            default:
+                return StandardAttribute::_None;
+                break;
+        }
+
+        return StandardAttribute::_None;
     }
 
     int ModelLoader::convertTextureTypeToAITextureKey(TextureType textureType) {

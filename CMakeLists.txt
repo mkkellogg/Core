@@ -132,6 +132,8 @@ set(SOURCE_FILES
     material/BasicCubeMaterial.cpp
     material/Shader.cpp
     material/MaterialLibrary.cpp
+    material/StandardUniforms.cpp
+    material/StandardAttributes.cpp
     color/Color4Components.cpp
     math/Math.cpp
     math/Matrix4x4.cpp

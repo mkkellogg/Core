@@ -13,9 +13,9 @@ namespace Core {
 
         this->graphics->activateShader(this->material->getShader());
 
-        this->checkAndSetShaderAttribute(mesh, StandardAttributes::Position, mesh->getVertexPositions());
-        this->checkAndSetShaderAttribute(mesh, StandardAttributes::Color, mesh->getVertexColors());
-        this->checkAndSetShaderAttribute(mesh, StandardAttributes::UV, mesh->getVertexUVs());
+        this->checkAndSetShaderAttribute(mesh, StandardAttribute::Position, mesh->getVertexPositions());
+        this->checkAndSetShaderAttribute(mesh, StandardAttribute::Color, mesh->getVertexColors());
+        this->checkAndSetShaderAttribute(mesh, StandardAttribute::UV0, mesh->getVertexUVs());
 
         Int32 projectionLoc = this->material->getShaderLocation(StandardUniform::ProjectionMatrix);
         Int32 viewMatrixLoc = this->material->getShaderLocation(StandardUniform::ViewMatrix);
@@ -56,7 +56,7 @@ namespace Core {
         }
     }
 
-    void MeshRenderer::checkAndSetShaderAttribute(WeakPointer<Mesh> mesh, StandardAttributes attribute, AttributeArrayBase *array) {
+    void MeshRenderer::checkAndSetShaderAttribute(WeakPointer<Mesh> mesh, StandardAttribute attribute, AttributeArrayBase *array) {
         if (mesh->isAttributeEnabled(attribute)) {
             Int32 shaderLocation = this->material->getShaderLocation(attribute);
             if (array->getGPUStorage()) {

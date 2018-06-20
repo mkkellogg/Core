@@ -42,9 +42,9 @@ namespace Core {
     Bool initVertexColors(UInt32 vertexCount);
     Bool initVertexUVs(UInt32 vertexCount);
 
-    void enableAttribute(StandardAttributes attribute);
-    void disableAttribute(StandardAttributes attribute);
-    Bool isAttributeEnabled(StandardAttributes attribute);
+    void enableAttribute(StandardAttribute attribute);
+    void disableAttribute(StandardAttribute attribute);
+    Bool isAttributeEnabled(StandardAttribute attribute);
     Bool isIndexed();
 
     void calculateBoundingBox();
@@ -57,7 +57,7 @@ namespace Core {
 
     PersistentWeakPointer<Graphics> graphics;
     Bool initialized;
-    Bool enabledAttributes[(UInt32)StandardAttributes::_Count];
+    Bool enabledAttributes[(UInt32)StandardAttribute::_Count];
     UInt32 vertexCount;
     Bool indexed;
     Box3 boundingBox;

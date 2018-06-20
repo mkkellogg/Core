@@ -16,7 +16,7 @@ namespace Core {
   public:
     
     virtual Bool build() override;
-    virtual Int32 getShaderLocation(StandardAttributes attribute) override;
+    virtual Int32 getShaderLocation(StandardAttribute attribute) override;
     virtual Int32 getShaderLocation(StandardUniform uniform) override;
     virtual void sendCustomUniformsToShader() override;
     void setSkyboxTexture(std::shared_ptr<CubeTexture> texture);

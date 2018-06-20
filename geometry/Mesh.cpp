@@ -37,20 +37,20 @@ namespace Core {
     }
 
     void Mesh::initAttributes() {
-        for (UInt32 i = 0; i < (UInt32)StandardAttributes::_Count; i++) {
-            this->disableAttribute((StandardAttributes)i);
+        for (UInt32 i = 0; i < (UInt32)StandardAttribute::_Count; i++) {
+            this->disableAttribute((StandardAttribute)i);
         }
     }
 
-    void Mesh::enableAttribute(StandardAttributes attribute) {
+    void Mesh::enableAttribute(StandardAttribute attribute) {
         this->enabledAttributes[(UInt32)attribute] = true;
     }
 
-    void Mesh::disableAttribute(StandardAttributes attribute) {
+    void Mesh::disableAttribute(StandardAttribute attribute) {
         this->enabledAttributes[(UInt32)attribute] = false;
     }
 
-    Bool Mesh::isAttributeEnabled(StandardAttributes attribute) {
+    Bool Mesh::isAttributeEnabled(StandardAttribute attribute) {
         return this->enabledAttributes[(UInt32)attribute];
     }
 
@@ -64,7 +64,7 @@ namespace Core {
 
         AttributeArray<Vector3rs>* vertexPositions = this->getVertexPositions();
 
-        if (vertexPositions && this->isAttributeEnabled(StandardAttributes::Position)) {
+        if (vertexPositions && this->isAttributeEnabled(StandardAttribute::Position)) {
             UInt32 index = 0;
             for (auto itr = vertexPositions->begin(); itr != vertexPositions->end(); ++itr) {
                 Vector3rs& position = *itr;
