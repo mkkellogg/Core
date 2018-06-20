@@ -1,12 +1,17 @@
-#include "Engine.h"
 #include <stdlib.h>
 #include <string.h>
 #include <new>
+
+#include "Engine.h"
 #include "common/debug.h"
 #include "geometry/Vector3.h"
 #include "math/Math.h"
 #include "math/Quaternion.h"
 #include "util/Time.h"
+
+#include "material/BasicMaterial.h"
+#include "material/BasicCubeMaterial.h"
+#include "material/BasicTexturedMaterial.h"
 
 namespace Core {
 
@@ -25,6 +30,26 @@ namespace Core {
         std::shared_ptr<GraphicsGL> graphicsSystem(new GraphicsGL(GraphicsGL::GLVersion::Three));
         this->graphics = std::static_pointer_cast<Graphics>(graphicsSystem);
         this->graphics->init();
+
+        WeakPointer<BasicMaterial> basicMaterial = this->createMaterial<BasicMaterial>();
+        WeakPointer<BasicTexturedMaterial> basicTexturedMaterial = this->createMaterial<BasicTexturedMaterial>();
+        WeakPointer<BasicCubeMaterial> basicCubeMaterial = this->createMaterial<BasicCubeMaterial>();
+
+        LongMask materialAttributes;
+        materialAttributes = LongMaskUtil::createMask();
+        LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::DiffuseTextured);
+        LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::VertexNormals);
+        this->materialLibrary.addEntry(materialAttributes, basicMaterial);
+
+        materialAttributes = LongMaskUtil::createMask();
+        LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::DiffuseTextured);
+        LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::VertexNormals);
+        this->materialLibrary.addEntry(materialAttributes, basicTexturedMaterial);
+
+        materialAttributes = LongMaskUtil::createMask();
+        LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::DiffuseTextured);
+        LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::VertexNormals);
+        this->materialLibrary.addEntry(materialAttributes, basicCubeMaterial);
     }
 
     void Engine::update() {
@@ -50,6 +75,10 @@ namespace Core {
 
     void Engine::setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) {
         this->graphics->setViewport(hOffset, vOffset, viewPortWidth, viewPortHeight);
+    }
+
+    MaterialLibrary& Engine::getMaterialLibrary() {
+        return this->materialLibrary;
     }
 
     WeakPointer<Graphics> Engine::getGraphicsSystem() {

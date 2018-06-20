@@ -17,6 +17,7 @@
 #include "image/CubeTexture.h"
 #include "image/TextureAttr.h"
 #include "geometry/Mesh.h"
+#include "material/MaterialLibrary.h"
 
 namespace Core {
 
@@ -37,6 +38,8 @@ namespace Core {
     void setRenderSize(UInt32 width, UInt32 height, Bool updateViewport = true);
     void setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
     void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
+
+    MaterialLibrary& getMaterialLibrary();
 
     WeakPointer<Graphics> getGraphicsSystem();
 
@@ -97,6 +100,8 @@ namespace Core {
     PersistentWeakPointer<ImageLoader> imageLoader;
     PersistentWeakPointer<AssetLoader> assetLoader;
     std::vector<std::function<void(Engine&)>> updateCallbacks;
+
+    MaterialLibrary materialLibrary;
 
     void cleanup();
 

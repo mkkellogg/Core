@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../util/WeakPointer.h"
 #include "Material.h"
 #include "../image/Texture.h"
 
@@ -18,7 +19,7 @@ namespace Core {
     virtual void sendCustomUniformsToShader() override;
   
   private:
-    BasicMaterial(std::shared_ptr<Graphics> graphics);
+    BasicMaterial(WeakPointer<Graphics> graphics);
     GLint positionLocation;
     GLint colorLocation;
     GLint uvLocation;

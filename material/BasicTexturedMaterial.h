@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../util/WeakPointer.h"
 #include "Material.h"
 #include "../image/Texture.h"
 
@@ -20,7 +21,7 @@ namespace Core {
     void setTexture(std::shared_ptr<Texture> texture);
 
   private:
-    BasicTexturedMaterial(std::shared_ptr<Graphics> graphics);
+    BasicTexturedMaterial(WeakPointer<Graphics> graphics);
     
     std::shared_ptr<Texture> texture;
     Int32 positionLocation;

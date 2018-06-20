@@ -50,6 +50,8 @@ set(INCLUDE_FILES
     material/StandardAttributes.h
     material/BasicCubeMaterial.h
     material/Shader.h
+    material/MaterialLibrary.h
+    material/ShaderMaterialCharacteristic.h
     Demo.h
     render/BaseRenderableContainer.h
     render/RenderableContainer.h
@@ -79,6 +81,7 @@ set(INCLUDE_FILES
     math/Matrix4x4.h
     base/VectorStorage.h
     base/BaseVector.h
+    base/BitMask.h
     common/gl.h
     common/assert.h
     common/types.h
@@ -128,6 +131,7 @@ set(SOURCE_FILES
     material/BasicTexturedMaterial.cpp
     material/BasicCubeMaterial.cpp
     material/Shader.cpp
+    material/MaterialLibrary.cpp
     color/Color4Components.cpp
     math/Math.cpp
     math/Matrix4x4.cpp

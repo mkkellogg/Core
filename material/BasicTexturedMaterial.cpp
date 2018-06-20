@@ -31,7 +31,7 @@ static const char fragmentShader[] =
 
 namespace Core {
 
-  BasicTexturedMaterial::BasicTexturedMaterial(std::shared_ptr<Graphics> graphics): Material(graphics) {
+  BasicTexturedMaterial::BasicTexturedMaterial(WeakPointer<Graphics> graphics): Material(graphics) {
 
   }
 

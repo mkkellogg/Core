@@ -1,5 +1,7 @@
 #pragma once
 
+
+#include "../util/WeakPointer.h"
 #include "Material.h"
 #include "../image/CubeTexture.h"
 
@@ -20,7 +22,7 @@ namespace Core {
     void setSkyboxTexture(std::shared_ptr<CubeTexture> texture);
     
   private:
-    BasicCubeMaterial(std::shared_ptr<Graphics> graphics);
+    BasicCubeMaterial(WeakPointer<Graphics> graphics);
     GLint positionLocation;
     GLint colorLocation;
     GLint skyboxLocation;
