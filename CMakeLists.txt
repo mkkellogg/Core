@@ -82,6 +82,7 @@ set(INCLUDE_FILES
     common/gl.h
     common/assert.h
     common/types.h
+    common/complextypes.h
     common/debug.h
     common/Exception.h
     GL/GraphicsGL.h

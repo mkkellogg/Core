@@ -20,7 +20,7 @@ namespace Core {
 
     void Renderer::processSceneStep(WeakPointer<Object3D> object, const Matrix4x4& curTransform, std::vector<WeakPointer<Object3D>>& outObjects,
                                     std::vector<WeakPointer<Camera>>& outCameras) {
-        for (Object3D::ChildIterator itr = object->beginIterateChildren(); itr != object->endIterateChildren(); ++itr) {
+        for (GameObjectIterator<Object3D> itr = object->beginIterateChildren(); itr != object->endIterateChildren(); ++itr) {
             WeakPointer<Object3D> obj = *itr;
 
             Matrix4x4 nextTransform = curTransform;
@@ -29,7 +29,7 @@ namespace Core {
             objTransform.getWorldMatrix().copy(nextTransform);
             outObjects.push_back(obj);
 
-            for (auto compItr = obj->beginIterateComponents(); compItr != obj->endIterateComponents(); ++compItr) {
+            for (GameObjectIterator<Object3DComponent> compItr = obj->beginIterateComponents(); compItr != obj->endIterateComponents(); ++compItr) {
                 // check if this component is a camera
                 std::shared_ptr<Object3DComponent> compShared = (*compItr).lock();
                 std::shared_ptr<Camera> camShared = std::dynamic_pointer_cast<Camera>(compShared);

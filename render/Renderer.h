@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../common/complextypes.h"
 #include "../util/WeakPointer.h"
 #include "../scene/Object3DComponent.h"
 #include "../common/debug.h"
