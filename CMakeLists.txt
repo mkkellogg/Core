@@ -111,6 +111,7 @@ set(SOURCE_FILES
     image/Texture2D.cpp
     image/TextureAttr.cpp
     image/CubeTexture.cpp
+    image/PNGLoader.cpp
     geometry/AttributeArrayGPUStorage.cpp
     geometry/IndexBuffer.cpp
     geometry/Mesh.cpp

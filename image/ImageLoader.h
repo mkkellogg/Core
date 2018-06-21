@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef CORE_USE_PRIVATE_INCLUDES
-#include "png.h"
+#include "PNGLoader.h"
 #endif
 
 #include <string>

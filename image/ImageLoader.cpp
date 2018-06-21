@@ -1,4 +1,5 @@
 #include "ImageLoader.h"
+#include "PNGLoader.h"
 #include "RawImage.h"
 
 namespace Core {
@@ -22,7 +23,15 @@ namespace Core {
               throw ImageLoaderException("ImageLoader::LoadImageU -> Error occurred while initializing image loader.");
         }
 
-        return nullptr;
+        std::string extension = ImageLoader::getFileExtension(fullPath);
+
+        if (extension == "png") {
+            return PNGLoader::loadPNG(fullPath);
+        }
+
+        std::string msg("ImageLoader::LoadImageU -> Unsupported image format: ");
+        msg += extension;
+        throw ImageLoaderException(msg);
     }
  
     void ImageLoader::destroyRawImage(RawImage * image) {
