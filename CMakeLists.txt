@@ -162,9 +162,12 @@ target_link_libraries(${EXECUTABLE_NAME} ../../DevIL/DevIL/build/lib/x64/libILUT
 
 include_directories(../../assimp/build/include)
 include_directories(../../assimp/include)
+target_link_libraries(${EXECUTABLE_NAME} ../../assimp/build/code/libassimp.a)
 
 add_custom_target(MakeIncludeDir ALL COMMAND ${CMAKE_COMMAND} -E make_directory "include")
 add_custom_target(MakeIncludeCoreDir ALL COMMAND ${CMAKE_COMMAND} -E make_directory "include/Core")
+
+
 
 # do the copying
 foreach(dir_i ${INCLUDE_DIRS})
@@ -186,3 +189,8 @@ foreach(file_i ${INCLUDE_FILES})
     ARGS -E copy "${CMAKE_SOURCE_DIR}/${file_i}" "include/Core/${file_i}"
 )
 endforeach(file_i)
+
+target_compile_definitions(core PRIVATE CORE_USE_PRIVATE_INCLUDES=1)
+
+
+

@@ -1,6 +1,9 @@
 #pragma once
 
+#ifdef CORE_USE_PRIVATE_INCLUDES
 #include <IL/il.h>
+#endif
+
 #include <string>
 
 #include "../common/types.h"
@@ -28,7 +31,11 @@ namespace Core {
 
         static RawImage * loadImageU(const std::string& fullPath);
         static RawImage * loadImageU(const std::string& fullPath, Bool reverseOrigin);
+
+#ifdef CORE_USE_PRIVATE_INCLUDES
         static RawImage * getRawImageFromILData(const ILubyte * data, UInt32 width, UInt32 height);
+#endif
+
         static void destroyRawImage(RawImage * image);
         static std::string getFileExtension(const std::string& filePath);
     

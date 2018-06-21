@@ -41,6 +41,7 @@ namespace Core {
     void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
 
     MaterialLibrary& getMaterialLibrary();
+    ModelLoader& getModelLoader();
 
     WeakPointer<Graphics> getGraphicsSystem();
 

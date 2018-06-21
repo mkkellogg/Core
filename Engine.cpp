@@ -26,6 +26,10 @@ namespace Core {
     }
 
     void Engine::init() {
+#ifdef CORE_USE_PRIVATE_INCLUDES
+        std::cout << "Well, it worked!!\n" << std::endl;
+#endif
+
         cleanup();
         std::shared_ptr<GraphicsGL> graphicsSystem(new GraphicsGL(GraphicsGL::GLVersion::Three));
         this->graphics = std::static_pointer_cast<Graphics>(graphicsSystem);
@@ -81,6 +85,10 @@ namespace Core {
 
     MaterialLibrary& Engine::getMaterialLibrary() {
         return this->materialLibrary;
+    }
+
+    ModelLoader& Engine::getModelLoader() {
+        return this->modelLoader;
     }
 
     WeakPointer<Graphics> Engine::getGraphicsSystem() {

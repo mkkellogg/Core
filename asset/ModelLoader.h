@@ -5,8 +5,10 @@
 #include <string>
 #include <vector>
 
+#ifdef CORE_USE_PRIVATE_INCLUDES
 #include "assimp/Importer.hpp"
 #include "assimp/scene.h"
+#endif
 
 #include "../base/BitMask.h"
 #include "../common/Exception.h"
@@ -39,6 +41,8 @@ namespace Core {
         WeakPointer<Object3D> loadModel(const std::string& filePath, Real importScale, Bool castShadows, Bool receiveShadows, Bool preserveFBXPivots);
 
     private:
+
+#ifdef CORE_USE_PRIVATE_INCLUDES
         enum class TextureType { Diffuse = 0, Specular = 1, BumpMap = 2, _None = 3 };
 
         enum class SceneTraverseOrder { PreOrder = 0 };
@@ -99,5 +103,7 @@ namespace Core {
         Engine& engine;
         std::shared_ptr<Assimp::Importer> importer;
         ImageLoader imageLoader;
+#endif
+
     };
 }
