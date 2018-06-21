@@ -15,7 +15,7 @@
 
 namespace Core {
 
-    Engine::Engine() {
+    Engine::Engine(): modelLoader(*this) {
     }
 
     Engine::~Engine() {
@@ -50,6 +50,8 @@ namespace Core {
         LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::DiffuseTextured);
         LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::VertexNormals);
         this->materialLibrary.addEntry(materialAttributes, basicCubeMaterial);
+
+        modelLoader.initImporter();
     }
 
     void Engine::update() {

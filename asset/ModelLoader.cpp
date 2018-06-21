@@ -1,5 +1,6 @@
 #include <bitset>
 #include <fstream>
+#include <queue>
 
 #include "assimp/DefaultLogger.hpp"
 #include "assimp/Importer.hpp"
@@ -16,6 +17,8 @@
 #include "../material/BasicTexturedMaterial.h"
 #include "../material/MaterialLibrary.h"
 #include "../material/ShaderMaterialCharacteristic.h"
+#include "../render/MeshRenderer.h"
+#include "../render/RenderableContainer.h"
 #include "ModelLoader.h"
 
 namespace Core {
@@ -170,12 +173,9 @@ namespace Core {
         aiMatrix4x4 matBaseTransformation = node.mTransformation;
         ModelLoader::convertAssimpMatrix(matBaseTransformation, mat);
 
-        // create new scene object to hold the Mesh3D object and its renderer
-        WeakPointer<Object3D> sceneObject = engine.createObject3D();
-        if (!sceneObject.isValid()) {
-            throw ModelLoaderException("ModelLoader::recursiveProcessModelScene -> Could not create scene object.");
-        };
-
+        WeakPointer<Object3D> nextParent;
+        std::queue<WeakPointer<Mesh>> tempMeshes;
+        WeakPointer<Material> lastMaterial;
         // are there any meshes in the model/scene?
         if (node.mNumMeshes > 0) {
             // loop through each Assimp mesh attached to the current Assimp node and
@@ -197,18 +197,36 @@ namespace Core {
                     throw ModelLoaderException("ModelLoader::recursiveProcessModelScene -> nullptr Material object encountered.");
                 }
 
-                // add the material to the mesh renderer
-                // rendererPtr->AddMultiMaterial(material);
-
                 // if the transformation matrix for this node has an inverted scale, we need to process the mesh
-                // differently or else it won't display correctly. we pass the [invert] flag to ConvertAssimpMesh()
+                // differently or else it won't display correctly. we pass the [invert] flag to convertAssimpMesh()
                 Bool invert = ModelLoader::hasOddReflections(mat);
-                // convert Assimp mesh to a Mesh3D object
-                WeakPointer<Mesh> subMesh = this->convertAssimpMesh(sceneMeshIndex, scene, materialImportDescriptor, invert);
-                // NONFATAL_ASSERT(subMesh3D.IsValid(), "ModelImporter::RecursiveProcessModelScene -> Could not convert Assimp mesh.", false);
 
-                // add the mesh to the newly created scene object
-                // mesh3D->SetSubMesh(subMesh3D, n);
+                // convert Assimp mesh to a Mesh object
+                WeakPointer<Mesh> subMesh = this->convertAssimpMesh(sceneMeshIndex, scene, materialImportDescriptor, invert);
+                tempMeshes.push(subMesh);
+
+                if ((material != lastMaterial && n > 0) || n == node.mNumMeshes - 1) {
+                    // create new scene object to hold the meshes object and its renderer
+                    WeakPointer<RenderableContainer<Mesh>> meshContainer = engine.createObject3D<RenderableContainer<Mesh>>();
+                    if (!meshContainer.isValid()) {
+                        throw ModelLoaderException("ModelLoader::recursiveProcessModelScene -> Could not create mesh container.");
+                    };
+                    meshContainer->getTransform().setTo(mat);
+
+                    unsigned int targetRemainingCount = n == node.mNumMeshes - 1 ? 0 : 1;
+
+                    while (tempMeshes.size() > targetRemainingCount) {
+                        WeakPointer<Mesh> subMesh = tempMeshes.front();
+                        tempMeshes.pop();
+                        meshContainer->addRenderable(subMesh);
+                    }
+
+                    WeakPointer<MeshRenderer> meshRenderer = engine.createRenderer<MeshRenderer>(material, meshContainer);
+                    parent->addChild(meshContainer);
+
+                    createdSceneObjects.push_back(meshContainer);
+                    if (n == 0) nextParent = meshContainer;
+                }
             }
 
             /*Mesh3DFilterSharedPtr filter = engineObjectManager->CreateMesh3DFilter();
@@ -223,19 +241,13 @@ namespace Core {
             sceneObject->SetRenderer(GTE::DynamicCastEngineObject<GTE::Mesh3DRenderer, GTE::Renderer>(meshRenderer));*/
         }
 
-        // update the scene object's local transform
-        /* sceneObject->GetTransform().SetTo(mat);
-
-         std::string nodeName(node.mName.C_Str());
-         sceneObject->SetName(nodeName);
-         parent->AddChild(sceneObject);
-         createdSceneObjects.push_back(sceneObject);
-
-         for (UInt32 i = 0; i < node.mNumChildren; i++) {
-             const aiNode *childNode = node.mChildren[i];
-             if (childNode != nullptr)RecursiveProcessModelScene(scene, *childNode, scale, sceneObject, materialImportDescriptors, skeleton,
-         createdSceneObjects, castShadows, receiveShadows);
-         }          */
+        for (UInt32 i = 0; i < node.mNumChildren; i++) {
+            const aiNode* childNode = node.mChildren[i];
+            if (childNode != nullptr) {
+                this->recursiveProcessModelScene(scene, *childNode, scale, nextParent, materialImportDescriptors, 
+                                                 createdSceneObjects, castShadows, receiveShadows);
+            }
+        }
     }
 
     /**
@@ -249,7 +261,7 @@ namespace Core {
     WeakPointer<Mesh> ModelLoader::convertAssimpMesh(UInt32 meshIndex, const aiScene& scene, MaterialImportDescriptor& materialImportDescriptor,
                                                      Bool invert) const {
         if (meshIndex >= scene.mNumMeshes) {
-            throw ModelLoaderException("ModelImporter::ConvertAssimpMesh -> mesh index is out of range.");
+            throw ModelLoaderException("ModelLoader::convertAssimpMesh -> mesh index is out of range.");
         }
 
         aiMesh& mesh = *scene.mMeshes[meshIndex];
@@ -296,7 +308,7 @@ namespace Core {
 
         std::vector<Real> positions;
         positions.reserve(mesh.mNumFaces * 12);
-        
+
         std::vector<Real> normals;
         if (mesh.mNormals != nullptr) {
             normals.reserve(mesh.mNumFaces * 12);
@@ -366,12 +378,10 @@ namespace Core {
 
                 // copy relevant data for diffuse texture (UV coords)
                 if (hasUVs) {
-                   
                     uvs.push_back(mesh.mTextureCoords[diffuseTextureUVIndex][vIndex].x);
                     if (materialImportDescriptor.meshSpecificProperties[meshIndex].invertVCoords) {
                         uvs.push_back(1 - mesh.mTextureCoords[diffuseTextureUVIndex][vIndex].y);
-                    }
-                    else {
+                    } else {
                         uvs.push_back(mesh.mTextureCoords[diffuseTextureUVIndex][vIndex].y);
                     }
                 }
@@ -379,14 +389,13 @@ namespace Core {
         }
 
         coreMesh->getVertexPositions()->store(positions.data());
-       // if (hasNormals) coreMesh->getVertexNormals()->store(normals.data());
+        // if (hasNormals) coreMesh->getVertexNormals()->store(normals.data());
         if (hasColors) coreMesh->getVertexColors()->store(colors.data());
         if (hasUVs) coreMesh->getVertexUVs()->store(uvs.data());
 
-       // if (invert) mesh3D->SetInvertNormals(true);
-       // mesh3D->SetNormalsSmoothingThreshold(80);
+        // if (invert) mesh3D->SetInvertNormals(true);
+        // mesh3D->SetNormalsSmoothingThreshold(80);
         return coreMesh;
-        
     }
 
     /**
@@ -421,7 +430,7 @@ namespace Core {
 
             aiMaterial* assimpMaterial = scene.mMaterials[m];
             if (assimpMaterial == nullptr) {
-                throw ModelLoaderException("ModelImporter::processMaterials -> Scene contains a null material.");
+                throw ModelLoaderException("ModelLoader::processMaterials -> Scene contains a null material.");
             }
 
             aiString mtName;
@@ -629,7 +638,7 @@ namespace Core {
         }
         // did texture fail to load?
         if (!textureImage || !texturePtr || !texturePtr->isBuilt()) {
-            std::string msg = std::string("ModelImporter::LoadAITexture -> Could not load texture file: ") + fullTextureFilePath;
+            std::string msg = std::string("ModelLoader::loadAITexture -> Could not load texture file: ") + fullTextureFilePath;
             throw ModelLoaderException(msg);
         }
 
@@ -653,7 +662,7 @@ namespace Core {
 
         // if we can't find a shader variable for the diffuse texture, then the load of this material has failed
         if (textureUniform == StandardUniform::_None) {
-            throw ModelLoaderException("ModelImporter::ModelLoader -> Could not locate shader variable for texture.");
+            throw ModelLoaderException("ModelLoader::setupMeshSpecificMaterialWithTexture -> Could not locate shader variable for texture.");
         }
 
         // set the diffuse texture in the material for the mesh specified by [meshIndex]

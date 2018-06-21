@@ -18,6 +18,7 @@
 #include "image/TextureAttr.h"
 #include "geometry/Mesh.h"
 #include "material/MaterialLibrary.h"
+#include "asset/ModelLoader.h"
 
 namespace Core {
 
@@ -102,6 +103,7 @@ namespace Core {
     std::vector<std::function<void(Engine&)>> updateCallbacks;
 
     MaterialLibrary materialLibrary;
+    ModelLoader modelLoader;
 
     void cleanup();
 

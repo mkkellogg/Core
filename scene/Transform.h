@@ -21,6 +21,8 @@ namespace Core {
     void toLocalMatrix(Matrix4x4& dest) const;
     void toWorldMatrix(Matrix4x4& dest) const;
 
+    void setTo(const Matrix4x4& mat, Bool updateWorld = false);
+
     void updateWorldMatrix();
 
     void transform(Vector4<Real>& vector) const;
