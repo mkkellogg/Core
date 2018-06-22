@@ -70,9 +70,11 @@ namespace Core {
     }
 
     template <typename T>
-    WeakPointer<typename std::enable_if<std::is_base_of<Material, T>::value, T>::type> createMaterial() {
-      std::shared_ptr<T> materialPtr = std::shared_ptr<T>(new T(this->graphics));
-      materialPtr->build();
+    WeakPointer<typename std::enable_if<std::is_base_of<Material, T>::value, T>::type> createMaterial(Bool build = true) {
+      std::shared_ptr<T> materialPtr = std::shared_ptr<T>(new T(*this, this->graphics));
+      if (build) {
+        materialPtr->build();
+      }
       this->materials.push_back(materialPtr);
       return materialPtr;
     }

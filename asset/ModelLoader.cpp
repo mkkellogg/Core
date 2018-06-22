@@ -216,7 +216,7 @@ namespace Core {
                         throw ModelLoaderException("ModelLoader::recursiveProcessModelScene -> Could not create mesh container.");
                     };
 
-                    //meshContainer->getTransform().setTo(mat);
+                    meshContainer->getTransform().setTo(mat);
 
                     unsigned int targetRemainingCount = n == node.mNumMeshes - 1 ? 0 : 1;
                     while (tempMeshes.size() > targetRemainingCount) {
@@ -254,7 +254,7 @@ namespace Core {
             if (!nextParent.isValid()) {
                 throw ModelLoaderException("ModelLoader::recursiveProcessModelScene -> Could not create default scene object.");
             };
-           // nextParent->getTransform().setTo(mat);
+            nextParent->getTransform().setTo(mat);
             parent->addChild(nextParent);
         }
 
@@ -569,6 +569,7 @@ namespace Core {
                     }
 
                     WeakPointer<Material> matchingMaterial = materialLibrary.getMaterial(shaderMaterialChacteristics);
+                    matchingMaterial = matchingMaterial->clone();
 
                     // map new material to its corresponding mesh
                     materialImportDescriptor.meshSpecificProperties[i].material = matchingMaterial;
@@ -729,6 +730,7 @@ namespace Core {
         if (textureImage && texturePtr) {
             texturePtr->build(textureImage);
         }
+        
         // did texture fail to load?
         if (!textureImage || !texturePtr || !texturePtr->isBuilt()) {
             std::string msg = std::string("ModelLoader::loadAITexture -> Could not load texture file: ") + fullTextureFilePath;
@@ -745,7 +747,7 @@ namespace Core {
      * The method then locates the Assimp UV data for that texture and stores that in the mesh-specific properties of
      * [materialImportDesc].
      */
-    Bool ModelLoader::setupMeshSpecificMaterialWithTexture(const aiMaterial& assimpMaterial, TextureType textureType, const WeakPointer<Texture> texture,
+    Bool ModelLoader::setupMeshSpecificMaterialWithTexture(const aiMaterial& assimpMaterial, TextureType textureType, WeakPointer<Texture> texture,
                                                            UInt32 meshIndex, MaterialImportDescriptor& materialImportDesc) const {
         // get the Assimp material key for textures of type [textureType]
         UInt32 aiTextureKey = this->convertTextureTypeToAITextureKey(textureType);

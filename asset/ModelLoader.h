@@ -80,7 +80,7 @@ namespace Core {
         Bool processMaterials(const std::string& modelPath, const aiScene& scene, std::vector<MaterialImportDescriptor>& materialImportDescriptors) const;
         WeakPointer<Texture> loadAITexture(aiMaterial& assimpMaterial, aiTextureType textureType, const std::string& modelPath) const;
         void getImportDetails(const aiMaterial* mtl, MaterialImportDescriptor& materialImportDesc, const aiScene& scene) const;
-        Bool setupMeshSpecificMaterialWithTexture(const aiMaterial& assimpMaterial, TextureType textureType, const WeakPointer<Texture> texture,
+        Bool setupMeshSpecificMaterialWithTexture(const aiMaterial& assimpMaterial, TextureType textureType, WeakPointer<Texture> texture,
                                                   UInt32 meshIndex, MaterialImportDescriptor& materialImportDesc) const;
         void recursiveProcessModelScene(const aiScene& scene, const aiNode& node, Real scale, WeakPointer<Object3D> parent, std::vector<MaterialImportDescriptor>& materialImportDescriptors,
                                         std::vector<WeakPointer<Object3D>>& createdSceneObjects, Bool castShadows, Bool receiveShadows) const;

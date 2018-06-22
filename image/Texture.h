@@ -10,7 +10,7 @@ namespace Core {
     class Texture {
     public:
         virtual ~Texture();
-        Int32 getTextureID();
+        Int32 getTextureID() const;
         Bool isBuilt() const;
 
     protected:

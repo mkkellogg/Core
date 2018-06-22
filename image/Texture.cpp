@@ -12,7 +12,7 @@ namespace Core {
 
     }
 
-    Int32 Texture::getTextureID() {
+    Int32 Texture::getTextureID() const {
         return this->textureId;
     }
 

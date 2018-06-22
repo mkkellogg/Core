@@ -1,4 +1,5 @@
 #include <cstring>
+#include <vector>
 
 #include "PNGLoader.h"
 #include "RawImage.h"
@@ -61,9 +62,12 @@ namespace Core {
 
         png_read_update_info(png, info);
 
+        std::vector<int> rowSizes;
         row_pointers = (png_bytep*)malloc(sizeof(png_bytep) * height);
         for(int y = 0; y < height; y++) {
-            row_pointers[y] = (png_byte*)malloc(png_get_rowbytes(png,info));
+            size_t rowSize = png_get_rowbytes(png,info);
+            row_pointers[y] = (png_byte*)malloc(rowSize);
+            rowSizes.push_back(rowSize);
         }
 
         png_read_image(png, row_pointers);
@@ -79,8 +83,10 @@ namespace Core {
 
         UInt32 index = 0;
         for(int y = 0; y < height; y++) {
-            memcpy(rawData + index, row_pointers[y], width);
-            index += width;
+            UInt32 targetIndex = height - y - 1;
+            size_t rowSize = rowSizes[targetIndex];
+            memcpy(rawData + index, row_pointers[targetIndex], rowSize);
+            index += rowSize;
         }
 
         for(int y = 0; y < height; y++) {
