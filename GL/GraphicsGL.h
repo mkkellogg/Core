@@ -5,18 +5,16 @@
 
 #include "../util/WeakPointer.h"
 #include "../Graphics.h"
-#include "RendererGL.h"
-#include "Texture2DGL.h"
-#include "CubeTextureGL.h"
-#include "ShaderGL.h"
 #include "../geometry/AttributeType.h"
-#include "AttributeArrayGPUStorageGL.h"
-#include "IndexBufferGL.h"
 
 namespace Core {
 
     // forward declarations
     class Engine;
+    class RendererGL;
+    class Texture2DGL;
+    class ShaderGL;
+    class CubeTextureGL;
 
     class GraphicsGL final : public Graphics {
         friend class Engine;

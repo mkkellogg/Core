@@ -167,8 +167,6 @@ target_link_libraries(${EXECUTABLE_NAME} ../../assimp/build/code/libassimp.a)
 add_custom_target(MakeIncludeDir ALL COMMAND ${CMAKE_COMMAND} -E make_directory "include")
 add_custom_target(MakeIncludeCoreDir ALL COMMAND ${CMAKE_COMMAND} -E make_directory "include/Core")
 
-
-
 # do the copying
 foreach(dir_i ${INCLUDE_DIRS})
     add_custom_command(

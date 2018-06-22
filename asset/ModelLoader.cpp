@@ -12,8 +12,10 @@
 
 #include "../Engine.h"
 #include "../filesys/FileSystem.h"
+#include "../scene/Object3D.h"
 #include "../image/Texture.h"
 #include "../image/TextureAttr.h"
+#include "../material/Material.h"
 #include "../material/BasicTexturedMaterial.h"
 #include "../material/BasicMaterial.h"
 #include "../material/MaterialLibrary.h"
@@ -324,7 +326,7 @@ namespace Core {
         Bool hasUVs = false;
 
         std::vector<Real> positions;
-        if (!coreMesh->initVertexPositions(vertexCount)) {
+        if (!coreMesh->initVertexPositions()) {
             throw ModelLoaderException("ModeLoader::convertAssimpMesh -> Unable to initialize vertex positions.");
         }
         positions.reserve(mesh.mNumFaces * 12);
@@ -344,7 +346,7 @@ namespace Core {
         Int32 colorsIndex = materialImportDescriptor.meshSpecificProperties[meshIndex].vertexColorsIndex;
         if (colorsIndex >= 0) {
             colors.reserve(mesh.mNumFaces * 12);
-            if (!coreMesh->initVertexColors(vertexCount)) {
+            if (!coreMesh->initVertexColors()) {
                 throw ModelLoaderException("ModeLoader::convertAssimpMesh -> Unable to initialize vertex colors.");
             }
             coreMesh->enableAttribute(StandardAttribute::Color);
@@ -354,7 +356,7 @@ namespace Core {
         std::vector<Real> uvs;
         if (diffuseTextureUVIndex >= 0) {
             uvs.reserve(mesh.mNumFaces * 6);
-            if (!coreMesh->initVertexUVs(vertexCount)) {
+            if (!coreMesh->initVertexUVs()) {
                 throw ModelLoaderException("ModeLoader::convertAssimpMesh -> Unable to initialize vertex uvs.");
             }
             coreMesh->enableAttribute(StandardAttribute::UV0);

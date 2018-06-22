@@ -10,17 +10,19 @@
 #include "assimp/scene.h"
 #endif
 
+#include "../util/WeakPointer.h"
+#include "../image/ImageLoader.h"
 #include "../base/BitMask.h"
 #include "../common/Exception.h"
 #include "../common/types.h"
-#include "../image/ImageLoader.h"
-#include "../image/Texture.h"
-#include "../material/Material.h"
-#include "../scene/Object3D.h"
-#include "../util/WeakPointer.h"
 #include "../material/StandardUniforms.h"
 
 namespace Core {
+
+    // forward declarations
+    class Object3D;
+    class Texture;
+    class Material;
 
     class ModelLoader {
     public:

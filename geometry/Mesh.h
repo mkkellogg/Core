@@ -3,69 +3,81 @@
 #include <new>
 #include <unordered_map>
 
-#include "../util/WeakPointer.h"
+#include "../Graphics.h"
+#include "../render/Renderable.h"
+#include "../util/PersistentWeakPointer.h"
+#include "../color/Color.h"
 #include "../common/assert.h"
 #include "../common/types.h"
-#include "../render/Renderable.h"
-#include "../scene/Object3D.h"
-#include "Vector3.h"
-#include "Vector2.h"
-#include "../color/Color.h"
-#include "AttributeArray.h"
-#include "IndexBuffer.h"
 #include "../material/StandardAttributes.h"
+#include "AttributeArray.h"
+#include "Vector2.h"
+#include "Vector3.h"
 #include "Box3.h"
-#include "../Graphics.h"
 
 namespace Core {
 
-  // forward declarations
-  class Engine;
+    // forward declarations
+    class Engine;
+    class Object3D;
+    class IndexBuffer;
 
-  class Mesh : public Renderable<Mesh>  {
-    friend class Engine;
+    class Mesh : public Renderable<Mesh> {
+        friend class Engine;
 
-  public:
+    public:
+        virtual ~Mesh();
+        virtual void init();
 
-    virtual ~Mesh();
+        UInt32 getVertexCount() const;
 
-    virtual void init();
+        AttributeArray<Vector3rs>* getVertexPositions();
+        AttributeArray<ColorS>* getVertexColors();
+        AttributeArray<Vector2rs>* getVertexUVs();
+        std::shared_ptr<IndexBuffer> getIndexBuffer();
 
-    UInt32 getVertexCount() const;
+        Bool initVertexPositions();
+        Bool initVertexColors();
+        Bool initVertexUVs();
 
-    AttributeArray<Vector3rs>* getVertexPositions();
-    AttributeArray<ColorS>* getVertexColors();
-    AttributeArray<Vector2rs>* getVertexUVs();
-    std::shared_ptr<IndexBuffer> getIndexBuffer();
+        void enableAttribute(StandardAttribute attribute);
+        void disableAttribute(StandardAttribute attribute);
+        Bool isAttributeEnabled(StandardAttribute attribute);
+        Bool isIndexed();
 
-    Bool initVertexPositions(UInt32 vertexCount);
-    Bool initVertexColors(UInt32 vertexCount);
-    Bool initVertexUVs(UInt32 vertexCount);
+        void calculateBoundingBox();
+        const Box3& getBoundingBox() const;
 
-    void enableAttribute(StandardAttribute attribute);
-    void disableAttribute(StandardAttribute attribute);
-    Bool isAttributeEnabled(StandardAttribute attribute);
-    Bool isIndexed();
+    protected:
+        Mesh(WeakPointer<Graphics> graphics, UInt32 vertexCount, Bool indexed);
+        void initAttributes();
+        Bool initIndices();
 
-    void calculateBoundingBox();
-    const Box3& getBoundingBox() const;
+        template <typename T>
+        Bool initVertexAttributes(AttributeArray<T>** attributes, UInt32 vertexCount) {
+            if (*attributes) delete *attributes;
 
-  protected:
-    Mesh(WeakPointer<Graphics> graphics, UInt32 vertexCount, Bool indexed);
-    void initAttributes();
-    Bool initIndices();
+            *attributes = new (std::nothrow) AttributeArray<T>(vertexCount);
+            if (*attributes == nullptr) {
+                throw AllocationException("MeshGL::initVertexAttributes() -> Unable to allocate array.");
+            }
 
-    PersistentWeakPointer<Graphics> graphics;
-    Bool initialized;
-    Bool enabledAttributes[(UInt32)StandardAttribute::_Count];
-    UInt32 vertexCount;
-    Bool indexed;
-    Box3 boundingBox;
+            std::shared_ptr<AttributeArrayGPUStorage> gpuStorage =
+                this->graphics->createGPUStorage((*attributes)->getSize(), T::ComponentCount, AttributeType::Float, false);
+            (*attributes)->setGPUStorage(gpuStorage);
+            return true;
+        }
 
-    AttributeArray<Vector3rs>* vertexPositions;
-    AttributeArray<ColorS>* vertexColors;
-    AttributeArray<Vector2rs>* vertexUVs;
-    std::shared_ptr<IndexBuffer> indexBuffer;
-  };
+        PersistentWeakPointer<Graphics> graphics;
+        Bool initialized;
+        Bool enabledAttributes[(UInt32)StandardAttribute::_Count];
+        UInt32 vertexCount;
+        Bool indexed;
+        Box3 boundingBox;
 
+        AttributeArray<Vector3rs>* vertexPositions;
+        AttributeArray<ColorS>* vertexColors;
+        AttributeArray<Vector2rs>* vertexUVs;
+        std::shared_ptr<IndexBuffer> indexBuffer;
+    };
 }

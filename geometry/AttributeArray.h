@@ -39,14 +39,14 @@ namespace Core {
     };
 
     template <typename T>
-    class AttributeArray: public AttributeArrayBase {
+    class AttributeArray final: public AttributeArrayBase {
     public:
 
         AttributeArray(UInt32 attributeCount) : AttributeArrayBase(attributeCount, T::ComponentCount), storage(nullptr), attributes(nullptr) {
             allocate();
         }
 
-        virtual ~AttributeArray() {
+        ~AttributeArray() {
             deallocate();
         }
 

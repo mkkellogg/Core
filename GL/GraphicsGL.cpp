@@ -1,4 +1,10 @@
 #include "GraphicsGL.h"
+#include "RendererGL.h"
+#include "Texture2DGL.h"
+#include "ShaderGL.h"
+#include "CubeTextureGL.h"
+#include "AttributeArrayGPUStorageGL.h"
+#include "IndexBufferGL.h"
 
 namespace Core {
 

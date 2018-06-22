@@ -1,4 +1,5 @@
 #include "RendererGL.h"
+#include "../geometry/Mesh.h"
 
 #if !defined(DYNAMIC_ES3)
 static GLboolean gl3stubInit() {
@@ -34,6 +35,7 @@ namespace Core {
     }
 
     void RendererGL::render(WeakPointer<Scene> scene) {
+        glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         Renderer::render(scene);
     }

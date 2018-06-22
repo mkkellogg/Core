@@ -2,12 +2,14 @@
 
 #include "../common/gl.h"
 #include "../render/Renderer.h"
-#include "../geometry/Mesh.h"
 
 namespace Core {
 
   // forward declaration
   class GraphicsGL;
+  class Scene;
+  class Camera;
+  class Object3D;
 
   class RendererGL final: public Renderer {
     friend class GraphicsGL;

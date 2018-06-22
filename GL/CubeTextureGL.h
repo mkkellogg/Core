@@ -1,12 +1,12 @@
 #pragma once
 
 #include "../image/CubeTexture.h"
-#include "../image/RawImage.h"
 
 namespace Core {
 
     // forward declaration
     class GraphicsGL;
+    class RawImage;
 
     class CubeTextureGL final : public CubeTexture {
         friend class GraphicsGL;

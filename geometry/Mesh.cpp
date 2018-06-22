@@ -1,6 +1,9 @@
 #include "Mesh.h"
 #include "../common/Exception.h"
 #include "../common/types.h"
+#include "../scene/Object3D.h"
+#include "IndexBuffer.h"
+#include "IndexBuffer.h"
 
 namespace Core {
 
@@ -101,44 +104,16 @@ namespace Core {
         return this->vertexUVs;
     }
 
-    Bool Mesh::initVertexPositions(UInt32 vertexCount) {
-        if (this->vertexPositions) delete this->vertexPositions;
-
-        this->vertexPositions = new (std::nothrow) AttributeArray<Vector3rs>(vertexCount);
-        if (this->vertexPositions == nullptr) {
-            throw AllocationException("MeshGL::initVertexPositions() -> Unable to allocate positions array.");
-        } 
-
-        std::shared_ptr<AttributeArrayGPUStorage> gpuStorage = this->graphics->createGPUStorage(this->vertexPositions->getSize(), Vector3rs::ComponentCount, AttributeType::Float, false);
-        this->vertexPositions->setGPUStorage(gpuStorage);
-
-        return true;
+    Bool Mesh::initVertexPositions() {
+        return this->initVertexAttributes<Vector3rs>(&this->vertexPositions, this->vertexCount);
     }
 
-    Bool Mesh::initVertexColors(UInt32 vertexCount) {
-        if (this->vertexColors) delete this->vertexColors;
-
-        this->vertexColors = new (std::nothrow) AttributeArray<ColorS>(vertexCount);
-        if (this->vertexColors == nullptr) {
-            throw AllocationException("MeshGL::initVertexColors() -> Unable to allocate colors array.");
-        }
-
-        std::shared_ptr<AttributeArrayGPUStorage> gpuStorage = this->graphics->createGPUStorage(this->vertexPositions->getSize(), ColorS::ComponentCount, AttributeType::Float, false);
-        this->vertexColors->setGPUStorage(gpuStorage);
-        return true;
+    Bool Mesh::initVertexColors() {
+        return this->initVertexAttributes<ColorS>(&this->vertexColors, this->vertexCount);
     }
 
-    Bool Mesh::initVertexUVs(UInt32 vertexCount) {
-        if (this->vertexUVs) delete this->vertexUVs;
-
-        this->vertexUVs = new (std::nothrow) AttributeArray<Vector2rs>(vertexCount);
-        if (this->vertexUVs == nullptr) {
-            throw AllocationException("MeshGL::initVertexUVs() -> Unable to allocate uvs array.");
-        }
-
-        std::shared_ptr<AttributeArrayGPUStorage> gpuStorage = this->graphics->createGPUStorage(this->vertexPositions->getSize(), Vector2rs::ComponentCount, AttributeType::Float, false);
-        this->vertexUVs->setGPUStorage(gpuStorage);
-        return true;
+    Bool Mesh::initVertexUVs() {
+        return this->initVertexAttributes<Vector2rs>(&this->vertexUVs, this->vertexCount);
     }
 
     Bool Mesh::initIndices() {

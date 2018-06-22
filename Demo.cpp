@@ -86,7 +86,7 @@ namespace Core {
     };
 
     skyboxMesh->enableAttribute(Core::StandardAttribute::Position);
-    Core::Bool positionInited = skyboxMesh->initVertexPositions(36);
+    Core::Bool positionInited = skyboxMesh->initVertexPositions();
     ASSERT(positionInited, "Unable to initialize skybox mesh vertex positions.");
     skyboxMesh->getVertexPositions()->store(vertexPositions);
 
