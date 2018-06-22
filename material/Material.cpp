@@ -5,16 +5,16 @@
 
 namespace Core {
 
-    Material::Material(WeakPointer<Graphics> graphics) : graphics(graphics), ready(false) {
+    Material::Material(Engine& engine, WeakPointer<Graphics> graphics) : graphics(graphics), ready(false), engine(engine) {
     }
 
-    Material::Material(WeakPointer<Graphics> graphics, WeakPointer<Shader> shader): Material(graphics) {
+    Material::Material(Engine& engine, WeakPointer<Graphics> graphics, WeakPointer<Shader> shader): Material(engine, graphics) {
         this->setShader(shader);
-        this->ready = this->shader && this->shader->isReady();
     }
 
     void Material::setShader(WeakPointer<Shader> shader) {
         this->shader = shader;
+        this->ready = this->shader && this->shader->isReady();
     }
 
     WeakPointer<Shader> Material::getShader() {

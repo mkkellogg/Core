@@ -17,14 +17,16 @@ namespace Core {
     virtual Int32 getShaderLocation(StandardAttribute attribute) override;
     virtual Int32 getShaderLocation(StandardUniform uniform) override;
     virtual void sendCustomUniformsToShader() override;
+    virtual WeakPointer<Material> clone() override;
   
   private:
-    BasicMaterial(WeakPointer<Graphics> graphics);
-    GLint positionLocation;
-    GLint colorLocation;
-    GLint uvLocation;
-    GLint projectionMatrixLocation;
-    GLint viewMatrixLocation;
-    GLint modelMatrixLocation;
+    BasicMaterial(Engine& engine, WeakPointer<Graphics> graphics);
+
+    Int32 positionLocation;
+    Int32 colorLocation;
+    Int32 uvLocation;
+    Int32 projectionMatrixLocation;
+    Int32 viewMatrixLocation;
+    Int32 modelMatrixLocation;
   };
 }
