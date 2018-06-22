@@ -1,5 +1,10 @@
+#include <vector>
+
 #include "Renderer.h"
 #include "../math/Matrix4x4.h"
+#include "../render/BaseRenderableContainer.h"
+#include "../render/MeshRenderer.h"
+#include "../render/RenderableContainer.h"
 
 namespace Core {
 
@@ -11,6 +16,29 @@ namespace Core {
 
     Bool Renderer::init() {
         return true;
+    }
+
+    void Renderer::render(WeakPointer<Scene> scene) {
+        std::vector<WeakPointer<Object3D>> objectList;
+        std::vector<WeakPointer<Camera>> cameraList;
+        this->processScene(scene, objectList, cameraList);
+        for (auto camera : cameraList) {
+            camera->setAspectRatioFromDimensions(this->renderSize.x, this->renderSize.y);
+            render(scene, camera, objectList);
+        }
+    }
+
+     void Renderer::render(WeakPointer<Scene> scene, WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objectList) {
+        for (auto object : objectList) {
+            std::shared_ptr<Object3D> objectShared = object.lock();
+            std::shared_ptr<BaseRenderableContainer> containerPtr = std::dynamic_pointer_cast<BaseRenderableContainer>(objectShared);
+            if (containerPtr) {
+                WeakPointer<BaseObjectRenderer> objectRenderer = containerPtr->getBaseRenderer();
+                if (objectRenderer) {
+                    objectRenderer->render(camera);
+                }
+            }
+        }
     }
 
     void Renderer::processScene(WeakPointer<Scene> scene, std::vector<WeakPointer<Object3D>>& outObjects, std::vector<WeakPointer<Camera>>& outCameras) {

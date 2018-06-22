@@ -20,10 +20,8 @@ namespace Core {
     virtual ~Renderer();
 
     virtual Bool init();
-    virtual void render(WeakPointer<Scene> scene) = 0;
-    virtual void render(WeakPointer<Scene> scene, 
-                        WeakPointer<Camera> camera,
-                        std::vector<WeakPointer<Object3D>>& objectList) = 0;
+    virtual void render(WeakPointer<Scene> scene);
+    virtual void render(WeakPointer<Scene> scene, WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objectList);
     void processScene(WeakPointer<Scene> scene, 
                       std::vector<WeakPointer<Object3D>>& outObjects,
                       std::vector<WeakPointer<Camera>>& outCamerast);

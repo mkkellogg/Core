@@ -18,7 +18,7 @@ namespace Core {
     Bool init() override;
     void render(WeakPointer<Scene> scene) override;
     void render(WeakPointer<Scene> scene, WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objectList) override;
-    virtual void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) override;
+    void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) override;
 
   private:
     RendererGL();
