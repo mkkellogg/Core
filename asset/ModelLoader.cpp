@@ -15,6 +15,7 @@
 #include "../image/Texture.h"
 #include "../image/TextureAttr.h"
 #include "../material/BasicTexturedMaterial.h"
+#include "../material/BasicMaterial.h"
 #include "../material/MaterialLibrary.h"
 #include "../material/ShaderMaterialCharacteristic.h"
 #include "../render/MeshRenderer.h"
@@ -45,9 +46,9 @@ namespace Core {
      * compatible path, so the the engine's FileSystem singleton should be used to derive the correct platform-specific
      * path before calling this method.
      */
-    std::shared_ptr<const aiScene> ModelLoader::loadAIScene(const std::string& filePath, Bool preserveFBXPivots) {
+    const aiScene* ModelLoader::loadAIScene(const std::string& filePath, Bool preserveFBXPivots) {
         // the global Assimp scene object
-        std::shared_ptr<const aiScene> scene;
+        const aiScene* scene = nullptr;
 
         // Create an instance of the Assimp Importer class
         this->initImporter();
@@ -65,7 +66,7 @@ namespace Core {
         importer->SetPropertyInteger(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, preserveFBXPivots ? 1 : 0);
 
         // read the model file in from disk
-        scene = std::shared_ptr<const aiScene>(importer->ReadFile(filePath, aiProcessPreset_TargetRealtime_Quality));
+        scene = importer->ReadFile(filePath, aiProcessPreset_TargetRealtime_Quality);
 
         // If the import failed, report it
         if (!scene) {
@@ -89,7 +90,7 @@ namespace Core {
         std::string fixedModelPath = fileSystem->fixupPathForLocalFilesystem(modelPath);
 
         // the global Assimp scene object
-        std::shared_ptr<const aiScene> scene = this->loadAIScene(fixedModelPath, preserveFBXPivots);
+        const aiScene* scene = this->loadAIScene(fixedModelPath, preserveFBXPivots);
 
         if (scene) {
             // the model has been loaded from disk into Assimp data structures, now convert to engine-native structures
@@ -125,7 +126,7 @@ namespace Core {
         // deactivate the root scene object so that it is not immediately
         // active or visible in the scene after it has been loaded
         root->setActive(false);
-        Matrix4x4 baseTransform;
+        root->getTransform().getLocalMatrix().scale(importScale, importScale, importScale);
 
         // container for all the SceneObject instances that get created during this process
         std::vector<WeakPointer<Object3D>> createdSceneObjects;
@@ -215,7 +216,7 @@ namespace Core {
                         throw ModelLoaderException("ModelLoader::recursiveProcessModelScene -> Could not create mesh container.");
                     };
 
-                    meshContainer->getTransform().setTo(mat);
+                    //meshContainer->getTransform().setTo(mat);
 
                     unsigned int targetRemainingCount = n == node.mNumMeshes - 1 ? 0 : 1;
                     while (tempMeshes.size() > targetRemainingCount) {
@@ -232,6 +233,8 @@ namespace Core {
 
                     newChildrenCount++;
                 }
+
+                lastMaterial = material;
             }
 
             /*Mesh3DFilterSharedPtr filter = engineObjectManager->CreateMesh3DFilter();
@@ -251,7 +254,8 @@ namespace Core {
             if (!nextParent.isValid()) {
                 throw ModelLoaderException("ModelLoader::recursiveProcessModelScene -> Could not create default scene object.");
             };
-            nextParent->getTransform().setTo(mat);
+           // nextParent->getTransform().setTo(mat);
+            parent->addChild(nextParent);
         }
 
         for (UInt32 i = 0; i < node.mNumChildren; i++) {
@@ -324,13 +328,15 @@ namespace Core {
             throw ModelLoaderException("ModeLoader::convertAssimpMesh -> Unable to initialize vertex positions.");
         }
         positions.reserve(mesh.mNumFaces * 12);
+        coreMesh->enableAttribute(StandardAttribute::Position);
 
         std::vector<Real> normals;
         if (mesh.mNormals != nullptr) {
             normals.reserve(mesh.mNumFaces * 12);
-            /*if (!coreMesh->initVertexNormals(vertexCount)) {
+            //if (!coreMesh->initVertexNormals(vertexCount)) {
 
-            }*/
+            //}
+            //coreMesh->enableAttribute(StandardAttribute::Normal);
             hasNormals = true;
         }
 
@@ -341,6 +347,7 @@ namespace Core {
             if (!coreMesh->initVertexColors(vertexCount)) {
                 throw ModelLoaderException("ModeLoader::convertAssimpMesh -> Unable to initialize vertex colors.");
             }
+            coreMesh->enableAttribute(StandardAttribute::Color);
             hasColors = true;
         }
 
@@ -350,6 +357,7 @@ namespace Core {
             if (!coreMesh->initVertexUVs(vertexCount)) {
                 throw ModelLoaderException("ModeLoader::convertAssimpMesh -> Unable to initialize vertex uvs.");
             }
+            coreMesh->enableAttribute(StandardAttribute::UV0);
             hasUVs = true;
         }
 
@@ -420,6 +428,68 @@ namespace Core {
         // if (invert) mesh3D->SetInvertNormals(true);
         // mesh3D->SetNormalsSmoothingThreshold(80);
         return coreMesh;
+
+
+/*
+           // ======= cube data =================
+        Real cubeVertexPositions[] = {
+            // back
+            -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0,
+            -1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0,
+            // left
+            -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0,
+            -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0,
+            // right
+            1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0,
+            1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+            // top
+            -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0,
+            1.0, 1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+            // bottom
+            -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0,
+            -1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0,
+            // front
+            1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0,
+            1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0
+        };
+
+        Real cubeVertexColors[] = {
+            // back
+            1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0,
+            1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0,
+            // left
+            1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0,
+            1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0,
+            // right
+            1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0,
+            1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0,
+            // top
+            1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0,
+            1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0,
+            // bottom
+            1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0,
+            1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0,
+            // front
+            1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0,
+            1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0,
+        };
+
+        WeakPointer<BasicMaterial> cubeMaterial(this->engine.createMaterial<BasicMaterial>());
+        cubeMaterial->build();
+
+
+        // ======= big cube ===============
+        WeakPointer<Mesh> bigCube(this->engine.createMesh(36, false));
+        bigCube->init();
+        bigCube->enableAttribute(StandardAttribute::Position);
+        Bool positionInited = bigCube->initVertexPositions(36);
+        bigCube->getVertexPositions()->store(cubeVertexPositions);
+
+        bigCube->enableAttribute(StandardAttribute::Color);
+        Bool colorInited = bigCube->initVertexColors(36);
+        bigCube->getVertexColors()->store(cubeVertexColors);
+
+        return bigCube;*/
     }
 
     /**

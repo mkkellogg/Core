@@ -30,5 +30,6 @@ namespace Core {
     Int32 uvLocation;
     Int32 projectionMatrixLocation;
     Int32 viewMatrixLocation;
+    GLint modelMatrixLocation;
   };
 }

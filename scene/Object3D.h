@@ -29,6 +29,7 @@ namespace Core {
     public:
         virtual ~Object3D();
 
+        UInt32 getID();
         Transform& getTransform();
         GameObjectIterator<Object3D> beginIterateChildren();
         GameObjectIterator<Object3D> endIterateChildren();
@@ -49,5 +50,8 @@ namespace Core {
         PersistentWeakPointer<Object3D> parent;
         std::vector<PersistentWeakPointer<Object3DComponent>> components;
         Bool active;
+        UInt32 id;
+
+        static UInt32 _nextID;
     };
 }

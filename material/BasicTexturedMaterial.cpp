@@ -10,10 +10,11 @@ static const char vertexShader[] =
         "attribute vec2 uv;\n"
         "uniform mat4 projection;\n"
         "uniform mat4 viewMatrix;\n"
+        "uniform mat4 modelMatrix;\n"
         "varying vec4 vColor;\n"
         "varying vec2 vUV;\n"
         "void main() {\n"
-        "    gl_Position = projection * viewMatrix * pos;\n"
+        "    gl_Position = projection * viewMatrix * modelMatrix * pos;\n"
         "    vUV = uv;\n"
         "    vColor = color;\n"
         "}\n";
@@ -45,9 +46,12 @@ namespace Core {
     this->positionLocation = this->shader->getAttributeLocation("pos");
     this->colorLocation = this->shader->getAttributeLocation("color");
     this->textureLocation = this->shader->getAttributeLocation("textureA");
+    this->uvLocation = this->shader->getAttributeLocation("uv");
+
     this->projectionMatrixLocation = this->shader->getUniformLocation("projection");
     this->viewMatrixLocation = this->shader->getUniformLocation("viewMatrix");
-    this->uvLocation = this->shader->getUniformLocation("uv");
+    this->modelMatrixLocation = this->shader->getUniformLocation("modelMatrix");
+    
     return true;
   }
 
@@ -70,6 +74,10 @@ namespace Core {
         return this->projectionMatrixLocation;
       case StandardUniform::ViewMatrix:
         return this->viewMatrixLocation;
+      case StandardUniform::ModelMatrix:
+        return this->modelMatrixLocation;
+      case StandardUniform::Texture0:
+        return this->textureLocation;
       default:
         return -1;
     }

@@ -3,10 +3,16 @@
 
 namespace Core {
 
-    Object3D::Object3D() : transform(*this), active(true) {
+    UInt32 Object3D::_nextID = 0;
+
+    Object3D::Object3D() : transform(*this), active(true), id(_nextID++) {
     }
 
     Object3D::~Object3D() {
+    }
+
+    UInt32 Object3D::getID() {
+        return this->id;
     }
 
     Transform& Object3D::getTransform() {

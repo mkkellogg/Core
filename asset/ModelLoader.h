@@ -74,7 +74,7 @@ namespace Core {
         };
 
         void initImporter();
-        std::shared_ptr<const aiScene> loadAIScene(const std::string& filePath, Bool preserveFBXPivots);
+        const aiScene* loadAIScene(const std::string& filePath, Bool preserveFBXPivots);
 
         WeakPointer<Object3D> processModelScene(const std::string& modelPath, const aiScene& scene, Real importScale, Bool castShadows, Bool receiveShadows) const;
         Bool processMaterials(const std::string& modelPath, const aiScene& scene, std::vector<MaterialImportDescriptor>& materialImportDescriptors) const;
