@@ -7,11 +7,12 @@ namespace Core {
         SpecularColored = 1,
         DiffuseTextured = 2,
         SpecularTextured = 3,
-        Bumped = 4,
-        EmissiveColored = 5,
-        EmissiveTextured = 6,
-        VertexColors = 7,
-        VertexNormals = 8
+        CubeTextured = 4,
+        Bumped = 5,
+        EmissiveColored = 6,
+        EmissiveTextured = 7,
+        VertexColors = 8,
+        VertexNormals = 9
     };
 
 }

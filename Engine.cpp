@@ -41,7 +41,6 @@ namespace Core {
 
         LongMask materialAttributes;
         materialAttributes = LongMaskUtil::createMask();
-        LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::DiffuseTextured);
         LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::VertexNormals);
         this->materialLibrary.addEntry(materialAttributes, basicMaterial);
 
@@ -51,11 +50,11 @@ namespace Core {
         this->materialLibrary.addEntry(materialAttributes, basicTexturedMaterial);
 
         materialAttributes = LongMaskUtil::createMask();
-        LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::DiffuseTextured);
+        LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::CubeTextured);
         LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::VertexNormals);
         this->materialLibrary.addEntry(materialAttributes, basicCubeMaterial);
 
-        modelLoader.initImporter();
+      //  modelLoader.initImporter();
     }
 
     void Engine::update() {

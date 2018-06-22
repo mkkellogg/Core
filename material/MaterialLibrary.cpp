@@ -6,12 +6,12 @@ namespace Core {
 
     }
 
-    void MaterialLibrary::addEntry(LongMask attributes, WeakPointer<Material> material) {
-        if (this->entries.find(attributes) != this->entries.end()) {
+    void MaterialLibrary::addEntry(LongMask shaderMaterialChacteristics, WeakPointer<Material> material) {
+        if (this->entries.find(shaderMaterialChacteristics) == this->entries.end()) {
             Entry entry;
-            entry.material = attributes;
+            entry.shaderMaterialChacteristics = shaderMaterialChacteristics;
             entry.material = material;
-            this->entries[attributes] = entry;
+            this->entries[shaderMaterialChacteristics] = entry;
         }
     }
 

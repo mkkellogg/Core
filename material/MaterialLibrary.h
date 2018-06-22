@@ -15,12 +15,12 @@ namespace Core {
         class Entry {
         public:
             PersistentWeakPointer<Material> material;
-            LongMask attributes;
+            LongMask shaderMaterialChacteristics;
         };
 
         MaterialLibrary();
 
-        void addEntry(LongMask attributes, WeakPointer<Material> material);
+        void addEntry(LongMask shaderMaterialChacteristics, WeakPointer<Material> material);
         Bool hasMaterial(LongMask shaderMaterialChacteristics);
         WeakPointer<Material> getMaterial(LongMask shaderMaterialChacteristics);
     

@@ -1,13 +1,14 @@
 #pragma once
 
 #include <string>
+#include <iostream>
 
 namespace Core {
 
     class Exception {
     public:
-        Exception(const std::string& msg): msg(msg) {}
-        Exception(const char* msg): msg(msg) {}
+        Exception(const std::string& msg): msg(msg) {std::cerr << msg << std::endl;}
+        Exception(const char* msg): msg(msg) {std::cerr << msg << std::endl;}
 
     private:
         std::string msg;

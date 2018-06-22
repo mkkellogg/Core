@@ -22,12 +22,7 @@
 
 namespace Core {
 
-    // forward declarations
-    class Engine;
-
     class ModelLoader {
-        friend class Engine;
-
     public:
         class ModelLoaderException : public Exception {
         public:
@@ -37,6 +32,7 @@ namespace Core {
             }
         };
 
+        ModelLoader(Engine& engine);
         ~ModelLoader();
         WeakPointer<Object3D> loadModel(const std::string& filePath, Real importScale, Bool castShadows, Bool receiveShadows, Bool preserveFBXPivots);
 
@@ -77,8 +73,6 @@ namespace Core {
             }
         };
 
-        ModelLoader(Engine& engine);
-
         void initImporter();
         std::shared_ptr<const aiScene> loadAIScene(const std::string& filePath, Bool preserveFBXPivots);
 
@@ -99,11 +93,10 @@ namespace Core {
         static StandardUniform mapTextureTypeToUniform(TextureType textureType);  
         static StandardAttribute mapTextureTypeToAttribute(TextureType textureType);
         static void convertAssimpMatrix(const aiMatrix4x4& source, Matrix4x4& dest);                  
+#endif
 
         Engine& engine;
-        std::shared_ptr<Assimp::Importer> importer;
         ImageLoader imageLoader;
-#endif
 
     };
 }

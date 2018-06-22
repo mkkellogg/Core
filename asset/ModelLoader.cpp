@@ -22,19 +22,20 @@
 #include "ModelLoader.h"
 
 namespace Core {
+    static std::shared_ptr<Assimp::Importer> importer = nullptr;
 
-    ModelLoader::ModelLoader(Engine& engine) : engine(engine), importer(nullptr) {
+    ModelLoader::ModelLoader(Engine& engine) : engine(engine) {
     }
 
     ModelLoader::~ModelLoader() {
     }
 
     void ModelLoader::initImporter() {
-        if (!this->importer) {
-            this->importer = std::make_shared<Assimp::Importer>();
+        if (!importer) {
+            importer = std::make_shared<Assimp::Importer>();
         }
 
-        if (!this->importer) {
+        if (!importer) {
             throw ModelLoaderException("ModeLoader::initImporter -> Unable to create Assimp::Importer.");
         }
     }
@@ -133,6 +134,7 @@ namespace Core {
         // all instances of SceneObject that are generated get stored in [createdSceneObjects].
         // any time meshes or mesh renderers are created, the information in [materialImportDescriptors]
         // will be used to link their materials and textures as appropriate.
+
         recursiveProcessModelScene(scene, *(scene.mRootNode), importScale, root, materialImportDescriptors, createdSceneObjects, castShadows, receiveShadows);
 
         // loop through each instance of SceneObject that was created in the call to RecursiveProcessModelScene()
@@ -205,16 +207,17 @@ namespace Core {
                 WeakPointer<Mesh> subMesh = this->convertAssimpMesh(sceneMeshIndex, scene, materialImportDescriptor, invert);
                 tempMeshes.push(subMesh);
 
+                UInt32 newChildrenCount = 0;
                 if ((material != lastMaterial && n > 0) || n == node.mNumMeshes - 1) {
                     // create new scene object to hold the meshes object and its renderer
                     WeakPointer<RenderableContainer<Mesh>> meshContainer = engine.createObject3D<RenderableContainer<Mesh>>();
                     if (!meshContainer.isValid()) {
                         throw ModelLoaderException("ModelLoader::recursiveProcessModelScene -> Could not create mesh container.");
                     };
+
                     meshContainer->getTransform().setTo(mat);
 
                     unsigned int targetRemainingCount = n == node.mNumMeshes - 1 ? 0 : 1;
-
                     while (tempMeshes.size() > targetRemainingCount) {
                         WeakPointer<Mesh> subMesh = tempMeshes.front();
                         tempMeshes.pop();
@@ -225,7 +228,9 @@ namespace Core {
                     parent->addChild(meshContainer);
 
                     createdSceneObjects.push_back(meshContainer);
-                    if (n == 0) nextParent = meshContainer;
+                    if (newChildrenCount == 0) nextParent = meshContainer;
+
+                    newChildrenCount++;
                 }
             }
 
@@ -241,11 +246,19 @@ namespace Core {
             sceneObject->SetRenderer(GTE::DynamicCastEngineObject<GTE::Mesh3DRenderer, GTE::Renderer>(meshRenderer));*/
         }
 
+        if (!nextParent.isValid()) {
+            nextParent = engine.createObject3D();
+            if (!nextParent.isValid()) {
+                throw ModelLoaderException("ModelLoader::recursiveProcessModelScene -> Could not create default scene object.");
+            };
+            nextParent->getTransform().setTo(mat);
+        }
+
         for (UInt32 i = 0; i < node.mNumChildren; i++) {
             const aiNode* childNode = node.mChildren[i];
             if (childNode != nullptr) {
-                this->recursiveProcessModelScene(scene, *childNode, scale, nextParent, materialImportDescriptors, 
-                                                 createdSceneObjects, castShadows, receiveShadows);
+                this->recursiveProcessModelScene(scene, *childNode, scale, nextParent, materialImportDescriptors, createdSceneObjects, castShadows,
+                                                 receiveShadows);
             }
         }
     }
@@ -307,11 +320,17 @@ namespace Core {
         Bool hasUVs = false;
 
         std::vector<Real> positions;
+        if (!coreMesh->initVertexPositions(vertexCount)) {
+            throw ModelLoaderException("ModeLoader::convertAssimpMesh -> Unable to initialize vertex positions.");
+        }
         positions.reserve(mesh.mNumFaces * 12);
 
         std::vector<Real> normals;
         if (mesh.mNormals != nullptr) {
             normals.reserve(mesh.mNumFaces * 12);
+            /*if (!coreMesh->initVertexNormals(vertexCount)) {
+
+            }*/
             hasNormals = true;
         }
 
@@ -319,12 +338,18 @@ namespace Core {
         Int32 colorsIndex = materialImportDescriptor.meshSpecificProperties[meshIndex].vertexColorsIndex;
         if (colorsIndex >= 0) {
             colors.reserve(mesh.mNumFaces * 12);
+            if (!coreMesh->initVertexColors(vertexCount)) {
+                throw ModelLoaderException("ModeLoader::convertAssimpMesh -> Unable to initialize vertex colors.");
+            }
             hasColors = true;
         }
 
         std::vector<Real> uvs;
         if (diffuseTextureUVIndex >= 0) {
             uvs.reserve(mesh.mNumFaces * 6);
+            if (!coreMesh->initVertexUVs(vertexCount)) {
+                throw ModelLoaderException("ModeLoader::convertAssimpMesh -> Unable to initialize vertex uvs.");
+            }
             hasUVs = true;
         }
 
@@ -349,7 +374,6 @@ namespace Core {
             // if [invert] == true, then we instead iterate in forward order
             for (Int32 i = start; i != end; i += inc) {
                 Int32 vIndex = face->mIndices[i];
-
                 aiVector3D srcPosition = mesh.mVertices[vIndex];
 
                 // copy vertex position
@@ -623,7 +647,6 @@ namespace Core {
             if (!(filename.length() <= 0)) {
                 // concatenate the file name with the model's directory location
                 filename = fileSystem->concatenatePaths(modelDirectory, filename);
-
                 // check if the image file is in the same directory as the model and if so, load it
                 if (fileSystem->fileExists(filename)) {
                     textureImage = ImageLoader::loadImageU(filename.c_str());
@@ -668,6 +691,7 @@ namespace Core {
         // set the diffuse texture in the material for the mesh specified by [meshIndex]
         WeakPointer<Material> material = materialImportDesc.meshSpecificProperties[meshIndex].material;
         WeakPointer<BasicTexturedMaterial> texturedMaterial = WeakPointer<Material>::dynamicPointerCast<BasicTexturedMaterial>(material);
+
         texturedMaterial->setTexture(texture);
 
         Int32 mappedIndex;

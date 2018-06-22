@@ -33,8 +33,8 @@ namespace Core {
         }
 
         template <typename U>
-        WeakPointer(WeakPointer<U>& ptr, Bool cacheShared = true) : std::weak_ptr<T>(ptr),  _cacheShared(cacheShared), _cachedSharedSet(false) {
-            this->_ptr = static_cast<T*>(ptr.get());
+        WeakPointer(const WeakPointer<U>& ptr, Bool cacheShared = true) : std::weak_ptr<T>(ptr),  _cacheShared(cacheShared), _cachedSharedSet(false) {
+            this->_ptr = static_cast<T*>(const_cast<WeakPointer<U>&>(ptr).get());
         }
 
         WeakPointer& operator =(const WeakPointer& other) {
@@ -72,11 +72,7 @@ namespace Core {
 #endif
 
             if (!this->_ptr) {
-                std::shared_ptr<T> temp = this->lock();
-                if (!temp) {
-                    throw WeakPointerAssertionFailure("Tried to use null weak pointer (1st try).");
-                }
-                this->_ptr = temp.get();
+                this->tryUpdatePtr();
             }
             if (!this->_ptr) {
                 throw WeakPointerAssertionFailure("Tried to use null weak pointer (2nd try).");
@@ -118,13 +114,33 @@ namespace Core {
         }
 
         template<typename U> 
-        static WeakPointer<U> dynamicPointerCast(const WeakPointer& src) {
-            T* s1 = const_cast<WeakPointer&>(src).get();
+        static WeakPointer<U> dynamicPointerCast(const WeakPointer<T>& src) {
+            WeakPointer<T>& _src = const_cast<WeakPointer<T>&>(src);
+            T* s1 = _src.get();
+            if (!s1) {
+                _src.tryUpdatePtr();
+                s1 = _src.get();
+            }
+
             U* s2 = dynamic_cast<U*>(s1);
-            return s2 != nullptr ? src : WeakPointer<U>();
+
+            // TODO: is this correct / safe ?
+            // we are definitely assuming no specializations of WeakPointer exist that might
+            // be of a different size, and no automatic storage for an instance of T
+            // should be allocated as part of WeakPointer<T>
+            return s2 != nullptr ? WeakPointer<U>(reinterpret_cast<WeakPointer<U>&>(_src)) : WeakPointer<U>();
         }
 
     protected:
+        void tryUpdatePtr() {
+            std::shared_ptr<T> temp = this->lock();
+            if (!temp) {
+                throw WeakPointerAssertionFailure("Tried to use null weak pointer (1st try).");
+            }
+            this->_ptr = temp.get();
+        }
+
+
         T * _ptr;
 
         std::shared_ptr<T> _cachedShared;

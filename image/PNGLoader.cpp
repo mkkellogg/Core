@@ -68,21 +68,25 @@ namespace Core {
 
         png_read_image(png, row_pointers);
 
+        fclose(fp);
+
         RawImage * rawPNG = new RawImage(width, height);
-        if (rawPNG != nullptr) {
+        if (rawPNG == nullptr) {
             throw PNGLoaderException("PNGLoader::loadPNG() -> Could not allocate RawImage object.");
         }
+        rawPNG->init();
         Byte * rawData = rawPNG->getImageData();
 
         UInt32 index = 0;
         for(int y = 0; y < height; y++) {
             memcpy(rawData + index, row_pointers[y], width);
-            free(row_pointers[y]);
             index += width;
         }
-        free(row_pointers);
 
-        fclose(fp);
+        for(int y = 0; y < height; y++) {
+            free(row_pointers[y]);
+        }
+        free(row_pointers);      
 
         return rawPNG;
     }

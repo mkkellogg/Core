@@ -25,7 +25,7 @@ namespace Core {
 
         std::string extension = ImageLoader::getFileExtension(fullPath);
 
-        if (extension == "png") {
+        if (extension == ".png") {
             return PNGLoader::loadPNG(fullPath);
         }
 

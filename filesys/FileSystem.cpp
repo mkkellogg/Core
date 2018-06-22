@@ -34,14 +34,17 @@ namespace Core {
         UInt32 iB = 0;
         while (iB < pathBTrimmed.size() && pathBTrimmed.c_str()[iB] != separator) iB++;
 
-        Int32 iA = 0;
-        while (iA >= 0 && pathATrimmed.c_str()[iA] != separator) iA--;
+        Int32 iA = pathATrimmed.size() - 1;
+        while (iA >= 0) {
+            iA--;
+            if (pathATrimmed.c_str()[iA + 1] == separator) break;
+        }
 
         if (iA >= 0) {
             pathATrimmed = pathATrimmed.substr(0, iA + 1);
         }
-        if (iB < pathBTrimmed.size()) {
-            pathBTrimmed = pathBTrimmed.substr(iB, pathBTrimmed.size() - 1 - iB);
+        if (iB + 1 < pathBTrimmed.size()) {
+            pathBTrimmed = pathBTrimmed.substr(iB + 1);
         }
 
         pathATrimmed.append(1, separator);
