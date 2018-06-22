@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.6)
 
 project(Core)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -fPIC")
 
 find_package (OpenGL REQUIRED)
 
@@ -156,13 +156,16 @@ add_library(${EXECUTABLE_NAME} ${SOURCE_FILES})
 
 target_link_libraries(${EXECUTABLE_NAME} ${OPENGL_LIBRARIES})
 
-include_directories(../../libpng/code)
-include_directories(../../libpng/build)
-target_link_libraries(${EXECUTABLE_NAME} ../../libpng/build/libpng.a)
+#include_directories(../../libpng/code)
+#include_directories(../../libpng/build)
+#target_link_libraries(${EXECUTABLE_NAME} ../../libpng/build/libpng.a)
+target_link_libraries(${EXECUTABLE_NAME} png)
 
 include_directories(../../assimp/build/include)
 include_directories(../../assimp/include)
-target_link_libraries(${EXECUTABLE_NAME} ../../assimp/build/code/libassimp.a)
+#target_link_libraries(${EXECUTABLE_NAME} ../../assimp/build/code/libassimp.a)
+link_directories(../../assimp_dynamic/lib/)
+target_link_libraries(${EXECUTABLE_NAME} assimp)
 
 add_custom_target(MakeIncludeDir ALL COMMAND ${CMAKE_COMMAND} -E make_directory "include")
 add_custom_target(MakeIncludeCoreDir ALL COMMAND ${CMAKE_COMMAND} -E make_directory "include/Core")
@@ -189,6 +192,4 @@ foreach(file_i ${INCLUDE_FILES})
 endforeach(file_i)
 
 target_compile_definitions(core PRIVATE CORE_USE_PRIVATE_INCLUDES=1)
-
-
 

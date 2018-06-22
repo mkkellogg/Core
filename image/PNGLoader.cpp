@@ -53,8 +53,9 @@ namespace Core {
         // These color_type don't have an alpha channel then fill it with 0xff.
         if(color_type == PNG_COLOR_TYPE_RGB ||
             color_type == PNG_COLOR_TYPE_GRAY ||
-            color_type == PNG_COLOR_TYPE_PALETTE)
-            png_set_filler(png, 0xFF, PNG_FILLER_AFTER);
+            color_type == PNG_COLOR_TYPE_PALETTE) {
+                png_set_filler(png, 0xFF, PNG_FILLER_AFTER);
+            }
 
         if(color_type == PNG_COLOR_TYPE_GRAY ||
             color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
