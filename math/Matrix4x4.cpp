@@ -643,7 +643,7 @@ namespace Core {
     }
 
     /*
-     * Rotate this matrix around the [vector] axis by [a] degrees
+     * Rotate this matrix around the [vector] axis by [a] radians.
      *
      * This performs a post-transformation, in that it is equivalent to post-multiplying
      * this matrix by a rotation matrix
@@ -657,7 +657,7 @@ namespace Core {
     }
 
     /*
-     * Rotate this matrix around the [x], [y], [z] axis by [a] degrees
+     * Rotate this matrix around the [x], [y], [z] axis by [a] radians.
      *
      * This performs a post-transformation, in that it is equivalent to post-multiplying
      * this matrix by a rotation matrix
@@ -671,7 +671,7 @@ namespace Core {
     }
 
     /*
-     * Rotate this matrix around the [vector] axis by [a] degrees
+     * Rotate this matrix around the [vector] axis by [a] radians.
      *
      * This performs a pre-transformation, in that it is equivalent to pre-multiplying
      * this matrix by a rotation matrix
@@ -685,7 +685,7 @@ namespace Core {
     }
 
     /*
-     * Rotate this matrix around the [x], [y], [z] axis by [a] degrees
+     * Rotate this matrix around the [x], [y], [z] axis by [a] radians.
      *
      * This performs a pre-transformation, in that it is equivalent to pre-multiplying
      * this matrix by a rotation matrix
@@ -706,14 +706,14 @@ namespace Core {
     }
 
     /*
-     * Set the 4x4 matrix [m] to be a rotation matrix, around axis [x], [y], [z] by [a] degrees
+     * Set the 4x4 matrix [m] to be a rotation matrix, around axis [x], [y], [z] by [a] radians.
      */
     void Matrix4x4::setRotate(Matrix4x4 &m, Real x, Real y, Real z, Real a) {
         Matrix4x4::setRotate(m.data, x, y, z, a);
     }
 
     /*
-     * Set the 4x4 matrix [rm] to be a rotation matrix, around axis [x], [y], [z] by [a] degrees
+     * Set the 4x4 matrix [rm] to be a rotation matrix, around axis [x], [y], [z] by [a] radians.
      */
     void Matrix4x4::setRotate(Real *rm, Real x, Real y, Real z, Real a) {
         if (rm == nullptr) throw NullPointerException("Matrix4x4::setRotate -> 'rm' is null.");
@@ -725,7 +725,6 @@ namespace Core {
         rm[13] = 0;
         rm[14] = 0;
         rm[15] = 1;
-        a *= Math::DegreesToRads;
         Real s = (Real)Math::Sin(a);
         Real c = (Real)Math::Cos(a);
         if (1.0f == x && 0.0f == y && 0.0f == z) {
@@ -791,9 +790,6 @@ namespace Core {
     void Matrix4x4::setRotateEuler(Real *rm, Real x, Real y, Real z) {
         if (rm == nullptr) throw NullPointerException("Matrix4x4::setRotateEuler -> 'rm' is null.");
 
-        x *= Math::DegreesToRads;
-        y *= Math::DegreesToRads;
-        z *= Math::DegreesToRads;
         Real cx = (Real)Math::Cos(x);
         Real sx = (Real)Math::Sin(x);
         Real cy = (Real)Math::Cos(y);

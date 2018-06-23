@@ -75,7 +75,7 @@ namespace Core {
 
     void Camera::buildPerspectiveProjectionMatrix(Real fov, Real ratio, Real nearP, Real farP, Matrix4x4& out) {
         // convert fov to radians
-        Real f = 1.0f / Math::Tan(fov * Math::DegreesToRads * .5f);
+        Real f = 1.0f / Math::Tan(fov * .5f);
 
         Real data[16];
         memset(data, 0, 16 * sizeof(Real));

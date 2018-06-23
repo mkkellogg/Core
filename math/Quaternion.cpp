@@ -417,12 +417,12 @@ namespace Core {
      * @param euler A 3-vector in order:  roll-pitch-yaw.
      */
     void Quaternion::euler(const Vector3Components<Real>& euler) {
-        Real c1 = Math::Cos(euler.z * 0.5f * Math::DegreesToRads);
-        Real c2 = Math::Cos(euler.y * 0.5f * Math::DegreesToRads);
-        Real c3 = Math::Cos(euler.x * 0.5f * Math::DegreesToRads);
-        Real s1 = Math::Sin(euler.z * 0.5f * Math::DegreesToRads);
-        Real s2 = Math::Sin(euler.y * 0.5f * Math::DegreesToRads);
-        Real s3 = Math::Sin(euler.x * 0.5f * Math::DegreesToRads);
+        Real c1 = Math::Cos(euler.z * 0.5f);
+        Real c2 = Math::Cos(euler.y * 0.5f);
+        Real c3 = Math::Cos(euler.x * 0.5f);
+        Real s1 = Math::Sin(euler.z * 0.5f);
+        Real s2 = Math::Sin(euler.y * 0.5f);
+        Real s3 = Math::Sin(euler.x * 0.5f);
 
         mData[0] = c1 * c2 * s3 - s1 * s2 * c3;
         mData[1] = c1 * s2 * c3 + s1 * c2 * s3;
@@ -508,7 +508,7 @@ namespace Core {
           // Calculate temporary values.
           Real halfTheta = acos(cosHalfTheta);
           Real sinHalfTheta = sqrt(1.0 - cosHalfTheta * cosHalfTheta);
-          // if theta = 180 degrees then result is not fully defined
+          // if theta = pi radians then result is not fully defined
           // we could rotate around any axis normal to qa or qb
           if (fabs(sinHalfTheta) < 0.001)
           { // fabs is floating point absolute
@@ -610,7 +610,7 @@ namespace Core {
         Vector3r axis;
         if (d < (1e-6f - 1.0f)) {
             if (!(fallbackAxisV3 == Vector3r::Zero)) {
-                // rotate 180 degrees about the fallback axis
+                // rotate pi radians about the fallback axis
                 q.fromAngleAxis(Math::PI, fallbackAxis);
             } else {
                 // Generate an axis
