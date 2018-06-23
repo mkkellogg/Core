@@ -43,8 +43,5 @@ namespace Core {
         virtual void drawBoundVertexBuffer(UInt32 vertexCount) = 0;
         virtual void drawBoundVertexBuffer(UInt32 vertexCount, WeakPointer<IndexBuffer> indices) = 0;
 
-    protected:
-        std::vector<std::shared_ptr<Mesh>> meshes;
-
     };
 }
