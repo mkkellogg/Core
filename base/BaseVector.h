@@ -4,25 +4,24 @@
 
 namespace Core {
 
-  template<typename T, UInt32 componentCount>
-  class BaseVector {
-  public:
+    template <typename T, UInt32 componentCount>
+    class BaseVector {
+    public:
+        static const UInt32 ComponentCount = componentCount;
+        typedef T ComponentType;
 
-    static const UInt32 ComponentCount = componentCount;
-    typedef T ComponentType;
+        BaseVector(T *data) : data(data) {
+        }
 
-    BaseVector(T *data) : data(data) {}
+        const T *getConstData() const {
+            return this->data;
+        }
 
-    const T *getConstData() const {
-      return this->data;
-    }
+        T *getData() {
+            return this->data;
+        }
 
-    T *getData() {
-      return this->data;
-    }
-    
-  protected:
-    T *data;
-  };
-
+    protected:
+        T *data;
+    };
 }

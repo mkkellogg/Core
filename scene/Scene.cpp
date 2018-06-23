@@ -3,12 +3,10 @@
 
 namespace Core {
 
-  Scene::Scene(WeakPointer<Object3D> root): root(root) {
-    
-  }
+    Scene::Scene(WeakPointer<Object3D> root) : root(root) {
+    }
 
-  WeakPointer<Object3D> Scene::getRoot() {
-    return this->root;
-  }
-
+    WeakPointer<Object3D> Scene::getRoot() {
+        return this->root;
+    }
 }

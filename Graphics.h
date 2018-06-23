@@ -15,6 +15,9 @@
 
 namespace Core {
 
+    // forward declarations
+    class Mesh;
+    
     class Graphics {
     public:
         virtual ~Graphics();

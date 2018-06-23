@@ -1,46 +1,41 @@
 #pragma once
 
 #include "../common/complextypes.h"
-#include "../util/WeakPointer.h"
-#include "../scene/Object3DComponent.h"
 #include "../common/debug.h"
-#include "../scene/Scene.h"
-#include "../scene/Object3D.h"
-#include "../scene/Transform.h"
 #include "../geometry/Vector2.h"
 #include "../geometry/Vector4.h"
-#include "Camera.h"
-#include "ObjectRenderers.h"
-#include "ObjectRenderer.h"
+#include "../scene/Transform.h"
+#include "../util/WeakPointer.h"
 
 namespace Core {
 
-  class Renderer {
-  public:
-    virtual ~Renderer();
+    // forward declaration
+    class Object3D;
+    class Scene;
+    class Camera;
 
-    virtual Bool init();
-    virtual void render(WeakPointer<Scene> scene);
-    virtual void render(WeakPointer<Scene> scene, WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objectList);
-    void processScene(WeakPointer<Scene> scene, 
-                      std::vector<WeakPointer<Object3D>>& outObjects,
-                      std::vector<WeakPointer<Camera>>& outCamerast);
+    class Renderer {
+    public:
+        virtual ~Renderer();
 
-    void setRenderSize(UInt32 width, UInt32 height,Bool updateViewport = true);    
-    void setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
-    virtual void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
-    Vector4u getViewport();
-    
-  private:
-    void processSceneStep(WeakPointer<Object3D> object,
-                          const Matrix4x4& curTransform,
-                          std::vector<WeakPointer<Object3D>>& outObjects,
-                          std::vector<WeakPointer<Camera>>& outCameras);
-  protected:
-    Renderer();
+        virtual Bool init();
+        virtual void render(WeakPointer<Scene> scene);
+        virtual void render(WeakPointer<Scene> scene, WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objectList);
+        void processScene(WeakPointer<Scene> scene, std::vector<WeakPointer<Object3D>>& outObjects, std::vector<WeakPointer<Camera>>& outCamerast);
 
-    Vector2u renderSize;
-    Vector4u viewport;
+        void setRenderSize(UInt32 width, UInt32 height, Bool updateViewport = true);
+        void setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
+        virtual void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
+        Vector4u getViewport();
 
-  };
+    private:
+        void processSceneStep(WeakPointer<Object3D> object, const Matrix4x4& curTransform, std::vector<WeakPointer<Object3D>>& outObjects,
+                              std::vector<WeakPointer<Camera>>& outCameras);
+
+    protected:
+        Renderer();
+
+        Vector2u renderSize;
+        Vector4u viewport;
+    };
 }

@@ -7,13 +7,9 @@
 
 #include "../common/assert.h"
 #include "../common/complextypes.h"
-#include "../render/BaseRenderable.h"
 #include "../render/ObjectRenderer.h"
-#include "../render/ObjectRenderers.h"
-#include "../render/Renderable.h"
 #include "../util/PersistentWeakPointer.h"
 #include "../util/ValueIterator.h"
-#include "Object3DComponent.h"
 #include "Transform.h"
 
 namespace Core {
@@ -22,6 +18,7 @@ namespace Core {
     class Mesh;
     class MeshRenderer;
     class Engine;
+    class Object3DComponent;
 
     class Object3D {
         friend class Engine;

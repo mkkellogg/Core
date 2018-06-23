@@ -7,21 +7,19 @@
 
 namespace Core {
 
-  // forward declaration
-  class GraphicsGL;
-  class RawImage;
+    // forward declaration
+    class GraphicsGL;
+    class RawImage;
 
-  class Texture2DGL final: public Texture2D {
-    friend class GraphicsGL;
+    class Texture2DGL final : public Texture2D {
+        friend class GraphicsGL;
 
-  public:
-    ~Texture2DGL();
+    public:
+        ~Texture2DGL();
 
-    void build(RawImage *imageData) override;
+        void build(RawImage* imageData) override;
 
-  protected:
-    Texture2DGL(const TextureAttributes& attributes);
-
-  };
-
+    protected:
+        Texture2DGL(const TextureAttributes& attributes);
+    };
 }

@@ -66,11 +66,11 @@ namespace Core {
         glUniform1i(location, 0);
     }
 
-    void ShaderGL::setUniformMatrix4(UInt32 location, const Real * data) {
+    void ShaderGL::setUniformMatrix4(UInt32 location, const Real *data) {
         glUniformMatrix4fv(location, 1, GL_FALSE, data);
     }
 
-    void ShaderGL::setUniformMatrix4(UInt32 location, const Matrix4x4& matrix) {
+    void ShaderGL::setUniformMatrix4(UInt32 location, const Matrix4x4 &matrix) {
         glUniformMatrix4fv(location, 1, GL_FALSE, matrix.getConstData());
     }
 

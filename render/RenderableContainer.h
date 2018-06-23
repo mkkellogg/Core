@@ -6,15 +6,14 @@
 #include "../common/types.h"
 #include "../geometry/Vector3.h"
 #include "../math/Matrix4x4.h"
-#include "../scene/Object3D.h"
 #include "BaseRenderableContainer.h"
-#include "ObjectRenderer.h"
-#include "Renderable.h"
 
 namespace Core {
 
     // forward declaration
     class Engine;
+    template <typename T> class Renderable;
+    template <typename T> class ObjectRenderer;
 
     template <typename T, typename Enable = void>
     class RenderableContainer;

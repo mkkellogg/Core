@@ -2,33 +2,31 @@
 
 #include <memory>
 
-#include "../util/PersistentWeakPointer.h"
 #include "../material/StandardAttributes.h"
-#include "../geometry/AttributeArray.h"
-#include "../geometry/AttributeArrayGPUStorage.h"
 #include "../render/ObjectRenderer.h"
-#include "../geometry/Mesh.h"
-#include "../material/Material.h"
-#include "../render/Camera.h"
+#include "../util/PersistentWeakPointer.h"
 
-namespace Core  {
+namespace Core {
 
-  // forward declarations
-  class Object3D;
-  class Engine;
+    // forward declarations
+    class Object3D;
+    class Engine;
+    class Camera;
+    class Material;
+    class AttributeArrayBase;
+    class Mesh;
 
-  class MeshRenderer : public ObjectRenderer<Mesh>{
-    friend class Engine;
+    class MeshRenderer : public ObjectRenderer<Mesh> {
+        friend class Engine;
 
-  public:
-    virtual void render(WeakPointer<Camera> camera) override;
-    virtual void renderObject(WeakPointer<Camera> camera, WeakPointer<Mesh> mesh) override;
+    public:
+        virtual void render(WeakPointer<Camera> camera) override;
+        virtual void renderObject(WeakPointer<Camera> camera, WeakPointer<Mesh> mesh) override;
 
-  private:
-    MeshRenderer(WeakPointer<Graphics> graphics, WeakPointer<Material> material, WeakPointer<Object3D> owner);
-    void checkAndSetShaderAttribute(WeakPointer<Mesh> mesh, StandardAttribute attribute, AttributeArrayBase* array);
+    private:
+        MeshRenderer(WeakPointer<Graphics> graphics, WeakPointer<Material> material, WeakPointer<Object3D> owner);
+        void checkAndSetShaderAttribute(WeakPointer<Mesh> mesh, StandardAttribute attribute, AttributeArrayBase* array);
 
-    PersistentWeakPointer<Material> material;
-  };
-
+        PersistentWeakPointer<Material> material;
+    };
 }

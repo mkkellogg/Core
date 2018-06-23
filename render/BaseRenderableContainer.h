@@ -2,9 +2,11 @@
 
 #include "../util/PersistentWeakPointer.h"
 #include "../scene/Object3D.h"
-#include "BaseObjectRenderer.h"
 
 namespace Core {
+
+    // forward declarations
+    class BaseObjectRenderer;
 
     class BaseRenderableContainer : public Object3D {
     public:

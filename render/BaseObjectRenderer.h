@@ -4,7 +4,6 @@
 
 #include "../util/WeakPointer.h"
 #include "../scene/Object3DComponent.h"
-#include "BaseRenderable.h"
 
 namespace Core {
 

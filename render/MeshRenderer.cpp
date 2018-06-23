@@ -1,5 +1,10 @@
 #include "MeshRenderer.h"
 #include "RenderableContainer.h"
+#include "../render/Camera.h"
+#include "../material/Material.h"
+#include "../geometry/AttributeArrayGPUStorage.h"
+#include "../geometry/AttributeArray.h"
+#include "../geometry/Mesh.h"
 
 namespace Core {
 

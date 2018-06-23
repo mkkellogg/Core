@@ -8,7 +8,6 @@
 #include "../util/WeakPointer.h"
 #include "../scene/Object3D.h"
 
-
 namespace Core {
 
     const UInt32 Camera::DEFAULT_FOV = 70;

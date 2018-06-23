@@ -1,5 +1,6 @@
 #include "Object3D.h"
 #include "Transform.h"
+#include "Object3DComponent.h"
 
 namespace Core {
 

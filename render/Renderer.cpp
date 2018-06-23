@@ -5,6 +5,8 @@
 #include "../render/BaseRenderableContainer.h"
 #include "../render/MeshRenderer.h"
 #include "../render/RenderableContainer.h"
+#include "../scene/Scene.h"
+#include "Camera.h"
 
 namespace Core {
 
