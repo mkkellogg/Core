@@ -53,7 +53,7 @@ namespace Core {
     void Camera::project(Vector3Base<Real>& vec) {
         Core::Matrix4x4 projection = this->projectionMatrix;
         Real w = vec.getW();
-        projection.transform(vec, w == 0.0f ? false : true);
+        projection.transform(vec);
         if (w != 0) {
             vec.x /= w;
             vec.y /= w;
@@ -65,7 +65,7 @@ namespace Core {
         Core::Matrix4x4 projection = this->projectionMatrix;
         projection.invert();
         Real w = vec.getW();
-        projection.transform(vec, w == 0.0f ? false : true);
+        projection.transform(vec);
         if (w != 0) {
             vec.x /= w;
             vec.y /= w;

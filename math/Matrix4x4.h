@@ -63,8 +63,8 @@ namespace Core {
         void multiplyByScalar(Real scalar);
         void transform(const Vector4<Real>& vector, Vector4<Real>& out) const;
         void transform(Vector4<Real>& vector) const;
-        void transform(const Vector3Base<Real>& vector, Vector3Base<Real>& out, Bool asPoint) const;
-        void transform(Vector3Base<Real>& vector, Bool asPoint) const;
+        void transform(const Vector3Base<Real>& vector, Vector3Base<Real>& out) const;
+        void transform(Vector3Base<Real>& vector) const;
         void transform(Real* vector4f) const;
         void add(const Matrix4x4& matrix);
         void multiply(const Matrix4x4& matrix);

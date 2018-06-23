@@ -65,14 +65,14 @@ namespace Core {
         this->worldMatrix.transform(vector);
     }
 
-    void Transform::transform(Vector3Base<Real>& vector, Bool asPoint) const {
-        this->worldMatrix.transform(vector, asPoint);
+    void Transform::transform(Vector3Base<Real>& vector) const {
+        this->worldMatrix.transform(vector);
     }
 
     void Transform::lookAt(const Point3r& target) {
         Point3r cameraPos;
         this->updateWorldMatrix();
-        this->transform(cameraPos, true);
+        this->transform(cameraPos);
 
         Vector3r toTarget = target - cameraPos;
         toTarget.normalize();

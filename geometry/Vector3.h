@@ -32,7 +32,7 @@ namespace Core {
 
         virtual ~Vector3Base() {}
 
-        T getW() {
+        T getW() const {
             return this->w;
         }
 
@@ -76,19 +76,23 @@ namespace Core {
             return Vector3Base<T, customStorage>::magnitude(this->x, this->y, this->z);
         }
 
+        static Real magnitude(const T& x, const T& y, const T& z) {
+            return (Real)Math::SquareRoot(x * x + y * y + z * z);
+        };
+
         Bool isZeroLength() const {
             Real epsilon = (Real)1e-06;
             Real sqlen = (this->x * this->x) + (this->y * this->y) + (this->z * this->z);
             return (sqlen < (epsilon * epsilon));
         }
 
+        Real dot(const Vector3Base& other) {
+            return Vector3Base::dot(*this, other);
+        }
+
         static Real dot(const Vector3Base& a, const Vector3Base& b) {
             return a.x * b.x + a.y * b.y + a.z * b.z;
         }
-
-        static Real magnitude(const T& x, const T& y, const T& z) {
-            return (Real)Math::SquareRoot(x * x + y * y + z * z);
-        };
 
         const Vector3Base operator*(const T& scale) const {
             Vector3Base<T, customStorage> vec = *this;

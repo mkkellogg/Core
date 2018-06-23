@@ -413,8 +413,9 @@ namespace Core {
      *
      * Store the result in [out].
      */
-    void Matrix4x4::transform(const Vector3Base<Real> &vector, Vector3Base<Real> &out, Bool asPoint) const {
-        Vector4<Real> temp(vector.x, vector.y, vector.z, asPoint ? 1.0f : 0.0f);
+    void Matrix4x4::transform(const Vector3Base<Real> &vector, Vector3Base<Real> &out) const {
+        Real w = vector.getW();
+        Vector4<Real> temp(vector.x, vector.y, vector.z, w);
         this->transform(temp);
         out.x = temp.x;
         out.y = temp.y;
@@ -426,12 +427,8 @@ namespace Core {
      * a 4-element homogeneous vector) and use [isPoint] to determine if the
      * w element should be 1 or 0.
      */
-    void Matrix4x4::transform(Vector3Base<Real> &vector, Bool asPoint) const {
-        Vector4<Real> temp(vector.x, vector.y, vector.z, asPoint ? 1.0f : 0.0f);
-        this->transform(temp);
-        vector.x = temp.x;
-        vector.y = temp.y;
-        vector.z = temp.z;
+    void Matrix4x4::transform(Vector3Base<Real> &vector) const {
+        this->transform(vector, vector);
     }
 
     /*

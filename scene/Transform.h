@@ -26,7 +26,7 @@ namespace Core {
         void updateWorldMatrix();
 
         void transform(Vector4<Real>& vector) const;
-        void transform(Vector3Base<Real>& vector, Bool asPoint) const;
+        void transform(Vector3Base<Real>& vector) const;
 
         void lookAt(const Point3r& target);
 
