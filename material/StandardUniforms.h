@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../common/types.h"
+#include <unordered_map>
 
 namespace Core {
 

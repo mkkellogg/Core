@@ -1,22 +1,23 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "util/WeakPointer.h"
-#include "render/Renderer.h"
-#include "image/Texture2D.h"
-#include "image/CubeTexture.h"
 #include "image/TextureAttr.h"
-#include "material/Shader.h"
-#include "geometry/IndexBuffer.h"
-#include "geometry/AttributeArray.h"
 #include "geometry/AttributeType.h"
-#include "geometry/AttributeArrayGPUStorage.h"
 
 namespace Core {
 
     // forward declarations
     class Mesh;
+    class Texture2D;
+    class CubeTexture;
+    class Shader;
+    class AttributeArrayGPUStorage;
+    class IndexBuffer;
+    class Renderer;
+    class Scene;
     
     class Graphics {
     public:

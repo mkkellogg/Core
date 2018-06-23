@@ -15,6 +15,7 @@
 #include "../scene/Object3D.h"
 #include "../image/Texture.h"
 #include "../image/TextureAttr.h"
+#include "../image/Texture2D.h"
 #include "../material/Material.h"
 #include "../material/BasicTexturedMaterial.h"
 #include "../material/BasicMaterial.h"

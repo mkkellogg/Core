@@ -16,6 +16,8 @@
 #include "../common/Exception.h"
 #include "../common/types.h"
 #include "../material/StandardUniforms.h"
+#include "../material/StandardAttributes.h"
+#include "../math/Matrix4x4.h"
 
 namespace Core {
 
@@ -23,6 +25,8 @@ namespace Core {
     class Object3D;
     class Texture;
     class Material;
+    class Engine;
+    class Mesh;
 
     class ModelLoader {
     public:

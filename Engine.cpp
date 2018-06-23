@@ -8,7 +8,12 @@
 #include "math/Math.h"
 #include "math/Quaternion.h"
 #include "util/Time.h"
-
+#include "GL/GraphicsGL.h"
+#include "render/BaseObjectRenderer.h"
+#include "scene/Scene.h"
+#include "render/Camera.h"
+#include "geometry/Mesh.h"
+#include "image/CubeTexture.h"
 #include "material/BasicMaterial.h"
 #include "material/BasicCubeMaterial.h"
 #include "material/BasicTexturedMaterial.h"
@@ -50,8 +55,6 @@ namespace Core {
         LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::CubeTextured);
         LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::VertexNormals);
         this->materialLibrary.addEntry(materialAttributes, basicCubeMaterial);
-
-      //  modelLoader.initImporter();
     }
 
     void Engine::update() {

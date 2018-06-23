@@ -1,6 +1,11 @@
 #include "Graphics.h"
 #include "scene/Scene.h"
 #include "geometry/Mesh.h"
+#include "image/Texture2D.h"
+#include "image/CubeTexture.h"
+#include "material/Shader.h"
+#include "render/Renderer.h"
+#include "geometry/AttributeArrayGPUStorage.h"
 
 namespace Core {
 

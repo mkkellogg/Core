@@ -3,113 +3,109 @@
 #include <functional>
 #include <memory>
 
-#include "util/PersistentWeakPointer.h"
-#include "GL/GraphicsGL.h"
-#include "scene/Scene.h"
-#include "render/Camera.h"
-#include "render/Renderer.h"
-#include "asset/AssetLoader.h"
-#include "geometry/Vector4.h"
-#include "render/BaseObjectRenderer.h"
-#include "render/RenderableContainer.h"
-#include "material/Material.h"
-#include "image/Texture2D.h"
-#include "image/CubeTexture.h"
-#include "image/TextureAttr.h"
+#include "scene/Object3D.h"
 #include "geometry/Mesh.h"
-#include "material/MaterialLibrary.h"
 #include "asset/ModelLoader.h"
+#include "geometry/Vector4.h"
+#include "image/TextureAttr.h"
+#include "material/Material.h"
+#include "material/MaterialLibrary.h"
+#include "render/RenderableContainer.h"
+#include "render/Renderer.h"
+#include "util/PersistentWeakPointer.h"
 
 namespace Core {
 
-  // forward declarations
-  class ImageLoader;
+    // forward declarations
+    class ImageLoader;
+    class AssetLoader;
+    class CubeTexture;
+    class Texture2D;
+    class BaseObjectRenderer;
+    class Camera;
+    class Scene;
 
-  class Engine {
+    class Engine {
+    public:
+        Engine();
+        virtual ~Engine();
 
-  public:
+        void init();
+        void update();
 
-    Engine();
-    virtual ~Engine();
+        void render();
+        void setRenderSize(UInt32 width, UInt32 height, Bool updateViewport = true);
+        void setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
+        void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
 
-    void init();
-    void update();
+        MaterialLibrary& getMaterialLibrary();
+        ModelLoader& getModelLoader();
 
-    void render();
-    void setRenderSize(UInt32 width, UInt32 height, Bool updateViewport = true);
-    void setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
-    void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
+        WeakPointer<Graphics> getGraphicsSystem();
 
-    MaterialLibrary& getMaterialLibrary();
-    ModelLoader& getModelLoader();
+        void setActiveScene(WeakPointer<Scene> scene);
+        WeakPointer<Scene> getActiveScene();
+        WeakPointer<Scene> createScene();
 
-    WeakPointer<Graphics> getGraphicsSystem();
+        WeakPointer<Camera> createCamera(WeakPointer<Object3D> owner);
 
-    void setActiveScene(WeakPointer<Scene> scene);
-    WeakPointer<Scene> getActiveScene();
-    WeakPointer<Scene> createScene();
+        template <typename T = Object3D>
+        WeakPointer<typename std::enable_if<std::is_base_of<Object3D, T>::value, T>::type> createObject3D() {
+            std::shared_ptr<T> objPtr = std::shared_ptr<T>(new T());
+            this->sceneObjects.push_back(objPtr);
+            return objPtr;
+        }
 
-    WeakPointer<Camera> createCamera(WeakPointer<Object3D> owner);
+        WeakPointer<Mesh> createMesh(UInt32 size, Bool indexed);
 
-    template <typename T = Object3D>
-    WeakPointer<typename std::enable_if<std::is_base_of<Object3D, T>::value, T>::type> createObject3D() {
-      std::shared_ptr<T> objPtr = std::shared_ptr<T>(new T());
-      this->sceneObjects.push_back(objPtr);
-      return objPtr;
-    }
+        template <typename T, typename R>
+        WeakPointer<typename std::enable_if<std::is_base_of<ObjectRenderer<R>, T>::value, T>::type> createRenderer(WeakPointer<Material> material,
+                                                                                                                   WeakPointer<RenderableContainer<R>> owner) {
+            std::shared_ptr<T> objectRenderer = std::shared_ptr<T>(new T(this->graphics, material, owner));
+            owner->setRenderer(objectRenderer);
+            objectRenderers.push_back(objectRenderer);
+            return objectRenderer;
+        }
 
-    WeakPointer<Mesh> createMesh(UInt32 size, Bool indexed);
+        template <typename T>
+        WeakPointer<typename std::enable_if<std::is_base_of<Material, T>::value, T>::type> createMaterial(Bool build = true) {
+            std::shared_ptr<T> materialPtr = std::shared_ptr<T>(new T(*this, this->graphics));
+            if (build) {
+                materialPtr->build();
+            }
+            this->materials.push_back(materialPtr);
+            return materialPtr;
+        }
 
-    template <typename T, typename R>
-    WeakPointer<typename std::enable_if<std::is_base_of<ObjectRenderer<R>, T>::value, T>::type> 
-    createRenderer(WeakPointer<Material> material, WeakPointer<RenderableContainer<R>> owner) {
-      std::shared_ptr<T> objectRenderer = std::shared_ptr<T>(new T(this->graphics, material, owner));
-      owner->setRenderer(objectRenderer);
-      objectRenderers.push_back(objectRenderer);
-      return objectRenderer;
-    }
+        WeakPointer<Texture2D> createTexture2D(const TextureAttributes& attributes);
+        WeakPointer<CubeTexture> createCubeTexture(const TextureAttributes& attributes);
 
-    template <typename T>
-    WeakPointer<typename std::enable_if<std::is_base_of<Material, T>::value, T>::type> createMaterial(Bool build = true) {
-      std::shared_ptr<T> materialPtr = std::shared_ptr<T>(new T(*this, this->graphics));
-      if (build) {
-        materialPtr->build();
-      }
-      this->materials.push_back(materialPtr);
-      return materialPtr;
-    }
+        void setImageLoader(WeakPointer<ImageLoader> imageLoader);
+        WeakPointer<ImageLoader> getImageLoader();
+        void setAssetLoader(WeakPointer<AssetLoader> assetLoader);
+        WeakPointer<AssetLoader> getAssetLoader();
 
-    WeakPointer<Texture2D> createTexture2D(const TextureAttributes& attributes);
-    WeakPointer<CubeTexture> createCubeTexture(const TextureAttributes& attributes);
+        void onUpdate(std::function<void(Engine&)> func);
 
-    void setImageLoader(WeakPointer<ImageLoader> imageLoader);
-    WeakPointer<ImageLoader> getImageLoader();
-    void setAssetLoader(WeakPointer<AssetLoader> assetLoader);
-    WeakPointer<AssetLoader> getAssetLoader();
+    private:
+        std::shared_ptr<Graphics> graphics;
 
-    void onUpdate(std::function<void(Engine&)> func);
+        std::vector<std::shared_ptr<Scene>> scenes;
+        std::shared_ptr<Scene> activeScene;
+        std::vector<std::shared_ptr<Camera>> cameras;
+        std::vector<std::shared_ptr<Object3D>> sceneObjects;
+        std::vector<std::shared_ptr<Material>> materials;
+        std::vector<std::shared_ptr<Texture>> textures;
+        std::vector<std::shared_ptr<BaseObjectRenderer>> objectRenderers;
+        std::vector<std::shared_ptr<Mesh>> meshes;
 
-  private:
-    
-    std::shared_ptr<Graphics> graphics;
+        PersistentWeakPointer<ImageLoader> imageLoader;
+        PersistentWeakPointer<AssetLoader> assetLoader;
+        std::vector<std::function<void(Engine&)>> updateCallbacks;
 
-    std::vector<std::shared_ptr<Scene>> scenes;
-    std::shared_ptr<Scene> activeScene;
-    std::vector<std::shared_ptr<Camera>> cameras;
-    std::vector<std::shared_ptr<Object3D>> sceneObjects;
-    std::vector<std::shared_ptr<Material>> materials;
-    std::vector<std::shared_ptr<Texture>> textures;
-    std::vector<std::shared_ptr<BaseObjectRenderer>> objectRenderers;
-    std::vector<std::shared_ptr<Mesh>> meshes;
+        MaterialLibrary materialLibrary;
+        ModelLoader modelLoader;
 
-    PersistentWeakPointer<ImageLoader> imageLoader;
-    PersistentWeakPointer<AssetLoader> assetLoader;
-    std::vector<std::function<void(Engine&)>> updateCallbacks;
-
-    MaterialLibrary materialLibrary;
-    ModelLoader modelLoader;
-
-    void cleanup();
-
-  };
+        void cleanup();
+    };
 }

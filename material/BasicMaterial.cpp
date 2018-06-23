@@ -1,4 +1,5 @@
 #include "BasicMaterial.h"
+#include "../material/Shader.h"
 #include "../util/WeakPointer.h"
 #include "StandardAttributes.h"
 #include "StandardUniforms.h"
