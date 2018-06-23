@@ -1,5 +1,6 @@
 #include "Texture2DGL.h"
 #include "../common/Exception.h"
+#include "../image/RawImage.h"
 
 namespace Core {
 

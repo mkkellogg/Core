@@ -1,6 +1,7 @@
 #include <memory>
 
 #include "Material.h"
+#include "Shader.h"
 #include "../common/debug.h"
 
 namespace Core {

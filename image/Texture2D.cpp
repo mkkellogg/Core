@@ -1,4 +1,5 @@
 #include "Texture2D.h"
+#include "RawImage.h"
 #include "../common/Exception.h"
 
 namespace Core {

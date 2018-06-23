@@ -2,7 +2,6 @@
 
 #include "../util/WeakPointer.h"
 #include "Material.h"
-#include "../image/Texture.h"
 
 namespace Core {
 

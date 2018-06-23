@@ -5,6 +5,7 @@
 
 #include "../util/WeakPointer.h"
 #include "../Graphics.h"
+#include "../common/gl.h"
 #include "../geometry/AttributeType.h"
 
 namespace Core {

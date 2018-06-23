@@ -1,11 +1,13 @@
 #pragma once
 
 #include <memory>
-#include "../common/gl.h"
-#include "RawImage.h"
+
 #include "Texture.h"
 
 namespace Core {
+
+    //forward declarations
+    class RawImage;
 
     class Texture2D: public Texture {
     public:

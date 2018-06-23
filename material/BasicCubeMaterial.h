@@ -3,12 +3,12 @@
 
 #include "../util/WeakPointer.h"
 #include "Material.h"
-#include "../image/CubeTexture.h"
 
 namespace Core {
 
   // forward declarations
   class Engine;
+  class CubeTexture;
 
   class BasicCubeMaterial : public Material {
     friend class Engine;

@@ -5,19 +5,15 @@
 #include "../util/PersistentWeakPointer.h"
 #include "../Graphics.h"
 #include "ShaderMaterialCharacteristic.h"
-#include "Material.h"
 #include "../base/BitMask.h"
 
 namespace Core {
 
+    // forward declarations
+    class Material;
+
     class MaterialLibrary {
     public:
-        class Entry {
-        public:
-            PersistentWeakPointer<Material> material;
-            LongMask shaderMaterialChacteristics;
-        };
-
         MaterialLibrary();
 
         void addEntry(LongMask shaderMaterialChacteristics, WeakPointer<Material> material);
@@ -25,6 +21,12 @@ namespace Core {
         WeakPointer<Material> getMaterial(LongMask shaderMaterialChacteristics);
     
     private:
+        class Entry {
+        public:
+            PersistentWeakPointer<Material> material;
+            LongMask shaderMaterialChacteristics;
+        };
+
         std::unordered_map<LongMask, Entry> entries;
     };
 

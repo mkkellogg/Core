@@ -2,12 +2,12 @@
 
 #include "../util/WeakPointer.h"
 #include "Material.h"
-#include "../image/Texture.h"
 
 namespace Core {
 
   // forward declarations
   class Engine;
+  class Texture;
 
   class BasicTexturedMaterial : public Material {
     friend class Engine;

@@ -2,6 +2,7 @@
 #include "../util/WeakPointer.h"
 #include "StandardAttributes.h"
 #include "StandardUniforms.h"
+#include "../image/Texture.h"
 #include "../Engine.h"
 
 static const char vertexShader[] =

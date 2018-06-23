@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "RawImage.h"
+
 #include "Texture.h"
 #include "TextureAttr.h"
 

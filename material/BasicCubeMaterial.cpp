@@ -3,6 +3,7 @@
 #include "StandardAttributes.h"
 #include "StandardUniforms.h"
 #include "../Engine.h"
+#include "../image/CubeTexture.h"
 
 static const char vertexShader[] =
     "#version 100\n"

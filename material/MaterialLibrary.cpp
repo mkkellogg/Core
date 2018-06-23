@@ -1,4 +1,5 @@
 #include "MaterialLibrary.h"
+#include "Material.h"
 
 namespace Core {
 

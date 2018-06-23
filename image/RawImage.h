@@ -9,17 +9,7 @@ namespace Core {
     class RawImage {
         friend class ImageLoader;
 
-    protected:
-
-        UInt32 width;
-        UInt32 height;
-        Byte * imageBytes;
-
-        UInt32 imageSizeBytes();
-        void destroy();
-
     public:
-
         RawImage(UInt32 width, UInt32 height);
         ~RawImage();
 
@@ -30,6 +20,14 @@ namespace Core {
         Byte * getImageData();
         UInt32 getWidth() const;
         UInt32 getHeight() const;
+
+    protected:
+        UInt32 imageSizeBytes();
+        void destroy();
+
+        UInt32 width;
+        UInt32 height;
+        Byte * imageBytes;
     };
 
 }

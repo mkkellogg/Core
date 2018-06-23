@@ -4,7 +4,6 @@
 
 #include "../Graphics.h"
 #include "../util/PersistentWeakPointer.h"
-#include "Shader.h"
 #include "StandardAttributes.h"
 #include "StandardUniforms.h"
 
@@ -12,6 +11,7 @@ namespace Core {
 
     // forward declarations
     class Engine;
+    class Shader;
 
     class Material {
     public:
