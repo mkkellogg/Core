@@ -211,4 +211,38 @@ namespace Core {
             
         }
     }
+
+    void Transform::rotate(const Vector3<Real>& axis, Real angle, TransformationSpace transformationSpace) {
+        this->rotate(axis.x, axis.y, axis.z, angle, transformationSpace);
+    }
+
+    void Transform::rotate(Real x, Real y, Real z, Real angle, TransformationSpace transformationSpace) {
+        if (transformationSpace == TransformationSpace::Local) {
+            this->localMatrix.rotate(x, y, z, angle);
+        }
+        else if (transformationSpace == TransformationSpace::PreLocal) {
+            this->localMatrix.preRotate(x, y, z, angle);
+        }
+        else {
+            Matrix4x4 localTransformation;
+            Matrix4x4 worldTransformation;
+            worldTransformation.rotate(x, y, z, angle);
+            this->getLocalTransformationFromWorldTransformation(worldTransformation, localTransformation);
+            this->localMatrix.multiply(localTransformation);
+        }
+    }
+
+    void Transform::rotateAround(const Vector3<Real>& axis, const Point3<Real>& pos, Real angle) {
+        this->rotateAround(axis.x, axis.y, axis.z, pos.x, pos.y, pos.z, angle);
+    }
+
+    void Transform::rotateAround(Real ax, Real ay, Real az, Real px, Real py, Real pz, Real angle) {
+        Matrix4x4 localTransformation;
+        Matrix4x4 worldTransformation;
+        worldTransformation.translate(-px, -py, -pz);
+        worldTransformation.preRotate(ax, ay, az, angle);
+        worldTransformation.preTranslate(px, py, pz);
+        this->getLocalTransformationFromWorldTransformation(worldTransformation, localTransformation);
+        this->localMatrix.multiply(localTransformation);
+    }
 }
