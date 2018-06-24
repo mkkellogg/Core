@@ -52,21 +52,77 @@ namespace Core {
         }
     }
 
-    void Transform::updateWorldMatrix() {
-        this->worldMatrix.copy(localMatrix);
-        WeakPointer<Object3D> parent = const_cast<Object3D&>(target).getParent();
-        while (parent.isValid()) {
-            this->worldMatrix.preMultiply(parent->getTransform().getLocalMatrix());
-            parent = parent->getParent();
-        }
-    }
-
     void Transform::transform(Vector4<Real>& vector) const {
         this->worldMatrix.transform(vector);
     }
 
     void Transform::transform(Vector3Base<Real>& vector) const {
         this->worldMatrix.transform(vector);
+    }
+
+    void Transform::getWorldTransformation(WeakPointer<Object3D> target, Matrix4x4& result) {
+        result.setIdentity();
+        if (!target.isValid()) return;
+        result.copy(target->getTransform().getLocalMatrix());
+        WeakPointer<Object3D> parent = target->getParent();
+        while (parent.isValid()) {
+            result.preMultiply(parent->getTransform().getLocalMatrix());
+            parent = parent->getParent();
+        }
+    }
+
+    void Transform::getAncestorWorldTransformation(Matrix4x4& result) {
+        Transform::getWorldTransformation(const_cast<Object3D&>(this->target).getParent(), result);
+    }
+
+    void Transform::getWorldTransformation(Matrix4x4& result) {
+        Transform::getWorldTransformation(const_cast<Object3D&>(this->target).getParent(), result);
+        result.multiply(this->localMatrix);
+    }
+
+    void Transform::updateWorldMatrix() {
+        this->getWorldTransformation(this->worldMatrix);
+    }
+
+    /*
+     * This method plays a critical part of performing transformations on scene objects in world space. In order to perform
+     * these kinds of transformations, it is necessary to take into account each local transformation of each ancestor of
+     * the scene object. If we wanted to apply a world transformation to a single matrix, we would simply pre-multiply that
+     * matrix with the desired transformation. With scene objects that are part of a scene hierarchy, we can't do that since
+     * the pre-multiplication would have to occur at the top of the hierarchy, and therefore quite likely to a different scene
+     * object than the one in question (we only want to modify the transform of the target scene object).
+     *
+     * We solve this problem by doing some arithmetic to find the equivalent transformation in the scene object's local space
+     * that accomplishes the same effect as the world space transformation that would occur on the scene object at the top of
+     * the hierarchy:
+     *
+     *   S = The target scene object.
+     *   A = Aggregate/concatenation of all ancestors of S.
+     *   L = The local transformation of S.
+     *   nWorld = The world space transformation.
+     *   nLocal = The transformation in the local space of S.
+     *
+     *   F = The concatenation of A & L -> A * L
+     *   FI = The inverse of F.
+     *
+     *   We can easily derive a desired world-space transformation that is suited for pre-multiplication. To apply that transformation,
+     *   we could simply do: nWorld * F. The problem there is that we'd have to apply that transformation to the top of the hierarchy,
+     *   which we cannot do as it would likely affect other scene objects. We find the equivalent transformation in the local space of S (nLocal) by:
+     *
+     *   	  nWorld * F = F * nLocal
+     *   FI * nWorld * F = FI * F * nLocal
+     *   			     = nLocal
+     *
+     *  Therefore the equivalent transformation in the local space of S is: FI * nWorld * F. This method takes in nWorld [worldTransformation]
+     *  and produces (FI * nWorld * F) in [localTransformation].
+     */
+    void Transform::getLocalTransformationFromWorldTransformation(const Matrix4x4& worldTransformation, Matrix4x4& localTransformation) {
+        Matrix4x4 fullInverse;
+        Transform::getWorldTransformation(localTransformation);
+        fullInverse.copy(localTransformation);
+        fullInverse.invert();
+        localTransformation.preMultiply(worldTransformation);
+        localTransformation.preMultiply(fullInverse);
     }
 
     void Transform::lookAt(const Point3r& target) {
@@ -119,5 +175,41 @@ namespace Core {
         }
 
         this->getLocalMatrix().copy(fullMat);
+    }
+
+    void Transform::transformBy(const Matrix4x4& mat, TransformationSpace transformationSpace) {
+        if (transformationSpace == TransformationSpace::Local) {
+            this->localMatrix.multiply(mat);
+        }
+        else if (transformationSpace == TransformationSpace::PreLocal) {
+            this->localMatrix.preMultiply(mat);
+        }
+        else {
+            //Matrix4x4 localTransformation;
+            //this->getLocalTransformationFromWorldTransformation(mat, localTransformation);
+            //this->localMatrix.multiply(localTransformation); 
+            this->localMatrix.preMultiply(mat);
+        }
+    }
+
+    void Transform::translate(const Vector3<Real>& dir, TransformationSpace transformationSpace) {
+        this->translate(dir.x, dir.y, dir.z, transformationSpace);
+    }
+
+    void Transform::translate(Real x, Real y, Real z, TransformationSpace transformationSpace) {
+        if (transformationSpace == TransformationSpace::Local) {
+            this->localMatrix.translate(x, y, z);
+        }
+        else if (transformationSpace == TransformationSpace::PreLocal) {
+            this->localMatrix.preTranslate(x, y, z);
+        }
+        else {
+            Matrix4x4 localTransformation;
+            Matrix4x4 worldTransformation;
+            worldTransformation.translate(x, y, z);
+            this->getLocalTransformationFromWorldTransformation(worldTransformation, localTransformation);
+            this->localMatrix.multiply(localTransformation);
+            
+        }
     }
 }

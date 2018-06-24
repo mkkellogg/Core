@@ -59,7 +59,13 @@ namespace Core {
 
     void Engine::update() {
         Time::update();
-        for (auto func : this->updateCallbacks) {
+        if (this->updateCallbacks.size() > 0) {
+            for (auto func : this->updateCallbacks) {
+                func(*this);
+            }
+            this->updateCallbacks.clear();
+        }
+        for (auto func : this->persistentUpdateCallbacks) {
             func(*this);
         }
     }
@@ -67,6 +73,15 @@ namespace Core {
     void Engine::render() {
         if (this->activeScene) {
             this->graphics->render(this->activeScene);
+            if (this->renderCallbacks.size() > 0) {
+                for (auto func : this->renderCallbacks) {
+                    func(*this);
+                }
+                this->renderCallbacks.clear();
+            }
+            for (auto func : this->persistentRenderCallbacks) {
+                func(*this);
+            }
         }
     }
 
@@ -147,7 +162,13 @@ namespace Core {
         return this->assetLoader;
     }
 
-    void Engine::onUpdate(std::function<void(Engine&)> func) {
-        this->updateCallbacks.push_back(func);
+    void Engine::onUpdate(LifecycleEventCallback func, Bool persistent) {
+        if (!persistent) this->updateCallbacks.push_back(func);
+        else this->persistentUpdateCallbacks.push_back(func);
+    }
+
+     void Engine::onRender(LifecycleEventCallback func, Bool persistent) {
+        if (!persistent) this->renderCallbacks.push_back(func);
+        else this->persistentRenderCallbacks.push_back(func);
     }
 }

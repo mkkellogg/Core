@@ -27,13 +27,15 @@ namespace Core {
 
     class Engine {
     public:
+        typedef std::function<void(Engine&)> LifecycleEventCallback;
+
         Engine();
         virtual ~Engine();
 
         void init();
         void update();
-
         void render();
+
         void setRenderSize(UInt32 width, UInt32 height, Bool updateViewport = true);
         void setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
         void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
@@ -85,7 +87,8 @@ namespace Core {
         void setAssetLoader(WeakPointer<AssetLoader> assetLoader);
         WeakPointer<AssetLoader> getAssetLoader();
 
-        void onUpdate(std::function<void(Engine&)> func);
+        void onUpdate(LifecycleEventCallback func, Bool persistent = false);
+        void onRender(LifecycleEventCallback func, Bool persistent = false);
 
     private:
         std::shared_ptr<Graphics> graphics;
@@ -101,7 +104,10 @@ namespace Core {
 
         PersistentWeakPointer<ImageLoader> imageLoader;
         PersistentWeakPointer<AssetLoader> assetLoader;
-        std::vector<std::function<void(Engine&)>> updateCallbacks;
+        std::vector<LifecycleEventCallback> updateCallbacks;
+        std::vector<LifecycleEventCallback> renderCallbacks;
+        std::vector<LifecycleEventCallback> persistentUpdateCallbacks;
+        std::vector<LifecycleEventCallback> persistentRenderCallbacks;
 
         MaterialLibrary materialLibrary;
         ModelLoader modelLoader;
