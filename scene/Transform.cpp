@@ -185,10 +185,9 @@ namespace Core {
             this->localMatrix.preMultiply(mat);
         }
         else {
-            //Matrix4x4 localTransformation;
-            //this->getLocalTransformationFromWorldTransformation(mat, localTransformation);
-            //this->localMatrix.multiply(localTransformation); 
-            this->localMatrix.preMultiply(mat);
+            Matrix4x4 localTransformation;
+            this->getLocalTransformationFromWorldTransformation(mat, localTransformation);
+            this->localMatrix.multiply(localTransformation); 
         }
     }
 
