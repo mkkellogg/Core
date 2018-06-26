@@ -63,4 +63,14 @@ namespace Core {
         return height;
     }
 
+    void RawImage::setPixel(IntColor4 color,  UInt32 x, UInt32 y) {
+        UInt32 rowSize = x * this->width * 4;
+        UInt32 columnOffset = x * 4;
+        Byte * location = imageBytes + (rowSize * y + columnOffset);
+        location[0] = color.r;
+        location[1] = color.g;
+        location[2] = color.b;
+        location[3] = color.a;
+    }
+
 }

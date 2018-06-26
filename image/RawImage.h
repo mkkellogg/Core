@@ -3,6 +3,7 @@
 #include "../common/types.h"
 #include "../common/debug.h"
 #include "../common/Exception.h"
+#include "../color/IntColor.h"
 
 namespace Core {
 
@@ -20,6 +21,8 @@ namespace Core {
         Byte * getImageData();
         UInt32 getWidth() const;
         UInt32 getHeight() const;
+
+        void setPixel(IntColor4 color, UInt32 x, UInt32 y);
 
     protected:
         UInt32 imageSizeBytes();
