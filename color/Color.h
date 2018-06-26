@@ -8,7 +8,7 @@ namespace Core {
 
 #define COLOR_COMPONENT_COUNT 4
 
-    template <bool customStorage>
+    template <bool customStorage = false>
     class Color4 : public VectorStorage<Real, COLOR_COMPONENT_COUNT, customStorage>, public Color4Components {
     public:
         Color4() : Color4(0.0, 0.0, 0.0, 1.0) {}
@@ -20,4 +20,5 @@ namespace Core {
 
     typedef Color4<false> Color;
     typedef Color4<true> ColorS;
+
 }
