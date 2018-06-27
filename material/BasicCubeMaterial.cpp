@@ -50,7 +50,7 @@ namespace Core {
 
         this->positionLocation = this->shader->getAttributeLocation("pos");
         this->colorLocation = this->shader->getAttributeLocation("color");
-        this->skyboxLocation = this->shader->getUniformLocation("skybox");
+        this->textureLocation = this->shader->getUniformLocation("skybox");
         this->projectionMatrixLocation = this->shader->getUniformLocation("projection");
         this->viewMatrixLocation = this->shader->getUniformLocation("viewMatrix");
         return true;
@@ -78,13 +78,13 @@ namespace Core {
         }
     }
 
-    void BasicCubeMaterial::setSkyboxTexture(std::shared_ptr<CubeTexture> texture) {
-        this->skyboxTexture = texture;
+    void BasicCubeMaterial::setTexture(WeakPointer<CubeTexture> texture) {
+        this->texture = texture;
     }
 
     void BasicCubeMaterial::sendCustomUniformsToShader() {
-        this->shader->setTextureCube(0, this->skyboxTexture->getTextureID());
-        this->shader->setUniform1i(skyboxLocation, 0);
+        this->shader->setTextureCube(0, this->texture->getTextureID());
+        this->shader->setUniform1i(textureLocation, 0);
     }
 
     WeakPointer<Material> BasicCubeMaterial::clone() {
@@ -95,7 +95,7 @@ namespace Core {
         newMaterial->colorLocation = this->colorLocation;
         newMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
         newMaterial->viewMatrixLocation = this->viewMatrixLocation;
-        newMaterial->skyboxLocation = this->skyboxLocation;
+        newMaterial->textureLocation = this->textureLocation;
         return newMaterial;
     }
 }

@@ -18,15 +18,15 @@ namespace Core {
         virtual Int32 getShaderLocation(StandardUniform uniform) override;
         virtual void sendCustomUniformsToShader() override;
         virtual WeakPointer<Material> clone() override;
-        void setSkyboxTexture(std::shared_ptr<CubeTexture> texture);
+        void setTexture(WeakPointer<CubeTexture> texture);
 
     private:
         BasicCubeMaterial(Engine& engine, WeakPointer<Graphics> graphics);
         Int32 positionLocation;
         Int32 colorLocation;
-        Int32 skyboxLocation;
+        Int32 textureLocation;
         Int32 projectionMatrixLocation;
         Int32 viewMatrixLocation;
-        std::shared_ptr<CubeTexture> skyboxTexture;
+        PersistentWeakPointer<CubeTexture> texture;
     };
 }
