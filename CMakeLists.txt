@@ -68,8 +68,10 @@ set(INCLUDE_FILES
     image/Texture.h
     image/TextureAttr.h
     image/RawImage.h
+    image/ImagePainter.h
     color/Color.h
     color/Color4Components.h
+    color/IntColor.h
     util/Time.h
     util/String.h
     util/WeakPointer.h
@@ -111,6 +113,7 @@ set(SOURCE_FILES
     image/TextureAttr.cpp
     image/CubeTexture.cpp
     image/PNGLoader.cpp
+    image/ImagePainter.cpp
     geometry/AttributeArrayGPUStorage.cpp
     geometry/IndexBuffer.cpp
     geometry/Mesh.cpp

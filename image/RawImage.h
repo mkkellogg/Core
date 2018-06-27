@@ -22,10 +22,12 @@ namespace Core {
         UInt32 getWidth() const;
         UInt32 getHeight() const;
 
-        void setPixel(IntColor4 color, UInt32 x, UInt32 y);
+        Byte* calcOffsetLocation(UInt32 x, UInt32 y) const;
+        UInt32 calcRowSize() const;
+        UInt32 calcRowSize(UInt32 pixels) const;
+        UInt32 imageSizeBytes();
 
     protected:
-        UInt32 imageSizeBytes();
         void destroy();
 
         UInt32 width;

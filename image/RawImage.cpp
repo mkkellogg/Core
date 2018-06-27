@@ -22,7 +22,7 @@ namespace Core {
     }
 
     UInt32 RawImage::imageSizeBytes() {
-        return width * height * 4;
+        return height * this->calcRowSize(this->width);
     }
 
     Bool RawImage::init() {
@@ -63,14 +63,18 @@ namespace Core {
         return height;
     }
 
-    void RawImage::setPixel(IntColor4 color,  UInt32 x, UInt32 y) {
-        UInt32 rowSize = x * this->width * 4;
-        UInt32 columnOffset = x * 4;
-        Byte * location = imageBytes + (rowSize * y + columnOffset);
-        location[0] = color.r;
-        location[1] = color.g;
-        location[2] = color.b;
-        location[3] = color.a;
+    Byte* RawImage::calcOffsetLocation(UInt32 x, UInt32 y) const {
+        UInt32 rowSize = this->calcRowSize();
+        UInt32 columnOffset = this->calcRowSize(x);
+        return this->imageBytes + (rowSize * y + columnOffset);
+    }
+
+    UInt32 RawImage::calcRowSize() const {
+        return this->calcRowSize(this->width);
+    }
+
+    UInt32 RawImage::calcRowSize(UInt32 pixels) const {
+        return pixels * 4;
     }
 
 }
