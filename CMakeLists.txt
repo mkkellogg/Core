@@ -36,6 +36,7 @@ set(INCLUDE_FILES
     geometry/AttributeType.h
     geometry/AttributeArrayGPUStorage.h
     geometry/IndexBuffer.h
+    geometry/GeometryUtils.h
     scene/Object3D.h
     scene/Scene.h
     scene/Object3DComponent.h
@@ -118,6 +119,7 @@ set(SOURCE_FILES
     geometry/IndexBuffer.cpp
     geometry/Mesh.cpp
     geometry/Box3.cpp
+    geometry/GeometryUtils.cpp
     scene/Object3D.cpp
     scene/Object3DComponent.cpp
     scene/Scene.cpp
