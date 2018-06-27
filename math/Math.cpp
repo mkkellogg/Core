@@ -71,6 +71,10 @@ namespace Core {
         return fabs(n);
     }
 
+    UInt32 Math::IAbs(Int32 n) {
+        return n >= 0 ? n : -n;
+    }
+
     Real Math::Min(Real a, Real b) {
         if (a < b)
             return a;
