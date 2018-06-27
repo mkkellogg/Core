@@ -13,14 +13,12 @@ namespace Core {
     }
 
     void Texture2DGL::build(RawImage *imageData) {
-        // glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-
         GLuint tex;
 
-        // generate the OpenGL cube texture
+        // generate the OpenGL texture
         glGenTextures(1, &tex);
         if (!tex) {
-            throw AllocationException("Texture::createTexture -> Unable to generate texture");
+            throw AllocationException("Texture2DGL::createTexture -> Unable to generate texture");
         }
         glBindTexture(GL_TEXTURE_2D, tex);
 
