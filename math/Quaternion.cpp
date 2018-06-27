@@ -249,7 +249,7 @@ namespace Core {
      * @return The 2-norm of [ w(), x(), y(), z() ]<sup>T</sup>.
      */
     Real Quaternion::norm() const {
-        return Math::SquareRoot(mData[0] * mData[0] + mData[1] * mData[1] + mData[2] * mData[2] + mData[3] * mData[3]);
+        return Math::squareRoot(mData[0] * mData[0] + mData[1] * mData[1] + mData[2] * mData[2] + mData[3] * mData[3]);
     }
 
     void Quaternion::setRotationMatrix(Real* data) const {
@@ -323,7 +323,7 @@ namespace Core {
         const Real* data = matrix.getConstData();
 
         if (trace > 0.0) {
-            root = Math::SquareRoot(trace + 1.0f);
+            root = Math::squareRoot(trace + 1.0f);
             mData[3] = 0.5f * root;
             root = 0.5f / root;
             mData[0] = (matrix.C1 - matrix.B2) * root;
@@ -337,7 +337,7 @@ namespace Core {
             UInt32 j = iNext[i];
             UInt32 k = iNext[j];
 
-            root = Math::SquareRoot(data[i * 4 + i] - data[j * 4 + j] - data[k * 4 + k] + 1.0f);
+            root = Math::squareRoot(data[i * 4 + i] - data[j * 4 + j] - data[k * 4 + k] + 1.0f);
             Real* apkQuat[3] = {mData, mData + 1, mData + 2};
             *apkQuat[i] = 0.5f * root;
             root = 0.5f / root;
@@ -359,8 +359,8 @@ namespace Core {
         //   q = cos(A/2)+sin(A/2)*(x*i+y*j+z*k)
 
         Real fHalfAngle(0.5f * rfAngle);
-        Real fSin = Math::Sin(fHalfAngle);
-        mData[3] = Math::Cos(fHalfAngle);
+        Real fSin = Math::sin(fHalfAngle);
+        mData[3] = Math::cos(fHalfAngle);
         mData[0] = fSin * rkAxis.x;
         mData[1] = fSin * rkAxis.y;
         mData[2] = fSin * rkAxis.z;
@@ -373,8 +373,8 @@ namespace Core {
         //   q = cos(A/2)+sin(A/2)*(x*i+y*j+z*k)
 
         Real fHalfAngle(0.5f * angle);
-        Real fSin = Math::Sin(fHalfAngle);
-        mData[3] = Math::Cos(fHalfAngle);
+        Real fSin = Math::sin(fHalfAngle);
+        mData[3] = Math::cos(fHalfAngle);
         mData[0] = fSin * x;
         mData[1] = fSin * y;
         mData[2] = fSin * z;
@@ -417,12 +417,12 @@ namespace Core {
      * @param euler A 3-vector in order:  roll-pitch-yaw.
      */
     void Quaternion::euler(const Vector3Components<Real>& euler) {
-        Real c1 = Math::Cos(euler.z * 0.5f);
-        Real c2 = Math::Cos(euler.y * 0.5f);
-        Real c3 = Math::Cos(euler.x * 0.5f);
-        Real s1 = Math::Sin(euler.z * 0.5f);
-        Real s2 = Math::Sin(euler.y * 0.5f);
-        Real s3 = Math::Sin(euler.x * 0.5f);
+        Real c1 = Math::cos(euler.z * 0.5f);
+        Real c2 = Math::cos(euler.y * 0.5f);
+        Real c3 = Math::cos(euler.x * 0.5f);
+        Real s1 = Math::sin(euler.z * 0.5f);
+        Real s2 = Math::sin(euler.y * 0.5f);
+        Real s3 = Math::sin(euler.x * 0.5f);
 
         mData[0] = c1 * c2 * s3 - s1 * s2 * c3;
         mData[1] = c1 * s2 * c3 + s1 * c2 * s3;
@@ -544,10 +544,10 @@ namespace Core {
         {
             // Standard case (slerp)
             Real omega, sinom;
-            omega = Math::ACos(cosom);  // extract theta from dot product's cos theta
-            sinom = Math::Sin(omega);
-            sclp = Math::Sin((static_cast<Real>(1.0) - t) * omega) / sinom;
-            sclq = Math::Sin(t * omega) / sinom;
+            omega = Math::aCos(cosom);  // extract theta from dot product's cos theta
+            sinom = Math::sin(omega);
+            sclp = Math::sin((static_cast<Real>(1.0) - t) * omega) / sinom;
+            sclq = Math::sin(t * omega) / sinom;
         } else {
             // Very close, do linear interp (because it's faster)
             sclp = static_cast<Real>(1.0) - t;
@@ -625,7 +625,7 @@ namespace Core {
                 q.fromAngleAxis(Math::PI, axis);
             }
         } else {
-            Real s = Math::SquareRoot((1 + d) * 2);
+            Real s = Math::squareRoot((1 + d) * 2);
             Real invs = 1 / s;
 
             Vector3r c;

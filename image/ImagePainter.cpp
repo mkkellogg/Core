@@ -36,8 +36,8 @@ namespace Core {
         Int32 dx = xInc > 0 ? 1 : -1;
         Int32 dy = yInc > 0 ? 1 : -1;
      
-        xInc = Math::IAbs(xInc);
-        yInc = Math::IAbs(yInc);
+        xInc = Math::iAbs(xInc);
+        yInc = Math::iAbs(yInc);
 
         UInt32 smallInc = xInc < yInc ? xInc : yInc;
         UInt32 bigInc = xInc + yInc - smallInc;
@@ -54,6 +54,9 @@ namespace Core {
             UInt32 tBigCount = bigCount;
             UInt32 p = 0;
             while (tBigCount - bigCount < bigInc - lastDelta) {
+                // TODO: implement line clipping that will produce results suited for
+                // a Bresenham style line drawing algorithm. In the mean time, make
+                // sure each pixel is in bounds (boooo) 
                 if (x >=0 && x < width && y >= 0 && y < height) {
                     this->setPixel(x, y);
                 }

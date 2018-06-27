@@ -214,7 +214,7 @@ namespace Core {
         Matrix4x4 rotMatrix;
 
         // build orthogonal matrix [rotMatrix]
-        Real fInvLength = Math::InverseSquareRoot(A0 * A0 + B0 * B0 + C0 * C0);
+        Real fInvLength = Math::inverseSquareRoot(A0 * A0 + B0 * B0 + C0 * C0);
 
         rotMatrix.A0 = A0 * fInvLength;
         rotMatrix.B0 = B0 * fInvLength;
@@ -224,7 +224,7 @@ namespace Core {
         rotMatrix.A1 = A1 - fDot * rotMatrix.A0;
         rotMatrix.B1 = B1 - fDot * rotMatrix.B0;
         rotMatrix.C1 = C1 - fDot * rotMatrix.C0;
-        fInvLength = Math::InverseSquareRoot(rotMatrix.A1 * rotMatrix.A1 + rotMatrix.B1 * rotMatrix.B1 + rotMatrix.C1 * rotMatrix.C1);
+        fInvLength = Math::inverseSquareRoot(rotMatrix.A1 * rotMatrix.A1 + rotMatrix.B1 * rotMatrix.B1 + rotMatrix.C1 * rotMatrix.C1);
 
         rotMatrix.A1 *= fInvLength;
         rotMatrix.B1 *= fInvLength;
@@ -240,7 +240,7 @@ namespace Core {
         rotMatrix.B2 -= fDot * rotMatrix.B1;
         rotMatrix.C2 -= fDot * rotMatrix.C1;
 
-        fInvLength = Math::InverseSquareRoot(rotMatrix.A2 * rotMatrix.A2 + rotMatrix.B2 * rotMatrix.B2 + rotMatrix.C2 * rotMatrix.C2);
+        fInvLength = Math::inverseSquareRoot(rotMatrix.A2 * rotMatrix.A2 + rotMatrix.B2 * rotMatrix.B2 + rotMatrix.C2 * rotMatrix.C2);
 
         rotMatrix.A2 *= fInvLength;
         rotMatrix.B2 *= fInvLength;
@@ -722,8 +722,8 @@ namespace Core {
         rm[13] = 0;
         rm[14] = 0;
         rm[15] = 1;
-        Real s = (Real)Math::Sin(a);
-        Real c = (Real)Math::Cos(a);
+        Real s = (Real)Math::sin(a);
+        Real c = (Real)Math::cos(a);
         if (1.0f == x && 0.0f == y && 0.0f == z) {
             rm[5] = c;
             rm[10] = c;
@@ -787,12 +787,12 @@ namespace Core {
     void Matrix4x4::setRotateEuler(Real *rm, Real x, Real y, Real z) {
         if (rm == nullptr) throw NullPointerException("Matrix4x4::setRotateEuler -> 'rm' is null.");
 
-        Real cx = (Real)Math::Cos(x);
-        Real sx = (Real)Math::Sin(x);
-        Real cy = (Real)Math::Cos(y);
-        Real sy = (Real)Math::Sin(y);
-        Real cz = (Real)Math::Cos(z);
-        Real sz = (Real)Math::Sin(z);
+        Real cx = (Real)Math::cos(x);
+        Real sx = (Real)Math::sin(x);
+        Real cy = (Real)Math::cos(y);
+        Real sy = (Real)Math::sin(y);
+        Real cz = (Real)Math::cos(z);
+        Real sz = (Real)Math::sin(z);
         Real cxsy = cx * sy;
         Real sxsy = sx * sy;
 

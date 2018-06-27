@@ -77,7 +77,7 @@ namespace Core {
         }
 
         static Real magnitude(const T& x, const T& y, const T& z) {
-            return (Real)Math::SquareRoot(x * x + y * y + z * z);
+            return (Real)Math::squareRoot(x * x + y * y + z * z);
         };
 
         Bool isZeroLength() const {

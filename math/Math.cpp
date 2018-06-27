@@ -7,6 +7,13 @@
 
 namespace Core {
 
+    class MathProxy {
+    public:
+        static Core::Real _sin(Core::Real a) { return sin(a); }
+        static Core::Real _cos(Core::Real a) { return cos(a); }
+        static Core::Real _tan(Core::Real a) { return tan(a); }
+    };
+
     const Real Math::PI = 3.14159265358979f;
     const Real Math::TwoPI = Math::PI * 2.0f;
     const Real Math::PIOver360 = Math::PI / 360.0f;
@@ -18,11 +25,11 @@ namespace Core {
         Real f;
     };
 
-    Real Math::SquareRoot(Real n) {
+    Real Math::squareRoot(Real n) {
         return sqrt(n);
     }
 
-    Real Math::QuickSquareRoot(Real n) {
+    Real Math::quickSquareRoot(Real n) {
         IntFloatUnion ifu;
 
         Real threeHalfs = 1.5f;
@@ -35,93 +42,93 @@ namespace Core {
         return ifu.f * n;
     }
 
-    Real Math::Round(Real n) {
+    Real Math::round(Real n) {
         return (Real)floor(n + 0.5f);
     }
 
-    Real Math::InverseSquareRoot(Real n) {
-        Real root = SquareRoot(n);
+    Real Math::inverseSquareRoot(Real n) {
+        Real root = squareRoot(n);
         if (root == 0) return 0;
         return 1 / root;
     }
 
-    Real Math::QuickInverseSquareRoot(Real n) {
-        Real root = QuickSquareRoot(n);
+    Real Math::quickInverseSquareRoot(Real n) {
+        Real root = quickSquareRoot(n);
         if (root == 0) return 0;
         return 1 / root;
     }
 
-    Real Math::Cos(Real n) {
-        return cos(n);
+    Real Math::cos(Real n) {
+        return MathProxy::_cos(n);
     }
 
-    Real Math::ACos(Real n) {
+    Real Math::aCos(Real n) {
         return acos(n);
     }
 
-    Real Math::Sin(Real n) {
-        return sin(n);
+    Real Math::sin(Real n) {
+        return MathProxy::_sin(n);
     }
 
-    Real Math::Tan(Real n) {
-        return tan(n);
+    Real Math::tan(Real n) {
+        return MathProxy::_tan(n);
     }
 
-    Real Math::Abs(Real n) {
+    Real Math::abs(Real n) {
         return fabs(n);
     }
 
-    UInt32 Math::IAbs(Int32 n) {
+    UInt32 Math::iAbs(Int32 n) {
         return n >= 0 ? n : -n;
     }
 
-    Real Math::Min(Real a, Real b) {
+    Real Math::min(Real a, Real b) {
         if (a < b)
             return a;
         else
             return b;
     }
 
-    Int32 Math::Min(Int32 a, Int32 b) {
+    Int32 Math::min(Int32 a, Int32 b) {
         if (a < b)
             return a;
         else
             return b;
     }
 
-    UInt32 Math::Min(UInt32 a, UInt32 b) {
+    UInt32 Math::min(UInt32 a, UInt32 b) {
         if (a < b)
             return a;
         else
             return b;
     }
 
-    Real Math::Max(Real a, Real b) {
+    Real Math::max(Real a, Real b) {
         if (a > b)
             return a;
         else
             return b;
     }
 
-    Int32 Math::Max(Int32 a, Int32 b) {
+    Int32 Math::max(Int32 a, Int32 b) {
         if (a > b)
             return a;
         else
             return b;
     }
 
-    UInt32 Math::Max(UInt32 a, UInt32 b) {
+    UInt32 Math::max(UInt32 a, UInt32 b) {
         if (a > b)
             return a;
         else
             return b;
     }
 
-    Real Math::Lerp(Real a, Real b, Real t) {
+    Real Math::lerp(Real a, Real b, Real t) {
         return (b - a) * t + a;
     }
 
-    Real Math::Random() {
+    Real Math::random() {
         return (Real)rand() / (Real)RAND_MAX;
     }
 }

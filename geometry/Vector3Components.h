@@ -21,7 +21,7 @@ namespace Core {
     Bool operator == (const Vector3Components<T>& other) {
       if (this == &other) return true;
       Real epsilon = .005f;
-      return Math::Abs(other.x - this->x) < epsilon && Math::Abs(other.y - this->y) < epsilon && Math::Abs(other.z - this->z) < epsilon;
+      return Math::abs(other.x - this->x) < epsilon && Math::abs(other.y - this->y) < epsilon && Math::abs(other.z - this->z) < epsilon;
     }
 
     void set(const T& x, const T& y, const T& z) {
