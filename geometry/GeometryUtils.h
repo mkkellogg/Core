@@ -10,7 +10,7 @@ namespace Core {
 
     class GeometryUtils {
     public:
-       static  WeakPointer<Mesh> createGrid(Real width, Real height, UInt32 hSubDivisions, UInt32 vSubDivisions);
+       static  WeakPointer<Mesh> createGrid(Real width, Real height, UInt32 hSubDivisions, UInt32 vSubDivisions, Real hTexToWorld, Real vTexToWorld);
      
     private:
         

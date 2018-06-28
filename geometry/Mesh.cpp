@@ -91,9 +91,12 @@ namespace Core {
         return this->boundingBox;
     }
 
- 
     AttributeArray<Vector3rs>* Mesh::getVertexPositions() {
         return this->vertexPositions;
+    }
+
+    AttributeArray<Vector3rs>* Mesh::getVertexNormals() {
+        return this->vertexNormals;
     }
 
     AttributeArray<ColorS>* Mesh::getVertexColors() {
@@ -106,6 +109,10 @@ namespace Core {
 
     Bool Mesh::initVertexPositions() {
         return this->initVertexAttributes<Vector3rs>(&this->vertexPositions, this->vertexCount);
+    }
+
+    Bool Mesh::initVertexNormals() {
+        return this->initVertexAttributes<Vector3rs>(&this->vertexNormals, this->vertexCount);
     }
 
     Bool Mesh::initVertexColors() {

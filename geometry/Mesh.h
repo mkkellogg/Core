@@ -32,11 +32,13 @@ namespace Core {
         UInt32 getVertexCount() const;
 
         AttributeArray<Vector3rs>* getVertexPositions();
+        AttributeArray<Vector3rs>* getVertexNormals();
         AttributeArray<ColorS>* getVertexColors();
         AttributeArray<Vector2rs>* getVertexUVs();
         std::shared_ptr<IndexBuffer> getIndexBuffer();
 
         Bool initVertexPositions();
+        Bool initVertexNormals();
         Bool initVertexColors();
         Bool initVertexUVs();
 
@@ -76,6 +78,7 @@ namespace Core {
         Box3 boundingBox;
 
         AttributeArray<Vector3rs>* vertexPositions;
+        AttributeArray<Vector3rs>* vertexNormals;
         AttributeArray<ColorS>* vertexColors;
         AttributeArray<Vector2rs>* vertexUVs;
         std::shared_ptr<IndexBuffer> indexBuffer;
