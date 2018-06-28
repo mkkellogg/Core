@@ -1,11 +1,11 @@
 #include <vector>
 
-#include "GeometryUtils.h"
 #include "../Engine.h"
-#include "../geometry/Mesh.h"
 #include "../geometry/IndexBuffer.h"
-#include "Vector3.h"
+#include "../geometry/Mesh.h"
+#include "GeometryUtils.h"
 #include "Vector2.h"
+#include "Vector3.h"
 
 namespace Core {
 
@@ -13,8 +13,8 @@ namespace Core {
         Real halfWidth = width / 2.0f;
         Real halfHeight = height / 2.0f;
 
-        Real cellWidth = width / (Real) hCells;
-        Real cellHeight = height / (Real) vCells;
+        Real cellWidth = width / (Real)hCells;
+        Real cellHeight = height / (Real)vCells;
 
         Real left = -halfWidth;
         Real bottom = -halfHeight;
@@ -27,70 +27,7 @@ namespace Core {
         std::vector<Real> uvs;
         std::vector<UInt32> indices;
 
-        /*for (UInt32 cx = 0; cx < hCells; cx++) {
-            for (UInt32 cy = 0; cy < vCells; cy++) {
-                Real bx = (Real)cx * cellWidth + left;
-                Real by = (Real)cy * cellHeight + bottom;
-
-                Real uvX = bx / hWorldToTex;
-                Real uvY = by / vWorldToTex;
-
-                if (cx == 0 || cy == 0) {
-                    // lower left of cell
-                    positions.push_back(bx);
-                    positions.push_back(by);
-                    positions.push_back(0);
-
-                    normals.push_back(0);
-                    normals.push_back(0);
-                    normals.push_back(1);
-
-                    uvs.push_back(uvX);
-                    uvs.push_back(uvY);
-                }
-
-                if (cx == 0) {
-                    // upper left of cell
-                    positions.push_back(bx);
-                    positions.push_back(by + cellHeight);
-                    positions.push_back(0);
-
-                    normals.push_back(0);
-                    normals.push_back(0);
-                    normals.push_back(1);
-
-                    uvs.push_back(uvX);
-                    uvs.push_back(uvY + textureCellHeight);
-                }
-                else if (cy == 0) {
-                    // lower right of cell
-                    positions.push_back(bx + cellWidth);
-                    positions.push_back(by);
-                    positions.push_back(0);
-                    
-                    normals.push_back(0);
-                    normals.push_back(0);
-                    normals.push_back(1);
-
-                    uvs.push_back(uvX + textureCellWidth);
-                    uvs.push_back(uvY);
-                }
-
-                // upper right of cell
-                positions.push_back(bx + cellWidth);
-                positions.push_back(by + cellHeight);
-                positions.push_back(0);
-
-                normals.push_back(0);
-                normals.push_back(0);
-                normals.push_back(1);
-                
-                uvs.push_back(uvX + textureCellWidth);
-                uvs.push_back(uvY + textureCellHeight);
-            } 
-        }*/
-
-         for (UInt32 cx = 0; cx <= hCells; cx++) {
+        for (UInt32 cx = 0; cx <= hCells; cx++) {
             for (UInt32 cy = 0; cy <= vCells; cy++) {
                 Real bx = (Real)cx * cellWidth + left;
                 Real by = (Real)cy * cellHeight + bottom;
@@ -98,10 +35,12 @@ namespace Core {
                 positions.push_back(bx);
                 positions.push_back(by);
                 positions.push_back(0);
+                positions.push_back(1);
 
                 normals.push_back(0);
                 normals.push_back(0);
                 normals.push_back(1);
+                normals.push_back(0);
 
                 Real uvX = bx / hWorldToTex;
                 Real uvY = by / vWorldToTex;
@@ -109,9 +48,9 @@ namespace Core {
                 uvs.push_back(uvX);
                 uvs.push_back(uvY);
             }
-         }
+        }
 
-         for (UInt32 cx = 0; cx < hCells; cx++) {
+        for (UInt32 cx = 0; cx < hCells; cx++) {
             for (UInt32 cy = 0; cy < vCells; cy++) {
                 Real bx = (Real)cx * cellWidth + left;
                 Real by = (Real)cy * cellHeight + bottom;
@@ -129,13 +68,13 @@ namespace Core {
                 indices.push_back(i2);
                 indices.push_back(i3);
             }
-         }
+        }
 
-        UInt32 vertexCount = (hCells + 1) * (vCells + 1);    
+        UInt32 vertexCount = (hCells + 1) * (vCells + 1);
 
-        WeakPointer<Engine> engine = Engine::instance(); 
+        WeakPointer<Engine> engine = Engine::instance();
 
-        WeakPointer<Mesh> gridPlane = engine->createMesh(vertexCount, true);
+        WeakPointer<Mesh> gridPlane = engine->createMesh(vertexCount, hCells * vCells * 6);
         gridPlane->init();
 
         gridPlane->enableAttribute(Core::StandardAttribute::Position);
@@ -154,5 +93,4 @@ namespace Core {
 
         return gridPlane;
     }
-
 }
