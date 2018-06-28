@@ -20,7 +20,17 @@
 
 namespace Core {
 
-    Engine::Engine(): modelLoader(*this) {
+    std::shared_ptr<Engine> Engine::_instance;
+
+    WeakPointer<Engine> Engine::instance() {
+        if (!_instance) {
+            _instance = std::shared_ptr<Engine>(new Engine());
+            _instance->init();
+        }
+        return _instance;
+    }
+
+    Engine::Engine(): modelLoader() {
     }
 
     Engine::~Engine() {
@@ -61,12 +71,12 @@ namespace Core {
         Time::update();
         if (this->updateCallbacks.size() > 0) {
             for (auto func : this->updateCallbacks) {
-                func(*this);
+                func();
             }
             this->updateCallbacks.clear();
         }
         for (auto func : this->persistentUpdateCallbacks) {
-            func(*this);
+            func();
         }
     }
 
@@ -75,12 +85,12 @@ namespace Core {
             this->graphics->render(this->activeScene);
             if (this->renderCallbacks.size() > 0) {
                 for (auto func : this->renderCallbacks) {
-                    func(*this);
+                    func();
                 }
                 this->renderCallbacks.clear();
             }
             for (auto func : this->persistentRenderCallbacks) {
-                func(*this);
+                func();
             }
         }
     }

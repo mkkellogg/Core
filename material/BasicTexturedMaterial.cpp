@@ -35,7 +35,7 @@ static const char fragmentShader[] =
 
 namespace Core {
 
-    BasicTexturedMaterial::BasicTexturedMaterial(Engine& engine, WeakPointer<Graphics> graphics) : Material(engine, graphics) {
+    BasicTexturedMaterial::BasicTexturedMaterial(WeakPointer<Graphics> graphics): Material(graphics) {
     }
 
     Bool BasicTexturedMaterial::build() {
@@ -96,7 +96,7 @@ namespace Core {
     }
 
     WeakPointer<Material> BasicTexturedMaterial::clone() {
-        WeakPointer<BasicTexturedMaterial> newMaterial = this->engine.createMaterial<BasicTexturedMaterial>(false);
+        WeakPointer<BasicTexturedMaterial> newMaterial = Engine::instance()->createMaterial<BasicTexturedMaterial>(false);
         newMaterial->setShader(this->getShader());
 
         newMaterial->texture = this->texture;

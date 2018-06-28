@@ -10,13 +10,12 @@
 namespace Core {
 
     // forward declarations
-    class Engine;
     class Shader;
 
     class Material {
     public:
-        Material(Engine& engine, WeakPointer<Graphics> graphics);
-        Material(Engine& engine, WeakPointer<Graphics> graphics, WeakPointer<Shader> shader);
+        Material(WeakPointer<Graphics> graphics);
+        Material(WeakPointer<Graphics> graphics, WeakPointer<Shader> shader);
         WeakPointer<Shader> getShader();
         virtual Bool build() = 0;
 
@@ -32,6 +31,5 @@ namespace Core {
         PersistentWeakPointer<Graphics> graphics;
         PersistentWeakPointer<Shader> shader;
         Bool ready;
-        Engine& engine;
     };
 }

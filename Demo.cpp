@@ -19,7 +19,7 @@
 
 namespace Core {
 
-  Demo::Demo(Engine& engine): engine(engine) {
+  Demo::Demo() {
     //this->imageLoader = engine.getImageLoader();
     //this->assetLoader = engine.getAssetLoader();
   }
@@ -27,7 +27,7 @@ namespace Core {
   void Demo::run() {
 
     WeakPointer<Core::Camera> camera;
-    this->engine.onUpdate([this, camera](Engine& engine) {
+    Engine::instance()->onUpdate([this, camera]() {
 
       static Core::Real rotationAngle = 0.0;
       if (WeakPointer<Camera>::isValid(camera)) {
@@ -57,11 +57,11 @@ namespace Core {
 
     });
 
-    WeakPointer<Core::Scene> scene = engine.createScene();
-    engine.setActiveScene(scene);
+    WeakPointer<Core::Scene> scene = Engine::instance()->createScene();
+    Engine::instance()->setActiveScene(scene);
     WeakPointer<Core::Scene> scenePtr(scene);
 
-    WeakPointer<Core::Mesh> skyboxMesh(engine.createMesh(36, false));
+    WeakPointer<Core::Mesh> skyboxMesh(Engine::instance()->createMesh(36, false));
     skyboxMesh->init();
 
     Core::Real vertexPositions[] = {
@@ -90,21 +90,21 @@ namespace Core {
     ASSERT(positionInited, "Unable to initialize skybox mesh vertex positions.");
     skyboxMesh->getVertexPositions()->store(vertexPositions);
 
-    this->skyboxMaterial = engine.createMaterial<Core::BasicMaterial>();
+    this->skyboxMaterial = Engine::instance()->createMaterial<Core::BasicMaterial>();
     WeakPointer<Core::BasicMaterial> skyboxMaterialPtr(this->skyboxMaterial);
     skyboxMaterialPtr->build();
 
-    WeakPointer<Core::RenderableContainer<Mesh>> skyboxObj = engine.createObject3D<Core::RenderableContainer<Mesh>>();
+    WeakPointer<Core::RenderableContainer<Mesh>> skyboxObj = Engine::instance()->createObject3D<Core::RenderableContainer<Mesh>>();
     WeakPointer<Core::RenderableContainer<Mesh>> skyboxObjPtr = WeakPointer<Core::RenderableContainer<Mesh>>(skyboxObj);
 
-    WeakPointer<Core::MeshRenderer> skyboxRenderer = engine.createRenderer<Core::MeshRenderer>(this->skyboxMaterial, skyboxObj);
+    WeakPointer<Core::MeshRenderer> skyboxRenderer = Engine::instance()->createRenderer<Core::MeshRenderer>(this->skyboxMaterial, skyboxObj);
     skyboxObjPtr->addRenderable(skyboxMesh);
 
     WeakPointer<Object3D> sceneRootPtr = WeakPointer<Object3D>(scenePtr->getRoot());
     sceneRootPtr->addChild(skyboxObj);
 
-    WeakPointer<Core::Object3D> cameraObj = engine.createObject3D<Core::Object3D>();
-    camera = engine.createCamera(cameraObj);
+    WeakPointer<Core::Object3D> cameraObj = Engine::instance()->createObject3D<Core::Object3D>();
+    camera = Engine::instance()->createCamera(cameraObj);
     sceneRootPtr->addChild(cameraObj);
 
   }

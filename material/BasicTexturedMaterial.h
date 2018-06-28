@@ -21,7 +21,7 @@ namespace Core {
         void setTexture(WeakPointer<Texture> texture);
 
     private:
-        BasicTexturedMaterial(Engine& engine, WeakPointer<Graphics> graphics);
+        BasicTexturedMaterial(WeakPointer<Graphics> graphics);
 
         WeakPointer<Texture> texture;
         Int32 positionLocation;

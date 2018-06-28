@@ -3,6 +3,7 @@
 #include <functional>
 #include <memory>
 
+#include "util/PersistentWeakPointer.h"
 #include "scene/Object3D.h"
 #include "geometry/Mesh.h"
 #include "asset/ModelLoader.h"
@@ -12,7 +13,6 @@
 #include "material/MaterialLibrary.h"
 #include "render/RenderableContainer.h"
 #include "render/Renderer.h"
-#include "util/PersistentWeakPointer.h"
 
 namespace Core {
 
@@ -25,14 +25,14 @@ namespace Core {
     class Camera;
     class Scene;
 
-    class Engine {
+    class Engine final {
     public:
-        typedef std::function<void(Engine&)> LifecycleEventCallback;
+        typedef std::function<void()> LifecycleEventCallback;
 
-        Engine();
-        virtual ~Engine();
+        ~Engine();
 
-        void init();
+        static WeakPointer<Engine> instance();
+
         void update();
         void render();
 
@@ -71,7 +71,7 @@ namespace Core {
 
         template <typename T>
         WeakPointer<typename std::enable_if<std::is_base_of<Material, T>::value, T>::type> createMaterial(Bool build = true) {
-            std::shared_ptr<T> materialPtr = std::shared_ptr<T>(new T(*this, this->graphics));
+            std::shared_ptr<T> materialPtr = std::shared_ptr<T>(new T(this->graphics));
             if (build) {
                 materialPtr->build();
             }
@@ -91,6 +91,11 @@ namespace Core {
         void onRender(LifecycleEventCallback func, Bool persistent = false);
 
     private:
+        Engine();
+        void init();
+
+        static std::shared_ptr<Engine> _instance;
+        
         std::shared_ptr<Graphics> graphics;
 
         std::vector<std::shared_ptr<Scene>> scenes;

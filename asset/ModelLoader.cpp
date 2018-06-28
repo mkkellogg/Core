@@ -28,7 +28,7 @@
 namespace Core {
     static std::shared_ptr<Assimp::Importer> importer = nullptr;
 
-    ModelLoader::ModelLoader(Engine& engine) : engine(engine) {
+    ModelLoader::ModelLoader() {
     }
 
     ModelLoader::~ModelLoader() {
@@ -112,7 +112,7 @@ namespace Core {
 
         // verify that we have a valid scene
         if (scene.mRootNode == nullptr) throw new ModelLoaderException("ModelLoader::processModelScene -> Assimp scene root is null.");
-        WeakPointer<Object3D> root = engine.createObject3D();
+        WeakPointer<Object3D> root = Engine::instance()->createObject3D();
         if (WeakPointer<Object3D>::isInvalid(root)) throw ModelLoaderException("ModelLoader::processModelScene -> Could not create root object.");
 
         std::shared_ptr<FileSystem> fileSystem = FileSystem::getInstance();
@@ -214,7 +214,7 @@ namespace Core {
                 UInt32 newChildrenCount = 0;
                 if ((material != lastMaterial && n > 0) || n == node.mNumMeshes - 1) {
                     // create new scene object to hold the meshes object and its renderer
-                    WeakPointer<RenderableContainer<Mesh>> meshContainer = engine.createObject3D<RenderableContainer<Mesh>>();
+                    WeakPointer<RenderableContainer<Mesh>> meshContainer = Engine::instance()->createObject3D<RenderableContainer<Mesh>>();
                     if (!meshContainer.isValid()) {
                         throw ModelLoaderException("ModelLoader::recursiveProcessModelScene -> Could not create mesh container.");
                     };
@@ -228,7 +228,7 @@ namespace Core {
                         meshContainer->addRenderable(subMesh);
                     }
 
-                    WeakPointer<MeshRenderer> meshRenderer = engine.createRenderer<MeshRenderer>(material, meshContainer);
+                    WeakPointer<MeshRenderer> meshRenderer = Engine::instance()->createRenderer<MeshRenderer>(material, meshContainer);
                     parent->addChild(meshContainer);
 
                     createdSceneObjects.push_back(meshContainer);
@@ -253,7 +253,7 @@ namespace Core {
         }
 
         if (!nextParent.isValid()) {
-            nextParent = engine.createObject3D();
+            nextParent = Engine::instance()->createObject3D();
             if (!nextParent.isValid()) {
                 throw ModelLoaderException("ModelLoader::recursiveProcessModelScene -> Could not create default scene object.");
             };
@@ -315,7 +315,7 @@ namespace Core {
         }
 
         // create Mesh3D object with the constructed StandardAttributeSet
-        WeakPointer<Mesh> coreMesh = engine.createMesh(vertexCount, false);
+        WeakPointer<Mesh> coreMesh = Engine::instance()->createMesh(vertexCount, false);
         if (!coreMesh.isValid()) {
             throw ModelLoaderException("ModeLoader::convertAssimpMesh -> Could not create Mesh3D object.");
         }
@@ -431,68 +431,6 @@ namespace Core {
         // if (invert) mesh3D->SetInvertNormals(true);
         // mesh3D->SetNormalsSmoothingThreshold(80);
         return coreMesh;
-
-
-/*
-           // ======= cube data =================
-        Real cubeVertexPositions[] = {
-            // back
-            -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0,
-            -1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0,
-            // left
-            -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0,
-            -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0,
-            // right
-            1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0,
-            1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-            // top
-            -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0,
-            1.0, 1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-            // bottom
-            -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0,
-            -1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0,
-            // front
-            1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0
-        };
-
-        Real cubeVertexColors[] = {
-            // back
-            1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0,
-            1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0,
-            // left
-            1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0,
-            1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0,
-            // right
-            1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0,
-            1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0,
-            // top
-            1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0,
-            1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0,
-            // bottom
-            1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0,
-            1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0,
-            // front
-            1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0,
-            1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0,
-        };
-
-        WeakPointer<BasicMaterial> cubeMaterial(this->engine.createMaterial<BasicMaterial>());
-        cubeMaterial->build();
-
-
-        // ======= big cube ===============
-        WeakPointer<Mesh> bigCube(this->engine.createMesh(36, false));
-        bigCube->init();
-        bigCube->enableAttribute(StandardAttribute::Position);
-        Bool positionInited = bigCube->initVertexPositions(36);
-        bigCube->getVertexPositions()->store(cubeVertexPositions);
-
-        bigCube->enableAttribute(StandardAttribute::Color);
-        Bool colorInited = bigCube->initVertexColors(36);
-        bigCube->getVertexColors()->store(cubeVertexColors);
-
-        return bigCube;*/
     }
 
     /**
@@ -549,7 +487,7 @@ namespace Core {
                 diffuseTexture = this->loadAITexture(*assimpMaterial, aiTextureType_DIFFUSE, fixedModelPath);
             }
 
-            MaterialLibrary& materialLibrary = this->engine.getMaterialLibrary();
+            MaterialLibrary& materialLibrary = Engine::instance()->getMaterialLibrary();
             // loop through each mesh in the scene and check if it uses [material]. If so,
             // create a unique Material object for the mesh and attach it to [materialImportDescriptor]
             //
@@ -557,9 +495,8 @@ namespace Core {
             // concerned about when creating unique instances of a material for a mesh.
             for (UInt32 i = 0; i < scene.mNumMeshes; i++) {
                 if (materialImportDescriptor.usedByMesh(i)) {
+
                     // see if we can match a loaded shader to the properties of this material and the current mesh
-                    // ShaderSharedPtr loadedShader =
-                    // engineObjectManager->GetLoadedShader(materialImportDescriptor.meshSpecificProperties[i].shaderMaterialChacteristics);
                     LongMask shaderMaterialChacteristics = materialImportDescriptor.meshSpecificProperties[i].shaderMaterialChacteristics;
                     Bool hasMaterial = materialLibrary.hasMaterial(shaderMaterialChacteristics);
 
@@ -710,9 +647,8 @@ namespace Core {
         RawImage* textureImage = nullptr;
         // check if the file specified by the full path in the Assimp material exists
         if (fileSystem->fileExists(fullTextureFilePath)) {
-            // texture = engineObjectManager->CreateTexture(fullTextureFilePath.c_str(), texAttributes);
             textureImage = ImageLoader::loadImageU(fullTextureFilePath);
-            texture = this->engine.getGraphicsSystem()->createTexture2D(texAttributes);
+            texture = Engine::instance()->getGraphicsSystem()->createTexture2D(texAttributes);
         }
         // if it does not exist, try looking for the texture image file in the model's directory
         else {
@@ -724,7 +660,7 @@ namespace Core {
                 // check if the image file is in the same directory as the model and if so, load it
                 if (fileSystem->fileExists(filename)) {
                     textureImage = ImageLoader::loadImageU(filename.c_str());
-                    texture = this->engine.getGraphicsSystem()->createTexture2D(texAttributes);
+                    texture = Engine::instance()->getGraphicsSystem()->createTexture2D(texAttributes);
                 }
             }
         }

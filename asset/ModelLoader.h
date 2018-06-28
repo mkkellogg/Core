@@ -38,7 +38,7 @@ namespace Core {
             }
         };
 
-        ModelLoader(Engine& engine);
+        ModelLoader();
         ~ModelLoader();
         WeakPointer<Object3D> loadModel(const std::string& filePath, Real importScale, Bool castShadows, Bool receiveShadows, Bool preserveFBXPivots);
 
@@ -101,7 +101,6 @@ namespace Core {
         static void convertAssimpMatrix(const aiMatrix4x4& source, Matrix4x4& dest);                  
 #endif
 
-        Engine& engine;
         ImageLoader imageLoader;
 
     };

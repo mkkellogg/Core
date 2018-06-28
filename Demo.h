@@ -9,7 +9,6 @@
 namespace Core {
 
   class Demo {
-    Engine& engine;
 
     std::vector<std::shared_ptr<RawImage>> skyboxImages;
     std::shared_ptr<CubeTexture> skyboxTexture;
@@ -20,7 +19,7 @@ namespace Core {
 
   public:
 
-    Demo(Engine& engine);
+    Demo();
     void run();
   };
 

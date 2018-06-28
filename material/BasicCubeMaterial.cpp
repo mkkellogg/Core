@@ -37,7 +37,7 @@ static const char fragmentShader[] =
 
 namespace Core {
 
-    BasicCubeMaterial::BasicCubeMaterial(Engine& engine, WeakPointer<Graphics> graphics) : Material(engine, graphics) {
+    BasicCubeMaterial::BasicCubeMaterial(WeakPointer<Graphics> graphics) : Material(graphics) {
     }
 
     Bool BasicCubeMaterial::build() {
@@ -88,7 +88,7 @@ namespace Core {
     }
 
     WeakPointer<Material> BasicCubeMaterial::clone() {
-        WeakPointer<BasicCubeMaterial> newMaterial = this->engine.createMaterial<BasicCubeMaterial>(false);
+        WeakPointer<BasicCubeMaterial> newMaterial = Engine::instance()->createMaterial<BasicCubeMaterial>(false);
         newMaterial->setShader(this->getShader());
 
         newMaterial->positionLocation = this->positionLocation;

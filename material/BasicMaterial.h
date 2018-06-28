@@ -19,7 +19,7 @@ namespace Core {
         virtual WeakPointer<Material> clone() override;
 
     private:
-        BasicMaterial(Engine& engine, WeakPointer<Graphics> graphics);
+        BasicMaterial(WeakPointer<Graphics> graphics);
 
         Int32 positionLocation;
         Int32 colorLocation;

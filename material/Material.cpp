@@ -6,10 +6,10 @@
 
 namespace Core {
 
-    Material::Material(Engine& engine, WeakPointer<Graphics> graphics) : graphics(graphics), ready(false), engine(engine) {
+    Material::Material(WeakPointer<Graphics> graphics): graphics(graphics), ready(false) {
     }
 
-    Material::Material(Engine& engine, WeakPointer<Graphics> graphics, WeakPointer<Shader> shader): Material(engine, graphics) {
+    Material::Material(WeakPointer<Graphics> graphics, WeakPointer<Shader> shader): Material(graphics) {
         this->setShader(shader);
     }
 
