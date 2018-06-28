@@ -320,8 +320,6 @@ namespace Core {
             throw ModelLoaderException("ModeLoader::convertAssimpMesh -> Could not create Mesh3D object.");
         }
 
-        coreMesh->init();
-
         Bool hasNormals = false;
         Bool hasColors = false;
         Bool hasUVs = false;
