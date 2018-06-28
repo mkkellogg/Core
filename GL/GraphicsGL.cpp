@@ -33,7 +33,7 @@ namespace Core {
         glClearColor(0, 0, 0, 1);
         glFrontFace(GL_CCW);
         glCullFace(GL_BACK);
-        glDisable(GL_CULL_FACE);
+        glEnable(GL_CULL_FACE);
         glEnable(GL_DEPTH_TEST);
         glDepthMask(GL_TRUE);
         glDepthFunc(GL_LEQUAL);
@@ -88,6 +88,7 @@ namespace Core {
         if (indexBuffer == nullptr) {
             throw AllocationException("GraphicsGL::createIndexBuffer() -> Unable to allocate index buffer.");
         }
+        indexBuffer->initIndices();
         std::shared_ptr<IndexBuffer> bufferPtr(indexBuffer);
         return bufferPtr;
     }
