@@ -128,7 +128,7 @@ namespace Core {
         return true;
     }
 
-    std::shared_ptr<IndexBuffer> Mesh::getIndexBuffer() {
+    WeakPointer<IndexBuffer>  Mesh::getIndexBuffer() {
         return this->indexBuffer;
     }
 }

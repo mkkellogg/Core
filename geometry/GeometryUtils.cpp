@@ -2,6 +2,8 @@
 
 #include "GeometryUtils.h"
 #include "../Engine.h"
+#include "../geometry/Mesh.h"
+#include "../geometry/IndexBuffer.h"
 #include "Vector3.h"
 #include "Vector2.h"
 
@@ -23,8 +25,9 @@ namespace Core {
         std::vector<Real> positions;
         std::vector<Real> normals;
         std::vector<Real> uvs;
+        std::vector<UInt32> indices;
 
-        for (UInt32 cx = 0; cx < hCells; cx++) {
+        /*for (UInt32 cx = 0; cx < hCells; cx++) {
             for (UInt32 cy = 0; cy < vCells; cy++) {
                 Real bx = (Real)cx * cellWidth + left;
                 Real by = (Real)cy * cellHeight + bottom;
@@ -85,15 +88,56 @@ namespace Core {
                 uvs.push_back(uvX + textureCellWidth);
                 uvs.push_back(uvY + textureCellHeight);
             } 
-        }
+        }*/
+
+         for (UInt32 cx = 0; cx <= hCells; cx++) {
+            for (UInt32 cy = 0; cy <= vCells; cy++) {
+                Real bx = (Real)cx * cellWidth + left;
+                Real by = (Real)cy * cellHeight + bottom;
+
+                positions.push_back(bx);
+                positions.push_back(by);
+                positions.push_back(0);
+
+                normals.push_back(0);
+                normals.push_back(0);
+                normals.push_back(1);
+
+                Real uvX = bx / hWorldToTex;
+                Real uvY = by / vWorldToTex;
+
+                uvs.push_back(uvX);
+                uvs.push_back(uvY);
+            }
+         }
+
+         for (UInt32 cx = 0; cx < hCells; cx++) {
+            for (UInt32 cy = 0; cy < vCells; cy++) {
+                Real bx = (Real)cx * cellWidth + left;
+                Real by = (Real)cy * cellHeight + bottom;
+
+                UInt32 i0 = cx * vCells + cy;
+                UInt32 i1 = i0 + 1;
+                UInt32 i2 = (cx + 1) * vCells + cy;
+                UInt32 i3 = i2 + 1;
+
+                indices.push_back(i0);
+                indices.push_back(i3);
+                indices.push_back(i1);
+
+                indices.push_back(i0);
+                indices.push_back(i2);
+                indices.push_back(i3);
+            }
+         }
 
         UInt32 vertexCount = (hCells + 1) * (vCells + 1);    
 
         WeakPointer<Engine> engine = Engine::instance(); 
 
-        WeakPointer<Mesh> gridPlane = engine->createMesh(vertexCount, false);
+        WeakPointer<Mesh> gridPlane = engine->createMesh(vertexCount, true);
         gridPlane->init();
-        
+
         gridPlane->enableAttribute(Core::StandardAttribute::Position);
         Core::Bool positionInited = gridPlane->initVertexPositions();
         gridPlane->getVertexPositions()->store(positions.data());
@@ -105,6 +149,8 @@ namespace Core {
         gridPlane->enableAttribute(Core::StandardAttribute::UV0);
         Core::Bool uvsInited = gridPlane->initVertexUVs();
         gridPlane->getVertexUVs()->store(uvs.data());
+
+        gridPlane->getIndexBuffer()->setIndices(indices.data());
 
         return gridPlane;
     }

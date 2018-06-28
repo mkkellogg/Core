@@ -35,7 +35,7 @@ namespace Core {
         AttributeArray<Vector3rs>* getVertexNormals();
         AttributeArray<ColorS>* getVertexColors();
         AttributeArray<Vector2rs>* getVertexUVs();
-        std::shared_ptr<IndexBuffer> getIndexBuffer();
+        WeakPointer<IndexBuffer> getIndexBuffer();
 
         Bool initVertexPositions();
         Bool initVertexNormals();
