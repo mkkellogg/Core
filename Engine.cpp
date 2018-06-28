@@ -134,8 +134,9 @@ namespace Core {
         return newScene;
     }
 
-    WeakPointer<Mesh> Engine::createMesh(UInt32 size, Bool indexed) {
-        std::shared_ptr<Mesh> newMesh = std::shared_ptr<Mesh>(new Mesh(this->graphics, size, indexed));
+    WeakPointer<Mesh> Engine::createMesh(UInt32 size, UInt32 indexCount) {
+        std::shared_ptr<Mesh> newMesh = std::shared_ptr<Mesh>(new Mesh(this->graphics, size, indexCount));
+        newMesh->init();
         this->meshes.push_back(newMesh);
         return newMesh;
     }

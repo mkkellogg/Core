@@ -30,6 +30,7 @@ namespace Core {
         virtual void init();
 
         UInt32 getVertexCount() const;
+        UInt32 getIndexCount() const;
 
         AttributeArray<Vector3rs>* getVertexPositions();
         AttributeArray<Vector3rs>* getVertexNormals();

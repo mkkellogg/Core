@@ -58,7 +58,7 @@ namespace Core {
             return objPtr;
         }
 
-        WeakPointer<Mesh> createMesh(UInt32 size, Bool indexed);
+        WeakPointer<Mesh> createMesh(UInt32 size, UInt32 indexCount);
 
         template <typename T, typename R>
         WeakPointer<typename std::enable_if<std::is_base_of<ObjectRenderer<R>, T>::value, T>::type> createRenderer(WeakPointer<Material> material,

@@ -45,6 +45,10 @@ namespace Core {
         return this->vertexCount;
     }
 
+    UInt32 Mesh::getIndexCount() const {
+        return this->indexCount;
+    }
+
     void Mesh::initAttributes() {
         for (UInt32 i = 0; i < (UInt32)StandardAttribute::_Count; i++) {
             this->disableAttribute((StandardAttribute)i);
@@ -134,7 +138,7 @@ namespace Core {
         return true;
     }
 
-    WeakPointer<IndexBuffer>  Mesh::getIndexBuffer() {
+    WeakPointer<IndexBuffer> Mesh::getIndexBuffer() {
         return this->indexBuffer;
     }
 }

@@ -20,6 +20,7 @@ namespace Core {
         this->graphics->activateShader(this->material->getShader());
 
         this->checkAndSetShaderAttribute(mesh, StandardAttribute::Position, mesh->getVertexPositions());
+        this->checkAndSetShaderAttribute(mesh, StandardAttribute::Normal, mesh->getVertexNormals());
         this->checkAndSetShaderAttribute(mesh, StandardAttribute::Color, mesh->getVertexColors());
         this->checkAndSetShaderAttribute(mesh, StandardAttribute::UV0, mesh->getVertexUVs());
 
@@ -46,7 +47,7 @@ namespace Core {
         this->material->sendCustomUniformsToShader();
 
         if (mesh->isIndexed()) {
-            this->graphics->drawBoundVertexBuffer(mesh->getVertexCount(), mesh->getIndexBuffer());
+            this->graphics->drawBoundVertexBuffer(mesh->getIndexCount(), mesh->getIndexBuffer());
         } else {
             this->graphics->drawBoundVertexBuffer(mesh->getVertexCount());
         }
