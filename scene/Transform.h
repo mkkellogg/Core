@@ -46,8 +46,8 @@ namespace Core {
         void translate(const Vector3<Real>& dir, TransformationSpace transformationSpace = TransformationSpace::Local);
         void translate(Real x, Real y, Real z, TransformationSpace transformationSpace = TransformationSpace::Local);
 
-        void rotate(const Vector3<Real>& axis, Real angle, TransformationSpace transformationSpace);
-        void rotate(Real x, Real y, Real z, Real angle, TransformationSpace transformationSpace);
+        void rotate(const Vector3<Real>& axis, Real angle, TransformationSpace transformationSpace = TransformationSpace::Local);
+        void rotate(Real x, Real y, Real z, Real angle, TransformationSpace transformationSpace = TransformationSpace::Local);
         void rotateAround(const Vector3<Real>& axis, const Point3<Real>& pos, Real angle);
         void rotateAround(Real ax, Real ay, Real az, Real px, Real py, Real pz, Real angle);
 
