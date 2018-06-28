@@ -7,11 +7,13 @@
 
 namespace Core {
 
-    Mesh::Mesh(WeakPointer<Graphics> graphics, UInt32 vertexCount, Bool indexed): graphics(graphics), initialized(false), vertexCount(vertexCount), indexed(indexed) {
+    Mesh::Mesh(WeakPointer<Graphics> graphics, UInt32 vertexCount, UInt32 indexCount): graphics(graphics), initialized(false), vertexCount(vertexCount), indexCount(indexCount) {
         this->vertexPositions = nullptr;
+        this->vertexNormals = nullptr;
         this->vertexColors = nullptr;
         this->vertexUVs = nullptr;
         this->indexBuffer = nullptr;
+        this->indexed = indexCount > 0 ? true : false;
         initAttributes();
     }
 
@@ -19,6 +21,10 @@ namespace Core {
         if (this->vertexPositions) {
             delete this->vertexPositions;
             this->vertexPositions = nullptr;
+        }
+        if (this->vertexNormals) {
+            delete this->vertexNormals;
+            this->vertexNormals = nullptr;
         }
         if (this->vertexColors) {
             delete this->vertexColors;
@@ -124,7 +130,7 @@ namespace Core {
     }
 
     Bool Mesh::initIndices() {
-        this->indexBuffer = this->graphics->createIndexBuffer(vertexCount);
+        this->indexBuffer = this->graphics->createIndexBuffer(indexCount);
         return true;
     }
 

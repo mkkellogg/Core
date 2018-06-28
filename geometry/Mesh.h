@@ -51,7 +51,7 @@ namespace Core {
         const Box3& getBoundingBox() const;
 
     protected:
-        Mesh(WeakPointer<Graphics> graphics, UInt32 vertexCount, Bool indexed);
+        Mesh(WeakPointer<Graphics> graphics, UInt32 vertexCount, UInt32 indexCount);
         void initAttributes();
         Bool initIndices();
 
@@ -75,6 +75,7 @@ namespace Core {
         Bool enabledAttributes[(UInt32)StandardAttribute::_Count];
         UInt32 vertexCount;
         Bool indexed;
+        UInt32 indexCount;
         Box3 boundingBox;
 
         AttributeArray<Vector3rs>* vertexPositions;

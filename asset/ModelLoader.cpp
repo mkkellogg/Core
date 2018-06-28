@@ -315,7 +315,7 @@ namespace Core {
         }
 
         // create Mesh3D object with the constructed StandardAttributeSet
-        WeakPointer<Mesh> coreMesh = Engine::instance()->createMesh(vertexCount, false);
+        WeakPointer<Mesh> coreMesh = Engine::instance()->createMesh(vertexCount, 0);
         if (!coreMesh.isValid()) {
             throw ModelLoaderException("ModeLoader::convertAssimpMesh -> Could not create Mesh3D object.");
         }
