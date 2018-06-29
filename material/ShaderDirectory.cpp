@@ -1,15 +1,11 @@
+#include <regex>
+#include <sstream>
+
 #include "ShaderDirectory.h"
 
 namespace Core {
 
     ShaderDirectory::~ShaderDirectory() {
-    }
-
-    void ShaderDirectory::addEntry(const std::string& name, const Entry& entry) {
-        if (this->entries.find(name) != this->entries.end()) {
-            throw ShaderDirectoryException(std::string("Cannot add shader for ") + name + std::string(" because it already exists."));
-        }
-        this->entries[name] = entry;
     }
 
     void ShaderDirectory::setShader(Shader::ShaderType type, const std::string& name, const std::string& shaderSrc) {
@@ -18,12 +14,13 @@ namespace Core {
 
     void ShaderDirectory::setShader(Shader::ShaderType type, const std::string& name, const char shaderSrc[]) {
         Entry& entry = this->entries[name];
+        std::string processedSource= processShaderSource(type, shaderSrc);
         switch (type) {
             case Shader::ShaderType::Vertex:
-                entry.vertexSource = shaderSrc;
+                entry.vertexSource = processedSource;
                 break;
             case Shader::ShaderType::Fragment:
-                entry.fragmentSource = shaderSrc;
+                entry.fragmentSource = processedSource;
                 break;
         }
     }
@@ -40,6 +37,33 @@ namespace Core {
                     break;
             }
         }
-        throw ShaderDirectoryException(std::string("Could not locate request shader ") + name);
+        throw ShaderDirectoryException(std::string("Could not locate requested shader ") + name);
+    }
+
+    std::string ShaderDirectory::processShaderSource(Shader::ShaderType type, const std::string& src) {
+        std::istringstream iss(src);
+        std::string result;
+        std::regex includeRegex("^#include \"[0-9a-zA-Z]*\"$");
+        std::regex nameRegex("\"[0-9a-zA-Z]*\"");
+        for (std::string line; std::getline(iss, line);) {
+            if (std::regex_match(line, includeRegex)) {
+                Bool matchFound = false;
+                std::string match;
+                for (auto i = std::sregex_iterator(line.begin(), line.end(), nameRegex); i != std::sregex_iterator(); ++i) {
+                match = i->str();
+                match = match.substr(1, match.size() - 2);
+                matchFound = true;
+                break;
+                }
+                if (matchFound) {
+                    std::string nextShader = this->getShader(type, match);
+                    result += nextShader;
+                }
+            }
+            else {
+                result += line + "\n";
+            }
+        }
+        return result;
     }
 }

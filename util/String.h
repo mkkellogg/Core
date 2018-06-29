@@ -6,9 +6,9 @@ namespace Core {
 
     class String {
     public:
-        static std::string trimLeft(const std::string& str);
-        static std::string trimRight(const std::string& str);
-        static std::string trim(const std::string& str);
+        static std::string trimLeft(std::string& str);
+        static std::string trimRight(std::string& str);
+        static std::string trim(std::string& str);
     };
 
 }

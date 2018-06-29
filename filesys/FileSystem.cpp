@@ -26,8 +26,10 @@ namespace Core {
     }
 
     std::string FileSystem::concatenatePaths(const std::string& pathA, const std::string& pathB) const {
-        std::string pathATrimmed = String::trim(pathA);
-        std::string pathBTrimmed = String::trim(pathB);
+        std::string pathATrimmed = pathA;
+        std::string pathBTrimmed = pathB;
+        String::trim(pathATrimmed);
+        String::trim(pathBTrimmed);
 
         Char separator = this->getPathSeparator();
 

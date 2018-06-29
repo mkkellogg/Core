@@ -1,21 +1,23 @@
 #include "String.h"
 
+static const std::string& TRIM_CHARS = "\t\n\v\f\r ";
+
 namespace Core {
 
-    std::string String::trimLeft(const std::string& str) {
-        std::size_t first = str.find_first_not_of(' ');
-        return str.substr(first, str.size());
+    std::string String::trimLeft(std::string& str) {
+        str.erase(0, str.find_first_not_of(TRIM_CHARS));
+        return str;
     }
 
-    std::string String::trimRight(const std::string& str) {
-        std::size_t last = str.find_last_not_of(' ');
-        return str.substr(0, last + 1);
+    std::string String::trimRight(std::string& str) {
+        str.erase(str.find_last_not_of(TRIM_CHARS) + 1);
+        return str;
     }
 
-    std::string String::trim(const std::string& str) {
-        std::size_t first = str.find_first_not_of(' ');
-        std::size_t last = str.find_last_not_of(' ');
-        return str.substr(first, last - first + 1);
+    std::string String::trim(std::string& str) {
+        String::trimRight(str);
+        String::trimLeft(str);
+        return str;
     }
 
 }

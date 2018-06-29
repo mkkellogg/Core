@@ -8,6 +8,9 @@ namespace Core {
 
     void ShaderDirectoryGL::init() {
 
+        this->setShader(Shader::ShaderType::Vertex, "Test", ShaderDirectoryGL::Test_vertex);
+        this->setShader(Shader::ShaderType::Fragment, "Test", ShaderDirectoryGL::Test_fragment);
+
         this->setShader(Shader::ShaderType::Vertex, "Basic", ShaderDirectoryGL::Basic_vertex);
         this->setShader(Shader::ShaderType::Fragment, "Basic", ShaderDirectoryGL::Basic_fragment);
 
@@ -18,7 +21,16 @@ namespace Core {
         this->setShader(Shader::ShaderType::Fragment, "BasicCube", ShaderDirectoryGL::BasicCube_fragment);
     }
 
+    const char ShaderDirectoryGL::Test_vertex[] =
+        "// some comments\n"
+        "// some more comments\n";
+
+    const char ShaderDirectoryGL::Test_fragment[] =
+        "// some fragment comments\n"
+        "// some morefragment comments\n";
+
     const char ShaderDirectoryGL::Basic_vertex[] =
+        "#include \"Test\"\n"
         "#version 100\n"
         "attribute vec4 pos;\n"
         "attribute vec4 color;\n"
