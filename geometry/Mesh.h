@@ -35,13 +35,13 @@ namespace Core {
         AttributeArray<Vector3rs>* getVertexPositions();
         AttributeArray<Vector3rs>* getVertexNormals();
         AttributeArray<ColorS>* getVertexColors();
-        AttributeArray<Vector2rs>* getVertexUVs();
+        AttributeArray<Vector2rs>* getVertexUVs0();
         WeakPointer<IndexBuffer> getIndexBuffer();
 
         Bool initVertexPositions();
         Bool initVertexNormals();
         Bool initVertexColors();
-        Bool initVertexUVs();
+        Bool initVertexUVs0();
 
         void enableAttribute(StandardAttribute attribute);
         void disableAttribute(StandardAttribute attribute);
@@ -82,7 +82,7 @@ namespace Core {
         AttributeArray<Vector3rs>* vertexPositions;
         AttributeArray<Vector3rs>* vertexNormals;
         AttributeArray<ColorS>* vertexColors;
-        AttributeArray<Vector2rs>* vertexUVs;
+        AttributeArray<Vector2rs>* vertexUVs0;
         std::shared_ptr<IndexBuffer> indexBuffer;
     };
 }

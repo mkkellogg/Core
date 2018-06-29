@@ -11,7 +11,7 @@ namespace Core {
         this->vertexPositions = nullptr;
         this->vertexNormals = nullptr;
         this->vertexColors = nullptr;
-        this->vertexUVs = nullptr;
+        this->vertexUVs0 = nullptr;
         this->indexBuffer = nullptr;
         this->indexed = indexCount > 0 ? true : false;
         initAttributes();
@@ -30,9 +30,9 @@ namespace Core {
             delete this->vertexColors;
             this->vertexColors = nullptr;
         }
-        if (this->vertexUVs) {
-            delete this->vertexUVs;
-            this->vertexUVs = nullptr;
+        if (this->vertexUVs0) {
+            delete this->vertexUVs0;
+            this->vertexUVs0 = nullptr;
         }
     }
 
@@ -113,8 +113,8 @@ namespace Core {
         return this->vertexColors;
     }
 
-    AttributeArray<Vector2rs>* Mesh::getVertexUVs() {
-        return this->vertexUVs;
+    AttributeArray<Vector2rs>* Mesh::getVertexUVs0() {
+        return this->vertexUVs0;
     }
 
     Bool Mesh::initVertexPositions() {
@@ -129,8 +129,8 @@ namespace Core {
         return this->initVertexAttributes<ColorS>(&this->vertexColors, this->vertexCount);
     }
 
-    Bool Mesh::initVertexUVs() {
-        return this->initVertexAttributes<Vector2rs>(&this->vertexUVs, this->vertexCount);
+    Bool Mesh::initVertexUVs0() {
+        return this->initVertexAttributes<Vector2rs>(&this->vertexUVs0, this->vertexCount);
     }
 
     Bool Mesh::initIndices() {

@@ -22,7 +22,7 @@ namespace Core {
         this->checkAndSetShaderAttribute(mesh, StandardAttribute::Position, mesh->getVertexPositions());
         this->checkAndSetShaderAttribute(mesh, StandardAttribute::Normal, mesh->getVertexNormals());
         this->checkAndSetShaderAttribute(mesh, StandardAttribute::Color, mesh->getVertexColors());
-        this->checkAndSetShaderAttribute(mesh, StandardAttribute::UV0, mesh->getVertexUVs());
+        this->checkAndSetShaderAttribute(mesh, StandardAttribute::UV0, mesh->getVertexUVs0());
 
         Int32 projectionLoc = this->material->getShaderLocation(StandardUniform::ProjectionMatrix);
         Int32 viewMatrixLoc = this->material->getShaderLocation(StandardUniform::ViewMatrix);

@@ -334,10 +334,10 @@ namespace Core {
         std::vector<Real> normals;
         if (mesh.mNormals != nullptr) {
             normals.reserve(mesh.mNumFaces * 12);
-            //if (!coreMesh->initVertexNormals(vertexCount)) {
-
-            //}
-            //coreMesh->enableAttribute(StandardAttribute::Normal);
+            if (!coreMesh->initVertexNormals()) {
+                throw ModelLoaderException("ModeLoader::convertAssimpMesh -> Unable to initialize vertex normals.");
+            }
+            coreMesh->enableAttribute(StandardAttribute::Normal);
             hasNormals = true;
         }
 
@@ -355,7 +355,7 @@ namespace Core {
         std::vector<Real> uvs;
         if (diffuseTextureUVIndex >= 0) {
             uvs.reserve(mesh.mNumFaces * 6);
-            if (!coreMesh->initVertexUVs()) {
+            if (!coreMesh->initVertexUVs0()) {
                 throw ModelLoaderException("ModeLoader::convertAssimpMesh -> Unable to initialize vertex uvs.");
             }
             coreMesh->enableAttribute(StandardAttribute::UV0);
@@ -422,9 +422,9 @@ namespace Core {
         }
 
         coreMesh->getVertexPositions()->store(positions.data());
-        // if (hasNormals) coreMesh->getVertexNormals()->store(normals.data());
+         if (hasNormals) coreMesh->getVertexNormals()->store(normals.data());
         if (hasColors) coreMesh->getVertexColors()->store(colors.data());
-        if (hasUVs) coreMesh->getVertexUVs()->store(uvs.data());
+        if (hasUVs) coreMesh->getVertexUVs0()->store(uvs.data());
 
         // if (invert) mesh3D->SetInvertNormals(true);
         // mesh3D->SetNormalsSmoothingThreshold(80);
