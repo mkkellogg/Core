@@ -4,28 +4,7 @@
 #include "StandardAttributes.h"
 #include "StandardUniforms.h"
 #include "../Engine.h"
-
-static const char vertexShader[] =
-    "#version 100\n"
-    "attribute vec4 pos;\n"
-    "attribute vec4 color;\n"
-    "attribute vec2 uv;\n"
-    "uniform mat4 projection;\n"
-    "uniform mat4 viewMatrix;\n"
-    "uniform mat4 modelMatrix;\n"
-    "varying vec4 vColor;\n"
-    "void main() {\n"
-    "    gl_Position = projection * viewMatrix * modelMatrix * pos;\n"
-    "    vColor = color;\n"
-    "}\n";
-
-static const char fragmentShader[] =
-    "#version 100\n"
-    "precision mediump float;\n"
-    "varying vec4 vColor;\n"
-    "void main() {\n"
-    "    gl_FragColor = vColor;\n"
-    "}\n";
+#include "../material/ShaderDirectory.h"
 
 namespace Core {
 
@@ -33,8 +12,10 @@ namespace Core {
     }
 
     Bool BasicMaterial::build() {
-        std::string vertexSrc = vertexShader;
-        std::string fragmentSrc = fragmentShader;
+        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
+        ShaderDirectory& shaderDirectory = graphics->getShaderDirectory();
+        const std::string& vertexSrc = shaderDirectory.getShader(Shader::ShaderType::Vertex, "Basic");
+        const std::string& fragmentSrc = shaderDirectory.getShader(Shader::ShaderType::Fragment, "Basic");
         Bool ready = this->buildFromSource(vertexSrc, fragmentSrc);
         if (!ready) {
             return false;

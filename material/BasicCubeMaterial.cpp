@@ -5,35 +5,7 @@
 #include "StandardUniforms.h"
 #include "../Engine.h"
 #include "../image/CubeTexture.h"
-
-static const char vertexShader[] =
-    "#version 100\n"
-    "attribute vec4 pos;\n"
-    "attribute vec4 color;\n"
-    "uniform mat4 projection;\n"
-    "uniform mat4 viewMatrix;\n"
-    "mat4 scale = mat4(1.0, 0.0, 0.0, 0.0,\n"
-    "                  0.0, 1.0, 0.0, 0.0,\n"
-    "                  0.0, 0.0, 1.0, -20.0,\n"
-    "                  0.0, 0.0, 0.0, 1.0);\n"
-    "varying vec4 vColor;\n"
-    "varying vec3 vUV;\n"
-    "void main() {\n"
-    "    gl_Position = projection * viewMatrix * pos;\n"
-    "    vUV = normalize(pos.xyz);\n"
-    "    vColor = color;\n"
-    "}\n";
-
-static const char fragmentShader[] =
-    "#version 100\n"
-    "precision mediump float;\n"
-    "uniform samplerCube skybox;\n"
-    "varying vec4 vColor;\n"
-    "varying vec3 vUV;\n"
-    "void main() {\n"
-    "    vec4 textureColor = textureCube(skybox, vUV);\n"
-    "    gl_FragColor = textureColor;\n"
-    "}\n";
+#include "../material/ShaderDirectory.h"
 
 namespace Core {
 
@@ -41,8 +13,10 @@ namespace Core {
     }
 
     Bool BasicCubeMaterial::build() {
-        std::string vertexSrc = vertexShader;
-        std::string fragmentSrc = fragmentShader;
+        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
+        ShaderDirectory& shaderDirectory = graphics->getShaderDirectory();
+        const std::string& vertexSrc = shaderDirectory.getShader(Shader::ShaderType::Vertex, "BasicCube");
+        const std::string& fragmentSrc = shaderDirectory.getShader(Shader::ShaderType::Fragment, "BasicCube");
         Bool ready = this->buildFromSource(vertexSrc, fragmentSrc);
         if (!ready) {
             return false;

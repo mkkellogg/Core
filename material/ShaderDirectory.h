@@ -41,10 +41,10 @@ namespace Core {
         void addEntry(const std::string& name, const Entry& entry);
         void setShader(Shader::ShaderType type, const std::string& name, const std::string& shaderSrc);
         void setShader(Shader::ShaderType type, const std::string& name, const char shaderSrc[]);
+        const std::string& getShader(Shader::ShaderType type, const std::string& name);
+
 
     protected:
-        void checkShaderExists(const std::string& name);
-
         std::unordered_map<std::string, Entry> entries;
     };
 

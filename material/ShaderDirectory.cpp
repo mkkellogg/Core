@@ -6,7 +6,9 @@ namespace Core {
     }
 
     void ShaderDirectory::addEntry(const std::string& name, const Entry& entry) {
-        this->checkShaderExists(name);
+        if (this->entries.find(name) != this->entries.end()) {
+            throw ShaderDirectoryException(std::string("Cannot add shader for ") + name + std::string(" because it already exists."));
+        }
         this->entries[name] = entry;
     }
 
@@ -18,17 +20,26 @@ namespace Core {
         Entry& entry = this->entries[name];
         switch (type) {
             case Shader::ShaderType::Vertex:
-                 entry.vertexSource = shaderSrc;
-            break;
+                entry.vertexSource = shaderSrc;
+                break;
             case Shader::ShaderType::Fragment:
-                 entry.fragmentSource = shaderSrc;
-            break;
+                entry.fragmentSource = shaderSrc;
+                break;
         }
     }
 
-    void ShaderDirectory::checkShaderExists(const std::string& name) {
+    const std::string& ShaderDirectory::getShader(Shader::ShaderType type, const std::string& name) {
         if (this->entries.find(name) != this->entries.end()) {
-            throw ShaderDirectoryException(std::string("Cannot add shader for ") + name + std::string(" because it already exists."));
+            Entry& entry = this->entries[name];
+            switch (type) {
+                case Shader::ShaderType::Vertex:
+                    return entry.vertexSource;
+                    break;
+                case Shader::ShaderType::Fragment:
+                    return entry.fragmentSource;
+                    break;
+            }
         }
+        throw ShaderDirectoryException(std::string("Could not locate request shader ") + name);
     }
 }

@@ -13,8 +13,14 @@ namespace Core {
 
         ~ShaderDirectoryGL();
 
+        static const char Basic_vertex[];
+        static const char Basic_fragment[];
+
         static const char BasicTextured_vertex[];
         static const char BasicTextured_fragment[];
+
+        static const char BasicCube_vertex[];
+        static const char BasicCube_fragment[];
 
         void init();
 
