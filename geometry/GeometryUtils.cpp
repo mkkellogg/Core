@@ -69,7 +69,6 @@ namespace Core {
                 indices.push_back(i0);
                 indices.push_back(i3);
                 indices.push_back(i2);
-
             }
         }
 
