@@ -139,6 +139,7 @@ set(SOURCE_FILES
     material/MaterialLibrary.cpp
     material/StandardUniforms.cpp
     material/StandardAttributes.cpp
+    material/ShaderDirectory.cpp
     color/Color4Components.cpp
     math/Math.cpp
     math/Matrix4x4.cpp
@@ -153,7 +154,8 @@ set(SOURCE_FILES
     GL/Texture2DGL.cpp
     GL/CubeTextureGL.cpp
     GL/ShaderGL.cpp
-    GL/IndexBufferGL.cpp)
+    GL/IndexBufferGL.cpp
+    GL/ShaderDirectoryGL.cpp)
     #RendererES3.cpp)
 
 add_library(${EXECUTABLE_NAME} ${SOURCE_FILES})

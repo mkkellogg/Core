@@ -37,6 +37,8 @@ namespace Core {
         glEnable(GL_DEPTH_TEST);
         glDepthMask(GL_TRUE);
         glDepthFunc(GL_LEQUAL);
+
+        this->shaderDirectory.init();
     }
 
     WeakPointer<Renderer> GraphicsGL::getRenderer() {

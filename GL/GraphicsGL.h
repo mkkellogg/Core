@@ -7,6 +7,7 @@
 #include "../Graphics.h"
 #include "../common/gl.h"
 #include "../geometry/AttributeType.h"
+#include "ShaderDirectoryGL.h"
 
 namespace Core {
 
@@ -52,5 +53,6 @@ namespace Core {
         std::vector<std::shared_ptr<Texture2DGL>> textures2D;
         std::vector<std::shared_ptr<CubeTextureGL>> cubeTextures;
         std::vector<std::shared_ptr<ShaderGL>> shaders;
+        ShaderDirectoryGL shaderDirectory;
     };
 }
