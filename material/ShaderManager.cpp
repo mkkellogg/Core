@@ -1,18 +1,18 @@
 #include <regex>
 #include <sstream>
 
-#include "ShaderDirectory.h"
+#include "ShaderManager.h"
 
 namespace Core {
 
-    ShaderDirectory::~ShaderDirectory() {
+    ShaderManager::~ShaderManager() {
     }
 
-    void ShaderDirectory::setShader(Shader::ShaderType type, const std::string& name, const std::string& shaderSrc) {
+    void ShaderManager::setShader(Shader::ShaderType type, const std::string& name, const std::string& shaderSrc) {
         this->setShader(type, name, shaderSrc.c_str());
     }
 
-    void ShaderDirectory::setShader(Shader::ShaderType type, const std::string& name, const char shaderSrc[]) {
+    void ShaderManager::setShader(Shader::ShaderType type, const std::string& name, const char shaderSrc[]) {
         Entry& entry = this->entries[name];
         switch (type) {
             case Shader::ShaderType::Vertex:
@@ -24,7 +24,7 @@ namespace Core {
         }
     }
 
-    std::string ShaderDirectory::getShader(Shader::ShaderType type, const std::string& name) {
+    std::string ShaderManager::getShader(Shader::ShaderType type, const std::string& name) {
         if (this->entries.find(name) != this->entries.end()) {
             Entry& entry = this->entries[name];
             switch (type) {
@@ -36,10 +36,10 @@ namespace Core {
                     break;
             }
         }
-        throw ShaderDirectoryException(std::string("Could not locate requested shader ") + name);
+        throw ShaderManagerException(std::string("Could not locate requested shader ") + name);
     }
 
-    std::string ShaderDirectory::processShaderSource(Shader::ShaderType type, const std::string& src) {
+    std::string ShaderManager::processShaderSource(Shader::ShaderType type, const std::string& src) {
         std::istringstream iss(src);
         std::string result;
         std::string includeName("\"[0-9a-zA-Z]*\"");

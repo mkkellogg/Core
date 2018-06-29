@@ -105,7 +105,7 @@ namespace Core {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
-    ShaderDirectory& GraphicsGL::getShaderDirectory() {
+    ShaderManager& GraphicsGL::getShaderManager() {
         return this->shaderDirectory;
     }
 

@@ -7,7 +7,7 @@
 #include "../Graphics.h"
 #include "../common/gl.h"
 #include "../geometry/AttributeType.h"
-#include "ShaderDirectoryGL.h"
+#include "ShaderManagerGL.h"
 
 namespace Core {
 
@@ -44,7 +44,7 @@ namespace Core {
         void drawBoundVertexBuffer(UInt32 vertexCount) override;
         void drawBoundVertexBuffer(UInt32 vertexCount, WeakPointer<IndexBuffer> indices) override;
 
-        ShaderDirectory& getShaderDirectory() override;
+        ShaderManager& getShaderManager() override;
 
     private:
         GraphicsGL(GLVersion version);
@@ -55,6 +55,6 @@ namespace Core {
         std::vector<std::shared_ptr<Texture2DGL>> textures2D;
         std::vector<std::shared_ptr<CubeTextureGL>> cubeTextures;
         std::vector<std::shared_ptr<ShaderGL>> shaders;
-        ShaderDirectoryGL shaderDirectory;
+        ShaderManagerGL shaderDirectory;
     };
 }

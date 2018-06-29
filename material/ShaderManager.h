@@ -8,13 +8,13 @@
 
 namespace Core {
 
-    class ShaderDirectory {
+    class ShaderManager {
     public:
 
-        class ShaderDirectoryException: Exception {
+        class ShaderManagerException: Exception {
         public:
-            ShaderDirectoryException(const std::string& msg): Exception(msg) {}
-            ShaderDirectoryException(const char* msg): Exception(msg) {}
+            ShaderManagerException(const std::string& msg): Exception(msg) {}
+            ShaderManagerException(const char* msg): Exception(msg) {}
         };
 
         class Entry {
@@ -37,7 +37,7 @@ namespace Core {
             std::string fragmentSource;
         };
 
-        virtual ~ShaderDirectory();
+        virtual ~ShaderManager();
         void setShader(Shader::ShaderType type, const std::string& name, const std::string& shaderSrc);
         void setShader(Shader::ShaderType type, const std::string& name, const char shaderSrc[]);
         std::string getShader(Shader::ShaderType type, const std::string& name);

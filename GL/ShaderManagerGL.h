@@ -4,14 +4,14 @@
 
 #include "../common/types.h"
 #include "../common/Exception.h"
-#include "../material/ShaderDirectory.h"
+#include "../material/ShaderManager.h"
 
 namespace Core {
 
-    class ShaderDirectoryGL final: public ShaderDirectory {
+    class ShaderManagerGL final: public ShaderManager {
     public:
 
-        ~ShaderDirectoryGL();
+        ~ShaderManagerGL();
 
         static const char Test_vertex[];
         static const char Test_fragment[];

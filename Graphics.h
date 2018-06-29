@@ -18,7 +18,7 @@ namespace Core {
     class IndexBuffer;
     class Renderer;
     class Scene;
-    class ShaderDirectory;
+    class ShaderManager;
     
     class Graphics {
     public:
@@ -44,7 +44,7 @@ namespace Core {
         virtual void drawBoundVertexBuffer(UInt32 vertexCount) = 0;
         virtual void drawBoundVertexBuffer(UInt32 vertexCount, WeakPointer<IndexBuffer> indices) = 0;
 
-        virtual ShaderDirectory& getShaderDirectory() = 0;
+        virtual ShaderManager& getShaderManager() = 0;
 
     };
 }

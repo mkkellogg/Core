@@ -4,7 +4,7 @@
 #include "StandardAttributes.h"
 #include "StandardUniforms.h"
 #include "../Engine.h"
-#include "../material/ShaderDirectory.h"
+#include "../material/ShaderManager.h"
 
 namespace Core {
 
@@ -13,7 +13,7 @@ namespace Core {
 
     Bool BasicMaterial::build() {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-        ShaderDirectory& shaderDirectory = graphics->getShaderDirectory();
+        ShaderManager& shaderDirectory = graphics->getShaderManager();
         const std::string& vertexSrc = shaderDirectory.getShader(Shader::ShaderType::Vertex, "Basic");
         const std::string& fragmentSrc = shaderDirectory.getShader(Shader::ShaderType::Fragment, "Basic");
         Bool ready = this->buildFromSource(vertexSrc, fragmentSrc);

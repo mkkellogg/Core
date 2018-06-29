@@ -1,35 +1,35 @@
-#include "ShaderDirectoryGL.h"
+#include "ShaderManagerGL.h"
 
 namespace Core {
 
-    ShaderDirectoryGL::~ShaderDirectoryGL() {
+    ShaderManagerGL::~ShaderManagerGL() {
         
     }
 
-    void ShaderDirectoryGL::init() {
+    void ShaderManagerGL::init() {
 
-        this->setShader(Shader::ShaderType::Vertex, "Test", ShaderDirectoryGL::Test_vertex);
-        this->setShader(Shader::ShaderType::Fragment, "Test", ShaderDirectoryGL::Test_fragment);
+        this->setShader(Shader::ShaderType::Vertex, "Test", ShaderManagerGL::Test_vertex);
+        this->setShader(Shader::ShaderType::Fragment, "Test", ShaderManagerGL::Test_fragment);
 
-        this->setShader(Shader::ShaderType::Vertex, "Basic", ShaderDirectoryGL::Basic_vertex);
-        this->setShader(Shader::ShaderType::Fragment, "Basic", ShaderDirectoryGL::Basic_fragment);
+        this->setShader(Shader::ShaderType::Vertex, "Basic", ShaderManagerGL::Basic_vertex);
+        this->setShader(Shader::ShaderType::Fragment, "Basic", ShaderManagerGL::Basic_fragment);
 
-        this->setShader(Shader::ShaderType::Vertex, "BasicTextured", ShaderDirectoryGL::BasicTextured_vertex);
-        this->setShader(Shader::ShaderType::Fragment, "BasicTextured", ShaderDirectoryGL::BasicTextured_fragment);
+        this->setShader(Shader::ShaderType::Vertex, "BasicTextured", ShaderManagerGL::BasicTextured_vertex);
+        this->setShader(Shader::ShaderType::Fragment, "BasicTextured", ShaderManagerGL::BasicTextured_fragment);
 
-        this->setShader(Shader::ShaderType::Vertex, "BasicCube", ShaderDirectoryGL::BasicCube_vertex);
-        this->setShader(Shader::ShaderType::Fragment, "BasicCube", ShaderDirectoryGL::BasicCube_fragment);
+        this->setShader(Shader::ShaderType::Vertex, "BasicCube", ShaderManagerGL::BasicCube_vertex);
+        this->setShader(Shader::ShaderType::Fragment, "BasicCube", ShaderManagerGL::BasicCube_fragment);
     }
 
-    const char ShaderDirectoryGL::Test_vertex[] =
+    const char ShaderManagerGL::Test_vertex[] =
         "// some comments\n"
         "// some more comments\n";
 
-    const char ShaderDirectoryGL::Test_fragment[] =
+    const char ShaderManagerGL::Test_fragment[] =
         "// some fragment comments\n"
         "// some morefragment comments\n";
 
-    const char ShaderDirectoryGL::Basic_vertex[] =
+    const char ShaderManagerGL::Basic_vertex[] =
         "#include \"Test\"\n"
         "#version 100\n"
         "attribute vec4 pos;\n"
@@ -44,7 +44,7 @@ namespace Core {
         "    vColor = color;\n"
         "}\n";
 
-    const char ShaderDirectoryGL::Basic_fragment[] =   
+    const char ShaderManagerGL::Basic_fragment[] =   
         "#version 100\n"
         "precision mediump float;\n"
         "varying vec4 vColor;\n"
@@ -52,7 +52,7 @@ namespace Core {
         "    gl_FragColor = vColor;\n"
         "}\n";
 
-    const char ShaderDirectoryGL::BasicTextured_vertex[] =  
+    const char ShaderManagerGL::BasicTextured_vertex[] =  
         "#version 100\n"
         "attribute vec4 pos;\n"
         "attribute vec4 color;\n"
@@ -68,7 +68,7 @@ namespace Core {
         "    vColor = color;\n"
         "}\n";
 
-    const char ShaderDirectoryGL::BasicTextured_fragment[] =   
+    const char ShaderManagerGL::BasicTextured_fragment[] =   
         "#version 100\n"
         "precision mediump float;\n"
         "uniform sampler2D textureA;\n"
@@ -79,7 +79,7 @@ namespace Core {
         "    gl_FragColor = textureColor;\n"
         "}\n";
 
-    const char ShaderDirectoryGL::BasicCube_vertex[] =  
+    const char ShaderManagerGL::BasicCube_vertex[] =  
         "#version 100\n"
         "attribute vec4 pos;\n"
         "attribute vec4 color;\n"
@@ -97,7 +97,7 @@ namespace Core {
         "    vColor = color;\n"
         "}\n";
 
-    const char ShaderDirectoryGL::BasicCube_fragment[] =  
+    const char ShaderManagerGL::BasicCube_fragment[] =  
         "#version 100\n"
         "precision mediump float;\n"
         "uniform samplerCube skybox;\n"

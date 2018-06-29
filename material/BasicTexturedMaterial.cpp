@@ -5,7 +5,7 @@
 #include "StandardUniforms.h"
 #include "../image/Texture.h"
 #include "../Engine.h"
-#include "../material/ShaderDirectory.h"
+#include "../material/ShaderManager.h"
 
 namespace Core {
 
@@ -14,7 +14,7 @@ namespace Core {
 
     Bool BasicTexturedMaterial::build() {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-        ShaderDirectory& shaderDirectory = graphics->getShaderDirectory();
+        ShaderManager& shaderDirectory = graphics->getShaderManager();
         const std::string& vertexSrc = shaderDirectory.getShader(Shader::ShaderType::Vertex, "BasicTextured");
         const std::string& fragmentSrc = shaderDirectory.getShader(Shader::ShaderType::Fragment, "BasicTextured");
         Bool ready = this->buildFromSource(vertexSrc, fragmentSrc);

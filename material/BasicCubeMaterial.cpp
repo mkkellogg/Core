@@ -5,7 +5,7 @@
 #include "StandardUniforms.h"
 #include "../Engine.h"
 #include "../image/CubeTexture.h"
-#include "../material/ShaderDirectory.h"
+#include "../material/ShaderManager.h"
 
 namespace Core {
 
@@ -14,7 +14,7 @@ namespace Core {
 
     Bool BasicCubeMaterial::build() {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-        ShaderDirectory& shaderDirectory = graphics->getShaderDirectory();
+        ShaderManager& shaderDirectory = graphics->getShaderManager();
         const std::string& vertexSrc = shaderDirectory.getShader(Shader::ShaderType::Vertex, "BasicCube");
         const std::string& fragmentSrc = shaderDirectory.getShader(Shader::ShaderType::Fragment, "BasicCube");
         Bool ready = this->buildFromSource(vertexSrc, fragmentSrc);
