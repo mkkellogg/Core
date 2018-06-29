@@ -22,6 +22,8 @@ namespace Core {
 
     private:
         BasicCubeMaterial(WeakPointer<Graphics> graphics);
+        void bindShaderVarLocations();
+        
         Int32 positionLocation;
         Int32 colorLocation;
         Int32 textureLocation;

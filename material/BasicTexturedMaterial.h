@@ -20,8 +20,9 @@ namespace Core {
         virtual WeakPointer<Material> clone() override;
         void setTexture(WeakPointer<Texture> texture);
 
-    private:
+    protected:
         BasicTexturedMaterial(WeakPointer<Graphics> graphics);
+        void bindShaderVarLocations();
 
         WeakPointer<Texture> texture;
         Int32 positionLocation;

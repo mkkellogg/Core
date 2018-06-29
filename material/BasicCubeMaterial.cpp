@@ -21,12 +21,7 @@ namespace Core {
         if (!ready) {
             return false;
         }
-
-        this->positionLocation = this->shader->getAttributeLocation("pos");
-        this->colorLocation = this->shader->getAttributeLocation("color");
-        this->textureLocation = this->shader->getUniformLocation("skybox");
-        this->projectionMatrixLocation = this->shader->getUniformLocation("projection");
-        this->viewMatrixLocation = this->shader->getUniformLocation("viewMatrix");
+        this->bindShaderVarLocations();
         return true;
     }
 
@@ -64,12 +59,19 @@ namespace Core {
     WeakPointer<Material> BasicCubeMaterial::clone() {
         WeakPointer<BasicCubeMaterial> newMaterial = Engine::instance()->createMaterial<BasicCubeMaterial>(false);
         newMaterial->setShader(this->getShader());
-
         newMaterial->positionLocation = this->positionLocation;
         newMaterial->colorLocation = this->colorLocation;
         newMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
         newMaterial->viewMatrixLocation = this->viewMatrixLocation;
         newMaterial->textureLocation = this->textureLocation;
         return newMaterial;
+    }
+
+    void BasicCubeMaterial::bindShaderVarLocations() {
+        this->positionLocation = this->shader->getAttributeLocation("pos");
+        this->colorLocation = this->shader->getAttributeLocation("color");
+        this->textureLocation = this->shader->getUniformLocation("skybox");
+        this->projectionMatrixLocation = this->shader->getUniformLocation("projection");
+        this->viewMatrixLocation = this->shader->getUniformLocation("viewMatrix");
     }
 }

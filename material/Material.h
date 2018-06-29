@@ -17,8 +17,8 @@ namespace Core {
         Material(WeakPointer<Graphics> graphics);
         Material(WeakPointer<Graphics> graphics, WeakPointer<Shader> shader);
         WeakPointer<Shader> getShader();
+        
         virtual Bool build() = 0;
-
         virtual Int32 getShaderLocation(StandardAttribute attribute) = 0;
         virtual Int32 getShaderLocation(StandardUniform uniform) = 0;
         virtual void sendCustomUniformsToShader() = 0;

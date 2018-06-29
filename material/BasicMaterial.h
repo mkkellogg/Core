@@ -20,6 +20,7 @@ namespace Core {
 
     private:
         BasicMaterial(WeakPointer<Graphics> graphics);
+        void bindShaderVarLocations();
 
         Int32 positionLocation;
         Int32 colorLocation;

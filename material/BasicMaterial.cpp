@@ -21,11 +21,7 @@ namespace Core {
             return false;
         }
 
-        this->positionLocation = this->shader->getAttributeLocation("pos");
-        this->colorLocation = this->shader->getAttributeLocation("color");
-        this->projectionMatrixLocation = this->shader->getUniformLocation("projection");
-        this->viewMatrixLocation = this->shader->getUniformLocation("viewMatrix");
-        this->modelMatrixLocation = this->shader->getUniformLocation("modelMatrix");
+        this->bindShaderVarLocations();
         return true;
     }
 
@@ -61,12 +57,19 @@ namespace Core {
     WeakPointer<Material> BasicMaterial::clone() {
         WeakPointer<BasicMaterial> newMaterial = Engine::instance()->createMaterial<BasicMaterial>(false);
         newMaterial->setShader(this->getShader());
-   
         newMaterial->positionLocation = this->positionLocation;
         newMaterial->colorLocation = this->colorLocation;
         newMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
         newMaterial->viewMatrixLocation = this->viewMatrixLocation;
         newMaterial->modelMatrixLocation = this->modelMatrixLocation;
         return newMaterial;
+    }
+
+    void BasicMaterial::bindShaderVarLocations() {
+        this->positionLocation = this->shader->getAttributeLocation("pos");
+        this->colorLocation = this->shader->getAttributeLocation("color");
+        this->projectionMatrixLocation = this->shader->getUniformLocation("projection");
+        this->viewMatrixLocation = this->shader->getUniformLocation("viewMatrix");
+        this->modelMatrixLocation = this->shader->getUniformLocation("modelMatrix");
     }
 }

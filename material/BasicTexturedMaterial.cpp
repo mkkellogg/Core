@@ -21,14 +21,7 @@ namespace Core {
         if (!ready) {
             return false;
         }
-        this->positionLocation = this->shader->getAttributeLocation("pos");
-        this->colorLocation = this->shader->getAttributeLocation("color");
-        this->textureLocation = this->shader->getAttributeLocation("textureA");
-        this->uvLocation = this->shader->getAttributeLocation("uv");
-        this->projectionMatrixLocation = this->shader->getUniformLocation("projection");
-        this->viewMatrixLocation = this->shader->getUniformLocation("viewMatrix");
-        this->modelMatrixLocation = this->shader->getUniformLocation("modelMatrix");
-
+        this->bindShaderVarLocations();
         return true;
     }
 
@@ -74,7 +67,6 @@ namespace Core {
     WeakPointer<Material> BasicTexturedMaterial::clone() {
         WeakPointer<BasicTexturedMaterial> newMaterial = Engine::instance()->createMaterial<BasicTexturedMaterial>(false);
         newMaterial->setShader(this->getShader());
-
         newMaterial->texture = this->texture;
         newMaterial->positionLocation = this->positionLocation;
         newMaterial->colorLocation = this->colorLocation;
@@ -84,5 +76,15 @@ namespace Core {
         newMaterial->uvLocation = this->uvLocation;
         newMaterial->textureLocation = this->textureLocation;
         return newMaterial;
+    }
+
+    void BasicTexturedMaterial::bindShaderVarLocations() {
+        this->positionLocation = this->shader->getAttributeLocation("pos");
+        this->colorLocation = this->shader->getAttributeLocation("color");
+        this->textureLocation = this->shader->getAttributeLocation("textureA");
+        this->uvLocation = this->shader->getAttributeLocation("uv");
+        this->projectionMatrixLocation = this->shader->getUniformLocation("projection");
+        this->viewMatrixLocation = this->shader->getUniformLocation("viewMatrix");
+        this->modelMatrixLocation = this->shader->getUniformLocation("modelMatrix");
     }
 }
