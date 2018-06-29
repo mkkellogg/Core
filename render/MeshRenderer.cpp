@@ -19,6 +19,9 @@ namespace Core {
 
         this->graphics->activateShader(this->material->getShader());
 
+        // send custom uniforms first so that the renderer can override if necessary.
+        this->material->sendCustomUniformsToShader();
+
         this->checkAndSetShaderAttribute(mesh, StandardAttribute::Position, mesh->getVertexPositions());
         this->checkAndSetShaderAttribute(mesh, StandardAttribute::Normal, mesh->getVertexNormals());
         this->checkAndSetShaderAttribute(mesh, StandardAttribute::Color, mesh->getVertexColors());
@@ -43,8 +46,6 @@ namespace Core {
             Matrix4x4 modelmatrix = this->owner->getTransform().getWorldMatrix();
             shader->setUniformMatrix4(modelMatrixLoc, modelmatrix);
         }
-
-        this->material->sendCustomUniformsToShader();
 
         if (mesh->isIndexed()) {
             this->graphics->drawBoundVertexBuffer(mesh->getIndexCount(), mesh->getIndexBuffer());
