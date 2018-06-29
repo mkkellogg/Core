@@ -40,7 +40,7 @@ namespace Core {
         virtual ~ShaderDirectory();
         void setShader(Shader::ShaderType type, const std::string& name, const std::string& shaderSrc);
         void setShader(Shader::ShaderType type, const std::string& name, const char shaderSrc[]);
-        const std::string& getShader(Shader::ShaderType type, const std::string& name);
+        std::string getShader(Shader::ShaderType type, const std::string& name);
 
 
     protected:

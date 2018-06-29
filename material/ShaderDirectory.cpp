@@ -14,26 +14,25 @@ namespace Core {
 
     void ShaderDirectory::setShader(Shader::ShaderType type, const std::string& name, const char shaderSrc[]) {
         Entry& entry = this->entries[name];
-        std::string processedSource= processShaderSource(type, shaderSrc);
         switch (type) {
             case Shader::ShaderType::Vertex:
-                entry.vertexSource = processedSource;
+                entry.vertexSource = shaderSrc;
                 break;
             case Shader::ShaderType::Fragment:
-                entry.fragmentSource = processedSource;
+                entry.fragmentSource = shaderSrc;
                 break;
         }
     }
 
-    const std::string& ShaderDirectory::getShader(Shader::ShaderType type, const std::string& name) {
+    std::string ShaderDirectory::getShader(Shader::ShaderType type, const std::string& name) {
         if (this->entries.find(name) != this->entries.end()) {
             Entry& entry = this->entries[name];
             switch (type) {
                 case Shader::ShaderType::Vertex:
-                    return entry.vertexSource;
+                    return processShaderSource(type, entry.vertexSource);
                     break;
                 case Shader::ShaderType::Fragment:
-                    return entry.fragmentSource;
+                    return processShaderSource(type, entry.fragmentSource);
                     break;
             }
         }
@@ -43,8 +42,9 @@ namespace Core {
     std::string ShaderDirectory::processShaderSource(Shader::ShaderType type, const std::string& src) {
         std::istringstream iss(src);
         std::string result;
-        std::regex includeRegex("^#include \"[0-9a-zA-Z]*\"$");
-        std::regex nameRegex("\"[0-9a-zA-Z]*\"");
+        std::string includeName("\"[0-9a-zA-Z]*\"");
+        std::regex includeRegex(std::string("^#include( )+") + includeName + std::string("$"));
+        std::regex nameRegex(includeName);
         for (std::string line; std::getline(iss, line);) {
             if (std::regex_match(line, includeRegex)) {
                 Bool matchFound = false;
