@@ -105,6 +105,10 @@ namespace Core {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
+    ShaderDirectory& GraphicsGL::getShaderDirectory() {
+        return this->shaderDirectory;
+    }
+
     GLuint GraphicsGL::convertAttributeType(AttributeType type) {
         switch (type) {
             case AttributeType::Float:

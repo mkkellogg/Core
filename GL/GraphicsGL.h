@@ -44,6 +44,8 @@ namespace Core {
         void drawBoundVertexBuffer(UInt32 vertexCount) override;
         void drawBoundVertexBuffer(UInt32 vertexCount, WeakPointer<IndexBuffer> indices) override;
 
+        ShaderDirectory& getShaderDirectory() override;
+
     private:
         GraphicsGL(GLVersion version);
         static GLuint convertAttributeType(AttributeType type);
