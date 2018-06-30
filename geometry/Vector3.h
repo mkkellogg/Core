@@ -42,17 +42,18 @@ namespace Core {
             return *this;
         }
 
+        operator Vector3Base<T, true>() {
+            Vector3Base<T, true> n(this->x, this->y, this->z); 
+            n->w = this->w;
+            return n;
+        }
+
         virtual void copy(const Vector3Base& src) {
-            this->set(src.x, src.y, src.z);
-            this->w = src.w;
+            Vector3Components<T>::copy(src);
         }
 
-        virtual void copy(const Vector3Components<T>& src) {
-            this->set(src.x, src.y, src.z);
-        }
-
-        virtual void set(const T& x, const T& y, const T& z) {
-            Vector3Components<T>::set(x, y, z);
+        virtual void copy(const Vector3Components<T>& src) override {
+            Vector3Components<T>::copy(src);
         }
 
         void invert() {
@@ -130,7 +131,8 @@ namespace Core {
         static const Vector3<T, customStorage> Up;
 
         Vector3() : Vector3(0.0, 0.0, 0.0) {}
-        Vector3(const Vector3Base<T, customStorage>& src) : Vector3(src.x, src.y, src.z) {}
+        Vector3(const Vector3Base<T, true>& src) : Vector3(src.x, src.y, src.z) {}
+        Vector3(const Vector3Base<T, false>& src) : Vector3(src.x, src.y, src.z) {}
         Vector3(const T& x, const T& y, const T& z) : Vector3Base<T, customStorage>(x, y, z) {
             set(x, y, z);
         }
@@ -141,7 +143,7 @@ namespace Core {
         }
 
         virtual void set(const T& x, const T& y, const T& z) override {
-            Vector3Base<T, customStorage>::set(x, y, z);
+            Vector3Components<T>::set(x, y, z);
             this->w = 0.0;
         }
 
@@ -168,7 +170,8 @@ namespace Core {
     class Point3 : public Vector3Base<T, customStorage> {
     public:
         Point3() : Point3(0.0, 0.0, 0.0) {}
-        Point3(const Vector3Base<T, customStorage>& src) : Point3(src.x, src.y, src.z) {}
+        Point3(const Vector3Base<T, true>& src) : Point3(src.x, src.y, src.z) {}
+        Point3(const Vector3Base<T, false>& src) : Point3(src.x, src.y, src.z) {}
         Point3(const T& x, const T& y, const T& z) : Vector3Base<T, customStorage>(x, y, z) {
             set(x, y, z);
         }
@@ -179,7 +182,7 @@ namespace Core {
         }
 
         virtual void set(const T& x, const T& y, const T& z) override {
-            Vector3Base<T, customStorage>::set(x, y, z);
+            Vector3Components<T>::set(x, y, z);
             this->w = 1.0;
         }
 
