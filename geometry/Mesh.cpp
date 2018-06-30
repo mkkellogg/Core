@@ -11,6 +11,7 @@ namespace Core {
         this->initialized = false;
         this->vertexPositions = nullptr;
         this->vertexNormals = nullptr;
+        this->vertexFaceNormals = nullptr;
         this->vertexColors = nullptr;
         this->vertexUVs0 = nullptr;
         this->indexBuffer = nullptr;
@@ -27,6 +28,10 @@ namespace Core {
         if (this->vertexNormals) {
             delete this->vertexNormals;
             this->vertexNormals = nullptr;
+        }
+         if (this->vertexFaceNormals) {
+            delete this->vertexFaceNormals;
+            this->vertexFaceNormals = nullptr;
         }
         if (this->vertexColors) {
             delete this->vertexColors;
@@ -77,12 +82,12 @@ namespace Core {
         Vector3r min;
         Vector3r max;
 
-        AttributeArray<Vector3rs>* vertexPositions = this->getVertexPositions();
+        AttributeArray<Point3rs>* vertexPositions = this->getVertexPositions();
 
         if (vertexPositions && this->isAttributeEnabled(StandardAttribute::Position)) {
             UInt32 index = 0;
             for (auto itr = vertexPositions->begin(); itr != vertexPositions->end(); ++itr) {
-                Vector3rs& position = *itr;
+                Point3rs& position = *itr;
 
                 if (index == 0 || position.x < min.x) min.x = position.x;
                 if (index == 0 || position.y < min.y) min.y = position.y;
@@ -103,12 +108,16 @@ namespace Core {
         return this->boundingBox;
     }
 
-    AttributeArray<Vector3rs>* Mesh::getVertexPositions() {
+    AttributeArray<Point3rs>* Mesh::getVertexPositions() {
         return this->vertexPositions;
     }
 
     AttributeArray<Vector3rs>* Mesh::getVertexNormals() {
         return this->vertexNormals;
+    }
+
+    AttributeArray<Vector3rs>* Mesh::getVertexFaceNormals() {
+        return this->vertexFaceNormals;
     }
 
     AttributeArray<ColorS>* Mesh::getVertexColors() {
@@ -120,11 +129,15 @@ namespace Core {
     }
 
     Bool Mesh::initVertexPositions() {
-        return this->initVertexAttributes<Vector3rs>(&this->vertexPositions, this->vertexCount);
+        return this->initVertexAttributes<Point3rs>(&this->vertexPositions, this->vertexCount);
     }
 
     Bool Mesh::initVertexNormals() {
         return this->initVertexAttributes<Vector3rs>(&this->vertexNormals, this->vertexCount);
+    }
+
+    Bool Mesh::initVertexFaceNormals() {
+        return this->initVertexAttributes<Vector3rs>(&this->vertexFaceNormals, this->vertexCount);
     }
 
     Bool Mesh::initVertexColors() {
@@ -151,12 +164,12 @@ namespace Core {
     * the un-averaged normals is less than [smoothingThreshhold]. [smoothingThreshhold]
     * is specified in degrees.
     */
-    /*void Mesh::calculateNormals(Real smoothingThreshhold) {
-        if (!StandardAttributes::hasAttribute(this->, StandardAttribute::Normal))return;
+    void Mesh::calculateNormals(Real smoothingThreshhold) {
+        if (!StandardAttributes::hasAttribute(this->enabledAttributes, StandardAttribute::Normal))return;
 
         // loop through each triangle in this mesh's vertices
         // and calculate normals for each
-        for (UInt32 v = 0; v < renderVertexCount - 2; v += 3) {
+        /*for (UInt32 v = 0; v < this->vertexCount - 2; v += 3) {
             Vector3 normal;
             CalculateFaceNormal(v, normal);
 
@@ -236,7 +249,53 @@ namespace Core {
             vertexNormals.GetElement(v)->Set(avg.x, avg.y, avg.z);
         }
 
-        if (invertNormals)InvertNormals();
-    }*/
+        if (invertNormals)InvertNormals(); */
+    }
 
+    /*
+     * For a given face in the sub-mesh specified by [faceIndex], calculate the face's
+     * normal and store the result in [result]. [faceIndex] will be the index of the
+     * face's first vertex in [positions], the next two will be at [faceIndex] + 1,
+     * and [faceIndex] + 2.
+     */
+    void Mesh::calculateFaceNormal(UInt32 faceIndex, Vector3r& result) {
+        UInt32 realVertexCount = this->vertexCount;
+        WeakPointer<IndexBuffer> indices;
+        if (this->indexed) {
+            indices = this->getIndexBuffer();
+            realVertexCount = this->indexCount;
+        }
+        if (faceIndex >= realVertexCount - 2) {
+            throw Exception("Mesh::calculateFaceNormal -> 'faceIndex' is out range.");
+        }
+
+        UInt32 mappedFaceIndex = faceIndex;
+        if (this->indexed) {
+            mappedFaceIndex = indices->getIndex(faceIndex);
+        }
+     
+        Vector3r a, b, c;
+
+        AttributeArray<Point3rs>* positions = this->getVertexPositions();
+
+       
+        Point3r p = positions->getAttribute(mappedFaceIndex);
+
+        // get Point3 objects for each vertex
+        /*const Point3 *pa = positions.GetElementConst(faceIndex);
+        const Point3 *pb = positions.GetElementConst(faceIndex + 1);
+        const Point3 *pc = positions.GetElementConst(faceIndex + 2);
+
+        NONFATAL_ASSERT(pa != nullptr && pb != nullptr && pc != nullptr, "SubMesh3D::CalculateFaceNormal -> Mesh vertex array contains null points.", true);
+
+        // form 2 vectors based on triangle's vertices
+        Point3::Subtract(*pb, *pa, b);
+        Point3::Subtract(*pc, *pa, a);
+
+        // calculate cross product
+        Vector3::Cross(a, b, c);
+        c.Normalize();
+
+        result.Set(c.x, c.y, c.z);*/
+    }
 }

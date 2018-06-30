@@ -32,14 +32,16 @@ namespace Core {
         UInt32 getVertexCount() const;
         UInt32 getIndexCount() const;
 
-        AttributeArray<Vector3rs>* getVertexPositions();
+        AttributeArray<Point3rs>* getVertexPositions();
         AttributeArray<Vector3rs>* getVertexNormals();
+        AttributeArray<Vector3rs>* getVertexFaceNormals();
         AttributeArray<ColorS>* getVertexColors();
         AttributeArray<Vector2rs>* getVertexUVs0();
         WeakPointer<IndexBuffer> getIndexBuffer();
 
         Bool initVertexPositions();
         Bool initVertexNormals();
+        Bool initVertexFaceNormals();
         Bool initVertexColors();
         Bool initVertexUVs0();
 
@@ -51,10 +53,13 @@ namespace Core {
         void calculateBoundingBox();
         const Box3& getBoundingBox() const;
 
+        void calculateNormals(Real smoothingThreshhold);
+
     protected:
         Mesh(WeakPointer<Graphics> graphics, UInt32 vertexCount, UInt32 indexCount);
         void initAttributes();
         Bool initIndices();
+        void calculateFaceNormal(UInt32 faceIndex, Vector3r& result);
 
         template <typename T>
         Bool initVertexAttributes(AttributeArray<T>** attributes, UInt32 vertexCount) {
@@ -79,8 +84,9 @@ namespace Core {
         UInt32 indexCount;
         Box3 boundingBox;
 
-        AttributeArray<Vector3rs>* vertexPositions;
+        AttributeArray<Point3rs>* vertexPositions;
         AttributeArray<Vector3rs>* vertexNormals;
+        AttributeArray<Vector3rs>* vertexFaceNormals;
         AttributeArray<ColorS>* vertexColors;
         AttributeArray<Vector2rs>* vertexUVs0;
         std::shared_ptr<IndexBuffer> indexBuffer;
