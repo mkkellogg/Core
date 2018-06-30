@@ -4,19 +4,17 @@
 
 namespace Core {
 
-  class Color4Components {
-  public:
-    Real& r;
-    Real& g;
-    Real& b;
-    Real& a;
+    class Color4Components {
+    public:
+        Real& r;
+        Real& g;
+        Real& b;
+        Real& a;
 
-    Color4Components(Real* data, const Real& x, const Real& y, const Real& z, const Real w);
-    virtual ~Color4Components() = 0;
+        Color4Components(Real* data, const Real& x, const Real& y, const Real& z, const Real w);
+        virtual ~Color4Components() = 0;
 
-    void set(const Real& r, const Real& g, const Real& b, const Real& a);
-    void copy(const Color4Components& src);
-
-  };
-
+        void set(const Real& r, const Real& g, const Real& b, const Real& a);
+        void copy(const Color4Components& src);
+    };
 }

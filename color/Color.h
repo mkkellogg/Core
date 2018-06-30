@@ -16,6 +16,12 @@ namespace Core {
         Color4(Real* storage) : Color4(storage, 0.0, 0.0, 0.0, 1.0) {}
         Color4(Real* storage, Real r, Real g, Real b, Real a)
             : VectorStorage<Real, COLOR_COMPONENT_COUNT, true>(storage), Color4Components(this->data, r, g, b, a) {}
+
+        Color4& operator =(const Color4& other) {
+            if (this == &other) return *this;
+            this->copy(other);
+            return *this;
+        }
     };
 
     typedef Color4<false> Color;
