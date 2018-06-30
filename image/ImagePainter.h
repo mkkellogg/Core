@@ -17,8 +17,8 @@ namespace Core {
         };
 
         ImagePainter(RawImage * targetImage);
-        void setDrawColor(IntColor4 color);
-        void setFillColor(IntColor4 color);
+        void setDrawColor(IntColor color);
+        void setFillColor(IntColor color);
         void setPixel(Int32 x, Int32 y);
         void drawLine(Int32 sx, Int32 sy, Int32 ex, Int32 ey);
         void drawHorizontalLine(Int32 sx, Int32 sy, Int32 length);
@@ -36,8 +36,8 @@ namespace Core {
         public:
             DrawState() {}
 
-            IntColor4 drawColor;
-            IntColor4 fillColor;
+            IntColor drawColor;
+            IntColor fillColor;
         };
 
         DrawState drawState;

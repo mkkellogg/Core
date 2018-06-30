@@ -7,11 +7,11 @@ namespace Core {
 
     }
 
-    void ImagePainter::setDrawColor(IntColor4 color) {
+    void ImagePainter::setDrawColor(IntColor color) {
         this->drawState.drawColor = color;
     }
 
-    void ImagePainter::setFillColor(IntColor4 color) {
+    void ImagePainter::setFillColor(IntColor color) {
         this->drawState.fillColor = color;
     }
 
@@ -79,7 +79,7 @@ namespace Core {
         y = this->clipY(y);
         if (y != oldY || x != oldX) return;
         Byte * location = this->targetImage->calcOffsetLocation(x, y);
-        IntColor4& color = this->drawState.drawColor;
+        IntColor& color = this->drawState.drawColor;
         location[0] = color.r;
         location[1] = color.g;
         location[2] = color.b;
@@ -100,7 +100,7 @@ namespace Core {
             if (byteCount % 4 != 0) {
                 throw PaintException("ImagePainter::drawHorizontalLine() -> image byte count must be multiple of 4.");
             }
-            IntColor4 drawColor = this->drawState.drawColor;
+            IntColor drawColor = this->drawState.drawColor;
             for (UInt32 i = 0; i < byteCount; i += 4) {
                 location[i] = drawColor.r;
                 location[i + 1] = drawColor.g;
@@ -125,7 +125,7 @@ namespace Core {
             if (rowSize % 4 != 0) {
                 throw PaintException("ImagePainter::drawHorizontalLine() -> image byte count must be multiple of 4.");
             }
-            IntColor4 drawColor = this->drawState.drawColor;
+            IntColor drawColor = this->drawState.drawColor;
             for (UInt32 i = 0; i < finalLength; i ++) {
                 location[0] = drawColor.r;
                 location[1] = drawColor.g;
