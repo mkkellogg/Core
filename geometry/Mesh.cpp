@@ -8,6 +8,7 @@
 namespace Core {
 
     Mesh::Mesh(WeakPointer<Graphics> graphics, UInt32 vertexCount, UInt32 indexCount): graphics(graphics), vertexCount(vertexCount), indexCount(indexCount) {
+        this->vertexCrossMap = nullptr;
         this->initialized = false;
         this->vertexPositions = nullptr;
         this->vertexNormals = nullptr;
@@ -17,6 +18,8 @@ namespace Core {
         this->indexBuffer = nullptr;
         this->indexed = indexCount > 0 ? true : false;
         this->enabledAttributes = StandardAttributes::createAttributeSet();
+        this->normalsSmoothingThreshold = Math::PI / 2.0;
+        this->shoudCalculateNormals = false;
         initAttributes();
     }
 
@@ -41,6 +44,7 @@ namespace Core {
             delete this->vertexUVs0;
             this->vertexUVs0 = nullptr;
         }
+        this->destroyVertexCrossMap();
     }
 
     void Mesh::init() {
@@ -157,64 +161,122 @@ namespace Core {
         return this->indexBuffer;
     }
 
+    void Mesh::update() {
+        if (this->shoudCalculateNormals /*|| calculateTangents || buildFaces*/) {
+            if (!this->buildVertexCrossMap())return;
+        }
+
+        //if (calculateBoundingBox)CalculateBoundingBox();
+        if (this->shoudCalculateNormals){
+            this->calculateNormals((Real)this->normalsSmoothingThreshold);
+        }
+       // if (calculateTangents)CalculateTangents((Real)normalsSmoothingThreshold);
+        //if (buildFaces)BuildFaces();
+
+    }
+
+    void Mesh::setCalculateNormals(Bool calculateNormals) {
+        this->shoudCalculateNormals = calculateNormals;
+    }
+
+    void Mesh::setNormalsSmoothingThreshold(Real threshold) {
+        this->normalsSmoothingThreshold = threshold;
+    }
+
     /*
     * Calculate vertex normals using the two incident edges to calculate the
     * cross product. For all triangles that share a given vertex,the method will
     * calculate the average normal for that vertex as long as the angle between
     * the un-averaged normals is less than [smoothingThreshhold]. [smoothingThreshhold]
-    * is specified in degrees.
+    * is specified in radians.
     */
     void Mesh::calculateNormals(Real smoothingThreshhold) {
         if (!StandardAttributes::hasAttribute(this->enabledAttributes, StandardAttribute::Normal))return;
 
+        if (this->vertexCrossMap == nullptr) {
+            throw Exception("Mesh::calculateNormal() -> 'vertexCrossMap' is null.");
+        }
+
+        UInt32 realVertexCount = this->vertexCount;
+        WeakPointer<IndexBuffer> indices;
+        if (this->indexed) {
+            indices = this->getIndexBuffer();
+            realVertexCount = this->indexCount;
+        }
+
+        AttributeArray<Vector3rs>* vertexNormals = this->getVertexNormals();
+        AttributeArray<Vector3rs>* vertexFaceNormals = this->getVertexFaceNormals();
+     
         // loop through each triangle in this mesh's vertices
         // and calculate normals for each
-        /*for (UInt32 v = 0; v < this->vertexCount - 2; v += 3) {
-            Vector3 normal;
-            CalculateFaceNormal(v, normal);
+        for (UInt32 v = 0; v < realVertexCount - 2; v += 3) {
+            Vector3r normal;
+            this->calculateFaceNormal(v, normal);
 
-            vertexNormals.GetElement(v)->Set(normal.x, normal.y, normal.z);
-            vertexNormals.GetElement(v + 1)->Set(normal.x, normal.y, normal.z);
-            vertexNormals.GetElement(v + 2)->Set(normal.x, normal.y, normal.z);
+            UInt32 mappedIndex1 = v;
+            UInt32 mappedIndex2 = v + 1;
+            UInt32 mappedIndex3 = v + 2;
+            if (this->indexed) {
+                mappedIndex1 = indices->getIndex(mappedIndex1);
+                mappedIndex2 = indices->getIndex(mappedIndex2);
+                mappedIndex3 = indices->getIndex(mappedIndex3);
+            }
 
-            faceNormals.GetElement(v)->Set(normal.x, normal.y, normal.z);
-            faceNormals.GetElement(v + 1)->Set(normal.x, normal.y, normal.z);
-            faceNormals.GetElement(v + 2)->Set(normal.x, normal.y, normal.z);
+            vertexNormals->getAttribute(mappedIndex1).copy(normal);
+            vertexNormals->getAttribute(mappedIndex2).copy(normal);
+            vertexNormals->getAttribute(mappedIndex3).copy(normal);
+
+            vertexFaceNormals->getAttribute(mappedIndex1).copy(normal);
+            vertexFaceNormals->getAttribute(mappedIndex2).copy(normal);
+            vertexFaceNormals->getAttribute(mappedIndex3).copy(normal);
         }
 
         // This vector is used to store the calculated average normal for all equal vertices
-        std::vector<Vector3> averageNormals;
+        std::vector<Vector3r> averageNormals;
 
         // loop through each vertex and lookup the associated list of
         // normals associated with that vertex, and then calculate the
         // average normal from that list.
-        for (UInt32 v = 0; v < renderVertexCount; v++) {
+        for (UInt32 v = 0; v < realVertexCount; v++) {
+
+            UInt32 mappedIndex = v;
+            if (this->indexed) {
+                mappedIndex = indices->getIndex(mappedIndex);
+            }
+
             // get existing normal for this vertex
-            Vector3 oNormal;
-            oNormal = *(faceNormals.GetElement(v));
-            oNormal.Normalize();
+            Vector3r oNormal;
+            oNormal = vertexFaceNormals->getAttribute(mappedIndex);
+            oNormal.normalize();
 
             // retrieve the list of equal vertices for vertex [v]
             std::vector<UInt32>* listPtr = vertexCrossMap[v];
-            NONFATAL_ASSERT(listPtr != nullptr, "SubMesh3D::CalculateNormals -> Null pointer to vertex group list.", true);
+            if (listPtr == nullptr) {
+                throw Exception("Mesh::calculateNormals -> Null pointer to vertex group list.");
+            }
 
-            Vector3 avg(0, 0, 0);
+            Vector3r avg(0, 0, 0);
             Real divisor = 0;
 
             std::vector<UInt32>& list = *listPtr;
 
             // compute the cosine of the smoothing threshhold angle
-            Real cosSmoothingThreshhold = (GTEMath::Cos(Constants::DegreesToRads * smoothingThreshhold));
+            Real cosSmoothingThreshhold = (Math::cos(smoothingThreshhold));
 
             for (UInt32 i = 0; i < list.size(); i++) {
                 UInt32 vIndex = list[i];
-                Vector3 * currentPtr = faceNormals.GetElement(vIndex);
-                Vector3 current = *currentPtr;
-                current.Normalize();
+
+                UInt32 mappedSubIndex = vIndex;
+                if (this->indexed) {
+                    mappedSubIndex = indices->getIndex(mappedSubIndex);
+                }
+
+                Vector3r current = vertexFaceNormals->getAttribute(mappedSubIndex);
+                current.normalize();
 
                 // calculate angle between the normal that exists for this vertex,
                 // and the current normal in the list.
-                Real dot = Vector3::Dot(current, oNormal);
+                Real dot = Vector3r::dot(current, oNormal);
 
                 if (dot > cosSmoothingThreshhold) {
                     avg.x += current.x;
@@ -233,7 +295,7 @@ namespace Core {
             }
             else {
                 Real scaleFactor = (Real)1.0 / divisor;
-                avg.Scale(scaleFactor);
+                avg.scale(scaleFactor);
                 //avg.Normalize();
             }
 
@@ -242,60 +304,138 @@ namespace Core {
 
         // loop through each vertex and assign the average normal
         // calculated for that vertex
-        for (UInt32 v = 0; v < renderVertexCount; v++) {
-            Vector3 avg = averageNormals[v];
-            avg.Normalize();
+        for (UInt32 v = 0; v < realVertexCount; v++) {
+            Vector3r avg = averageNormals[v];
+            avg.normalize();
+            
+            UInt32 mappedIndex = v;
+            if (this->indexed) {
+                mappedIndex = indices->getIndex(mappedIndex);
+            }
+
             // set the normal for this vertex to the averaged normal
-            vertexNormals.GetElement(v)->Set(avg.x, avg.y, avg.z);
+            vertexNormals->getAttribute(mappedIndex).copy(avg);
         }
 
-        if (invertNormals)InvertNormals(); */
+        //if (invertNormals)InvertNormals(); 
+
+        vertexNormals->updateGPUStorageData();
     }
 
     /*
-     * For a given face in the sub-mesh specified by [faceIndex], calculate the face's
-     * normal and store the result in [result]. [faceIndex] will be the index of the
-     * face's first vertex in [positions], the next two will be at [faceIndex] + 1,
-     * and [faceIndex] + 2.
+     * For a given face in the sub-mesh specified by [faceVertexIndex], calculate the face's
+     * normal and store the result in [result]. [faceVertexIndex] will be the index of the
+     * face's first vertex in [vertexPositions], the next two will be at [faceVertexIndex] + 1,
+     * and [faceVertexIndex] + 2.
      */
-    void Mesh::calculateFaceNormal(UInt32 faceIndex, Vector3r& result) {
+    void Mesh::calculateFaceNormal(UInt32 faceVertexIndex, Vector3r& result) {
         UInt32 realVertexCount = this->vertexCount;
         WeakPointer<IndexBuffer> indices;
         if (this->indexed) {
             indices = this->getIndexBuffer();
             realVertexCount = this->indexCount;
         }
-        if (faceIndex >= realVertexCount - 2) {
+        if (faceVertexIndex >= realVertexCount - 2) {
             throw Exception("Mesh::calculateFaceNormal -> 'faceIndex' is out range.");
         }
 
-        UInt32 mappedFaceIndex = faceIndex;
+        UInt32 mappedFaceIndex1 = faceVertexIndex;
+        UInt32 mappedFaceIndex2 = faceVertexIndex + 1;
+        UInt32 mappedFaceIndex3 = faceVertexIndex + 2;
         if (this->indexed) {
-            mappedFaceIndex = indices->getIndex(faceIndex);
+            mappedFaceIndex1 = indices->getIndex(mappedFaceIndex1);
+            mappedFaceIndex2 = indices->getIndex(mappedFaceIndex2);
+            mappedFaceIndex3 = indices->getIndex(mappedFaceIndex3);
         }
      
-        Vector3r a, b, c;
+        Vector3r a, b;
 
         AttributeArray<Point3rs>* positions = this->getVertexPositions();
-
        
-        Point3r p = positions->getAttribute(mappedFaceIndex);
-
-        // get Point3 objects for each vertex
-        /*const Point3 *pa = positions.GetElementConst(faceIndex);
-        const Point3 *pb = positions.GetElementConst(faceIndex + 1);
-        const Point3 *pc = positions.GetElementConst(faceIndex + 2);
-
-        NONFATAL_ASSERT(pa != nullptr && pb != nullptr && pc != nullptr, "SubMesh3D::CalculateFaceNormal -> Mesh vertex array contains null points.", true);
+        Point3r p1 = positions->getAttribute(mappedFaceIndex1);
+        Point3r p2 = positions->getAttribute(mappedFaceIndex2);
+        Point3r p3 = positions->getAttribute(mappedFaceIndex3);
 
         // form 2 vectors based on triangle's vertices
-        Point3::Subtract(*pb, *pa, b);
-        Point3::Subtract(*pc, *pa, a);
+        a = p2 - p1;
+        b = p3 - p1;
 
         // calculate cross product
-        Vector3::Cross(a, b, c);
-        c.Normalize();
+        Vector3r::cross(a, b, result);
+        result.normalize();
+    }
 
-        result.Set(c.x, c.y, c.z);*/
+    /*
+     * Deallocate and destroy [vertexCrossMap].
+     */
+    void Mesh::destroyVertexCrossMap() {
+        if (this->vertexCrossMap != nullptr) {
+            UInt32 realVertexCount = this->vertexCount;
+            if (this->indexed) {
+                realVertexCount = this->indexCount;
+            }
+
+            std::unordered_map<std::vector<UInt32>*, Bool> deleted;
+            for (UInt32 i = 0; i < realVertexCount; i++) {
+                std::vector<UInt32>* list = this->vertexCrossMap[i];
+                if (list != nullptr && !deleted[list]) {
+                    delete list;
+                    deleted[list] = true;
+                }
+            }
+
+            delete[] this->vertexCrossMap;
+            this->vertexCrossMap = nullptr;
+        }
+    }
+
+    /*
+     * Construct [vertexCrossMap]. The vertex cross map is used to group all vertices that are equal.
+     * For a given combination of x,y,z, a corresponding list exists in [vertexCrossMap] with all the indices
+     * of vertices in [vertexPositions] which have a matching value for x,y, and z.
+     */
+    Bool Mesh::buildVertexCrossMap() {
+        // destroy existing cross map (if there is one).
+        this->destroyVertexCrossMap();
+
+        // This map is used to link all equal vertices. Many triangles in a mesh can potentially have equal
+        // vertices, so this structure is used to store indices in [vertexPositions] for those vertices.
+        std::unordered_map<Point3r, std::vector<UInt32>*, Vector3Base<Real>::Hasher, Vector3Base<Real>::Eq> vertexGroups;
+
+        UInt32 realVertexCount = this->vertexCount;
+        WeakPointer<IndexBuffer> indices;
+        if (this->indexed) {
+            indices = this->getIndexBuffer();
+            realVertexCount = this->indexCount;
+        }
+
+        vertexCrossMap = new(std::nothrow) std::vector<UInt32>*[realVertexCount];
+        if (vertexCrossMap == nullptr) {
+            throw AllocationException("Mesh::buildVertexCrossMap -> Could not allocate vertexCrossMap.");
+        }
+        
+        // loop through each vertex in the mesh and add the index in [vertexPositions] for that vertex to the
+        // appropriate vertex group.
+        for (UInt32 v = 0; v < realVertexCount; v++) {
+            UInt32 mappedIndex = v;
+            if (this->indexed) {
+                mappedIndex = indices->getIndex(mappedIndex);
+            }
+
+            Point3r point = this->vertexPositions->getAttribute(mappedIndex);
+
+            std::vector<UInt32>*& list = vertexGroups[point];
+
+            if (list == nullptr)list = new(std::nothrow) std::vector<UInt32>();
+            if (list == nullptr) {
+                throw AllocationException("Mesh::buildVertexCrossMap -> Could not allocate sub list.");
+            }
+
+            // add the normal at index [v] to the vertex group linked to [point]
+            list->push_back(v);
+            vertexCrossMap[v] = list;
+        }
+
+        return true;
     }
 }

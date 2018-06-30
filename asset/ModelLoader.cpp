@@ -440,12 +440,18 @@ namespace Core {
         }
 
         coreMesh->getVertexPositions()->store(positions.data());
-         if (hasNormals) coreMesh->getVertexNormals()->store(normals.data());
+        if (hasNormals) {
+            coreMesh->getVertexNormals()->store(normals.data());
+            coreMesh->getVertexFaceNormals()->store(faceNormals.data());
+        }
         if (hasColors) coreMesh->getVertexColors()->store(colors.data());
         if (hasUVs) coreMesh->getVertexUVs0()->store(uvs.data());
 
         // if (invert) mesh3D->SetInvertNormals(true);
-        // mesh3D->SetNormalsSmoothingThreshold(80);
+        coreMesh->setNormalsSmoothingThreshold(Math::PI / 4.0f);
+        coreMesh->setCalculateNormals(true);
+        coreMesh->update();
+
         return coreMesh;
     }
 

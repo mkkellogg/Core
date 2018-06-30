@@ -2,6 +2,7 @@
 
 #include <new>
 #include <unordered_map>
+#include <vector>
 
 #include "../Graphics.h"
 #include "../render/Renderable.h"
@@ -53,13 +54,19 @@ namespace Core {
         void calculateBoundingBox();
         const Box3& getBoundingBox() const;
 
-        void calculateNormals(Real smoothingThreshhold);
+        void setNormalsSmoothingThreshold(Real threshold);
+        void setCalculateNormals(Bool calculateNormals);
+        void calculateNormals(Real smoothingThreshold);
+
+        void update();
 
     protected:
         Mesh(WeakPointer<Graphics> graphics, UInt32 vertexCount, UInt32 indexCount);
         void initAttributes();
         Bool initIndices();
         void calculateFaceNormal(UInt32 faceIndex, Vector3r& result);
+        void destroyVertexCrossMap();
+        Bool buildVertexCrossMap();
 
         template <typename T>
         Bool initVertexAttributes(AttributeArray<T>** attributes, UInt32 vertexCount) {
@@ -90,5 +97,11 @@ namespace Core {
         AttributeArray<ColorS>* vertexColors;
         AttributeArray<Vector2rs>* vertexUVs0;
         std::shared_ptr<IndexBuffer> indexBuffer;
+
+        // maps vertices to other equal vertices
+        std::vector<UInt32>** vertexCrossMap;
+        Bool shoudCalculateNormals;
+        Real normalsSmoothingThreshold;
+
     };
 }
