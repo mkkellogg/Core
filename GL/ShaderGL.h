@@ -28,6 +28,7 @@ namespace Core {
         void setTexture2D(UInt32 slot, UInt32 textureID) override;
         void setTextureCube(UInt32 slot, UInt32 textureID) override;
         void setUniform1i(UInt32 location, Int32 val) override;
+        void setUniform1f(UInt32 location, Real val) override;
         void setUniform4f(UInt32 location, Real x, Real y, Real z, Real w) override;
         void setUniformMatrix4(UInt32 location, const Real* data) override;
         void setUniformMatrix4(UInt32 location, const Matrix4x4& data) override;
