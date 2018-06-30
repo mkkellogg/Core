@@ -59,6 +59,9 @@ namespace Core {
         }
 
         T& getAttribute(UInt32 index) {
+            if (index >= this->attributeCount) {
+                throw OutOfRangeException("AttributeArray::getAttribute() -> 'index' is out of range.");
+            }
             return this->attributes[index];
         }
 
@@ -70,6 +73,12 @@ namespace Core {
         void setGPUStorage(std::shared_ptr<AttributeArrayGPUStorage> storage) { 
             this->gpuStorage = storage;
             this->updateGPUStorageData();
+        }
+
+        void updateGPUStorageData() {
+            if (this->gpuStorage) {
+                this->gpuStorage->updateBufferData((void *)this->storage);
+            }
         }
 
         class iterator {
@@ -124,12 +133,6 @@ namespace Core {
         typename T::ComponentType* storage;
         T* attributes;
 
-        void updateGPUStorageData() {
-            if (this->gpuStorage) {
-                this->gpuStorage->updateBufferData((void *)this->storage);
-            }
-        }
-
         void allocate() {
             this->deallocate();
 
@@ -145,7 +148,7 @@ namespace Core {
 
             this->attributes = reinterpret_cast<T*>(tempAttributes);
             for (UInt32 i = 0; i < this->attributeCount; i++) {
-                new (this->attributes + i) T(this->storage + i);
+                new (this->attributes + i) T(this->storage + (i * T::ComponentCount));
             }
         }
 
