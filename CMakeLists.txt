@@ -63,6 +63,8 @@ set(INCLUDE_FILES
     render/Renderer.h
     render/BaseRenderable.h
     render/MeshRenderer.h
+    light/Light.h
+    light/PointLight.h
     image/ImageLoader.h
     image/CubeTexture.h
     image/Texture2D.h
@@ -131,6 +133,8 @@ set(SOURCE_FILES
     render/Camera.cpp
     render/Renderer.cpp
     render/ObjectRenderers.cpp
+    light/Light.cpp
+    light/PointLight.cpp
     material/Material.cpp
     material/BasicMaterial.cpp
     material/BasicTexturedMaterial.cpp
