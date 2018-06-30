@@ -59,7 +59,7 @@ namespace Core {
         }
 
         T& getAttribute(UInt32 index) {
-            return this - attributes[index];
+            return this->attributes[index];
         }
 
         void store(const typename T::ComponentType* data) {
