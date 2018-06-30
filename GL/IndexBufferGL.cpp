@@ -33,6 +33,7 @@ namespace Core {
     }
 
     void IndexBufferGL::setIndices(UInt32* indices) {
+        IndexBuffer::setIndices(indices);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->bufferID);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->size * sizeof(UInt32), indices, GL_DYNAMIC_DRAW);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
