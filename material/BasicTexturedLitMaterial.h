@@ -9,7 +9,7 @@ namespace Core {
     class Engine;
     class Texture;
 
-    class BasicTexturedMaterial : public Material {
+    class BasicTexturedLitMaterial : public Material {
         friend class Engine;
 
     public:
@@ -21,7 +21,7 @@ namespace Core {
         void setTexture(WeakPointer<Texture> texture);
 
     protected:
-        BasicTexturedMaterial(WeakPointer<Graphics> graphics);
+        BasicTexturedLitMaterial(WeakPointer<Graphics> graphics);
         void bindShaderVarLocations();
 
         WeakPointer<Texture> texture;
@@ -33,5 +33,11 @@ namespace Core {
         Int32 projectionMatrixLocation;
         Int32 viewMatrixLocation;
         Int32 modelMatrixLocation;
+
+        Int32 lightPositionLocation;
+        Int32 lightRangeLocation;
+        Int32 lightTypeLocation;
+        Int32 lightIntensityLocation;
+        Int32 lightColorLocation;
     };
 }

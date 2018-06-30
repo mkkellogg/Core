@@ -12,7 +12,8 @@ namespace Core {
         EmissiveColored = 6,
         EmissiveTextured = 7,
         VertexColors = 8,
-        VertexNormals = 9
+        VertexNormals = 9,
+        Lit = 10,
     };
 
 }

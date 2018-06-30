@@ -17,6 +17,9 @@ namespace Core {
         this->setShader(Shader::ShaderType::Vertex, "BasicTextured", ShaderManagerGL::BasicTextured_vertex);
         this->setShader(Shader::ShaderType::Fragment, "BasicTextured", ShaderManagerGL::BasicTextured_fragment);
 
+        this->setShader(Shader::ShaderType::Vertex, "BasicTexturedLit", ShaderManagerGL::BasicTexturedLit_vertex);
+        this->setShader(Shader::ShaderType::Fragment, "BasicTexturedLit", ShaderManagerGL::BasicTexturedLit_fragment);
+
         this->setShader(Shader::ShaderType::Vertex, "BasicCube", ShaderManagerGL::BasicCube_vertex);
         this->setShader(Shader::ShaderType::Fragment, "BasicCube", ShaderManagerGL::BasicCube_fragment);
     }
@@ -56,6 +59,34 @@ namespace Core {
         "#version 100\n"
         "attribute vec4 pos;\n"
         "attribute vec4 color;\n"
+        "attribute vec2 uv;\n"
+        "uniform mat4 projection;\n"
+        "uniform mat4 viewMatrix;\n"
+        "uniform mat4 modelMatrix;\n"
+        "varying vec4 vColor;\n"
+        "varying vec3 vNormal;\n"
+        "varying vec2 vUV;\n"
+        "void main() {\n"
+        "    gl_Position = projection * viewMatrix * modelMatrix * pos;\n"
+        "    vUV = uv;\n"
+        "    vColor = color;\n"
+        "}\n";
+
+    const char ShaderManagerGL::BasicTextured_fragment[] =   
+        "#version 100\n"
+        "precision mediump float;\n"
+        "uniform sampler2D textureA;\n"
+        "varying vec4 vColor;\n"
+        "varying vec2 vUV;\n"
+        "void main() {\n"
+        "    vec4 textureColor = texture2D(textureA, vUV);\n"
+        "    gl_FragColor = textureColor;\n"
+        "}\n";
+
+    const char ShaderManagerGL::BasicTexturedLit_vertex[] =  
+        "#version 100\n"
+        "attribute vec4 pos;\n"
+        "attribute vec4 color;\n"
         "attribute vec4 normal;\n"
         "attribute vec2 uv;\n"
         "uniform mat4 projection;\n"
@@ -73,7 +104,7 @@ namespace Core {
         "    vNormal = vec3(normal);\n"
         "}\n";
 
-    const char ShaderManagerGL::BasicTextured_fragment[] =   
+    const char ShaderManagerGL::BasicTexturedLit_fragment[] =   
         "#version 100\n"
         "precision mediump float;\n"
         "uniform sampler2D textureA;\n"
@@ -87,8 +118,7 @@ namespace Core {
         "varying vec4 vPos;\n"
         "void main() {\n"
         "    vec4 textureColor = texture2D(textureA, vUV);\n"
-       // "    vec3 toLight = normalize(vec3(lightPos - vPos));\n"
-        "    vec3 toLight = normalize(vec3(10.0, 10.0, -10.0));\n"
+        "    vec3 toLight = normalize(vec3(lightPos - vPos));\n"
         "    float aAtten = max(dot(normalize(vNormal), toLight), 0.0);\n"
         "    gl_FragColor = vec4(textureColor.rgb * aAtten, textureColor.a);\n"
         "}\n";

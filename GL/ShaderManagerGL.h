@@ -22,6 +22,9 @@ namespace Core {
         static const char BasicTextured_vertex[];
         static const char BasicTextured_fragment[];
 
+        static const char BasicTexturedLit_vertex[];
+        static const char BasicTexturedLit_fragment[];
+
         static const char BasicCube_vertex[];
         static const char BasicCube_fragment[];
 

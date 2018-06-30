@@ -1,4 +1,4 @@
-#include "BasicTexturedMaterial.h"
+#include "BasicTexturedLitMaterial.h"
 #include "../material/Shader.h"
 #include "../util/WeakPointer.h"
 #include "StandardAttributes.h"
@@ -9,14 +9,14 @@
 
 namespace Core {
 
-    BasicTexturedMaterial::BasicTexturedMaterial(WeakPointer<Graphics> graphics): Material(graphics) {
+    BasicTexturedLitMaterial::BasicTexturedLitMaterial(WeakPointer<Graphics> graphics): Material(graphics) {
     }
 
-    Bool BasicTexturedMaterial::build() {
+    Bool BasicTexturedLitMaterial::build() {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         ShaderManager& shaderDirectory = graphics->getShaderManager();
-        const std::string& vertexSrc = shaderDirectory.getShader(Shader::ShaderType::Vertex, "BasicTextured");
-        const std::string& fragmentSrc = shaderDirectory.getShader(Shader::ShaderType::Fragment, "BasicTextured");
+        const std::string& vertexSrc = shaderDirectory.getShader(Shader::ShaderType::Vertex, "BasicTexturedLit");
+        const std::string& fragmentSrc = shaderDirectory.getShader(Shader::ShaderType::Fragment, "BasicTexturedLit");
         Bool ready = this->buildFromSource(vertexSrc, fragmentSrc);
         if (!ready) {
             return false;
@@ -25,7 +25,7 @@ namespace Core {
         return true;
     }
 
-    Int32 BasicTexturedMaterial::getShaderLocation(StandardAttribute attribute) {
+    Int32 BasicTexturedLitMaterial::getShaderLocation(StandardAttribute attribute) {
         switch (attribute) {
             case StandardAttribute::Position:
                 return this->positionLocation;
@@ -40,7 +40,7 @@ namespace Core {
         }
     }
 
-    Int32 BasicTexturedMaterial::getShaderLocation(StandardUniform uniform) {
+    Int32 BasicTexturedLitMaterial::getShaderLocation(StandardUniform uniform) {
         switch (uniform) {
             case StandardUniform::ProjectionMatrix:
                 return this->projectionMatrixLocation;
@@ -50,24 +50,34 @@ namespace Core {
                 return this->modelMatrixLocation;
             case StandardUniform::Texture0:
                 return this->textureLocation;
+            case StandardUniform::LightPosition:
+                return this->lightPositionLocation;
+            case StandardUniform::LightRange:
+                return this->lightRangeLocation;
+            case StandardUniform::LightType:
+                return this->lightTypeLocation;
+            case StandardUniform::LightIntensity:
+                return this->lightIntensityLocation;
+            case StandardUniform::LightColor:
+                return this->lightColorLocation;
             default:
                 return -1;
         }
     }
 
-    void BasicTexturedMaterial::setTexture(WeakPointer<Texture> texture) {
+    void BasicTexturedLitMaterial::setTexture(WeakPointer<Texture> texture) {
         this->texture = texture;
     }
 
-    void BasicTexturedMaterial::sendCustomUniformsToShader() {
+    void BasicTexturedLitMaterial::sendCustomUniformsToShader() {
         if (this->texture) {
             this->shader->setTexture2D(0, this->texture->getTextureID());
             this->shader->setUniform1i(textureLocation, 0);
         }
     }
 
-    WeakPointer<Material> BasicTexturedMaterial::clone() {
-        WeakPointer<BasicTexturedMaterial> newMaterial = Engine::instance()->createMaterial<BasicTexturedMaterial>(false);
+    WeakPointer<Material> BasicTexturedLitMaterial::clone() {
+        WeakPointer<BasicTexturedLitMaterial> newMaterial = Engine::instance()->createMaterial<BasicTexturedLitMaterial>(false);
         newMaterial->setShader(this->getShader());
         newMaterial->texture = this->texture;
         newMaterial->positionLocation = this->positionLocation;
@@ -78,10 +88,15 @@ namespace Core {
         newMaterial->modelMatrixLocation = this->modelMatrixLocation;
         newMaterial->uvLocation = this->uvLocation;
         newMaterial->textureLocation = this->textureLocation;
+        newMaterial->lightPositionLocation = this->lightPositionLocation;
+        newMaterial->lightRangeLocation = this->lightRangeLocation;
+        newMaterial->lightTypeLocation = this->lightTypeLocation;
+        newMaterial->lightIntensityLocation = this->lightIntensityLocation;
+        newMaterial->lightColorLocation = this->lightColorLocation;
         return newMaterial;
     }
 
-    void BasicTexturedMaterial::bindShaderVarLocations() {
+    void BasicTexturedLitMaterial::bindShaderVarLocations() {
         this->positionLocation = this->shader->getAttributeLocation("pos");
         this->normalLocation = this->shader->getAttributeLocation("normal");
         this->colorLocation = this->shader->getAttributeLocation("color");
@@ -90,5 +105,10 @@ namespace Core {
         this->projectionMatrixLocation = this->shader->getUniformLocation("projection");
         this->viewMatrixLocation = this->shader->getUniformLocation("viewMatrix");
         this->modelMatrixLocation = this->shader->getUniformLocation("modelMatrix");
+        this->lightPositionLocation = this->shader->getUniformLocation("lightPos");
+        this->lightRangeLocation = this->shader->getUniformLocation("lightRange");
+        this->lightTypeLocation = this->shader->getUniformLocation("lightType");
+        this->lightIntensityLocation = this->shader->getUniformLocation("lightIntensity");
+        this->lightColorLocation = this->shader->getUniformLocation("lightColor");
     }
 }

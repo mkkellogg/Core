@@ -18,6 +18,7 @@
 #include "../image/Texture2D.h"
 #include "../material/Material.h"
 #include "../material/BasicTexturedMaterial.h"
+#include "../material/BasicTexturedLitMaterial.h"
 #include "../material/BasicMaterial.h"
 #include "../material/MaterialLibrary.h"
 #include "../material/ShaderMaterialCharacteristic.h"
@@ -332,14 +333,12 @@ namespace Core {
         coreMesh->enableAttribute(StandardAttribute::Position);
 
         std::vector<Real> normals;
-        if (mesh.mNormals != nullptr) {
-            normals.reserve(mesh.mNumFaces * 12);
-            if (!coreMesh->initVertexNormals()) {
-                throw ModelLoaderException("ModeLoader::convertAssimpMesh -> Unable to initialize vertex normals.");
-            }
-            coreMesh->enableAttribute(StandardAttribute::Normal);
-            hasNormals = true;
+        normals.reserve(mesh.mNumFaces * 12);
+        if (!coreMesh->initVertexNormals()) {
+            throw ModelLoaderException("ModeLoader::convertAssimpMesh -> Unable to initialize vertex normals.");
         }
+        coreMesh->enableAttribute(StandardAttribute::Normal);
+        hasNormals = true;
 
         std::vector<Real> colors;
         Int32 colorsIndex = materialImportDescriptor.meshSpecificProperties[meshIndex].vertexColorsIndex;
@@ -393,10 +392,17 @@ namespace Core {
 
                 // copy mesh normals
                 if (hasNormals) {
-                    aiVector3D& srcNormal = mesh.mNormals[vIndex];
-                    normals.push_back(srcNormal.x);
-                    normals.push_back(srcNormal.y);
-                    normals.push_back(srcNormal.z);
+                    if (mesh.mNormals != nullptr) {
+                        aiVector3D& srcNormal = mesh.mNormals[vIndex];
+                        normals.push_back(srcNormal.x);
+                        normals.push_back(srcNormal.y);
+                        normals.push_back(srcNormal.z);
+                    }
+                    else {
+                        normals.push_back(0.0f);
+                        normals.push_back(0.0f);
+                        normals.push_back(0.0f);
+                    }
                     normals.push_back(0.0f);
                 }
 
@@ -501,7 +507,7 @@ namespace Core {
                     // if we can't find a loaded shader that matches the properties of this material and
                     // the current mesh...well we can't really load this material
                     if (!hasMaterial) {
-                        std::string msg = "Could not find loaded shader for: ";
+                        std::string msg = "Could not find loaded material for: ";
                         msg += std::bitset<64>(shaderMaterialChacteristics).to_string();
                         throw ModelLoaderException(msg);
                     }
@@ -553,6 +559,8 @@ namespace Core {
         if (AI_SUCCESS == mtl->GetTexture(aiTextureType_DIFFUSE, 0, &path)) {
             LongMaskUtil::setBit(&flags, (Int16)ShaderMaterialCharacteristic::DiffuseTextured);
         }
+
+        LongMaskUtil::setBit(&flags, (Int16)ShaderMaterialCharacteristic::Lit);
 
         /*if(AI_SUCCESS == mtl->GetTexture(aiTextureType_SPECULAR, 0, &path))
         {
@@ -699,7 +707,7 @@ namespace Core {
 
         // set the diffuse texture in the material for the mesh specified by [meshIndex]
         WeakPointer<Material> material = materialImportDesc.meshSpecificProperties[meshIndex].material;
-        WeakPointer<BasicTexturedMaterial> texturedMaterial = WeakPointer<Material>::dynamicPointerCast<BasicTexturedMaterial>(material);
+        WeakPointer<BasicTexturedLitMaterial> texturedMaterial = WeakPointer<Material>::dynamicPointerCast<BasicTexturedLitMaterial>(material);
 
         texturedMaterial->setTexture(texture);
 
