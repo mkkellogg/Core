@@ -29,6 +29,8 @@ namespace Core {
         switch (attribute) {
             case StandardAttribute::Position:
                 return this->positionLocation;
+             case StandardAttribute::Normal:
+                return this->normalLocation;
             case StandardAttribute::Color:
                 return this->colorLocation;
             case StandardAttribute::UV0:
@@ -48,6 +50,16 @@ namespace Core {
                 return this->modelMatrixLocation;
             case StandardUniform::Texture0:
                 return this->textureLocation;
+            case StandardUniform::LightPosition:
+                return this->lightPositionLocation;
+            case StandardUniform::LightRange:
+                return this->lightRangeLocation;
+            case StandardUniform::LightType:
+                return this->lightTypeLocation;
+            case StandardUniform::LightIntensity:
+                return this->lightIntensityLocation;
+            case StandardUniform::LightColor:
+                return this->lightColorLocation;
             default:
                 return -1;
         }
@@ -69,22 +81,34 @@ namespace Core {
         newMaterial->setShader(this->getShader());
         newMaterial->texture = this->texture;
         newMaterial->positionLocation = this->positionLocation;
+        newMaterial->normalLocation = this->normalLocation;
         newMaterial->colorLocation = this->colorLocation;
         newMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
         newMaterial->viewMatrixLocation = this->viewMatrixLocation;
         newMaterial->modelMatrixLocation = this->modelMatrixLocation;
         newMaterial->uvLocation = this->uvLocation;
         newMaterial->textureLocation = this->textureLocation;
+        newMaterial->lightPositionLocation = this->lightPositionLocation;
+        newMaterial->lightRangeLocation = this->lightRangeLocation;
+        newMaterial->lightTypeLocation = this->lightTypeLocation;
+        newMaterial->lightIntensityLocation = this->lightIntensityLocation;
+        newMaterial->lightColorLocation = this->lightColorLocation;
         return newMaterial;
     }
 
     void BasicTexturedMaterial::bindShaderVarLocations() {
         this->positionLocation = this->shader->getAttributeLocation("pos");
+        this->normalLocation = this->shader->getAttributeLocation("normal");
         this->colorLocation = this->shader->getAttributeLocation("color");
         this->textureLocation = this->shader->getAttributeLocation("textureA");
         this->uvLocation = this->shader->getAttributeLocation("uv");
         this->projectionMatrixLocation = this->shader->getUniformLocation("projection");
         this->viewMatrixLocation = this->shader->getUniformLocation("viewMatrix");
         this->modelMatrixLocation = this->shader->getUniformLocation("modelMatrix");
+        this->lightPositionLocation = this->shader->getUniformLocation("lightPos");
+        this->lightRangeLocation = this->shader->getUniformLocation("lightRange");
+        this->lightTypeLocation = this->shader->getUniformLocation("lightType");
+        this->lightIntensityLocation = this->shader->getUniformLocation("lightIntensity");
+        this->lightColorLocation = this->shader->getUniformLocation("lightColor");
     }
 }

@@ -29,7 +29,8 @@ namespace Core {
         friend class Engine;
 
     public:
-       
+        virtual ~Light() = 0;
+
         const Color& getColor() const;
         void setColor(const Color& color);
         void setColor(Real r, Real g, Real b, Real a);
@@ -45,7 +46,6 @@ namespace Core {
 
     protected:
         Light(WeakPointer<Object3D> owner);
-        virtual ~Light() = 0;
 
         Color color;
         Real intensity;

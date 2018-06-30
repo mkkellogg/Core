@@ -66,7 +66,7 @@ namespace Core {
         glUniform1i(location, val);
     }
 
-    void setUniform1f(UInt32 location, Real val) {
+    void ShaderGL::setUniform1f(UInt32 location, Real val) {
         glUniform1f(location, val);
     }
 

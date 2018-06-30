@@ -63,6 +63,7 @@ set(INCLUDE_FILES
     render/Renderer.h
     render/BaseRenderable.h
     render/MeshRenderer.h
+    render/RenderState.h
     light/Light.h
     light/PointLight.h
     image/ImageLoader.h

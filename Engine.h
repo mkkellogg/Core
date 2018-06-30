@@ -13,6 +13,7 @@
 #include "material/MaterialLibrary.h"
 #include "render/RenderableContainer.h"
 #include "render/Renderer.h"
+#include "light/Light.h"
 
 namespace Core {
 
@@ -50,6 +51,13 @@ namespace Core {
         WeakPointer<Scene> createScene();
 
         WeakPointer<Camera> createCamera(WeakPointer<Object3D> owner);
+
+        template <typename T>
+        WeakPointer<typename std::enable_if<std::is_base_of<Light, T>::value, T>::type> createLight(WeakPointer<Object3D> owner) {
+            std::shared_ptr<T> lightPtr = std::shared_ptr<T>(new T(owner));
+            this->lights.push_back(lightPtr);
+            return lightPtr;
+        }
 
         template <typename T = Object3D>
         WeakPointer<typename std::enable_if<std::is_base_of<Object3D, T>::value, T>::type> createObject3D() {
@@ -101,6 +109,7 @@ namespace Core {
         std::vector<std::shared_ptr<Scene>> scenes;
         std::shared_ptr<Scene> activeScene;
         std::vector<std::shared_ptr<Camera>> cameras;
+        std::vector<std::shared_ptr<Light>> lights;
         std::vector<std::shared_ptr<Object3D>> sceneObjects;
         std::vector<std::shared_ptr<Material>> materials;
         std::vector<std::shared_ptr<Texture>> textures;

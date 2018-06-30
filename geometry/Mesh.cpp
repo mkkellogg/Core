@@ -141,4 +141,100 @@ namespace Core {
     WeakPointer<IndexBuffer> Mesh::getIndexBuffer() {
         return this->indexBuffer;
     }
+
+    /*
+    * Calculate vertex normals using the two incident edges to calculate the
+    * cross product. For all triangles that share a given vertex,the method will
+    * calculate the average normal for that vertex as long as the angle between
+    * the un-averaged normals is less than [smoothingThreshhold]. [smoothingThreshhold]
+    * is specified in degrees.
+    */
+    /*void Mesh::calculateNormals(Real smoothingThreshhold) {
+        if (!StandardAttributes::hasAttribute(this->, StandardAttribute::Normal))return;
+
+        // loop through each triangle in this mesh's vertices
+        // and calculate normals for each
+        for (UInt32 v = 0; v < renderVertexCount - 2; v += 3) {
+            Vector3 normal;
+            CalculateFaceNormal(v, normal);
+
+            vertexNormals.GetElement(v)->Set(normal.x, normal.y, normal.z);
+            vertexNormals.GetElement(v + 1)->Set(normal.x, normal.y, normal.z);
+            vertexNormals.GetElement(v + 2)->Set(normal.x, normal.y, normal.z);
+
+            faceNormals.GetElement(v)->Set(normal.x, normal.y, normal.z);
+            faceNormals.GetElement(v + 1)->Set(normal.x, normal.y, normal.z);
+            faceNormals.GetElement(v + 2)->Set(normal.x, normal.y, normal.z);
+        }
+
+        // This vector is used to store the calculated average normal for all equal vertices
+        std::vector<Vector3> averageNormals;
+
+        // loop through each vertex and lookup the associated list of
+        // normals associated with that vertex, and then calculate the
+        // average normal from that list.
+        for (UInt32 v = 0; v < renderVertexCount; v++) {
+            // get existing normal for this vertex
+            Vector3 oNormal;
+            oNormal = *(faceNormals.GetElement(v));
+            oNormal.Normalize();
+
+            // retrieve the list of equal vertices for vertex [v]
+            std::vector<UInt32>* listPtr = vertexCrossMap[v];
+            NONFATAL_ASSERT(listPtr != nullptr, "SubMesh3D::CalculateNormals -> Null pointer to vertex group list.", true);
+
+            Vector3 avg(0, 0, 0);
+            Real divisor = 0;
+
+            std::vector<UInt32>& list = *listPtr;
+
+            // compute the cosine of the smoothing threshhold angle
+            Real cosSmoothingThreshhold = (GTEMath::Cos(Constants::DegreesToRads * smoothingThreshhold));
+
+            for (UInt32 i = 0; i < list.size(); i++) {
+                UInt32 vIndex = list[i];
+                Vector3 * currentPtr = faceNormals.GetElement(vIndex);
+                Vector3 current = *currentPtr;
+                current.Normalize();
+
+                // calculate angle between the normal that exists for this vertex,
+                // and the current normal in the list.
+                Real dot = Vector3::Dot(current, oNormal);
+
+                if (dot > cosSmoothingThreshhold) {
+                    avg.x += current.x;
+                    avg.y += current.y;
+                    avg.z += current.z;
+                    divisor++;
+                }
+            }
+
+            // if divisor <= 1, then no valid normals were found to include in the average,
+            // so just use the existing one
+            if (divisor <= 1) {
+                avg.x = oNormal.x;
+                avg.y = oNormal.y;
+                avg.z = oNormal.z;
+            }
+            else {
+                Real scaleFactor = (Real)1.0 / divisor;
+                avg.Scale(scaleFactor);
+                //avg.Normalize();
+            }
+
+            averageNormals.push_back(avg);
+        }
+
+        // loop through each vertex and assign the average normal
+        // calculated for that vertex
+        for (UInt32 v = 0; v < renderVertexCount; v++) {
+            Vector3 avg = averageNormals[v];
+            avg.Normalize();
+            // set the normal for this vertex to the averaged normal
+            vertexNormals.GetElement(v)->Set(avg.x, avg.y, avg.z);
+        }
+
+        if (invertNormals)InvertNormals();
+    }*/
+
 }

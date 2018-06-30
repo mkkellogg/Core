@@ -6,6 +6,8 @@
 #include "../geometry/AttributeArrayGPUStorage.h"
 #include "../geometry/AttributeArray.h"
 #include "../geometry/Mesh.h"
+#include "../light/PointLight.h"
+#include "../Engine.h"
 
 namespace Core {
 
@@ -15,9 +17,13 @@ namespace Core {
     }
 
     void MeshRenderer::renderObject(WeakPointer<Camera> camera, WeakPointer<Mesh> mesh) {
-        WeakPointer<Shader> shader = this->material->getShader();
+        static WeakPointer<PointLight> testLight = Engine::instance()->createLight<PointLight>(this->getOwner());
+        testLight->setColor(1.0f, 0.6f, 0.0f, 1.0f);
+        testLight->setRadius(10.0f);
+        testLight->setPosition(10.0f, 20.0f, -10.0f);
 
-        this->graphics->activateShader(this->material->getShader());
+        WeakPointer<Shader> shader = this->material->getShader();
+        this->graphics->activateShader(shader);
 
         // send custom uniforms first so that the renderer can override if necessary.
         this->material->sendCustomUniformsToShader();
@@ -45,6 +51,34 @@ namespace Core {
         if (modelMatrixLoc >= 0) {
             Matrix4x4 modelmatrix = this->owner->getTransform().getWorldMatrix();
             shader->setUniformMatrix4(modelMatrixLoc, modelmatrix);
+        }
+
+        Int32 lightPositionLoc = this->material->getShaderLocation(StandardUniform::LightPosition);
+        Int32 lightRangeLoc = this->material->getShaderLocation(StandardUniform::LightRange);
+        Int32 lightTypeLoc = this->material->getShaderLocation(StandardUniform::LightType);
+        Int32 lightIntensityLoc = this->material->getShaderLocation(StandardUniform::LightIntensity);
+        Int32 lightColorLoc = this->material->getShaderLocation(StandardUniform::LightColor);
+
+        if (lightPositionLoc >= 0) {
+            Point3r pos = testLight->getPosition();
+            shader->setUniform4f(lightPositionLoc, pos.x, pos.y, pos.z, 1.0f);
+        }
+
+        if (lightRangeLoc >= 0) {
+            shader->setUniform1f(lightRangeLoc, testLight->getRadius());
+        }
+
+       if (lightTypeLoc >= 0) {
+            shader->setUniform1i(lightRangeLoc, (Int32)LightType::Point);
+        }
+
+        if (lightIntensityLoc >= 0) {
+            shader->setUniform1f(lightIntensityLoc, testLight->getIntensity());
+        }
+
+        if (lightColorLoc >= 0) {
+            Color color = testLight->getColor();
+            shader->setUniform4f(lightPositionLoc, color.r, color.g, color.b, color.a);
         }
 
         if (mesh->isIndexed()) {

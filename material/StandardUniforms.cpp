@@ -13,7 +13,15 @@ namespace Core {
         ModelViewProjectionMatrix = 4,
         Texture0 = 5,
         Texture1 = 6,
-        _Count = 7  // Must always be last in the list
+         LightPosition = 7,
+        LightDirection = 8,
+        LightColor = 9,
+        LightIntensity = 10,
+        LightAttenuation = 11,
+        LightType = 12,
+        LightRange = 13,
+        LightEnabled = 14,
+        _Count = 15  // Must always be last in the list
         */
 
     const std::string StandardUniforms::uniformNames[] =
@@ -24,7 +32,15 @@ namespace Core {
         "PROJECTION_MATRIX",
         "MODELVIEWPROJECTION_MATRIX",
         "TEXTURE0",
-        "TEXTURE1"
+        "TEXTURE1",
+        "LIGHT_POSITION",
+        "LIGHT_DIRECTION",
+        "LIGHT_COLOR",
+        "LIGHT_INTENSITY",
+        "LIGHT_ATTENUATION",
+        "LIGHT_TYPE",
+        "LIGHT_RANGE",
+        "LIGHT_ENABLED",
     };
 
     std::unordered_map<std::string, StandardUniform> StandardUniforms::nameToUniform
@@ -35,7 +51,14 @@ namespace Core {
         {uniformNames[(UInt16)StandardUniform::ProjectionMatrix],StandardUniform::ProjectionMatrix},
         {uniformNames[(UInt16)StandardUniform::ModelViewProjectionMatrix],StandardUniform::ModelViewProjectionMatrix},
         {uniformNames[(UInt16)StandardUniform::Texture0],StandardUniform::Texture0},
-        {uniformNames[(UInt16)StandardUniform::Texture1],StandardUniform::Texture1}
+        {uniformNames[(UInt16)StandardUniform::Texture1],StandardUniform::Texture1},
+        {uniformNames[(UInt16)StandardUniform::LightPosition],StandardUniform::LightPosition},
+        {uniformNames[(UInt16)StandardUniform::LightDirection],StandardUniform::LightDirection},
+        {uniformNames[(UInt16)StandardUniform::LightColor],StandardUniform::LightColor},
+        {uniformNames[(UInt16)StandardUniform::LightIntensity],StandardUniform::LightIntensity},
+        {uniformNames[(UInt16)StandardUniform::LightAttenuation],StandardUniform::LightAttenuation},
+        {uniformNames[(UInt16)StandardUniform::LightRange],StandardUniform::LightRange},
+        {uniformNames[(UInt16)StandardUniform::LightEnabled],StandardUniform::LightEnabled},
     };
 
     const std::string& StandardUniforms::getUniformName(StandardUniform uniform) {

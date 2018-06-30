@@ -9,6 +9,10 @@ namespace Core {
         this->cullingMask = IntMaskUtil::createMask();
     }
 
+    Light::~Light() {
+        
+    }
+
     const Color& Light::getColor() const {
         return this->color;
     }

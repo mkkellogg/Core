@@ -13,8 +13,16 @@ namespace Core {
         ModelViewProjectionMatrix = 4,
         Texture0 = 5,
         Texture1 = 6,
-        _Count = 7,  // Must always be last in the list (before _None)
-        _None = 8,
+        LightPosition = 7,
+        LightDirection = 8,
+        LightColor = 9,
+        LightIntensity = 10,
+        LightAttenuation = 11,
+        LightType = 12,
+        LightRange = 13,
+        LightEnabled = 14,
+        _Count = 15,  // Must always be last in the list (before _None)
+        _None = 16,
     };
 
     class StandardUniforms {
