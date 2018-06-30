@@ -43,7 +43,7 @@ namespace Core {
         std::istringstream iss(src);
         std::string result;
         std::string includeName("\"[0-9a-zA-Z]*\"");
-        std::regex includeRegex(std::string("^#include( )+") + includeName + std::string("$"));
+        std::regex includeRegex(std::string("^( )*#include( )+") + includeName + std::string("( )*$"));
         std::regex nameRegex(includeName);
         for (std::string line; std::getline(iss, line);) {
             if (std::regex_match(line, includeRegex)) {

@@ -66,6 +66,10 @@ namespace Core {
         glUniform1i(location, 0);
     }
 
+    void ShaderGL::setUniform4f(UInt32 location, Real x, Real y, Real z, Real w) {
+        glUniform4f(location, x, y, z, w);
+    }
+
     void ShaderGL::setUniformMatrix4(UInt32 location, const Real *data) {
         glUniformMatrix4fv(location, 1, GL_FALSE, data);
     }
