@@ -333,11 +333,17 @@ namespace Core {
         coreMesh->enableAttribute(StandardAttribute::Position);
 
         std::vector<Real> normals;
+        std::vector<Real> faceNormals;
         normals.reserve(mesh.mNumFaces * 12);
+        faceNormals.reserve(mesh.mNumFaces * 12);
         if (!coreMesh->initVertexNormals()) {
             throw ModelLoaderException("ModeLoader::convertAssimpMesh -> Unable to initialize vertex normals.");
         }
+        if (!coreMesh->initVertexFaceNormals()) {
+            throw ModelLoaderException("ModeLoader::convertAssimpMesh -> Unable to initialize face normals.");
+        }
         coreMesh->enableAttribute(StandardAttribute::Normal);
+        coreMesh->enableAttribute(StandardAttribute::FaceNormal);
         hasNormals = true;
 
         std::vector<Real> colors;
@@ -397,11 +403,17 @@ namespace Core {
                         normals.push_back(srcNormal.x);
                         normals.push_back(srcNormal.y);
                         normals.push_back(srcNormal.z);
+                        faceNormals.push_back(srcNormal.x);
+                        faceNormals.push_back(srcNormal.y);
+                        faceNormals.push_back(srcNormal.z);
                     }
                     else {
                         normals.push_back(0.0f);
                         normals.push_back(0.0f);
                         normals.push_back(0.0f);
+                        faceNormals.push_back(0.0f);
+                        faceNormals.push_back(0.0f);
+                        faceNormals.push_back(0.0f);
                     }
                     normals.push_back(0.0f);
                 }
@@ -409,10 +421,10 @@ namespace Core {
                 // copy vertex colors (if present)
                 if (hasColors) {
                     auto color = mesh.mColors[colorsIndex];
-                    normals.push_back(color->r);
-                    normals.push_back(color->g);
-                    normals.push_back(color->b);
-                    normals.push_back(color->a);
+                    colors.push_back(color->r);
+                    colors.push_back(color->g);
+                    colors.push_back(color->b);
+                    colors.push_back(color->a);
                 }
 
                 // copy relevant data for diffuse texture (UV coords)
