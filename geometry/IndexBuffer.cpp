@@ -13,7 +13,7 @@ namespace Core {
 
     IndexBuffer::~IndexBuffer() {
         if (this->indices) {
-            delete this->indices;
+            delete[] this->indices;
             this->indices = nullptr;
         }
     }
