@@ -101,6 +101,21 @@ namespace Core {
             return vec;
         }
 
+        // TODO: optimize this hashing function (implement correctly)
+        typedef struct {
+            Int32 operator()(const Vector3Base& p) const {
+                return (Int32)p.x + (6 << (Int32)p.y) + (12 << (Int32)p.z);
+            }
+
+            Int32 operator()(const Vector3Base& p) {
+                return (Int32)p.x + (6 << (Int32)p.y) + (12 << (Int32)p.z);
+            }
+        }Hasher;
+
+        typedef struct {
+            Bool operator() (const Vector3Base& a, const Vector3Base& b) const { return a.x == b.x && a.y == b.y && a.z == b.z; }
+        }Eq;
+
     protected:
         T& w = this->data[3];
 
