@@ -21,6 +21,12 @@ namespace Core {
         Vector4(T* storage, const T& x, const T& y, const T& z, const T& w)
             : VectorStorage<T, VECTOR4_COMPONENT_COUNT, true>(storage), Vector4Components<T>(this->data, x, y, z, w) {
         }
+
+        Vector4& operator =(const Vector4& other) {
+            if (this == &other) return *this;
+            this->copy(other);
+            return *this;
+        }
     };
 
     typedef Vector4<Real, false> Vector4r;
