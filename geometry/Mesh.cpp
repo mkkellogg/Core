@@ -7,13 +7,15 @@
 
 namespace Core {
 
-    Mesh::Mesh(WeakPointer<Graphics> graphics, UInt32 vertexCount, UInt32 indexCount): graphics(graphics), initialized(false), vertexCount(vertexCount), indexCount(indexCount) {
+    Mesh::Mesh(WeakPointer<Graphics> graphics, UInt32 vertexCount, UInt32 indexCount): graphics(graphics), vertexCount(vertexCount), indexCount(indexCount) {
+        this->initialized = false;
         this->vertexPositions = nullptr;
         this->vertexNormals = nullptr;
         this->vertexColors = nullptr;
         this->vertexUVs0 = nullptr;
         this->indexBuffer = nullptr;
         this->indexed = indexCount > 0 ? true : false;
+        this->enabledAttributes = StandardAttributes::createAttributeSet();
         initAttributes();
     }
 
@@ -56,15 +58,15 @@ namespace Core {
     }
 
     void Mesh::enableAttribute(StandardAttribute attribute) {
-        this->enabledAttributes[(UInt32)attribute] = true;
+        StandardAttributes::addAttribute(&this->enabledAttributes, attribute);
     }
 
     void Mesh::disableAttribute(StandardAttribute attribute) {
-        this->enabledAttributes[(UInt32)attribute] = false;
+        StandardAttributes::removeAttribute(&this->enabledAttributes, attribute);
     }
 
     Bool Mesh::isAttributeEnabled(StandardAttribute attribute) {
-        return this->enabledAttributes[(UInt32)attribute];
+        return StandardAttributes::hasAttribute(this->enabledAttributes, attribute);
     }
 
     Bool Mesh::isIndexed() {

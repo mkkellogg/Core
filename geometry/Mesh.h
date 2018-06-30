@@ -73,7 +73,7 @@ namespace Core {
 
         PersistentWeakPointer<Graphics> graphics;
         Bool initialized;
-        Bool enabledAttributes[(UInt32)StandardAttribute::_Count];
+        StandardAttributeSet enabledAttributes;
         UInt32 vertexCount;
         Bool indexed;
         UInt32 indexCount;
