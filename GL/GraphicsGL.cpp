@@ -1,10 +1,10 @@
 #include "GraphicsGL.h"
-#include "RendererGL.h"
-#include "Texture2DGL.h"
-#include "ShaderGL.h"
-#include "CubeTextureGL.h"
 #include "AttributeArrayGPUStorageGL.h"
+#include "CubeTextureGL.h"
 #include "IndexBufferGL.h"
+#include "RendererGL.h"
+#include "ShaderGL.h"
+#include "Texture2DGL.h"
 
 namespace Core {
 
@@ -101,12 +101,49 @@ namespace Core {
 
     void GraphicsGL::drawBoundVertexBuffer(UInt32 vertexCount, WeakPointer<IndexBuffer> indices) {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices->getBufferID());
-        glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, (void *)(0));
+        glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, (void*)(0));
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
     ShaderManager& GraphicsGL::getShaderManager() {
         return this->shaderDirectory;
+    }
+
+    void GraphicsGL::setBlendingEnabled(Bool enabled) {
+        if (enabled) glEnable(GL_BLEND);
+        else glDisable(GL_BLEND);
+    }
+
+    void GraphicsGL::setBlendingFunction(RenderState::BlendingMethod source, RenderState::BlendingMethod dest) {
+        glBlendFunc(getGLBlendProperty(source), getGLBlendProperty(dest));
+    }
+
+    GLenum GraphicsGL::getGLBlendProperty(RenderState::BlendingMethod property) {
+        switch (property) {
+            case RenderState::BlendingMethod::SrcAlpha:
+                return GL_SRC_ALPHA;
+            case RenderState::BlendingMethod::OneMinusSrcAlpha:
+                return GL_ONE_MINUS_SRC_ALPHA;
+            case RenderState::BlendingMethod::DstAlpha:
+                return GL_DST_ALPHA;
+            case RenderState::BlendingMethod::OneMinusDstAlpha:
+                return GL_ONE_MINUS_DST_ALPHA;
+            case RenderState::BlendingMethod::One:
+                return GL_ONE;
+            case RenderState::BlendingMethod::Zero:
+                return GL_ZERO;
+            case RenderState::BlendingMethod::DstColor:
+                return GL_DST_COLOR;
+            case RenderState::BlendingMethod::OneMinusDstColor:
+                return GL_ONE_MINUS_DST_COLOR;
+            case RenderState::BlendingMethod::SrcColor:
+                return GL_SRC_COLOR;
+            case RenderState::BlendingMethod::OneMinusSrcColor:
+                return GL_ONE_MINUS_SRC_COLOR;
+            default:
+                return (GLenum)0xFFFFFFFF;
+        }
+        return (GLenum)0xFFFFFFFF;
     }
 
     GLuint GraphicsGL::convertAttributeType(AttributeType type) {

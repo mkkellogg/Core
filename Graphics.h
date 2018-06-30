@@ -6,6 +6,7 @@
 #include "util/WeakPointer.h"
 #include "image/TextureAttr.h"
 #include "geometry/AttributeType.h"
+#include "render/RenderState.h"
 
 namespace Core {
 
@@ -45,6 +46,9 @@ namespace Core {
         virtual void drawBoundVertexBuffer(UInt32 vertexCount, WeakPointer<IndexBuffer> indices) = 0;
 
         virtual ShaderManager& getShaderManager() = 0;
+
+        virtual void setBlendingEnabled(Bool enabled) = 0;
+        virtual void setBlendingFunction(RenderState::BlendingMethod source, RenderState::BlendingMethod dest) = 0;
 
     };
 }

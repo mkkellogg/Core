@@ -46,9 +46,13 @@ namespace Core {
 
         ShaderManager& getShaderManager() override;
 
+        void setBlendingEnabled(Bool enabled) override;
+        void setBlendingFunction(RenderState::BlendingMethod source, RenderState::BlendingMethod dest) override;
+
     private:
         GraphicsGL(GLVersion version);
         static GLuint convertAttributeType(AttributeType type);
+        static GLenum getGLBlendProperty(RenderState::BlendingMethod property);
 
         GLVersion glVersion;
         std::shared_ptr<RendererGL> renderer;
