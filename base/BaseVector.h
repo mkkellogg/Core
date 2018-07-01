@@ -10,8 +10,7 @@ namespace Core {
         static const UInt32 ComponentCount = componentCount;
         typedef T ComponentType;
 
-        BaseVector(T *data) : data(data) {
-        }
+        BaseVector(T *data) : data(data) {}
 
         const T *getConstData() const {
             return this->data;

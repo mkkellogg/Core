@@ -89,30 +89,30 @@ namespace Core {
             iterator(AttributeArray<T>* array, UInt32 index) : array(array), index(index) {
             }
 
-            T& operator*() {
+            T& operator *() {
                 return array->attributes[index];
             }
 
-            iterator operator++() {
+            iterator operator ++() {
                 if (this->index < this->array->getAttributeCount()) {
                     ++this->index;
                 }
                 return *this;
             }
 
-            iterator operator++(int i) {
+            iterator operator ++(int i) {
                 if (this->index < this->array->getAttributeCount()) {
                     this->index++;
                 }
                 return *this;
             }
 
-            Bool operator==(const iterator& other) {
+            Bool operator ==(const iterator& other) {
                 if (this == &other) return true;
                 return this->index == other.index && this->array == other.array;
             }
 
-            Bool operator!=(const iterator& other) {
+            Bool operator !=(const iterator& other) {
                 return this->operator==(other);
             }
         };

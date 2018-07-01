@@ -24,26 +24,11 @@ namespace Core {
     }
 
     Mesh::~Mesh() {
-        if (this->vertexPositions) {
-            delete this->vertexPositions;
-            this->vertexPositions = nullptr;
-        }
-        if (this->vertexNormals) {
-            delete this->vertexNormals;
-            this->vertexNormals = nullptr;
-        }
-         if (this->vertexFaceNormals) {
-            delete this->vertexFaceNormals;
-            this->vertexFaceNormals = nullptr;
-        }
-        if (this->vertexColors) {
-            delete this->vertexColors;
-            this->vertexColors = nullptr;
-        }
-        if (this->vertexUVs0) {
-            delete this->vertexUVs0;
-            this->vertexUVs0 = nullptr;
-        }
+        this->destroyAttributeArray(&this->vertexPositions);
+        this->destroyAttributeArray(&this->vertexNormals);
+        this->destroyAttributeArray(&this->vertexFaceNormals);
+        this->destroyAttributeArray(&this->vertexColors);
+        this->destroyAttributeArray(&this->vertexUVs0);
         this->destroyVertexCrossMap();
     }
 

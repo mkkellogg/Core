@@ -448,7 +448,7 @@ namespace Core {
         if (hasUVs) coreMesh->getVertexUVs0()->store(uvs.data());
 
         // if (invert) mesh3D->SetInvertNormals(true);
-        coreMesh->setNormalsSmoothingThreshold(Math::PI / 4.0f);
+        coreMesh->setNormalsSmoothingThreshold(Math::PI / 3.0f);
         coreMesh->setCalculateNormals(true);
         coreMesh->update();
 

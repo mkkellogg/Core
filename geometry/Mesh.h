@@ -69,8 +69,16 @@ namespace Core {
         Bool buildVertexCrossMap();
 
         template <typename T>
+        void destroyAttributeArray(AttributeArray<T>** attributes) {
+            if (*attributes) {
+                delete *attributes;
+                *attributes = nullptr;
+            }
+        }
+
+        template <typename T>
         Bool initVertexAttributes(AttributeArray<T>** attributes, UInt32 vertexCount) {
-            if (*attributes) delete *attributes;
+            this->destroyAttributeArray(attributes);
 
             *attributes = new (std::nothrow) AttributeArray<T>(vertexCount);
             if (*attributes == nullptr) {
