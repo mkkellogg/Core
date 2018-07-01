@@ -25,7 +25,7 @@ namespace Core {
 
     private:
         MeshRenderer(WeakPointer<Graphics> graphics, WeakPointer<Material> material, WeakPointer<Object3D> owner);
-        void checkAndSetShaderAttribute(WeakPointer<Mesh> mesh, StandardAttribute attribute, AttributeArrayBase* array);
+        void checkAndSetShaderAttribute(WeakPointer<Mesh> mesh, StandardAttribute attribute, WeakPointer<AttributeArrayBase> array);
 
         PersistentWeakPointer<Material> material;
     };

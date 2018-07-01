@@ -10,12 +10,6 @@ namespace Core {
     Mesh::Mesh(WeakPointer<Graphics> graphics, UInt32 vertexCount, UInt32 indexCount): graphics(graphics), vertexCount(vertexCount), indexCount(indexCount) {
         this->vertexCrossMap = nullptr;
         this->initialized = false;
-        this->vertexPositions = nullptr;
-        this->vertexNormals = nullptr;
-        this->vertexFaceNormals = nullptr;
-        this->vertexColors = nullptr;
-        this->vertexUVs0 = nullptr;
-        this->indexBuffer = nullptr;
         this->indexed = indexCount > 0 ? true : false;
         this->enabledAttributes = StandardAttributes::createAttributeSet();
         this->normalsSmoothingThreshold = Math::PI / 2.0;
@@ -24,11 +18,6 @@ namespace Core {
     }
 
     Mesh::~Mesh() {
-        this->destroyAttributeArray(&this->vertexPositions);
-        this->destroyAttributeArray(&this->vertexNormals);
-        this->destroyAttributeArray(&this->vertexFaceNormals);
-        this->destroyAttributeArray(&this->vertexColors);
-        this->destroyAttributeArray(&this->vertexUVs0);
         this->destroyVertexCrossMap();
     }
 
@@ -71,7 +60,7 @@ namespace Core {
         Vector3r min;
         Vector3r max;
 
-        AttributeArray<Point3rs>* vertexPositions = this->getVertexPositions();
+        WeakPointer<AttributeArray<Point3rs>> vertexPositions = this->vertexPositions;
 
         if (vertexPositions && this->isAttributeEnabled(StandardAttribute::Position)) {
             UInt32 index = 0;
@@ -97,23 +86,23 @@ namespace Core {
         return this->boundingBox;
     }
 
-    AttributeArray<Point3rs>* Mesh::getVertexPositions() {
+    WeakPointer<AttributeArray<Point3rs>> Mesh::getVertexPositions() {
         return this->vertexPositions;
     }
 
-    AttributeArray<Vector3rs>* Mesh::getVertexNormals() {
+    WeakPointer<AttributeArray<Vector3rs>> Mesh::getVertexNormals() {
         return this->vertexNormals;
     }
 
-    AttributeArray<Vector3rs>* Mesh::getVertexFaceNormals() {
+    WeakPointer<AttributeArray<Vector3rs>> Mesh::getVertexFaceNormals() {
         return this->vertexFaceNormals;
     }
 
-    AttributeArray<ColorS>* Mesh::getVertexColors() {
+    WeakPointer<AttributeArray<ColorS>> Mesh::getVertexColors() {
         return this->vertexColors;
     }
 
-    AttributeArray<Vector2rs>* Mesh::getVertexUVs0() {
+    WeakPointer<AttributeArray<Vector2rs>> Mesh::getVertexUVs0() {
         return this->vertexUVs0;
     }
 
@@ -189,8 +178,8 @@ namespace Core {
             realVertexCount = this->indexCount;
         }
 
-        AttributeArray<Vector3rs>* vertexNormals = this->getVertexNormals();
-        AttributeArray<Vector3rs>* vertexFaceNormals = this->getVertexFaceNormals();
+        WeakPointer<AttributeArray<Vector3rs>> vertexNormals = this->vertexNormals;
+        WeakPointer<AttributeArray<Vector3rs>> vertexFaceNormals = this->vertexFaceNormals;
      
         // loop through each triangle in this mesh's vertices
         // and calculate normals for each
@@ -335,7 +324,7 @@ namespace Core {
      
         Vector3r a, b;
 
-        AttributeArray<Point3rs>* positions = this->getVertexPositions();
+        WeakPointer<AttributeArray<Point3rs>> positions = this->vertexPositions;
        
         Point3r p1 = positions->getAttribute(mappedFaceIndex1);
         Point3r p2 = positions->getAttribute(mappedFaceIndex2);

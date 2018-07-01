@@ -98,7 +98,7 @@ namespace Core {
         }
     }
 
-    void MeshRenderer::checkAndSetShaderAttribute(WeakPointer<Mesh> mesh, StandardAttribute attribute, AttributeArrayBase *array) {
+    void MeshRenderer::checkAndSetShaderAttribute(WeakPointer<Mesh> mesh, StandardAttribute attribute, WeakPointer<AttributeArrayBase> array) {
         if (mesh->isAttributeEnabled(attribute)) {
             Int32 shaderLocation = this->material->getShaderLocation(attribute);
             if (array->getGPUStorage()) {

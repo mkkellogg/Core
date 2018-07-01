@@ -33,11 +33,11 @@ namespace Core {
         UInt32 getVertexCount() const;
         UInt32 getIndexCount() const;
 
-        AttributeArray<Point3rs>* getVertexPositions();
-        AttributeArray<Vector3rs>* getVertexNormals();
-        AttributeArray<Vector3rs>* getVertexFaceNormals();
-        AttributeArray<ColorS>* getVertexColors();
-        AttributeArray<Vector2rs>* getVertexUVs0();
+        WeakPointer<AttributeArray<Point3rs>> getVertexPositions();
+        WeakPointer<AttributeArray<Vector3rs>> getVertexNormals();
+        WeakPointer<AttributeArray<Vector3rs>> getVertexFaceNormals();
+        WeakPointer<AttributeArray<ColorS>> getVertexColors();
+        WeakPointer<AttributeArray<Vector2rs>> getVertexUVs0();
         WeakPointer<IndexBuffer> getIndexBuffer();
 
         Bool initVertexPositions();
@@ -69,19 +69,11 @@ namespace Core {
         Bool buildVertexCrossMap();
 
         template <typename T>
-        void destroyAttributeArray(AttributeArray<T>** attributes) {
-            if (*attributes) {
-                delete *attributes;
-                *attributes = nullptr;
+        Bool initVertexAttributes(std::shared_ptr<AttributeArray<T>>* attributes, UInt32 vertexCount) {          
+            try {
+                *attributes = std::make_shared<AttributeArray<T>>(vertexCount);
             }
-        }
-
-        template <typename T>
-        Bool initVertexAttributes(AttributeArray<T>** attributes, UInt32 vertexCount) {
-            this->destroyAttributeArray(attributes);
-
-            *attributes = new (std::nothrow) AttributeArray<T>(vertexCount);
-            if (*attributes == nullptr) {
+            catch(...) {
                 throw AllocationException("MeshGL::initVertexAttributes() -> Unable to allocate array.");
             }
 
@@ -99,11 +91,11 @@ namespace Core {
         UInt32 indexCount;
         Box3 boundingBox;
 
-        AttributeArray<Point3rs>* vertexPositions;
-        AttributeArray<Vector3rs>* vertexNormals;
-        AttributeArray<Vector3rs>* vertexFaceNormals;
-        AttributeArray<ColorS>* vertexColors;
-        AttributeArray<Vector2rs>* vertexUVs0;
+        std::shared_ptr<AttributeArray<Point3rs>> vertexPositions;
+        std::shared_ptr<AttributeArray<Vector3rs>> vertexNormals;
+        std::shared_ptr<AttributeArray<Vector3rs>> vertexFaceNormals;
+        std::shared_ptr<AttributeArray<ColorS>> vertexColors;
+        std::shared_ptr<AttributeArray<Vector2rs>> vertexUVs0;
         std::shared_ptr<IndexBuffer> indexBuffer;
 
         // maps vertices to other equal vertices
