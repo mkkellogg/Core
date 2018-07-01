@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "../material/StandardAttributes.h"
 #include "../render/ObjectRenderer.h"
@@ -20,12 +21,13 @@ namespace Core {
         friend class Engine;
 
     public:
-        virtual void render(WeakPointer<Camera> camera, WeakPointer<Light> light) override;
-        virtual void renderObject(WeakPointer<Camera> camera, WeakPointer<Mesh> mesh, WeakPointer<Light> light) override;
+        virtual void render(WeakPointer<Camera> camera, const std::vector<WeakPointer<Light>>& lights) override;
+        virtual void renderObject(WeakPointer<Camera> camera, WeakPointer<Mesh> mesh, const std::vector<WeakPointer<Light>>& lights) override;
 
     private:
         MeshRenderer(WeakPointer<Graphics> graphics, WeakPointer<Material> material, WeakPointer<Object3D> owner);
         void checkAndSetShaderAttribute(WeakPointer<Mesh> mesh, StandardAttribute attribute, WeakPointer<AttributeArrayBase> array);
+        void drawMesh(WeakPointer<Mesh> mesh);
 
         PersistentWeakPointer<Material> material;
     };

@@ -1,6 +1,5 @@
 #include <vector>
 
-#include "Renderer.h"
 #include "../Engine.h"
 #include "../math/Matrix4x4.h"
 #include "../render/BaseRenderableContainer.h"
@@ -8,6 +7,7 @@
 #include "../render/RenderableContainer.h"
 #include "../scene/Scene.h"
 #include "Camera.h"
+#include "Renderer.h"
 
 // TODO: remove this include when light debugging is done
 #include "../light/PointLight.h"
@@ -27,41 +27,44 @@ namespace Core {
     void Renderer::render(WeakPointer<Scene> scene) {
         std::vector<WeakPointer<Object3D>> objectList;
         std::vector<WeakPointer<Camera>> cameraList;
-        this->processScene(scene, objectList, cameraList);
+        std::vector<WeakPointer<Light>> lightList;
+        this->processScene(scene, objectList, cameraList, lightList);
+
         for (auto camera : cameraList) {
             camera->setAspectRatioFromDimensions(this->renderSize.x, this->renderSize.y);
-            render(scene, camera, objectList);
+            render(scene, camera, objectList, lightList);
         }
     }
 
-     void Renderer::render(WeakPointer<Scene> scene, WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objectList) {
-
-        static WeakPointer<Object3D> ownerObject = Engine::instance()->createObject3D();
-        static WeakPointer<PointLight> testPointLight = Engine::instance()->createLight<PointLight>(ownerObject);
-        testPointLight->setColor(1.0f, 0.6f, 0.0f, 1.0f);
-        testPointLight->setRadius(10.0f);
-        testPointLight->setPosition(10.0f, 20.0f, -10.0f);
-        WeakPointer<Light> testLight = testPointLight;
-
+    void Renderer::render(WeakPointer<Scene> scene, 
+                          WeakPointer<Camera> camera, 
+                          std::vector<WeakPointer<Object3D>>& objectList,
+                          std::vector<WeakPointer<Light>>& lightList) {
         for (auto object : objectList) {
             std::shared_ptr<Object3D> objectShared = object.lock();
             std::shared_ptr<BaseRenderableContainer> containerPtr = std::dynamic_pointer_cast<BaseRenderableContainer>(objectShared);
             if (containerPtr) {
                 WeakPointer<BaseObjectRenderer> objectRenderer = containerPtr->getBaseRenderer();
                 if (objectRenderer) {
-                    objectRenderer->render(camera, testLight);
+                    objectRenderer->render(camera, lightList);
                 }
             }
         }
     }
 
-    void Renderer::processScene(WeakPointer<Scene> scene, std::vector<WeakPointer<Object3D>>& outObjects, std::vector<WeakPointer<Camera>>& outCameras) {
+    void Renderer::processScene(WeakPointer<Scene> scene, 
+                                std::vector<WeakPointer<Object3D>>& outObjects, 
+                                std::vector<WeakPointer<Camera>>& outCameras,
+                                std::vector<WeakPointer<Light>>& outLights) {
         Matrix4x4 rootTransform;
-        processSceneStep(scene->getRoot(), rootTransform, outObjects, outCameras);
+        processSceneStep(scene->getRoot(), rootTransform, outObjects, outCameras, outLights);
     }
 
-    void Renderer::processSceneStep(WeakPointer<Object3D> object, const Matrix4x4& curTransform, std::vector<WeakPointer<Object3D>>& outObjects,
-                                    std::vector<WeakPointer<Camera>>& outCameras) {
+    void Renderer::processSceneStep(WeakPointer<Object3D> object, 
+                                    const Matrix4x4& curTransform, 
+                                    std::vector<WeakPointer<Object3D>>& outObjects,
+                                    std::vector<WeakPointer<Camera>>& outCameras, 
+                                    std::vector<WeakPointer<Light>>& outLights) {
         for (GameObjectIterator<Object3D> itr = object->beginIterateChildren(); itr != object->endIterateChildren(); ++itr) {
             WeakPointer<Object3D> obj = *itr;
 
@@ -73,14 +76,21 @@ namespace Core {
 
             for (GameObjectIterator<Object3DComponent> compItr = obj->beginIterateComponents(); compItr != obj->endIterateComponents(); ++compItr) {
                 // check if this component is a camera
-                std::shared_ptr<Object3DComponent> compShared = (*compItr).lock();
-                std::shared_ptr<Camera> camShared = std::dynamic_pointer_cast<Camera>(compShared);
-                if (camShared) {
-                    outCameras.push_back(camShared);
+                WeakPointer<Object3DComponent> comp = (*compItr);
+                WeakPointer<Camera> cameraPtr = WeakPointer<Object3DComponent>::dynamicPointerCast<Camera>(comp);
+                if (cameraPtr.isValid()) {
+                    outCameras.push_back(cameraPtr);
+                    continue;
+                }
+               
+                WeakPointer<Light> lightPtr = WeakPointer<Object3DComponent>::dynamicPointerCast<Light>(comp);
+                if (lightPtr.isValid()) {
+                    outLights.push_back(lightPtr);
+                    continue;
                 }
             }
 
-            this->processSceneStep(obj, nextTransform, outObjects, outCameras);
+            this->processSceneStep(obj, nextTransform, outObjects, outCameras, outLights);
         }
     }
 

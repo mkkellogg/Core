@@ -111,6 +111,7 @@ namespace Core {
         "uniform vec4 lightPos;\n"
         "uniform float lightRange;\n"
         "uniform int lightType;\n"
+        "uniform int lightEnabled;\n"
         "uniform vec4 lightColor;\n"
         "varying vec4 vColor;\n"
         "varying vec3 vNormal;\n"
@@ -118,9 +119,14 @@ namespace Core {
         "varying vec4 vPos;\n"
         "void main() {\n"
         "    vec4 textureColor = texture2D(textureA, vUV);\n"
-        "    vec3 toLight = normalize(vec3(lightPos - vPos));\n"
-        "    float aAtten = max(dot(normalize(vNormal), toLight), 0.0);\n"
-        "    gl_FragColor = vec4(textureColor.rgb * aAtten, textureColor.a);\n"
+        "    if (lightEnabled != 0) { \n"
+        "         vec3 toLight = normalize(vec3(lightPos - vPos));\n"
+        "         float aAtten = max(dot(normalize(vNormal), toLight), 0.0);\n"
+        "         gl_FragColor = vec4(textureColor.rgb * aAtten, textureColor.a);\n"
+        "    } \n"
+        "    else { \n"
+        "         gl_FragColor = textureColor;\n"
+        "    }\n"
         "}\n";
 
     const char ShaderManagerGL::BasicCube_vertex[] =  

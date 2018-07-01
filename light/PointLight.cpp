@@ -17,7 +17,7 @@ namespace Core {
         this->attenuationOverride = true;
     }
 
-    Real PointLight::setAttenuation() const {
+    Real PointLight::getAttenuation() const {
         return this->attenuation;
     }
 
@@ -28,18 +28,6 @@ namespace Core {
     void PointLight::setRadius(Real radius) {
         this->radius = radius;
         this->calcAttentuationForCurrentRadius();
-    }
-
-    void PointLight::setPosition(const Point3<Real>& postion) {
-        this->setPosition(postion.x, postion.y, postion.z);
-    }
-
-    void PointLight::setPosition(Real x, Real y, Real z) {
-        this->position.set(x, y, z);
-    }
-
-    Point3r PointLight::getPosition() {
-        return this->position;
     }
 
     void PointLight::calcAttentuationForCurrentRadius() {

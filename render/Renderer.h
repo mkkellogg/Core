@@ -13,6 +13,7 @@ namespace Core {
     class Object3D;
     class Scene;
     class Camera;
+    class Light;
 
     class Renderer {
     public:
@@ -20,8 +21,14 @@ namespace Core {
 
         virtual Bool init();
         virtual void render(WeakPointer<Scene> scene);
-        virtual void render(WeakPointer<Scene> scene, WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objectList);
-        void processScene(WeakPointer<Scene> scene, std::vector<WeakPointer<Object3D>>& outObjects, std::vector<WeakPointer<Camera>>& outCamerast);
+        virtual void render(WeakPointer<Scene> scene, 
+                            WeakPointer<Camera> camera, 
+                            std::vector<WeakPointer<Object3D>>& objectList,
+                            std::vector<WeakPointer<Light>>& lightList);
+        void processScene(WeakPointer<Scene> scene, 
+                          std::vector<WeakPointer<Object3D>>& outObjects, 
+                          std::vector<WeakPointer<Camera>>& outCameras,
+                          std::vector<WeakPointer<Light>>& outLights);
 
         void setRenderSize(UInt32 width, UInt32 height, Bool updateViewport = true);
         void setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
@@ -29,8 +36,11 @@ namespace Core {
         Vector4u getViewport();
 
     private:
-        void processSceneStep(WeakPointer<Object3D> object, const Matrix4x4& curTransform, std::vector<WeakPointer<Object3D>>& outObjects,
-                              std::vector<WeakPointer<Camera>>& outCameras);
+        void processSceneStep(WeakPointer<Object3D> object, 
+                              const Matrix4x4& curTransform, 
+                              std::vector<WeakPointer<Object3D>>& outObjects,
+                              std::vector<WeakPointer<Camera>>& outCameras, 
+                              std::vector<WeakPointer<Light>>& outLights);
 
     protected:
         Renderer();

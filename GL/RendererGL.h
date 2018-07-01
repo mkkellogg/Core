@@ -10,6 +10,7 @@ namespace Core {
     class Scene;
     class Camera;
     class Object3D;
+    class Light;
 
     class RendererGL final : public Renderer {
         friend class GraphicsGL;
@@ -18,7 +19,10 @@ namespace Core {
         ~RendererGL();
         Bool init() override;
         void render(WeakPointer<Scene> scene) override;
-        void render(WeakPointer<Scene> scene, WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objectList) override;
+        void render(WeakPointer<Scene> scene, 
+                    WeakPointer<Camera> camera, 
+                    std::vector<WeakPointer<Object3D>>& objectList, 
+                    std::vector<WeakPointer<Light>>& lightList) override;
         void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) override;
 
     private:

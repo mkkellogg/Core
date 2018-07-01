@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "../util/WeakPointer.h"
 #include "../scene/Object3DComponent.h"
@@ -16,6 +17,6 @@ namespace Core {
     public:
         BaseObjectRenderer(WeakPointer<Object3D> owner) : Object3DComponent(owner) {
         }
-        virtual void render(WeakPointer<Camera> camera, WeakPointer<Light> light) = 0;
+        virtual void render(WeakPointer<Camera> camera, const std::vector<WeakPointer<Light>>& lights) = 0;
     };
 }

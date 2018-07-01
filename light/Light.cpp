@@ -13,10 +13,6 @@ namespace Core {
         
     }
 
-    LightType Light::getType() {
-        return this->type;
-    }
-
     const Color& Light::getColor() const {
         return this->color;
     }
@@ -51,5 +47,9 @@ namespace Core {
 
     IntMask Light::getCullingMask() const {
         return this->cullingMask;
+    }
+
+    LightType Light::getType() const {
+        return this->type;
     }
 }

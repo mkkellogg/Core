@@ -39,5 +39,6 @@ namespace Core {
         Int32 lightTypeLocation;
         Int32 lightIntensityLocation;
         Int32 lightColorLocation;
+        Int32 lightEnabledLocation;
     };
 }

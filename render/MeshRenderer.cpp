@@ -16,7 +16,7 @@ namespace Core {
                                WeakPointer<Object3D> owner): ObjectRenderer<Mesh>(graphics, owner), material(material) {
     }
 
-    void MeshRenderer::renderObject(WeakPointer<Camera> camera, WeakPointer<Mesh> mesh, WeakPointer<Light> light) {
+    void MeshRenderer::renderObject(WeakPointer<Camera> camera, WeakPointer<Mesh> mesh, const std::vector<WeakPointer<Light>>& lights) {
         WeakPointer<Shader> shader = this->material->getShader();
         this->graphics->activateShader(shader);
 
@@ -53,46 +53,54 @@ namespace Core {
         Int32 lightTypeLoc = this->material->getShaderLocation(StandardUniform::LightType);
         Int32 lightIntensityLoc = this->material->getShaderLocation(StandardUniform::LightIntensity);
         Int32 lightColorLoc = this->material->getShaderLocation(StandardUniform::LightColor);
+        Int32 lightEnabledLoc = this->material->getShaderLocation(StandardUniform::LightEnabled);
 
-        LightType lightType = light->getType();
-        if (lightColorLoc >= 0) {
-            Color color = light->getColor();
-            shader->setUniform4f(lightPositionLoc, color.r, color.g, color.b, color.a);
-        }
+        if (lights.size() > 0) {
+            shader->setUniform1i(lightEnabledLoc, 1);
+            for(UInt32 i = 0; i < lights.size(); i++) {
+                const WeakPointer<Light> light = lights[i];
+                LightType lightType = light->getType();
+                if (lightColorLoc >= 0) {
+                    Color color = light->getColor();
+                    shader->setUniform4f(lightPositionLoc, color.r, color.g, color.b, color.a);
+                }
 
-        if (lightTypeLoc >= 0) {
-            shader->setUniform1i(lightRangeLoc, (Int32)lightType);
-        }
+                if (lightTypeLoc >= 0) {
+                    shader->setUniform1i(lightRangeLoc, (Int32)lightType);
+                }
 
-        if (lightIntensityLoc >= 0) {
-            shader->setUniform1f(lightIntensityLoc, light->getIntensity());
-        }
+                if (lightIntensityLoc >= 0) {
+                    shader->setUniform1f(lightIntensityLoc, light->getIntensity());
+                }
 
-        if (lightType == LightType::Point) {
-             WeakPointer<PointLight> pointLight = WeakPointer<Light>::dynamicPointerCast<PointLight>(light);
-            if (lightRangeLoc >= 0) {
-                shader->setUniform1f(lightRangeLoc, pointLight->getRadius());
+                if (lightType == LightType::Point) {
+                    WeakPointer<PointLight> pointLight = WeakPointer<Light>::dynamicPointerCast<PointLight>(light);
+                    if (lightRangeLoc >= 0) {
+                        shader->setUniform1f(lightRangeLoc, pointLight->getRadius());
+                    }
+
+                    if (lightPositionLoc >= 0) {
+                        Point3r pos;
+                        pointLight->getOwner()->getTransform().getWorldMatrix().transform(pos);
+                        shader->setUniform4f(lightPositionLoc, pos.x, pos.y, pos.z, 1.0f);
+                    }
+                }
             }
 
-            if (lightPositionLoc >= 0) {
-                Point3r pos = pointLight->getPosition();
-                shader->setUniform4f(lightPositionLoc, pos.x, pos.y, pos.z, 1.0f);
-            }
+            this->drawMesh(mesh);
         }
-
-        if (mesh->isIndexed()) {
-            this->graphics->drawBoundVertexBuffer(mesh->getIndexCount(), mesh->getIndexBuffer());
-        } else {
-            this->graphics->drawBoundVertexBuffer(mesh->getVertexCount());
+        else {
+            shader->setUniform1i(lightEnabledLoc, 0);
+            this->drawMesh(mesh);
         }
     }
 
-    void MeshRenderer::render(WeakPointer<Camera> camera, WeakPointer<Light> light) {
+    void MeshRenderer::render(WeakPointer<Camera> camera, const std::vector<WeakPointer<Light>>& lights) {
         std::shared_ptr<RenderableContainer<Mesh>> thisContainer = std::dynamic_pointer_cast<RenderableContainer<Mesh>>(this->owner.lock());
         if (thisContainer) {
             auto renderables = thisContainer->getRenderables();
             for (auto mesh : renderables) {
-                this->renderObject(camera, mesh, light);
+                this->renderObject(camera, mesh, lights);
             }
         }
     }
@@ -103,6 +111,14 @@ namespace Core {
             if (array->getGPUStorage()) {
                 array->getGPUStorage()->sendToShader(shaderLocation);
             }
+        }
+    }
+
+    void MeshRenderer::drawMesh(WeakPointer<Mesh> mesh) {
+        if (mesh->isIndexed()) {
+            this->graphics->drawBoundVertexBuffer(mesh->getIndexCount(), mesh->getIndexBuffer());
+        } else {
+            this->graphics->drawBoundVertexBuffer(mesh->getVertexCount());
         }
     }
 }

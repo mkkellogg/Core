@@ -31,7 +31,7 @@ namespace Core {
         void setCullingMask(IntMask mask);
         IntMask getCullingMask() const;
 
-        LightType getType();
+        LightType getType() const;
 
     protected:
         Light(LightType type, WeakPointer<Object3D> owner);

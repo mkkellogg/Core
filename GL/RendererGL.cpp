@@ -39,7 +39,8 @@ namespace Core {
         Renderer::render(scene);
     }
 
-    void RendererGL::render(WeakPointer<Scene> scene, WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objectList) {
-        Renderer::render(scene, camera, objectList);
+    void RendererGL::render(WeakPointer<Scene> scene, WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objectList,
+                            std::vector<WeakPointer<Light>>& lightList) {
+        Renderer::render(scene, camera, objectList, lightList);
     }
 }

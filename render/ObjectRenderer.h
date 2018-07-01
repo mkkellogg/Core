@@ -15,7 +15,7 @@ namespace Core {
     class ObjectRenderer : public BaseObjectRenderer {
     public:
         ObjectRenderer(WeakPointer<Graphics> graphics, WeakPointer<Object3D> owner) : BaseObjectRenderer(owner), graphics(graphics) {}
-        virtual void renderObject(WeakPointer<Camera> camera, WeakPointer<T> renderable, WeakPointer<Light> light) = 0;
+        virtual void renderObject(WeakPointer<Camera> camera, WeakPointer<T> renderable, const std::vector<WeakPointer<Light>>& lights) = 0;
 
     protected:
         PersistentWeakPointer<Graphics> graphics;
