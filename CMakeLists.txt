@@ -54,6 +54,7 @@ set(INCLUDE_FILES
     material/Shader.h
     material/MaterialLibrary.h
     material/ShaderMaterialCharacteristic.h
+    material/ShaderType.h
     Demo.h
     render/BaseRenderableContainer.h
     render/RenderableContainer.h

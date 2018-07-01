@@ -4,15 +4,12 @@
 #include "../common/types.h"
 #include "../common/Exception.h"
 #include "../math/Matrix4x4.h"
+#include "ShaderType.h"
 
 namespace Core {
 
     class Shader {
     public:
-        enum class ShaderType { 
-            Vertex = 1, 
-            Fragment = 2 
-        };
 
         class ShaderVariableException: Exception {
         public:

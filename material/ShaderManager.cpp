@@ -8,30 +8,30 @@ namespace Core {
     ShaderManager::~ShaderManager() {
     }
 
-    void ShaderManager::setShader(Shader::ShaderType type, const std::string& name, const std::string& shaderSrc) {
+    void ShaderManager::setShader(ShaderType type, const std::string& name, const std::string& shaderSrc) {
         this->setShader(type, name, shaderSrc.c_str());
     }
 
-    void ShaderManager::setShader(Shader::ShaderType type, const std::string& name, const char shaderSrc[]) {
+    void ShaderManager::setShader(ShaderType type, const std::string& name, const char shaderSrc[]) {
         Entry& entry = this->entries[name];
         switch (type) {
-            case Shader::ShaderType::Vertex:
+            case ShaderType::Vertex:
                 entry.vertexSource = shaderSrc;
                 break;
-            case Shader::ShaderType::Fragment:
+            case ShaderType::Fragment:
                 entry.fragmentSource = shaderSrc;
                 break;
         }
     }
 
-    std::string ShaderManager::getShader(Shader::ShaderType type, const std::string& name) {
+    std::string ShaderManager::getShader(ShaderType type, const std::string& name) {
         if (this->entries.find(name) != this->entries.end()) {
             Entry& entry = this->entries[name];
             switch (type) {
-                case Shader::ShaderType::Vertex:
+                case ShaderType::Vertex:
                     return processShaderSource(type, entry.vertexSource);
                     break;
-                case Shader::ShaderType::Fragment:
+                case ShaderType::Fragment:
                     return processShaderSource(type, entry.fragmentSource);
                     break;
             }
@@ -39,7 +39,7 @@ namespace Core {
         throw ShaderManagerException(std::string("Could not locate requested shader ") + name);
     }
 
-    std::string ShaderManager::processShaderSource(Shader::ShaderType type, const std::string& src) {
+    std::string ShaderManager::processShaderSource(ShaderType type, const std::string& src) {
         std::istringstream iss(src);
         std::string result;
         std::string includeName("\"[0-9a-zA-Z]*\"");

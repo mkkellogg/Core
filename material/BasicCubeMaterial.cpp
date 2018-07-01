@@ -15,8 +15,8 @@ namespace Core {
     Bool BasicCubeMaterial::build() {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         ShaderManager& shaderDirectory = graphics->getShaderManager();
-        const std::string& vertexSrc = shaderDirectory.getShader(Shader::ShaderType::Vertex, "BasicCube");
-        const std::string& fragmentSrc = shaderDirectory.getShader(Shader::ShaderType::Fragment, "BasicCube");
+        const std::string& vertexSrc = shaderDirectory.getShader(ShaderType::Vertex, "BasicCube");
+        const std::string& fragmentSrc = shaderDirectory.getShader(ShaderType::Fragment, "BasicCube");
         Bool ready = this->buildFromSource(vertexSrc, fragmentSrc);
         if (!ready) {
             return false;

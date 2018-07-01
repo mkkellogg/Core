@@ -8,20 +8,20 @@ namespace Core {
 
     void ShaderManagerGL::init() {
 
-        this->setShader(Shader::ShaderType::Vertex, "Test", ShaderManagerGL::Test_vertex);
-        this->setShader(Shader::ShaderType::Fragment, "Test", ShaderManagerGL::Test_fragment);
+        this->setShader(ShaderType::Vertex, "Test", ShaderManagerGL::Test_vertex);
+        this->setShader(ShaderType::Fragment, "Test", ShaderManagerGL::Test_fragment);
 
-        this->setShader(Shader::ShaderType::Vertex, "Basic", ShaderManagerGL::Basic_vertex);
-        this->setShader(Shader::ShaderType::Fragment, "Basic", ShaderManagerGL::Basic_fragment);
+        this->setShader(ShaderType::Vertex, "Basic", ShaderManagerGL::Basic_vertex);
+        this->setShader(ShaderType::Fragment, "Basic", ShaderManagerGL::Basic_fragment);
 
-        this->setShader(Shader::ShaderType::Vertex, "BasicTextured", ShaderManagerGL::BasicTextured_vertex);
-        this->setShader(Shader::ShaderType::Fragment, "BasicTextured", ShaderManagerGL::BasicTextured_fragment);
+        this->setShader(ShaderType::Vertex, "BasicTextured", ShaderManagerGL::BasicTextured_vertex);
+        this->setShader(ShaderType::Fragment, "BasicTextured", ShaderManagerGL::BasicTextured_fragment);
 
-        this->setShader(Shader::ShaderType::Vertex, "BasicTexturedLit", ShaderManagerGL::BasicTexturedLit_vertex);
-        this->setShader(Shader::ShaderType::Fragment, "BasicTexturedLit", ShaderManagerGL::BasicTexturedLit_fragment);
+        this->setShader(ShaderType::Vertex, "BasicTexturedLit", ShaderManagerGL::BasicTexturedLit_vertex);
+        this->setShader(ShaderType::Fragment, "BasicTexturedLit", ShaderManagerGL::BasicTexturedLit_fragment);
 
-        this->setShader(Shader::ShaderType::Vertex, "BasicCube", ShaderManagerGL::BasicCube_vertex);
-        this->setShader(Shader::ShaderType::Fragment, "BasicCube", ShaderManagerGL::BasicCube_fragment);
+        this->setShader(ShaderType::Vertex, "BasicCube", ShaderManagerGL::BasicCube_vertex);
+        this->setShader(ShaderType::Fragment, "BasicCube", ShaderManagerGL::BasicCube_fragment);
     }
 
     const char ShaderManagerGL::Test_vertex[] =

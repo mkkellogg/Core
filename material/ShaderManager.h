@@ -38,13 +38,13 @@ namespace Core {
         };
 
         virtual ~ShaderManager();
-        void setShader(Shader::ShaderType type, const std::string& name, const std::string& shaderSrc);
-        void setShader(Shader::ShaderType type, const std::string& name, const char shaderSrc[]);
-        std::string getShader(Shader::ShaderType type, const std::string& name);
+        void setShader(ShaderType type, const std::string& name, const std::string& shaderSrc);
+        void setShader(ShaderType type, const std::string& name, const char shaderSrc[]);
+        std::string getShader(ShaderType type, const std::string& name);
 
 
     protected:
-        std::string processShaderSource(Shader::ShaderType type, const std::string& src);
+        std::string processShaderSource(ShaderType type, const std::string& src);
 
         std::unordered_map<std::string, Entry> entries;
     };

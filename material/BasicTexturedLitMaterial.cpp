@@ -15,8 +15,8 @@ namespace Core {
     Bool BasicTexturedLitMaterial::build() {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         ShaderManager& shaderDirectory = graphics->getShaderManager();
-        const std::string& vertexSrc = shaderDirectory.getShader(Shader::ShaderType::Vertex, "BasicTexturedLit");
-        const std::string& fragmentSrc = shaderDirectory.getShader(Shader::ShaderType::Fragment, "BasicTexturedLit");
+        const std::string& vertexSrc = shaderDirectory.getShader(ShaderType::Vertex, "BasicTexturedLit");
+        const std::string& fragmentSrc = shaderDirectory.getShader(ShaderType::Fragment, "BasicTexturedLit");
         Bool ready = this->buildFromSource(vertexSrc, fragmentSrc);
         if (!ready) {
             return false;
