@@ -67,6 +67,8 @@ set(INCLUDE_FILES
     render/RenderState.h
     light/Light.h
     light/PointLight.h
+    light/LightType.h
+    light/LightCullType.h
     image/ImageLoader.h
     image/CubeTexture.h
     image/Texture2D.h
