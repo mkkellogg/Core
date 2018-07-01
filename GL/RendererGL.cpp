@@ -20,15 +20,6 @@ namespace Core {
     RendererGL::~RendererGL() {
     }
 
-    RendererGL* RendererGL::createRenderer() {
-        RendererGL* renderer = new RendererGL;
-        if (!renderer->init()) {
-            delete renderer;
-            return nullptr;
-        }
-        return renderer;
-    }
-
     void RendererGL::setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) {
         Renderer::setViewport(hOffset, vOffset, viewPortWidth, viewPortHeight);
         glViewport(hOffset, vOffset, viewPortWidth, viewPortHeight);

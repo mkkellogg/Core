@@ -28,7 +28,8 @@ namespace Core {
         UInt32 maxGL = 0;
         const char* versionStr = (const char*)glGetString(GL_VERSION);
 
-        renderer = std::shared_ptr<RendererGL>(RendererGL::createRenderer());
+        renderer = std::shared_ptr<RendererGL>(new RendererGL());
+        renderer->init();
 
         glClearColor(0, 0, 0, 1);
         glFrontFace(GL_CCW);

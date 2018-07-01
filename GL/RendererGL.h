@@ -23,6 +23,5 @@ namespace Core {
 
     private:
         RendererGL();
-        static RendererGL* createRenderer();
     };
 }
