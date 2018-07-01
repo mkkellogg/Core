@@ -668,7 +668,7 @@ namespace Core {
         texAttributes.FilterMode = TextureFilter::TriLinear;
         texAttributes.MipMapLevel = 4;
 
-        RawImage* textureImage = nullptr;
+        std::shared_ptr<RawImage> textureImage;
         // check if the file specified by the full path in the Assimp material exists
         if (fileSystem->fileExists(fullTextureFilePath)) {
             textureImage = ImageLoader::loadImageU(fullTextureFilePath);

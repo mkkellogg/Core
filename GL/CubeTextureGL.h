@@ -13,7 +13,9 @@ namespace Core {
 
     public:
         ~CubeTextureGL();
-        void build(RawImage *frontData, RawImage *backData, RawImage *topData, RawImage *bottomData, RawImage *leftData, RawImage *rightData) override;
+        void build(WeakPointer<RawImage> frontData, WeakPointer<RawImage> backData, 
+                   WeakPointer<RawImage> topData,WeakPointer<RawImage> bottomData, 
+                   WeakPointer<RawImage> leftData, WeakPointer<RawImage> rightData) override;
 
     private:
         CubeTextureGL(const TextureAttributes& attributes);

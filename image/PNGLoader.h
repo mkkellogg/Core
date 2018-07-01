@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
 #include "png.h"
 
@@ -21,7 +22,7 @@ namespace Core {
             PNGLoaderException(const char* msg): Exception(msg) {}
         };
 
-        static RawImage * loadPNG(const std::string& path);
+        static std::shared_ptr<RawImage> loadPNG(const std::string& path);
 
     };
 

@@ -16,8 +16,9 @@ namespace Core {
         
     }
 
-    void CubeTextureGL::build(RawImage *front, RawImage *back, RawImage *top, 
-                              RawImage *bottom, RawImage *left, RawImage *right) {
+    void CubeTextureGL::build(WeakPointer<RawImage> front, WeakPointer<RawImage> back, 
+                              WeakPointer<RawImage> top, WeakPointer<RawImage> bottom, 
+                              WeakPointer<RawImage> left, WeakPointer<RawImage> right) {
         // glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
         GLuint tex;
@@ -29,7 +30,7 @@ namespace Core {
         }
         glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
 
-        std::vector<RawImage *> images = {front, back, top, bottom, left, right};
+        std::vector<WeakPointer<RawImage>> images = {front, back, top, bottom, left, right};
         std::vector<GLuint> faces = {GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
                                      GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
                                      GL_TEXTURE_CUBE_MAP_NEGATIVE_X, GL_TEXTURE_CUBE_MAP_POSITIVE_X};

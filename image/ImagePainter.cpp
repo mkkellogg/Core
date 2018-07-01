@@ -3,7 +3,7 @@
 
 namespace Core {
 
-    ImagePainter::ImagePainter(RawImage * targetImage): targetImage(targetImage) {
+    ImagePainter::ImagePainter(WeakPointer<RawImage> targetImage): targetImage(targetImage) {
 
     }
 
@@ -126,7 +126,7 @@ namespace Core {
                 throw PaintException("ImagePainter::drawHorizontalLine() -> image byte count must be multiple of 4.");
             }
             IntColor drawColor = this->drawState.drawColor;
-            for (UInt32 i = 0; i < finalLength; i ++) {
+            for (UInt32 i = 0; i < (UInt32)finalLength; i ++) {
                 location[0] = drawColor.r;
                 location[1] = drawColor.g;
                 location[2] = drawColor.b;

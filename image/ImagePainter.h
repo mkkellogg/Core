@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../util/PersistentWeakPointer.h"
 #include "../common/types.h"
 #include "../color/IntColor.h"
 #include "RawImage.h"
@@ -16,7 +17,7 @@ namespace Core {
             PaintException(const char* msg): Exception(msg) {}
         };
 
-        ImagePainter(RawImage * targetImage);
+        ImagePainter(WeakPointer<RawImage> targetImage);
         void setDrawColor(IntColor color);
         void setFillColor(IntColor color);
         void setPixel(Int32 x, Int32 y);
@@ -41,7 +42,7 @@ namespace Core {
         };
 
         DrawState drawState;
-        RawImage * targetImage;
+        PersistentWeakPointer<RawImage> targetImage;
     };
 
 }

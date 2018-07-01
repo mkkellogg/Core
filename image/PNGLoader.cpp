@@ -6,7 +6,7 @@
 
 namespace Core {
 
-    RawImage* PNGLoader::loadPNG(const std::string& path) {
+    std::shared_ptr<RawImage> PNGLoader::loadPNG(const std::string& path) {
 
         int width, height;
         png_byte color_type;
@@ -80,6 +80,8 @@ namespace Core {
             throw PNGLoaderException("PNGLoader::loadPNG() -> Could not allocate RawImage object.");
         }
         rawPNG->init();
+        std::shared_ptr<RawImage> pngPtr = std::shared_ptr<RawImage>(rawPNG);
+
         Byte * rawData = rawPNG->getImageData();
 
         UInt32 index = 0;
@@ -95,7 +97,7 @@ namespace Core {
         }
         free(row_pointers);      
 
-        return rawPNG;
+        return pngPtr;
     }
 
 }

@@ -14,11 +14,11 @@ namespace Core {
         return true;
     }
 
-    RawImage * ImageLoader::loadImageU(const std::string& fullPath) {
+    std::shared_ptr<RawImage> ImageLoader::loadImageU(const std::string& fullPath) {
         return loadImageU(fullPath, false);
     }
 
-    RawImage * ImageLoader::loadImageU(const std::string& fullPath, Bool reverseOrigin) {
+    std::shared_ptr<RawImage> ImageLoader::loadImageU(const std::string& fullPath, Bool reverseOrigin) {
         if (!initialize()) {
               throw ImageLoaderException("ImageLoader::LoadImageU -> Error occurred while initializing image loader.");
         }
@@ -34,13 +34,6 @@ namespace Core {
         throw ImageLoaderException(msg);
     }
  
-    void ImageLoader::destroyRawImage(RawImage * image) {
-        if (image == nullptr) {
-          throw ImageLoaderException("ImageLoader::DestroyRawImage -> 'image' is null.");
-        }
-        delete image;
-    }
-
     std::string ImageLoader::getFileExtension(const std::string& filePath) {
         Int32 dotIndex = (Int32)filePath.find_last_of(".");
         if (dotIndex < 0)dotIndex = 0;

@@ -29,10 +29,9 @@ namespace Core {
             ImageLoaderException(const char* msg): Exception(msg) {}
         };
 
-        static RawImage * loadImageU(const std::string& fullPath);
-        static RawImage * loadImageU(const std::string& fullPath, Bool reverseOrigin);
+        static std::shared_ptr<RawImage> loadImageU(const std::string& fullPath);
+        static std::shared_ptr<RawImage> loadImageU(const std::string& fullPath, Bool reverseOrigin);
 
-        static void destroyRawImage(RawImage * image);
         static std::string getFileExtension(const std::string& filePath);
     
     private:

@@ -17,7 +17,7 @@ namespace Core {
     public:
         ~Texture2DGL();
 
-        void build(RawImage* imageData) override;
+        void build(WeakPointer<RawImage> imageData) override;
 
     protected:
         Texture2DGL(const TextureAttributes& attributes);

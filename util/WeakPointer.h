@@ -55,33 +55,13 @@ namespace Core {
             return this->_ptr == other._ptr;
         }
 
+        const T* operator ->() const {
+            return const_cast<WeakPointer<T>*>(this)->_getPtr();
+        }
+
         // TODO: Make this thread-safe. The following code is only valid in a SINGLE THREADED context!
-        T *operator->() {
-
-#ifdef __CORE_WEAK_POINTER_CACHE_SHARED
-            if (this->_cacheShared) {
-                if (!this->_cachedSharedSet) {
-                    this->_cachedShared = this->lock();
-                    if (!this->_cachedShared) {
-                        throw WeakPointerAssertionFailure("Shared pointer is invalid.");
-                    }
-                    this->_cachedSharedSet = true;
-                }
-                return this->_cachedShared.get();
-            }
-#endif
-
-            if (!this->_ptr) {
-                this->tryUpdatePtr();
-            }
-            if (!this->_ptr) {
-                throw WeakPointerAssertionFailure("Tried to use null weak pointer (2nd try).");
-            }
-            if (!this->isValid()) {
-                throw WeakPointerAssertionFailure("Tried to use invalid weak pointer.");
-            }
-            return this->_ptr;
-
+        T* operator ->() {
+            return this->_getPtr();
         }
 
         T *get() {
@@ -132,6 +112,33 @@ namespace Core {
         }
 
     protected:
+        T* _getPtr() {
+
+#ifdef __CORE_WEAK_POINTER_CACHE_SHARED
+            if (this->_cacheShared) {
+                if (!this->_cachedSharedSet) {
+                    this->_cachedShared = this->lock();
+                    if (!this->_cachedShared) {
+                        throw WeakPointerAssertionFailure("Shared pointer is invalid.");
+                    }
+                    this->_cachedSharedSet = true;
+                }
+                return this->_cachedShared.get();
+            }
+#endif
+
+            if (!this->_ptr) {
+                this->tryUpdatePtr();
+            }
+            if (!this->_ptr) {
+                throw WeakPointerAssertionFailure("Tried to use null weak pointer (2nd try).");
+            }
+            if (!this->isValid()) {
+                throw WeakPointerAssertionFailure("Tried to use invalid weak pointer.");
+            }
+            return this->_ptr;
+        }
+
         void tryUpdatePtr() {
             std::shared_ptr<T> temp = this->lock();
             if (!temp) {

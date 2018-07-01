@@ -12,7 +12,7 @@ namespace Core {
 
     }
 
-    void Texture2DGL::build(RawImage *imageData) {
+    void Texture2DGL::build(WeakPointer<RawImage> imageData) {
         GLuint tex;
 
         // generate the OpenGL texture
