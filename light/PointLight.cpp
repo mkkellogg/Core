@@ -2,7 +2,7 @@
 
 namespace Core {
 
-    PointLight::PointLight(WeakPointer<Object3D> owner): Light(owner) {
+    PointLight::PointLight(WeakPointer<Object3D> owner): Light(LightType::Point, owner) {
         this->attenuationOverride = false;
         this->attenuation = 1.0f;
         this->radius = 1.0f;

@@ -1,12 +1,16 @@
 #include <vector>
 
 #include "Renderer.h"
+#include "../Engine.h"
 #include "../math/Matrix4x4.h"
 #include "../render/BaseRenderableContainer.h"
 #include "../render/MeshRenderer.h"
 #include "../render/RenderableContainer.h"
 #include "../scene/Scene.h"
 #include "Camera.h"
+
+// TODO: remove this include when light debugging is done
+#include "../light/PointLight.h"
 
 namespace Core {
 
@@ -31,13 +35,21 @@ namespace Core {
     }
 
      void Renderer::render(WeakPointer<Scene> scene, WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objectList) {
+
+        static WeakPointer<Object3D> ownerObject = Engine::instance()->createObject3D();
+        static WeakPointer<PointLight> testPointLight = Engine::instance()->createLight<PointLight>(ownerObject);
+        testPointLight->setColor(1.0f, 0.6f, 0.0f, 1.0f);
+        testPointLight->setRadius(10.0f);
+        testPointLight->setPosition(10.0f, 20.0f, -10.0f);
+        WeakPointer<Light> testLight = testPointLight;
+
         for (auto object : objectList) {
             std::shared_ptr<Object3D> objectShared = object.lock();
             std::shared_ptr<BaseRenderableContainer> containerPtr = std::dynamic_pointer_cast<BaseRenderableContainer>(objectShared);
             if (containerPtr) {
                 WeakPointer<BaseObjectRenderer> objectRenderer = containerPtr->getBaseRenderer();
                 if (objectRenderer) {
-                    objectRenderer->render(camera);
+                    objectRenderer->render(camera, testLight);
                 }
             }
         }

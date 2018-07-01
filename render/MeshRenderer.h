@@ -20,8 +20,8 @@ namespace Core {
         friend class Engine;
 
     public:
-        virtual void render(WeakPointer<Camera> camera) override;
-        virtual void renderObject(WeakPointer<Camera> camera, WeakPointer<Mesh> mesh) override;
+        virtual void render(WeakPointer<Camera> camera, WeakPointer<Light> light) override;
+        virtual void renderObject(WeakPointer<Camera> camera, WeakPointer<Mesh> mesh, WeakPointer<Light> light) override;
 
     private:
         MeshRenderer(WeakPointer<Graphics> graphics, WeakPointer<Material> material, WeakPointer<Object3D> owner);

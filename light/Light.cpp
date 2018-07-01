@@ -2,7 +2,7 @@
 
 namespace Core {
 
-    Light::Light(WeakPointer<Object3D> owner): Object3DComponent(owner) {
+    Light::Light(LightType type, WeakPointer<Object3D> owner): Object3DComponent(owner), type(type) {
         this->color.set(1, 1, 1, 1);
         this->intensity = 1;
         this->shadowsEnabled = false;
@@ -11,6 +11,10 @@ namespace Core {
 
     Light::~Light() {
         
+    }
+
+    LightType Light::getType() {
+        return this->type;
     }
 
     const Color& Light::getColor() const {

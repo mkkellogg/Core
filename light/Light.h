@@ -31,12 +31,15 @@ namespace Core {
         void setCullingMask(IntMask mask);
         IntMask getCullingMask() const;
 
+        LightType getType();
+
     protected:
-        Light(WeakPointer<Object3D> owner);
+        Light(LightType type, WeakPointer<Object3D> owner);
 
         Color color;
         Real intensity;
         Bool shadowsEnabled;
         IntMask cullingMask;
+        LightType type;
     };
 }
