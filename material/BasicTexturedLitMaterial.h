@@ -33,6 +33,7 @@ namespace Core {
         Int32 projectionMatrixLocation;
         Int32 viewMatrixLocation;
         Int32 modelMatrixLocation;
+        Int32 modelInverseTransposeMatrixLocation;
 
         Int32 lightPositionLocation;
         Int32 lightRangeLocation;

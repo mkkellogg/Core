@@ -92,6 +92,7 @@ namespace Core {
         "uniform mat4 projection;\n"
         "uniform mat4 viewMatrix;\n"
         "uniform mat4 modelMatrix;\n"
+        "uniform mat4 modelInverseTransposeMatrix;\n"
         "varying vec4 vColor;\n"
         "varying vec3 vNormal;\n"
         "varying vec2 vUV;\n"
@@ -101,7 +102,7 @@ namespace Core {
         "    vPos = modelMatrix * pos;\n"
         "    vUV = uv;\n"
         "    vColor = color;\n"
-        "    vNormal = vec3(normal);\n"
+        "    vNormal = vec3(modelInverseTransposeMatrix * normal);\n"
         "}\n";
 
     const char ShaderManagerGL::BasicTexturedLit_fragment[] =   
@@ -118,14 +119,16 @@ namespace Core {
         "varying vec2 vUV;\n"
         "varying vec4 vPos;\n"
         "void main() {\n"
-        "    vec4 textureColor = texture2D(textureA, vUV);\n"
         "    if (lightEnabled != 0) { \n"
-        "         vec3 toLight = normalize(vec3(lightPos - vPos));\n"
+        "         vec4 textureColor = texture2D(textureA, vUV);\n"
+        "         vec4 fragPos = vPos;\n"
+        "         vec4 realLightPos = lightPos;\n"
+        "         vec3 toLight = normalize(vec3(realLightPos - fragPos));\n"
         "         float aAtten = max(dot(normalize(vNormal), toLight), 0.0);\n"
         "         gl_FragColor = vec4(textureColor.rgb * aAtten, textureColor.a);\n"
         "    } \n"
         "    else { \n"
-        "         gl_FragColor = textureColor;\n"
+        "         gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n"
         "    }\n"
         "}\n";
 

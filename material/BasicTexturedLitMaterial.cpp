@@ -48,6 +48,8 @@ namespace Core {
                 return this->viewMatrixLocation;
             case StandardUniform::ModelMatrix:
                 return this->modelMatrixLocation;
+             case StandardUniform::ModelInverseTransposeMatrix:
+                return this->modelInverseTransposeMatrixLocation;
             case StandardUniform::Texture0:
                 return this->textureLocation;
             case StandardUniform::LightPosition:
@@ -88,6 +90,7 @@ namespace Core {
         newMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
         newMaterial->viewMatrixLocation = this->viewMatrixLocation;
         newMaterial->modelMatrixLocation = this->modelMatrixLocation;
+        newMaterial->modelInverseTransposeMatrixLocation = this->modelInverseTransposeMatrixLocation;
         newMaterial->uvLocation = this->uvLocation;
         newMaterial->textureLocation = this->textureLocation;
         newMaterial->lightPositionLocation = this->lightPositionLocation;
@@ -108,6 +111,7 @@ namespace Core {
         this->projectionMatrixLocation = this->shader->getUniformLocation("projection");
         this->viewMatrixLocation = this->shader->getUniformLocation("viewMatrix");
         this->modelMatrixLocation = this->shader->getUniformLocation("modelMatrix");
+        this->modelInverseTransposeMatrixLocation = this->shader->getUniformLocation("modelInverseTransposeMatrix");
         this->lightPositionLocation = this->shader->getUniformLocation("lightPos");
         this->lightRangeLocation = this->shader->getUniformLocation("lightRange");
         this->lightTypeLocation = this->shader->getUniformLocation("lightType");

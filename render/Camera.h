@@ -25,6 +25,8 @@ namespace Core {
         void setAspectRatioFromDimensions(UInt32 width, UInt32 height);
         void updateProjection(Real fov, Real ratio, Real nearP, Real farP);
         const Matrix4x4& getProjectionMatrix() const;
+        void updateWorlInverseTransposeMatrix() ;
+        const Matrix4x4& getWorlInverseTransposeMatrix() const;
         void lookAt(const Point3r& target);
         void project(Vector3Base<Real>& vec);
         void unProject(Vector3Base<Real>& vec);
@@ -40,5 +42,6 @@ namespace Core {
         Real nearP;
         Real farP;
         Matrix4x4 projectionMatrix;
+        Matrix4x4 worldInverseTransposeMatrix;
     };
 }

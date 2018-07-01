@@ -331,8 +331,8 @@ namespace Core {
         Point3r p3 = positions->getAttribute(mappedFaceIndex3);
 
         // form 2 vectors based on triangle's vertices
-        a = p2 - p1;
-        b = p3 - p1;
+        a = p3 - p1;
+        b = p2 - p1;
 
         // calculate cross product
         Vector3r::cross(a, b, result);

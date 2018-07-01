@@ -32,6 +32,7 @@ namespace Core {
 
         for (auto camera : cameraList) {
             camera->setAspectRatioFromDimensions(this->renderSize.x, this->renderSize.y);
+            camera->updateWorlInverseTransposeMatrix();
             render(scene, camera, objectList, lightList);
         }
     }

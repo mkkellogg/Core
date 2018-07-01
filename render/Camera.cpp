@@ -45,6 +45,16 @@ namespace Core {
         return this->projectionMatrix;
     }
 
+    void Camera::updateWorlInverseTransposeMatrix() {
+        this->worldInverseTransposeMatrix.copy(this->owner->getTransform().getWorldMatrix());
+        this->worldInverseTransposeMatrix.transpose();
+        this->worldInverseTransposeMatrix.invert();
+    }
+
+    const Matrix4x4& Camera::getWorlInverseTransposeMatrix() const {
+        return this->worldInverseTransposeMatrix;
+    }
+
     void Camera::lookAt(const Point3r& target) {
         WeakPointer<Object3D> owner(this->getOwner());
         owner->getTransform().lookAt(target);

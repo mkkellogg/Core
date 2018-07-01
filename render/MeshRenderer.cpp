@@ -31,6 +31,8 @@ namespace Core {
         Int32 projectionLoc = this->material->getShaderLocation(StandardUniform::ProjectionMatrix);
         Int32 viewMatrixLoc = this->material->getShaderLocation(StandardUniform::ViewMatrix);
         Int32 modelMatrixLoc = this->material->getShaderLocation(StandardUniform::ModelMatrix);
+        Int32 modelInverseTransposeMatrixLoc = this->material->getShaderLocation(StandardUniform::ModelInverseTransposeMatrix);
+        Int32 viewInverseTransposeMatrixLoc = this->material->getShaderLocation(StandardUniform::ViewInverseTransposeMatrix);
 
         if (projectionLoc >= 0) {
             const Matrix4x4 &projMatrix = camera->getProjectionMatrix();
@@ -48,6 +50,18 @@ namespace Core {
             shader->setUniformMatrix4(modelMatrixLoc, modelmatrix);
         }
 
+        if (modelInverseTransposeMatrixLoc >= 0) {
+            Matrix4x4 modelInverseTransposeMatrix = this->owner->getTransform().getWorldMatrix();
+            modelInverseTransposeMatrix.invert();
+            modelInverseTransposeMatrix.transpose();
+            shader->setUniformMatrix4(modelInverseTransposeMatrixLoc, modelInverseTransposeMatrix);
+        }
+
+        if (viewInverseTransposeMatrixLoc >= 0) {
+            Matrix4x4 viewInverseTransposeMatrix = camera->getWorlInverseTransposeMatrix();
+            shader->setUniformMatrix4(viewInverseTransposeMatrixLoc, viewInverseTransposeMatrix);
+        }
+
         Int32 lightPositionLoc = this->material->getShaderLocation(StandardUniform::LightPosition);
         Int32 lightRangeLoc = this->material->getShaderLocation(StandardUniform::LightRange);
         Int32 lightTypeLoc = this->material->getShaderLocation(StandardUniform::LightType);
@@ -56,7 +70,9 @@ namespace Core {
         Int32 lightEnabledLoc = this->material->getShaderLocation(StandardUniform::LightEnabled);
 
         if (lights.size() > 0) {
-            shader->setUniform1i(lightEnabledLoc, 1);
+            if (lightEnabledLoc >= 0) {
+                shader->setUniform1i(lightEnabledLoc, 1);
+            }
             for(UInt32 i = 0; i < lights.size(); i++) {
                 const WeakPointer<Light> light = lights[i];
                 LightType lightType = light->getType();
@@ -90,7 +106,9 @@ namespace Core {
             this->drawMesh(mesh);
         }
         else {
-            shader->setUniform1i(lightEnabledLoc, 0);
+            if (lightEnabledLoc >= 0) {
+                shader->setUniform1i(lightEnabledLoc, 0);
+            }
             this->drawMesh(mesh);
         }
     }

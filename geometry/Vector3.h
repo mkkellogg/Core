@@ -163,9 +163,9 @@ namespace Core {
         }
 
         static void cross(const Vector3& a, const Vector3& b, Vector3& result) {
-            result.x = (a.y * b.z) - (b.y * a.z);
-            result.y = (b.x * a.z) - (a.x * b.z);
-            result.z = (a.x * b.y) - (b.x * a.y);
+            result.x = (a.y * b.z) - (a.z * b.y);
+            result.y = (a.z * b.x) - (a.x * b.z);
+            result.z = (a.x * b.y) - (a.y * b.x);
         }
 
         Vector3 operator*(const T& scale) const {

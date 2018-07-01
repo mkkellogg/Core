@@ -11,18 +11,20 @@ namespace Core {
         ModelViewMatrix = 2,
         ProjectionMatrix = 3,
         ModelViewProjectionMatrix = 4,
-        Texture0 = 5,
-        Texture1 = 6,
-        LightPosition = 7,
-        LightDirection = 8,
-        LightColor = 9,
-        LightIntensity = 10,
-        LightAttenuation = 11,
-        LightType = 12,
-        LightRange = 13,
-        LightEnabled = 14,
-        _Count = 15,  // Must always be last in the list (before _None)
-        _None = 16,
+        ModelInverseTransposeMatrix = 5,
+        ViewInverseTransposeMatrix = 6,
+        Texture0 = 7,
+        Texture1 = 8,
+        LightPosition = 9,
+        LightDirection = 10,
+        LightColor = 11,
+        LightIntensity = 12,
+        LightAttenuation = 13,
+        LightType = 14,
+        LightRange = 15,
+        LightEnabled = 16,
+        _Count = 17,  // Must always be last in the list (before _None)
+        _None = 18,
     };
 
     class StandardUniforms {
