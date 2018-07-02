@@ -66,6 +66,7 @@ set(INCLUDE_FILES
     render/BaseRenderable.h
     render/MeshRenderer.h
     render/RenderState.h
+    render/RenderTarget.h
     light/Light.h
     light/PointLight.h
     light/LightType.h
@@ -138,6 +139,7 @@ set(SOURCE_FILES
     render/Camera.cpp
     render/Renderer.cpp
     render/ObjectRenderers.cpp
+    render/RenderTarget.cpp
     light/Light.cpp
     light/PointLight.cpp
     material/Material.cpp
