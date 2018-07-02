@@ -19,6 +19,18 @@ namespace Core {
     void CubeTextureGL::build(WeakPointer<RawImage> front, WeakPointer<RawImage> back, 
                               WeakPointer<RawImage> top, WeakPointer<RawImage> bottom, 
                               WeakPointer<RawImage> left, WeakPointer<RawImage> right) {
+                                  
+        this->setupTexture(front->getWidth(), front->getHeight(), 
+                           front->getImageData(), back->getImageData(), 
+                           top->getImageData(), bottom->getImageData(), 
+                           left->getImageData(), right->getImageData());
+    }
+
+    void CubeTextureGL::build(UInt32 width, UInt32 height) {
+        this->setupTexture(width, height, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+    }
+
+    void CubeTextureGL::setupTexture(UInt32 width, UInt32 height, Byte* front, Byte* back, Byte* top, Byte* bottom, Byte* left, Byte* right) {
         // glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
         GLuint tex;

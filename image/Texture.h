@@ -12,6 +12,7 @@ namespace Core {
         virtual ~Texture();
         Int32 getTextureID() const;
         Bool isBuilt() const;
+        virtual void build(UInt32 width, UInt32 height) = 0;
 
     protected:
         Texture(const TextureAttributes& attribute);

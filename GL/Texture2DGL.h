@@ -18,8 +18,10 @@ namespace Core {
         ~Texture2DGL();
 
         void build(WeakPointer<RawImage> imageData) override;
+        void build(UInt32 width, UInt32 height) override;
 
     protected:
         Texture2DGL(const TextureAttributes& attributes);
+        void setupTexture(UInt32 width, UInt32 height, Byte* data);
     };
 }

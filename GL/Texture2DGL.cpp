@@ -15,21 +15,29 @@ namespace Core {
     }
 
     void Texture2DGL::build(WeakPointer<RawImage> imageData) {
+        this->setupTexture(imageData->getWidth(), imageData->getHeight(), imageData->getImageData());
+    }
+      
+    void Texture2DGL::build(UInt32 width, UInt32 height) {
+        this->setupTexture(width, height, nullptr);
+    }
+
+    void Texture2DGL::setupTexture(UInt32 width, UInt32 height, Byte* data) {
         GLuint tex;
 
         // generate the OpenGL texture
         glGenTextures(1, &tex);
         if (!tex) {
-            throw AllocationException("Texture2DGL::createTexture -> Unable to generate texture");
+            throw AllocationException("Texture2DGL::setupTexture -> Unable to generate texture");
         }
         glBindTexture(GL_TEXTURE_2D, tex);
 
         // set the wrap mode
-        if (attributes.WrapMode == TextureWrap::Mirror) {
+        if (this->attributes.WrapMode == TextureWrap::Mirror) {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
         }
-        else if (attributes.WrapMode == TextureWrap::Repeat) {
+        else if (this->attributes.WrapMode == TextureWrap::Repeat) {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         }
@@ -58,13 +66,13 @@ namespace Core {
         }
 
         // we only generate mip-maps if bi-linear or tri-linear filtering is used
-        if (attributes.FilterMode == TextureFilter::TriLinear || attributes.FilterMode == TextureFilter::BiLinear) {
+        if (this->attributes.FilterMode == TextureFilter::TriLinear || attributes.FilterMode == TextureFilter::BiLinear) {
             glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, attributes.MipMapLevel);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, attributes.MipMapLevel);
         }
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageData->getWidth(), imageData->getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData->getImageData());
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
         glBindTexture(GL_TEXTURE_2D, 0);
         this->textureId = (Int32)tex;
