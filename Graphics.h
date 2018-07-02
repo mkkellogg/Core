@@ -34,6 +34,8 @@ namespace Core {
 
         virtual WeakPointer<Texture2D> createTexture2D(const TextureAttributes& attributes) = 0;
         virtual WeakPointer<CubeTexture> createCubeTexture(const TextureAttributes& attributes) = 0;
+        virtual void destroyTexture2D(WeakPointer<Texture2D> texture) = 0;
+        virtual void destroyCubeTexture(WeakPointer<CubeTexture> texture) = 0;
 
         virtual WeakPointer<Shader> createShader(const std::string& vertex, const std::string& fragment) = 0;
         virtual WeakPointer<Shader> createShader(const char vertex[], const char fragment[]) = 0;

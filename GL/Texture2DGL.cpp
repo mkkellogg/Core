@@ -9,7 +9,9 @@ namespace Core {
     }
 
     Texture2DGL::~Texture2DGL() {
-
+        if (this->textureId > 0) {
+            glDeleteTextures(1, &this->textureId);
+        }
     }
 
     void Texture2DGL::build(WeakPointer<RawImage> imageData) {

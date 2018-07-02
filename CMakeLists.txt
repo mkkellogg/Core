@@ -105,6 +105,7 @@ set(INCLUDE_FILES
     GL/ShaderGL.h
     GL/AttributeArrayGPUStorageGL.h
     GL/IndexBufferGL.h
+    GL/RenderTargetGL.h
     Graphics.h
     Engine.h)
 
@@ -167,7 +168,8 @@ set(SOURCE_FILES
     GL/CubeTextureGL.cpp
     GL/ShaderGL.cpp
     GL/IndexBufferGL.cpp
-    GL/ShaderManagerGL.cpp)
+    GL/ShaderManagerGL.cpp
+    GL/RenderTargetGL.cpp)
     #RendererES3.cpp)
 
 add_library(${EXECUTABLE_NAME} ${SOURCE_FILES})

@@ -15,7 +15,7 @@ namespace Core {
 
     protected:
         Texture(const TextureAttributes& attribute);
-        Int32 textureId;
+        UInt32 textureId;
         TextureAttributes attributes;
     };
 }

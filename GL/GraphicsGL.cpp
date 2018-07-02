@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "GraphicsGL.h"
 #include "AttributeArrayGPUStorageGL.h"
 #include "CubeTextureGL.h"
@@ -48,6 +50,30 @@ namespace Core {
         std::shared_ptr<CubeTextureGL> newTexture = std::shared_ptr<CubeTextureGL>(new CubeTextureGL(attributes));
         this->cubeTextures.push_back(newTexture);
         return std::static_pointer_cast<CubeTexture>(newTexture);
+    }
+
+    void GraphicsGL::destroyTexture2D(WeakPointer<Texture2D> texture) {
+        WeakPointer<Texture2DGL> textureGL = WeakPointer<Texture2D>::dynamicPointerCast<Texture2DGL>(texture);
+        if (textureGL.isValid()) {
+            std::shared_ptr<Texture2DGL> sharedPtr = textureGL.lock();
+            auto end = this->textures2D.end();
+            auto result = std::find(this->textures2D.begin(), end, sharedPtr);
+            if (result != end) {
+                this->textures2D.erase(result);
+            }
+        }
+    }
+
+    void GraphicsGL::destroyCubeTexture(WeakPointer<CubeTexture> texture) {
+        WeakPointer<CubeTextureGL> textureGL = WeakPointer<CubeTexture>::dynamicPointerCast<CubeTextureGL>(texture);
+        if (textureGL.isValid()) {
+            std::shared_ptr<CubeTextureGL> sharedPtr = textureGL.lock();
+            auto end = this->cubeTextures.end();
+            auto result = std::find(this->cubeTextures.begin(), end, sharedPtr);
+            if (result != end) {
+                this->cubeTextures.erase(result);
+            }
+        }
     }
 
     WeakPointer<Shader> GraphicsGL::createShader(const std::string& vertex, const std::string& fragment) {

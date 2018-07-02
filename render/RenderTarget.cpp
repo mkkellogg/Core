@@ -15,7 +15,6 @@ namespace Core {
         colorBufferIsTexture = false;
     }
 
-
     RenderTarget::~RenderTarget() {
 
     }

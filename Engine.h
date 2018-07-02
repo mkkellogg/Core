@@ -91,6 +91,8 @@ namespace Core {
 
         WeakPointer<Texture2D> createTexture2D(const TextureAttributes& attributes);
         WeakPointer<CubeTexture> createCubeTexture(const TextureAttributes& attributes);
+        void destroyTexture2D(WeakPointer<Texture2D> texture);
+        void destroyCubeTexture(WeakPointer<CubeTexture> texture);
 
         void setImageLoader(WeakPointer<ImageLoader> imageLoader);
         WeakPointer<ImageLoader> getImageLoader();
@@ -114,7 +116,6 @@ namespace Core {
         std::vector<std::shared_ptr<Light>> lights;
         std::vector<std::shared_ptr<Object3D>> sceneObjects;
         std::vector<std::shared_ptr<Material>> materials;
-        std::vector<std::shared_ptr<Texture>> textures;
         std::vector<std::shared_ptr<BaseObjectRenderer>> objectRenderers;
         std::vector<std::shared_ptr<Mesh>> meshes;
 

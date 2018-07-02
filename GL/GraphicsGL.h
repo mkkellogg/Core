@@ -33,6 +33,8 @@ namespace Core {
         
         WeakPointer<Texture2D> createTexture2D(const TextureAttributes& attributes) override;
         WeakPointer<CubeTexture> createCubeTexture(const TextureAttributes& attributes) override;
+        void destroyTexture2D(WeakPointer<Texture2D> texture) override;
+        void destroyCubeTexture(WeakPointer<CubeTexture> texture) override;
         
         WeakPointer<Shader> createShader(const std::string& vertex, const std::string& fragment) override;
         WeakPointer<Shader> createShader(const char vertex[], const char fragment[]) override;

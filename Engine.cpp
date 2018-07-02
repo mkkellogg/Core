@@ -165,6 +165,14 @@ namespace Core {
         return this->graphics->createCubeTexture(attributes);
     }
 
+    void Engine::destroyTexture2D(WeakPointer<Texture2D> texture) {
+        this->graphics->destroyTexture2D(texture);
+    }
+
+    void Engine::destroyCubeTexture(WeakPointer<CubeTexture> texture) {
+        this->graphics->destroyCubeTexture(texture);
+    }
+
     void Engine::setImageLoader(WeakPointer<ImageLoader> imageLoader) {
         this->imageLoader = imageLoader;
     }
