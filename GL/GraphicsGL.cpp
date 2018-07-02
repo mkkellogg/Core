@@ -31,14 +31,6 @@ namespace Core {
         renderer = std::shared_ptr<RendererGL>(new RendererGL());
         renderer->init();
 
-        glClearColor(0, 0, 0, 1);
-        glFrontFace(GL_CCW);
-        glCullFace(GL_BACK);
-        glEnable(GL_CULL_FACE);
-        glEnable(GL_DEPTH_TEST);
-        glDepthMask(GL_TRUE);
-        glDepthFunc(GL_LEQUAL);
-
         this->shaderDirectory.init();
     }
 
