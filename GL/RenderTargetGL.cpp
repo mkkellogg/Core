@@ -5,6 +5,7 @@
 #include "../Graphics.h"
 #include "../image/Texture.h"
 #include "Texture2DGL.h"
+#include "CubeTextureGL.h"
 
 namespace Core {
 
@@ -26,13 +27,14 @@ namespace Core {
 
         // destroy the color texture attachment
         if (this->colorTexture.isValid()) {
-            Texture2DGL * texGL = dynamic_cast<Texture2DGL*>(colorTexture.get());
-
+            GLuint texID = this->colorTexture->getTextureID();
+            glDeleteTextures(1, &texID);
         }
 
         // destroy the depth texture attachment
         if (this->depthTexture.isValid()) {
-            Texture2DGL * texGL = dynamic_cast<Texture2DGL*>(depthTexture.get());
+            GLuint texID = this->depthTexture->getTextureID();
+            glDeleteTextures(1, &texID);
         }
 
         // destroy the FBO
@@ -54,61 +56,53 @@ namespace Core {
         glBindFramebuffer(GL_FRAMEBUFFER, fboID);
 
         if (fboID == 0) {
-            throw RenderTargetException("RenderTargetGL::Init -> Unable to create frame buffer object.");
+            throw RenderTargetException("RenderTargetGL::init -> Unable to create frame buffer object.");
         }
 
         // generate a color texture attachment
-        /*if (this->hasColorBuffer) {
+        if (this->hasColorBuffer) {
             TextureAttributes attributes = this->colorTextureAttributes;
 
             if (attributes.IsCube) {
                 colorTexture = Engine::instance()->createCubeTexture(attributes);
-                // create a cube texture for this render target
-                colorTexture = objectManager->CreateCubeTexture(nullptr, width, height,
-                                                                nullptr, width, height,
-                                                                nullptr, width, height,
-                                                                nullptr, width, height,
-                                                                nullptr, width, height,
-                                                                nullptr, width, height);
             }
             else {
-                // create a 2D texture for this render target
-                colorTexture = objectManager->CreateTexture(width, height, nullptr, attributes);
+                colorTexture = Engine::instance()->createTexture2D(attributes);
             }
-            NONFATAL_ASSERT_RTRN(colorTexture.IsValid(), "RenderTargetGL::Init -> Unable to create color texture.", false, true);
-
-            TextureGL * texGL = dynamic_cast<TextureGL*>(colorTexture.GetPtr());
-            ASSERT(texGL != nullptr, "RenderTargetGL::Init -> Unable to cast color texture to TextureGL.");
+            colorTexture->build(this->width, this->height);
+            if (!colorTexture.isValid()) {
+                throw RenderTargetException("RenderTargetGL::init -> Unable to create color texture.");
+            }
 
             if (attributes.IsCube) {
-                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X, texGL->GetTextureID(), 0);
-                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, texGL->GetTextureID(), 0);
-                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, texGL->GetTextureID(), 0);
-                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, texGL->GetTextureID(), 0);
-                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, texGL->GetTextureID(), 0);
-                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, texGL->GetTextureID(), 0);
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X, this->colorTexture->getTextureID(), 0);
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, this->colorTexture->getTextureID(), 0);
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, this->colorTexture->getTextureID(), 0);
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, this->colorTexture->getTextureID(), 0);
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, this->colorTexture->getTextureID(), 0);
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, this->colorTexture->getTextureID(), 0);
 
             }
-            else
-                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texGL->GetTextureID(), 0);
+            else {
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->colorTexture->getTextureID(), 0);
+            }
 
             colorBufferIsTexture = true;
-        }*/
+        }
 
         // generate a depth texture attachment
-       /* if (hasDepthBuffer && !enableStencilBuffer) {
+        if (hasDepthBuffer && !enableStencilBuffer) {
             TextureAttributes attributes;
             attributes.FilterMode = TextureFilter::Point;
             attributes.WrapMode = TextureWrap::Clamp;
             attributes.IsDepthTexture = true;
 
-            depthTexture = objectManager->CreateTexture(width, height, nullptr, attributes);
-            NONFATAL_ASSERT_RTRN(depthTexture.IsValid(), "RenderTargetGL::Init -> Unable to create depth texture.", false, true);
-
-            TextureGL * texGL = dynamic_cast<TextureGL*>(depthTexture.GetPtr());
-            ASSERT(texGL != nullptr, "RenderTargetGL::Init -> Unable to cast depth texture to TextureGL.");
-
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texGL->GetTextureID(), 0);
+            this->depthTexture = Engine::instance()->createTexture2D(attributes);
+            if (!this->depthTexture.isValid()) {
+                throw RenderTargetException("RenderTargetGL::init -> Unable to create depth texture.");
+            }
+            this->depthTexture->build(this->width, this->height);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, this->depthTexture->getTextureID(), 0);
 
             depthBufferIsTexture = true;
         }
@@ -119,7 +113,10 @@ namespace Core {
 
             GLuint depthStencilRenderBufferID;
             glGenRenderbuffers(1, &depthStencilRenderBufferID);
-            ASSERT(depthStencilRenderBufferID != 0, "RenderTargetGL::Init -> Unable to create depth/stencil render buffer.");
+
+            if (depthStencilRenderBufferID == 0) {
+                throw RenderTargetException("RenderTargetGL::init -> Unable to create depth/stencil render buffer.");
+            }
 
             glBindRenderbuffer(GL_RENDERBUFFER, depthStencilRenderBufferID);
             glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
@@ -131,9 +128,12 @@ namespace Core {
         }
 
         UInt32 status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-        NONFATAL_ASSERT_RTRN(status == GL_FRAMEBUFFER_COMPLETE, "RenderTargetGL::Init -> Framebuffer is incomplete!.", false, true);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);*/
+        if (status != GL_FRAMEBUFFER_COMPLETE) {
+            throw RenderTargetException("RenderTargetGL::init -> Framebuffer is incomplete!.");
+        }
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         return true;
     }
