@@ -5,6 +5,7 @@
 
 #include "../util/WeakPointer.h"
 #include "../scene/Object3DComponent.h"
+#include "ViewDescriptor.h"
 
 namespace Core {
 
@@ -17,6 +18,6 @@ namespace Core {
     public:
         BaseObjectRenderer(WeakPointer<Object3D> owner) : Object3DComponent(owner) {
         }
-        virtual void render(WeakPointer<Camera> camera, const std::vector<WeakPointer<Light>>& lights) = 0;
+        virtual void render(const ViewDescriptor& viewDescriptor, const std::vector<WeakPointer<Light>>& lights) = 0;
     };
 }

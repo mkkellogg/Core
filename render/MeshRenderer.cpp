@@ -16,7 +16,7 @@ namespace Core {
                                WeakPointer<Object3D> owner): ObjectRenderer<Mesh>(graphics, owner), material(material) {
     }
 
-    void MeshRenderer::renderObject(WeakPointer<Camera> camera, WeakPointer<Mesh> mesh, const std::vector<WeakPointer<Light>>& lights) {
+    void MeshRenderer::renderObject(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh, const std::vector<WeakPointer<Light>>& lights) {
         WeakPointer<Shader> shader = this->material->getShader();
         this->graphics->activateShader(shader);
 
@@ -35,12 +35,12 @@ namespace Core {
         Int32 viewInverseTransposeMatrixLoc = this->material->getShaderLocation(StandardUniform::ViewInverseTransposeMatrix);
 
         if (projectionLoc >= 0) {
-            const Matrix4x4 &projMatrix = camera->getProjectionMatrix();
+            const Matrix4x4 &projMatrix = viewDescriptor.projectionMatrix;
             shader->setUniformMatrix4(projectionLoc, projMatrix);
         }
 
         if (viewMatrixLoc >= 0) {;
-            Matrix4x4 viewMatrix = camera->getOwner()->getTransform().getWorldMatrix();
+            Matrix4x4 viewMatrix = viewDescriptor.viewMatrix;
             viewMatrix.invert();
             shader->setUniformMatrix4(viewMatrixLoc, viewMatrix);
         }
@@ -58,7 +58,7 @@ namespace Core {
         }
 
         if (viewInverseTransposeMatrixLoc >= 0) {
-            Matrix4x4 viewInverseTransposeMatrix = camera->getWorlInverseTransposeMatrix();
+            Matrix4x4 viewInverseTransposeMatrix = viewDescriptor.viewInverseTransposeMatrix;
             shader->setUniformMatrix4(viewInverseTransposeMatrixLoc, viewInverseTransposeMatrix);
         }
 
@@ -113,12 +113,12 @@ namespace Core {
         }
     }
 
-    void MeshRenderer::render(WeakPointer<Camera> camera, const std::vector<WeakPointer<Light>>& lights) {
+    void MeshRenderer::render(const ViewDescriptor& viewDescriptor, const std::vector<WeakPointer<Light>>& lights) {
         std::shared_ptr<RenderableContainer<Mesh>> thisContainer = std::dynamic_pointer_cast<RenderableContainer<Mesh>>(this->owner.lock());
         if (thisContainer) {
             auto renderables = thisContainer->getRenderables();
             for (auto mesh : renderables) {
-                this->renderObject(camera, mesh, lights);
+                this->renderObject(viewDescriptor, mesh, lights);
             }
         }
     }

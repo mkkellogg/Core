@@ -3,8 +3,8 @@
 #include <memory>
 #include <vector>
 
-#include "../material/StandardAttributes.h"
 #include "../render/ObjectRenderer.h"
+#include "../material/StandardAttributes.h"
 #include "../util/PersistentWeakPointer.h"
 
 namespace Core {
@@ -21,8 +21,8 @@ namespace Core {
         friend class Engine;
 
     public:
-        virtual void render(WeakPointer<Camera> camera, const std::vector<WeakPointer<Light>>& lights) override;
-        virtual void renderObject(WeakPointer<Camera> camera, WeakPointer<Mesh> mesh, const std::vector<WeakPointer<Light>>& lights) override;
+        virtual void render(const ViewDescriptor& viewDescriptor, const std::vector<WeakPointer<Light>>& lights) override;
+        virtual void renderObject(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh, const std::vector<WeakPointer<Light>>& lights) override;
 
     private:
         MeshRenderer(WeakPointer<Graphics> graphics, WeakPointer<Material> material, WeakPointer<Object3D> owner);

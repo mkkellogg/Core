@@ -14,6 +14,7 @@ namespace Core {
     class Scene;
     class Camera;
     class Light;
+    class ViewDescriptor;
 
     class Renderer {
     public:
@@ -22,7 +23,7 @@ namespace Core {
         virtual Bool init();
         virtual void render(WeakPointer<Scene> scene);
         virtual void render(WeakPointer<Scene> scene, 
-                            WeakPointer<Camera> camera, 
+                            const ViewDescriptor& viewDescriptor, 
                             std::vector<WeakPointer<Object3D>>& objectList,
                             std::vector<WeakPointer<Light>>& lightList);
         void processScene(WeakPointer<Scene> scene, 

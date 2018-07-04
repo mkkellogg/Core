@@ -20,7 +20,7 @@ namespace Core {
         Bool init() override;
         void render(WeakPointer<Scene> scene) override;
         void render(WeakPointer<Scene> scene, 
-                    WeakPointer<Camera> camera, 
+                    const ViewDescriptor& viewDescriptor, 
                     std::vector<WeakPointer<Object3D>>& objectList, 
                     std::vector<WeakPointer<Light>>& lightList) override;
         void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) override;

@@ -8,6 +8,7 @@
 #include "../scene/Scene.h"
 #include "Camera.h"
 #include "Renderer.h"
+#include "ViewDescriptor.h"
 
 // TODO: remove this include when light debugging is done
 #include "../light/PointLight.h"
@@ -32,13 +33,18 @@ namespace Core {
 
         for (auto camera : cameraList) {
             camera->setAspectRatioFromDimensions(this->renderSize.x, this->renderSize.y);
-            camera->updateWorlInverseTransposeMatrix();
-            render(scene, camera, objectList, lightList);
+            ViewDescriptor viewDescriptor;
+            viewDescriptor.viewMatrix.copy(camera->getOwner()->getTransform().getWorldMatrix());
+            viewDescriptor.projectionMatrix.copy(camera->getProjectionMatrix());
+            viewDescriptor.viewInverseTransposeMatrix.copy(viewDescriptor.viewMatrix);
+            viewDescriptor.viewInverseTransposeMatrix.transpose();
+            viewDescriptor.viewInverseTransposeMatrix.invert();
+            render(scene, viewDescriptor, objectList, lightList);
         }
     }
 
     void Renderer::render(WeakPointer<Scene> scene, 
-                          WeakPointer<Camera> camera, 
+                          const ViewDescriptor& viewDescriptor, 
                           std::vector<WeakPointer<Object3D>>& objectList,
                           std::vector<WeakPointer<Light>>& lightList) {
         for (auto object : objectList) {
@@ -47,7 +53,7 @@ namespace Core {
             if (containerPtr) {
                 WeakPointer<BaseObjectRenderer> objectRenderer = containerPtr->getBaseRenderer();
                 if (objectRenderer) {
-                    objectRenderer->render(camera, lightList);
+                    objectRenderer->render(viewDescriptor, lightList);
                 }
             }
         }
