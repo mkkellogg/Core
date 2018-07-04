@@ -26,17 +26,17 @@ namespace Core {
                             const ViewDescriptor& viewDescriptor, 
                             std::vector<WeakPointer<Object3D>>& objectList,
                             std::vector<WeakPointer<Light>>& lightList);
-        void processScene(WeakPointer<Scene> scene, 
-                          std::vector<WeakPointer<Object3D>>& outObjects, 
-                          std::vector<WeakPointer<Camera>>& outCameras,
-                          std::vector<WeakPointer<Light>>& outLights);
-
         void setRenderSize(UInt32 width, UInt32 height, Bool updateViewport = true);
         void setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
         virtual void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
         Vector4u getViewport();
 
     private:
+        void getViewDescriptorForCamera(WeakPointer<Camera> camera, ViewDescriptor& viewDescriptor);
+        void processScene(WeakPointer<Scene> scene,
+                    std::vector<WeakPointer<Object3D>>& outObjects,
+                    std::vector<WeakPointer<Camera>>& outCameras,
+                    std::vector<WeakPointer<Light>>& outLights);
         void processSceneStep(WeakPointer<Object3D> object, 
                               const Matrix4x4& curTransform, 
                               std::vector<WeakPointer<Object3D>>& outObjects,

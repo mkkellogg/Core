@@ -17,22 +17,30 @@ namespace Core {
     }
 
     void MeshRenderer::renderObject(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh, const std::vector<WeakPointer<Light>>& lights) {
-        WeakPointer<Shader> shader = this->material->getShader();
+        
+        WeakPointer<Material> material;
+        if (viewDescriptor.overrideMaterial.isValid()) {
+            material = viewDescriptor.overrideMaterial;
+        }
+        else {
+            material = this->material;
+        }
+        WeakPointer<Shader> shader = material->getShader();
         this->graphics->activateShader(shader);
 
         // send custom uniforms first so that the renderer can override if necessary.
-        this->material->sendCustomUniformsToShader();
+        material->sendCustomUniformsToShader();
 
-        this->checkAndSetShaderAttribute(mesh, StandardAttribute::Position, mesh->getVertexPositions());
-        this->checkAndSetShaderAttribute(mesh, StandardAttribute::Normal, mesh->getVertexNormals());
-        this->checkAndSetShaderAttribute(mesh, StandardAttribute::Color, mesh->getVertexColors());
-        this->checkAndSetShaderAttribute(mesh, StandardAttribute::UV0, mesh->getVertexUVs0());
+        this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::Position, mesh->getVertexPositions());
+        this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::Normal, mesh->getVertexNormals());
+        this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::Color, mesh->getVertexColors());
+        this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::UV0, mesh->getVertexUVs0());
 
-        Int32 projectionLoc = this->material->getShaderLocation(StandardUniform::ProjectionMatrix);
-        Int32 viewMatrixLoc = this->material->getShaderLocation(StandardUniform::ViewMatrix);
-        Int32 modelMatrixLoc = this->material->getShaderLocation(StandardUniform::ModelMatrix);
-        Int32 modelInverseTransposeMatrixLoc = this->material->getShaderLocation(StandardUniform::ModelInverseTransposeMatrix);
-        Int32 viewInverseTransposeMatrixLoc = this->material->getShaderLocation(StandardUniform::ViewInverseTransposeMatrix);
+        Int32 projectionLoc = material->getShaderLocation(StandardUniform::ProjectionMatrix);
+        Int32 viewMatrixLoc = material->getShaderLocation(StandardUniform::ViewMatrix);
+        Int32 modelMatrixLoc = material->getShaderLocation(StandardUniform::ModelMatrix);
+        Int32 modelInverseTransposeMatrixLoc = material->getShaderLocation(StandardUniform::ModelInverseTransposeMatrix);
+        Int32 viewInverseTransposeMatrixLoc = material->getShaderLocation(StandardUniform::ViewInverseTransposeMatrix);
 
         if (projectionLoc >= 0) {
             const Matrix4x4 &projMatrix = viewDescriptor.projectionMatrix;
@@ -62,12 +70,12 @@ namespace Core {
             shader->setUniformMatrix4(viewInverseTransposeMatrixLoc, viewInverseTransposeMatrix);
         }
 
-        Int32 lightPositionLoc = this->material->getShaderLocation(StandardUniform::LightPosition);
-        Int32 lightRangeLoc = this->material->getShaderLocation(StandardUniform::LightRange);
-        Int32 lightTypeLoc = this->material->getShaderLocation(StandardUniform::LightType);
-        Int32 lightIntensityLoc = this->material->getShaderLocation(StandardUniform::LightIntensity);
-        Int32 lightColorLoc = this->material->getShaderLocation(StandardUniform::LightColor);
-        Int32 lightEnabledLoc = this->material->getShaderLocation(StandardUniform::LightEnabled);
+        Int32 lightPositionLoc = material->getShaderLocation(StandardUniform::LightPosition);
+        Int32 lightRangeLoc = material->getShaderLocation(StandardUniform::LightRange);
+        Int32 lightTypeLoc = material->getShaderLocation(StandardUniform::LightType);
+        Int32 lightIntensityLoc = material->getShaderLocation(StandardUniform::LightIntensity);
+        Int32 lightColorLoc = material->getShaderLocation(StandardUniform::LightColor);
+        Int32 lightEnabledLoc = material->getShaderLocation(StandardUniform::LightEnabled);
 
         if (lights.size() > 0) {
             if (lightEnabledLoc >= 0) {
@@ -123,9 +131,9 @@ namespace Core {
         }
     }
 
-    void MeshRenderer::checkAndSetShaderAttribute(WeakPointer<Mesh> mesh, StandardAttribute attribute, WeakPointer<AttributeArrayBase> array) {
+    void MeshRenderer::checkAndSetShaderAttribute(WeakPointer<Mesh> mesh, WeakPointer<Material> material, StandardAttribute attribute, WeakPointer<AttributeArrayBase> array) {
         if (mesh->isAttributeEnabled(attribute)) {
-            Int32 shaderLocation = this->material->getShaderLocation(attribute);
+            Int32 shaderLocation = material->getShaderLocation(attribute);
             if (array->getGPUStorage()) {
                 array->getGPUStorage()->sendToShader(shaderLocation);
             }

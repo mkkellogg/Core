@@ -10,9 +10,6 @@
 #include "Renderer.h"
 #include "ViewDescriptor.h"
 
-// TODO: remove this include when light debugging is done
-#include "../light/PointLight.h"
-
 namespace Core {
 
     Renderer::Renderer() {
@@ -34,11 +31,7 @@ namespace Core {
         for (auto camera : cameraList) {
             camera->setAspectRatioFromDimensions(this->renderSize.x, this->renderSize.y);
             ViewDescriptor viewDescriptor;
-            viewDescriptor.viewMatrix.copy(camera->getOwner()->getTransform().getWorldMatrix());
-            viewDescriptor.projectionMatrix.copy(camera->getProjectionMatrix());
-            viewDescriptor.viewInverseTransposeMatrix.copy(viewDescriptor.viewMatrix);
-            viewDescriptor.viewInverseTransposeMatrix.transpose();
-            viewDescriptor.viewInverseTransposeMatrix.invert();
+            this->getViewDescriptorForCamera(camera, viewDescriptor);
             render(scene, viewDescriptor, objectList, lightList);
         }
     }
@@ -47,6 +40,7 @@ namespace Core {
                           const ViewDescriptor& viewDescriptor, 
                           std::vector<WeakPointer<Object3D>>& objectList,
                           std::vector<WeakPointer<Light>>& lightList) {
+
         for (auto object : objectList) {
             std::shared_ptr<Object3D> objectShared = object.lock();
             std::shared_ptr<BaseRenderableContainer> containerPtr = std::dynamic_pointer_cast<BaseRenderableContainer>(objectShared);
@@ -57,6 +51,37 @@ namespace Core {
                 }
             }
         }
+        
+    }
+
+    void Renderer::setRenderSize(UInt32 width, UInt32 height, Bool updateViewport) {
+        this->renderSize.x = width;
+        this->renderSize.y = height;
+        if (updateViewport) {
+            this->setViewport(0, 0, width, height);
+        }
+    }
+
+    void Renderer::setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) {
+        this->renderSize.x = width;
+        this->renderSize.y = height;
+        this->setViewport(hOffset, vOffset, viewPortWidth, viewPortHeight);
+    }
+
+    void Renderer::setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) {
+        this->viewport.set(hOffset, vOffset, viewPortWidth, viewPortHeight);
+    }
+
+    Vector4u Renderer::getViewport() {
+        return this->viewport;
+    }
+
+    void Renderer::getViewDescriptorForCamera(WeakPointer<Camera> camera, ViewDescriptor& viewDescriptor) {
+        viewDescriptor.viewMatrix.copy(camera->getOwner()->getTransform().getWorldMatrix());
+        viewDescriptor.projectionMatrix.copy(camera->getProjectionMatrix());
+        viewDescriptor.viewInverseTransposeMatrix.copy(viewDescriptor.viewMatrix);
+        viewDescriptor.viewInverseTransposeMatrix.transpose();
+        viewDescriptor.viewInverseTransposeMatrix.invert();
     }
 
     void Renderer::processScene(WeakPointer<Scene> scene, 
@@ -101,25 +126,4 @@ namespace Core {
         }
     }
 
-    void Renderer::setRenderSize(UInt32 width, UInt32 height, Bool updateViewport) {
-        this->renderSize.x = width;
-        this->renderSize.y = height;
-        if (updateViewport) {
-            this->setViewport(0, 0, width, height);
-        }
-    }
-
-    void Renderer::setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) {
-        this->renderSize.x = width;
-        this->renderSize.y = height;
-        this->setViewport(hOffset, vOffset, viewPortWidth, viewPortHeight);
-    }
-
-    void Renderer::setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) {
-        this->viewport.set(hOffset, vOffset, viewPortWidth, viewPortHeight);
-    }
-
-    Vector4u Renderer::getViewport() {
-        return this->viewport;
-    }
 }
