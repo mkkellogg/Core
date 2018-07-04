@@ -1,5 +1,0 @@
-create libcorec.a
-addlib ./libcore.a
-addlib ./libcore-ext.a
-save
-end

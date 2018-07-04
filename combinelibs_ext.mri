@@ -1,7 +1,0 @@
-create libcore-ext.a
-addlib ../../assimp/build/code/libassimp.a
-addlib ../../assimp/build/contrib/zlib/libzlibstatic.a
-addlib ../../assimp/build/contrib/irrXML/libIrrXML.a
-addlib ../../libpng/build/libpng16.a
-save
-end
