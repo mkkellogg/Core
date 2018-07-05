@@ -20,6 +20,7 @@ namespace Core {
     class Renderer;
     class Scene;
     class ShaderManager;
+    class RenderTarget;
     
     class Graphics {
     public:
@@ -51,6 +52,9 @@ namespace Core {
 
         virtual void setBlendingEnabled(Bool enabled) = 0;
         virtual void setBlendingFunction(RenderState::BlendingMethod source, RenderState::BlendingMethod dest) = 0;
+
+        virtual WeakPointer<RenderTarget> getDefaultRenderTarget() = 0;
+        virtual void updateDefaultRenderTarget(UInt32 width, UInt32 height) = 0;
 
     };
 }

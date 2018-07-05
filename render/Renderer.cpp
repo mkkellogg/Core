@@ -51,7 +51,7 @@ namespace Core {
                 }
             }
         }
-        
+
     }
 
     void Renderer::setRenderSize(UInt32 width, UInt32 height, Bool updateViewport) {
@@ -74,6 +74,10 @@ namespace Core {
 
     Vector4u Renderer::getViewport() {
         return this->viewport;
+    }
+
+    Vector2u Renderer::getRenderSize() {
+        return this->renderSize;
     }
 
     void Renderer::getViewDescriptorForCamera(WeakPointer<Camera> camera, ViewDescriptor& viewDescriptor) {

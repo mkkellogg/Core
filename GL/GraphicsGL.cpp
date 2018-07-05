@@ -7,6 +7,7 @@
 #include "RendererGL.h"
 #include "ShaderGL.h"
 #include "Texture2DGL.h"
+#include "RenderTargetGL.h"
 
 namespace Core {
 
@@ -30,9 +31,8 @@ namespace Core {
         UInt32 maxGL = 0;
         const char* versionStr = (const char*)glGetString(GL_VERSION);
 
-        renderer = std::shared_ptr<RendererGL>(new RendererGL());
-        renderer->init();
-
+        this->renderer = this->createRenderer();
+        this->defaultRenderTarget = this->createDefaultRenderTarget();
         this->shaderDirectory.init();
     }
 
@@ -137,6 +137,15 @@ namespace Core {
         glBlendFunc(getGLBlendProperty(source), getGLBlendProperty(dest));
     }
 
+    WeakPointer<RenderTarget> GraphicsGL::getDefaultRenderTarget() {
+        return  std::static_pointer_cast<RenderTarget>(this->defaultRenderTarget);
+    }
+
+    void GraphicsGL::updateDefaultRenderTarget(UInt32 width, UInt32 height) {
+        this->defaultRenderTarget->width = width;
+        this->defaultRenderTarget->height = height;
+    }
+
     GLenum GraphicsGL::getGLBlendProperty(RenderState::BlendingMethod property) {
         switch (property) {
             case RenderState::BlendingMethod::SrcAlpha:
@@ -175,5 +184,26 @@ namespace Core {
                 return GL_INT;
         }
         return 0;
+    }
+
+    std::shared_ptr<RendererGL> GraphicsGL::createRenderer() {
+        RendererGL* renderPtr = new RendererGL();
+        if (renderPtr == nullptr) {
+            throw AllocationException("GraphicsGL::createRenderer -> Unable to allocate renderer.");
+        }
+        std::shared_ptr<RendererGL> renderer(renderPtr);
+        renderer->init();
+        return renderer;
+    }
+
+    std::shared_ptr<RenderTargetGL> GraphicsGL::createDefaultRenderTarget() {
+        TextureAttributes colorAttributes;
+        Vector2u renderSize = this->renderer->getRenderSize();
+        RenderTargetGL* defaultTargetPtr = new(std::nothrow) RenderTargetGL(false, false, false, colorAttributes, renderSize.x, renderSize.y);
+        if (defaultTargetPtr == nullptr) {
+            throw AllocationException("GraphicsGL::createDefaultRenderTarget -> Unable to allocate default render target.");
+        }
+        std::shared_ptr<RenderTargetGL> defaultTarget(defaultTargetPtr);
+        return defaultTarget;
     }
 }

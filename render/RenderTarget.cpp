@@ -29,7 +29,7 @@ namespace Core {
             case RenderBufferType::Depth:
                 return hasDepthBuffer;
             default:
-                return false;;
+                return false;
         }
     }
 

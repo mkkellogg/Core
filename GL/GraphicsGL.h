@@ -17,6 +17,7 @@ namespace Core {
     class Texture2DGL;
     class ShaderGL;
     class CubeTextureGL;
+    class RenderTargetGL;
 
     class GraphicsGL final : public Graphics {
         friend class Engine;
@@ -51,13 +52,19 @@ namespace Core {
         void setBlendingEnabled(Bool enabled) override;
         void setBlendingFunction(RenderState::BlendingMethod source, RenderState::BlendingMethod dest) override;
 
+        WeakPointer<RenderTarget> getDefaultRenderTarget() override;
+        void updateDefaultRenderTarget(UInt32 width, UInt32 height) override;
+
     private:
         GraphicsGL(GLVersion version);
         static GLuint convertAttributeType(AttributeType type);
         static GLenum getGLBlendProperty(RenderState::BlendingMethod property);
+        std::shared_ptr<RendererGL> createRenderer();
+        std::shared_ptr<RenderTargetGL> createDefaultRenderTarget();
 
         GLVersion glVersion;
         std::shared_ptr<RendererGL> renderer;
+        std::shared_ptr<RenderTargetGL> defaultRenderTarget;
         std::vector<std::shared_ptr<Texture2DGL>> textures2D;
         std::vector<std::shared_ptr<CubeTextureGL>> cubeTextures;
         std::vector<std::shared_ptr<ShaderGL>> shaders;
