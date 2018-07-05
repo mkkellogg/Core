@@ -9,6 +9,7 @@
 #include "Camera.h"
 #include "Renderer.h"
 #include "ViewDescriptor.h"
+#include "RenderTarget.h"
 
 namespace Core {
 
@@ -30,25 +31,27 @@ namespace Core {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
 
         for (auto camera : cameraList) {
-            camera->setAspectRatioFromDimensions(this->renderSize.x, this->renderSize.y);
-            ViewDescriptor viewDescriptor;
-            this->getViewDescriptorForCamera(camera, viewDescriptor);
-
             WeakPointer<RenderTarget> currentRenderTarget = graphics->getCurrentRenderTarget();
             Vector2u currentRenderSize = this->getRenderSize();
+            Vector4u currentViewport = this->getViewport();
             
-            WeakPointer<RenderTarget> cameraRenderTarget = camera->getRenderTarget();
-            if (cameraRenderTarget.isValid()) {
-                graphics->activateRenderTarget(cameraRenderTarget);
+            WeakPointer<RenderTarget> nextRenderTarget = camera->getRenderTarget();
+            if (!nextRenderTarget.isValid()) {
+                nextRenderTarget = graphics->getDefaultRenderTarget();
             }
-            else {
-                graphics->activateRenderTarget(graphics->getDefaultRenderTarget());
+            if (nextRenderTarget.get() != currentRenderTarget.get()) {
+                graphics->activateRenderTarget(nextRenderTarget);
+                this->setViewport(0, 0, nextRenderTarget->getWidth(), nextRenderTarget->getHeight());
             }
-            
+            camera->setAspectRatioFromDimensions(nextRenderTarget->getWidth(), nextRenderTarget->getHeight());
+
+            ViewDescriptor viewDescriptor;
+            this->getViewDescriptorForCamera(camera, viewDescriptor);
             render(scene, viewDescriptor, objectList, lightList);
 
             graphics->activateRenderTarget(currentRenderTarget);
             this->setRenderSize(currentRenderSize.x, currentRenderSize.y);
+            this->setViewport(currentViewport.x, currentViewport.y, currentViewport.z, currentViewport.w);
         }
     }
 

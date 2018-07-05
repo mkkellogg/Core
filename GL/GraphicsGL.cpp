@@ -179,7 +179,6 @@ namespace Core {
             if (currentTargetGL->getFBOID() == renderTargetGL->getFBOID())return true;
         }
 
-        glViewport(0, 0, target->getWidth(), target->getHeight());
         glBindFramebuffer(GL_FRAMEBUFFER, renderTargetGL->getFBOID());
 
         this->currentRenderTarget = WeakPointer<RenderTarget>::dynamicPointerCast<RenderTargetGL>(target);
