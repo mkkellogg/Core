@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../util/PersistentWeakPointer.h"
 #include "../common/types.h"
 #include "../geometry/Vector3.h"
 #include "../math/Matrix4x4.h"
@@ -9,6 +10,7 @@ namespace Core {
 
     // forward declarations
     class Engine;
+    class RenderTarget;
 
     class Camera : public Object3DComponent {
         friend class Engine;
@@ -29,6 +31,8 @@ namespace Core {
         void lookAt(const Point3r& target);
         void project(Vector3Base<Real>& vec);
         void unProject(Vector3Base<Real>& vec);
+        void setRenderTarget(WeakPointer<RenderTarget> renderTarget);
+        WeakPointer<RenderTarget> getRenderTarget();
 
         static void buildPerspectiveProjectionMatrix(Real fov, Real ratio, Real nearP, Real farP, Matrix4x4& out);
 
@@ -41,5 +45,6 @@ namespace Core {
         Real nearP;
         Real farP;
         Matrix4x4 projectionMatrix;
+        PersistentWeakPointer<RenderTarget> renderTarget;
     };
 }

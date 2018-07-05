@@ -52,8 +52,12 @@ namespace Core {
         void setBlendingEnabled(Bool enabled) override;
         void setBlendingFunction(RenderState::BlendingMethod source, RenderState::BlendingMethod dest) override;
 
+        WeakPointer<RenderTarget> createRenderTarget(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
+                                                     const TextureAttributes& colorTextureAttributes, UInt32 width, UInt32 height) override;
         WeakPointer<RenderTarget> getDefaultRenderTarget() override;
+        WeakPointer<RenderTarget> getCurrentRenderTarget() override;
         void updateDefaultRenderTarget(UInt32 width, UInt32 height) override;
+        Bool activateRenderTarget(WeakPointer<RenderTarget> target) override;
 
     private:
         GraphicsGL(GLVersion version);
@@ -64,10 +68,12 @@ namespace Core {
 
         GLVersion glVersion;
         std::shared_ptr<RendererGL> renderer;
-        std::shared_ptr<RenderTargetGL> defaultRenderTarget;
         std::vector<std::shared_ptr<Texture2DGL>> textures2D;
         std::vector<std::shared_ptr<CubeTextureGL>> cubeTextures;
         std::vector<std::shared_ptr<ShaderGL>> shaders;
+        std::shared_ptr<RenderTargetGL> defaultRenderTarget;
+        std::vector<std::shared_ptr<RenderTargetGL>> renderTargets;
+        WeakPointer<RenderTargetGL> currentRenderTarget;
         ShaderManagerGL shaderDirectory;
     };
 }

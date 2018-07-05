@@ -33,6 +33,7 @@ namespace Core {
 
         this->renderer = this->createRenderer();
         this->defaultRenderTarget = this->createDefaultRenderTarget();
+        this->currentRenderTarget = this->defaultRenderTarget;
         this->shaderDirectory.init();
     }
 
@@ -137,8 +138,55 @@ namespace Core {
         glBlendFunc(getGLBlendProperty(source), getGLBlendProperty(dest));
     }
 
+    WeakPointer<RenderTarget> GraphicsGL::createRenderTarget(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
+                                                             const TextureAttributes& colorTextureAttributes, UInt32 width, UInt32 height) {
+        TextureAttributes colorAttributes;
+        RenderTargetGL* renderTargetPtr = new(std::nothrow) RenderTargetGL(hasColor, hasDepth, enableStencilBuffer, colorAttributes, width, height);
+        if (renderTargetPtr == nullptr) {
+            throw AllocationException("GraphicsGL::createRenderTarget -> Unable to allocate render target.");
+        }
+        std::shared_ptr<RenderTargetGL> target(renderTargetPtr);
+        target->init();
+        this->renderTargets.push_back(target);
+
+        WeakPointer<RenderTargetGL> weakPtr = target;
+        return weakPtr;
+    }
+
     WeakPointer<RenderTarget> GraphicsGL::getDefaultRenderTarget() {
-        return  std::static_pointer_cast<RenderTarget>(this->defaultRenderTarget);
+        return std::static_pointer_cast<RenderTarget>(this->defaultRenderTarget);
+    }
+
+    WeakPointer<RenderTarget> GraphicsGL::getCurrentRenderTarget() {
+        return this->currentRenderTarget;
+    }
+
+    Bool GraphicsGL::activateRenderTarget(WeakPointer<RenderTarget> target) {
+        if (!target.isValid()) {
+            throw NullPointerException("RenderTargetGL::activeRenderTarget -> 'target' is not valid.");
+        }
+
+        RenderTarget * renderTarget = target.get();
+        RenderTargetGL * renderTargetGL = dynamic_cast<RenderTargetGL *>(renderTarget);
+
+        if (renderTargetGL == nullptr) {
+            throw InvalidArgumentException("RenderTargetGL::activeRenderTarget -> Render target is not a valid OpenGL render target.");
+        }
+
+        if (this->currentRenderTarget.isValid()) {
+            // prevent activating the currently active target.
+            RenderTargetGL * currentTargetGL = this->currentRenderTarget.get();
+            if (currentTargetGL->getFBOID() == renderTargetGL->getFBOID())return true;
+        }
+
+        glViewport(0, 0, target->getWidth(), target->getHeight());
+        glBindFramebuffer(GL_FRAMEBUFFER, renderTargetGL->getFBOID());
+
+        this->currentRenderTarget = WeakPointer<RenderTarget>::dynamicPointerCast<RenderTargetGL>(target);
+
+        //GetCurrentBufferBits();
+
+        return true;
     }
 
     void GraphicsGL::updateDefaultRenderTarget(UInt32 width, UInt32 height) {

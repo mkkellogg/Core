@@ -73,6 +73,14 @@ namespace Core {
         }
     }
 
+    void Camera::setRenderTarget(WeakPointer<RenderTarget> renderTarget) {
+        this->renderTarget = renderTarget;
+    }
+
+    WeakPointer<RenderTarget> Camera::getRenderTarget() {
+        return this->renderTarget;
+    }
+
     void Camera::buildPerspectiveProjectionMatrix(Real fov, Real ratio, Real nearP, Real farP, Matrix4x4& out) {
         // convert fov to radians
         Real f = 1.0f / Math::tan(fov * .5f);

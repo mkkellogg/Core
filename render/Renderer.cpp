@@ -27,12 +27,28 @@ namespace Core {
         std::vector<WeakPointer<Camera>> cameraList;
         std::vector<WeakPointer<Light>> lightList;
         this->processScene(scene, objectList, cameraList, lightList);
+        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
 
         for (auto camera : cameraList) {
             camera->setAspectRatioFromDimensions(this->renderSize.x, this->renderSize.y);
             ViewDescriptor viewDescriptor;
             this->getViewDescriptorForCamera(camera, viewDescriptor);
+
+            WeakPointer<RenderTarget> currentRenderTarget = graphics->getCurrentRenderTarget();
+            Vector2u currentRenderSize = this->getRenderSize();
+            
+            WeakPointer<RenderTarget> cameraRenderTarget = camera->getRenderTarget();
+            if (cameraRenderTarget.isValid()) {
+                graphics->activateRenderTarget(cameraRenderTarget);
+            }
+            else {
+                graphics->activateRenderTarget(graphics->getDefaultRenderTarget());
+            }
+            
             render(scene, viewDescriptor, objectList, lightList);
+
+            graphics->activateRenderTarget(currentRenderTarget);
+            this->setRenderSize(currentRenderSize.x, currentRenderSize.y);
         }
     }
 

@@ -20,6 +20,12 @@ namespace Core {
         NullPointerException(const char* msg): Exception(msg) {}
     };
 
+    class InvalidArgumentException: Exception {
+    public:
+        InvalidArgumentException(const std::string& msg): Exception(msg) {}
+        InvalidArgumentException(const char* msg): Exception(msg) {}
+    };
+
     class AssertionFailedException: Exception {
     public:
         AssertionFailedException(const std::string& msg): Exception(msg) {}
