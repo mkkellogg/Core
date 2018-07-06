@@ -3,12 +3,12 @@
 
 namespace Core {
 
-    RenderTarget::RenderTarget(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer, const TextureAttributes& colorTextureAttributes, UInt32 width, UInt32 height) {
+    RenderTarget::RenderTarget(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer, const TextureAttributes& colorTextureAttributes, Vector2u size) {
         this->hasColorBuffer = hasColor;
         this->hasDepthBuffer = hasDepth;
         this->enableStencilBuffer = enableStencilBuffer;
-        this->width = width;
-        this->height = height;
+        this->size = size;
+        this->viewport = Vector4u(0, 0, this->size.x, this->size.y);
         this->colorTextureAttributes = colorTextureAttributes;
 
         depthBufferIsTexture = false;
@@ -47,12 +47,12 @@ namespace Core {
         return colorTexture;
     }
 
-    UInt32 RenderTarget::getWidth() const {
-        return width;
+    Vector2u RenderTarget::getSize() {
+        return this->size;
     }
 
-    UInt32 RenderTarget::getHeight() const {
-        return height;
+    Vector4u RenderTarget::getViewport() {
+        return this->viewport;
     }
 
     Bool RenderTarget::isColorBufferTexture() const {

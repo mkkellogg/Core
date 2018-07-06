@@ -139,9 +139,9 @@ namespace Core {
     }
 
     WeakPointer<RenderTarget> GraphicsGL::createRenderTarget(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
-                                                             const TextureAttributes& colorTextureAttributes, UInt32 width, UInt32 height) {
+                                                             const TextureAttributes& colorTextureAttributes, Vector2u size) {
         TextureAttributes colorAttributes;
-        RenderTargetGL* renderTargetPtr = new(std::nothrow) RenderTargetGL(hasColor, hasDepth, enableStencilBuffer, colorAttributes, width, height);
+        RenderTargetGL* renderTargetPtr = new(std::nothrow) RenderTargetGL(hasColor, hasDepth, enableStencilBuffer, colorAttributes, size);
         if (renderTargetPtr == nullptr) {
             throw AllocationException("GraphicsGL::createRenderTarget -> Unable to allocate render target.");
         }
@@ -188,9 +188,12 @@ namespace Core {
         return true;
     }
 
-    void GraphicsGL::updateDefaultRenderTarget(UInt32 width, UInt32 height) {
-        this->defaultRenderTarget->width = width;
-        this->defaultRenderTarget->height = height;
+    void GraphicsGL::updateDefaultRenderTargetSize(Vector2u size) {
+        this->defaultRenderTarget->size = size;
+    }
+
+    void GraphicsGL::updateDefaultRenderTargetViewport(Vector4u viewport) {
+        this->defaultRenderTarget->viewport = viewport;
     }
 
     GLenum GraphicsGL::getGLBlendProperty(RenderState::BlendingMethod property) {
@@ -246,7 +249,7 @@ namespace Core {
     std::shared_ptr<RenderTargetGL> GraphicsGL::createDefaultRenderTarget() {
         TextureAttributes colorAttributes;
         Vector2u renderSize = this->renderer->getRenderSize();
-        RenderTargetGL* defaultTargetPtr = new(std::nothrow) RenderTargetGL(false, false, false, colorAttributes, renderSize.x, renderSize.y);
+        RenderTargetGL* defaultTargetPtr = new(std::nothrow) RenderTargetGL(false, false, false, colorAttributes, renderSize);
         if (defaultTargetPtr == nullptr) {
             throw AllocationException("GraphicsGL::createDefaultRenderTarget -> Unable to allocate default render target.");
         }

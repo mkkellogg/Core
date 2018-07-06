@@ -32,25 +32,26 @@ namespace Core {
 
         for (auto camera : cameraList) {
             WeakPointer<RenderTarget> currentRenderTarget = graphics->getCurrentRenderTarget();
-            Vector2u currentRenderSize = this->getRenderSize();
+           // Vector2u currentRenderSize = this->getRenderSize();
             Vector4u currentViewport = this->getViewport();
             
             WeakPointer<RenderTarget> nextRenderTarget = camera->getRenderTarget();
             if (!nextRenderTarget.isValid()) {
                 nextRenderTarget = graphics->getDefaultRenderTarget();
             }
-            if (nextRenderTarget.get() != currentRenderTarget.get()) {
-                graphics->activateRenderTarget(nextRenderTarget);
-                this->setViewport(0, 0, nextRenderTarget->getWidth(), nextRenderTarget->getHeight());
-            }
-            camera->setAspectRatioFromDimensions(nextRenderTarget->getWidth(), nextRenderTarget->getHeight());
+            graphics->activateRenderTarget(nextRenderTarget);
+
+            Vector2u nextSize = nextRenderTarget->getSize();
+            Vector4u nextViewport = nextRenderTarget->getViewport();
+            this->setViewport(nextViewport.x, nextViewport.y, nextViewport.z, nextViewport.w);
+            camera->setAspectRatioFromDimensions(nextSize.x, nextSize.y);
 
             ViewDescriptor viewDescriptor;
             this->getViewDescriptorForCamera(camera, viewDescriptor);
             render(scene, viewDescriptor, objectList, lightList);
 
             graphics->activateRenderTarget(currentRenderTarget);
-            this->setRenderSize(currentRenderSize.x, currentRenderSize.y);
+            //this->setRenderSize(currentRenderSize.x, currentRenderSize.y);
             this->setViewport(currentViewport.x, currentViewport.y, currentViewport.z, currentViewport.w);
         }
     }

@@ -41,7 +41,7 @@ namespace Core {
         GLuint fboID;
 
         RenderTargetGL(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
-                       const TextureAttributes& colorTextureAttributes, UInt32 width, UInt32 height);
+                       const TextureAttributes& colorTextureAttributes, Vector2u size);
 
         void destroy();
     };

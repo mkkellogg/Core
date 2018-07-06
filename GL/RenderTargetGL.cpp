@@ -10,8 +10,8 @@
 namespace Core {
 
     RenderTargetGL::RenderTargetGL(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
-                                   const TextureAttributes& colorTextureAttributes, UInt32 width, UInt32 height) :
-        RenderTarget(hasColor, hasDepth, enableStencilBuffer, colorTextureAttributes, width, height) {
+                                   const TextureAttributes& colorTextureAttributes, Vector2u size) :
+        RenderTarget(hasColor, hasDepth, enableStencilBuffer, colorTextureAttributes, size) {
         fboID = 0;
     }
 
@@ -69,7 +69,7 @@ namespace Core {
             else {
                 colorTexture = Engine::instance()->createTexture2D(attributes);
             }
-            colorTexture->build(this->width, this->height);
+            colorTexture->build(this->size.x, this->size.y);
             if (!colorTexture.isValid()) {
                 throw RenderTargetException("RenderTargetGL::init -> Unable to create color texture.");
             }
@@ -101,7 +101,7 @@ namespace Core {
             if (!this->depthTexture.isValid()) {
                 throw RenderTargetException("RenderTargetGL::init -> Unable to create depth texture.");
             }
-            this->depthTexture->build(this->width, this->height);
+            this->depthTexture->build(this->size.x, this->size.y);
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, this->depthTexture->getTextureID(), 0);
 
             depthBufferIsTexture = true;
@@ -119,7 +119,7 @@ namespace Core {
             }
 
             glBindRenderbuffer(GL_RENDERBUFFER, depthStencilRenderBufferID);
-            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, this->size.x, this->size.y);
 
             //Attach stencil buffer to FBO
             glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthStencilRenderBufferID);

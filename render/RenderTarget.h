@@ -3,6 +3,8 @@
 #include "../util/PersistentWeakPointer.h"
 #include "../common/types.h"
 #include "../base/BitMask.h"
+#include "../geometry/Vector2.h"
+#include "../geometry/Vector4.h"
 #include "RenderBuffer.h"
 #include "../image/TextureAttr.h"
 
@@ -20,8 +22,8 @@ namespace Core {
         Bool hasBuffer(RenderBufferType bufferType) const;
         WeakPointer<Texture> getDepthTexture();
         WeakPointer<Texture> getColorTexture();
-        UInt32 getWidth() const;
-        UInt32 getHeight() const;
+        Vector2u getSize();
+        Vector4u getViewport();
         Bool isColorBufferTexture() const;
         Bool isDepthBufferTexture() const;
 
@@ -37,10 +39,10 @@ namespace Core {
         Bool depthBufferIsTexture;
         // enable stencil buffer for render (but not as a render target)
         Bool enableStencilBuffer;
-        // width of this render target
-        UInt32 width;
-        // height of this render target
-        UInt32 height;
+        // size of this render target
+        Vector2u size;
+        // viewport for this rendertarget
+        Vector4u viewport;
         // texture to which color rendering will occur
         PersistentWeakPointer<Texture> colorTexture;
         // texture to which depth rendering will occur
@@ -48,7 +50,7 @@ namespace Core {
         // texture attributes of [colorTexture]
         TextureAttributes colorTextureAttributes;
 
-        RenderTarget(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer, const TextureAttributes& colorTextureAttributes, UInt32 width, UInt32 height);
+        RenderTarget(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer, const TextureAttributes& colorTextureAttributes, Vector2u size);
 
 
     };

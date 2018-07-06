@@ -53,10 +53,11 @@ namespace Core {
         void setBlendingFunction(RenderState::BlendingMethod source, RenderState::BlendingMethod dest) override;
 
         WeakPointer<RenderTarget> createRenderTarget(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
-                                                     const TextureAttributes& colorTextureAttributes, UInt32 width, UInt32 height) override;
+                                                     const TextureAttributes& colorTextureAttributes, Vector2u size) override;
         WeakPointer<RenderTarget> getDefaultRenderTarget() override;
         WeakPointer<RenderTarget> getCurrentRenderTarget() override;
-        void updateDefaultRenderTarget(UInt32 width, UInt32 height) override;
+        void updateDefaultRenderTargetSize(Vector2u size) override;
+        void updateDefaultRenderTargetViewport(Vector4u viewport) override;
         Bool activateRenderTarget(WeakPointer<RenderTarget> target) override;
 
     private:

@@ -7,6 +7,8 @@
 #include "image/TextureAttr.h"
 #include "geometry/AttributeType.h"
 #include "render/RenderState.h"
+#include "geometry/Vector2.h"
+#include "geometry/Vector4.h"
 
 namespace Core {
 
@@ -54,10 +56,11 @@ namespace Core {
         virtual void setBlendingFunction(RenderState::BlendingMethod source, RenderState::BlendingMethod dest) = 0;
 
         virtual WeakPointer<RenderTarget> createRenderTarget(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
-                                                             const TextureAttributes& colorTextureAttributes, UInt32 width, UInt32 height) = 0;
+                                                             const TextureAttributes& colorTextureAttributes, Vector2u size) = 0;
         virtual WeakPointer<RenderTarget> getDefaultRenderTarget() = 0;
         virtual WeakPointer<RenderTarget> getCurrentRenderTarget() = 0;
-        virtual void updateDefaultRenderTarget(UInt32 width, UInt32 height) = 0;
+        virtual void updateDefaultRenderTargetSize(Vector2u size) = 0;
+        virtual void updateDefaultRenderTargetViewport(Vector4u viewport) = 0;
         virtual Bool activateRenderTarget(WeakPointer<RenderTarget> target) = 0;
 
     };
