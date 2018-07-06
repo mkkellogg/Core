@@ -28,15 +28,16 @@ namespace Core {
         if (!this->depthMaterial.isValid()) {
             this->depthMaterial = Engine::instance()->createMaterial<DepthOnlyMaterial>();
         }
+        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
+        
         std::vector<WeakPointer<Object3D>> objectList;
         std::vector<WeakPointer<Camera>> cameraList;
         std::vector<WeakPointer<Light>> lightList;
         this->processScene(scene, objectList, cameraList, lightList);
-        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
 
         for (auto camera : cameraList) {
             WeakPointer<RenderTarget> currentRenderTarget = graphics->getCurrentRenderTarget();
-            Vector4u currentViewport = currentRenderTarget->getViewport();
+            Vector4u currentViewport = graphics->getViewport();
             
             WeakPointer<RenderTarget> nextRenderTarget = camera->getRenderTarget();
             if (!nextRenderTarget.isValid()) {

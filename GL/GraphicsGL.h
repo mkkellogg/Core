@@ -63,10 +63,14 @@ namespace Core {
         void updateDefaultRenderTargetViewport(Vector4u viewport) override;
         Bool activateRenderTarget(WeakPointer<RenderTarget> target) override;
 
-    private:
-        GraphicsGL(GLVersion version);
         static GLuint convertAttributeType(AttributeType type);
         static GLenum getGLBlendProperty(RenderState::BlendingMethod property);
+        static GLenum getGLTextureFormat(TextureFormat format);
+        static GLenum getGLPixelFormat(TextureFormat format);
+        static GLenum getGLPixelType(TextureFormat format);
+
+    private:
+        GraphicsGL(GLVersion version);
         std::shared_ptr<RendererGL> createRenderer();
         std::shared_ptr<RenderTargetGL> createDefaultRenderTarget();
 

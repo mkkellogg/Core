@@ -1,4 +1,6 @@
 #include "Texture2DGL.h"
+#include "GraphicsGL.h"
+#include "../Engine.h"
 #include "../common/Exception.h"
 #include "../image/RawImage.h"
 
@@ -24,6 +26,9 @@ namespace Core {
 
     void Texture2DGL::setupTexture(UInt32 width, UInt32 height, Byte* data) {
         GLuint tex;
+
+        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
+        WeakPointer<GraphicsGL> graphicsGL =  WeakPointer<Graphics>::dynamicPointerCast<GraphicsGL>(graphics);
 
         // generate the OpenGL texture
         glGenTextures(1, &tex);
@@ -73,6 +78,12 @@ namespace Core {
         }
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+        auto textureFormat = graphicsGL->getGLTextureFormat(attributes.Format);
+        auto pixelFormat = graphicsGL->getGLPixelFormat(attributes.Format);
+        auto pixelType = graphicsGL->getGLPixelType(attributes.Format);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, textureFormat, width, height, 0, pixelFormat, pixelType, data);
 
         glBindTexture(GL_TEXTURE_2D, 0);
         this->textureId = (Int32)tex;

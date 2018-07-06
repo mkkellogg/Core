@@ -245,6 +245,75 @@ namespace Core {
         return 0;
     }
 
+     /*
+     * Get the OpenGL texture format that corresponds to [format].
+     */
+    GLenum GraphicsGL::getGLTextureFormat(TextureFormat format) {
+        switch (format) {
+            case TextureFormat::R32F:
+            return GL_R32F;
+            break;
+            case TextureFormat::RGBA8:
+            return GL_RGBA8;
+            break;
+            case TextureFormat::RGBA16F:
+            return GL_RGBA16F;
+            break;
+            case TextureFormat::RGBA32F:
+            return GL_RGBA32F;
+            break;
+
+        }
+
+        return GL_RGBA8;
+    }
+
+    /*
+     * Get the OpenGL pixel format that corresponds to [format].
+     */
+    GLenum GraphicsGL::getGLPixelFormat(TextureFormat format) {
+        switch (format) {
+            case TextureFormat::R32F:
+            return GL_RED;
+            break;
+            case TextureFormat::RGBA8:
+            return GL_RGBA;
+            break;
+            case TextureFormat::RGBA16F:
+            return GL_RGBA;
+            break;
+            case TextureFormat::RGBA32F:
+            return GL_RGBA;
+            break;
+
+        }
+
+        return GL_RGBA;
+    }
+
+    /*
+     * Get the OpenGL pixel type that corresponds to [format].
+     */
+    GLenum GraphicsGL::getGLPixelType(TextureFormat format) {
+        switch (format) {
+            case TextureFormat::R32F:
+            return GL_FLOAT;
+            break;
+            case TextureFormat::RGBA8:
+            return GL_UNSIGNED_BYTE;
+            break;
+            case TextureFormat::RGBA16F:
+            return GL_FLOAT;
+            break;
+            case TextureFormat::RGBA32F:
+            return GL_FLOAT;
+            break;
+
+        }
+
+        return GL_UNSIGNED_BYTE;
+    }
+
     std::shared_ptr<RendererGL> GraphicsGL::createRenderer() {
         RendererGL* renderPtr = new RendererGL();
         if (renderPtr == nullptr) {
