@@ -37,11 +37,13 @@ namespace Core {
             this->_ptr = static_cast<T*>(const_cast<WeakPointer<U>&>(ptr).get());
         }
 
-        WeakPointer& operator =(const WeakPointer& other) {
-            if (&other == this) return *this;
+        template <typename U>
+        WeakPointer<typename std::enable_if<std::is_base_of<T, U>::value, T>::type>& operator =(const WeakPointer<U>& other) {
+            if ((void *)&other == (void *)this) return *this;
             std::weak_ptr<T>::operator=(other);
-            this->_ptr = other._ptr;
+            this->_ptr = const_cast<WeakPointer<U>&>(other).get();
             return *this;
+            
         }
 
         WeakPointer& operator =(std::shared_ptr<T>& other) {
