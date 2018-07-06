@@ -41,6 +41,15 @@ namespace Core {
         return std::static_pointer_cast<Renderer>(this->renderer);
     }
 
+    void GraphicsGL::setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) {
+        glViewport(hOffset, vOffset, viewPortWidth, viewPortHeight);
+        this->viewport.set(hOffset, vOffset, viewPortWidth, viewPortHeight);
+    }
+
+    Vector4u GraphicsGL::getViewport() {
+        return this->viewport;
+    }
+
     WeakPointer<Texture2D> GraphicsGL::createTexture2D(const TextureAttributes& attributes) {
         std::shared_ptr<Texture2DGL> newTexture = std::shared_ptr<Texture2DGL>(new Texture2DGL(attributes));
         this->textures2D.push_back(newTexture);
@@ -248,7 +257,7 @@ namespace Core {
 
     std::shared_ptr<RenderTargetGL> GraphicsGL::createDefaultRenderTarget() {
         TextureAttributes colorAttributes;
-        Vector2u renderSize = this->renderer->getRenderSize();
+        Vector2u renderSize(1024, 1024);
         RenderTargetGL* defaultTargetPtr = new(std::nothrow) RenderTargetGL(false, false, false, colorAttributes, renderSize);
         if (defaultTargetPtr == nullptr) {
             throw AllocationException("GraphicsGL::createDefaultRenderTarget -> Unable to allocate default render target.");

@@ -33,7 +33,7 @@ namespace Core {
         for (auto camera : cameraList) {
             WeakPointer<RenderTarget> currentRenderTarget = graphics->getCurrentRenderTarget();
            // Vector2u currentRenderSize = this->getRenderSize();
-            Vector4u currentViewport = this->getViewport();
+            Vector4u currentViewport = currentRenderTarget->getViewport();
             
             WeakPointer<RenderTarget> nextRenderTarget = camera->getRenderTarget();
             if (!nextRenderTarget.isValid()) {
@@ -43,7 +43,7 @@ namespace Core {
 
             Vector2u nextSize = nextRenderTarget->getSize();
             Vector4u nextViewport = nextRenderTarget->getViewport();
-            this->setViewport(nextViewport.x, nextViewport.y, nextViewport.z, nextViewport.w);
+            graphics->setViewport(nextViewport.x, nextViewport.y, nextViewport.z, nextViewport.w);
             camera->setAspectRatioFromDimensions(nextSize.x, nextSize.y);
 
             ViewDescriptor viewDescriptor;
@@ -52,7 +52,7 @@ namespace Core {
 
             graphics->activateRenderTarget(currentRenderTarget);
             //this->setRenderSize(currentRenderSize.x, currentRenderSize.y);
-            this->setViewport(currentViewport.x, currentViewport.y, currentViewport.z, currentViewport.w);
+            graphics->setViewport(currentViewport.x, currentViewport.y, currentViewport.z, currentViewport.w);
         }
     }
 
@@ -72,32 +72,6 @@ namespace Core {
             }
         }
 
-    }
-
-    void Renderer::setRenderSize(UInt32 width, UInt32 height, Bool updateViewport) {
-        this->renderSize.x = width;
-        this->renderSize.y = height;
-        if (updateViewport) {
-            this->setViewport(0, 0, width, height);
-        }
-    }
-
-    void Renderer::setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) {
-        this->renderSize.x = width;
-        this->renderSize.y = height;
-        this->setViewport(hOffset, vOffset, viewPortWidth, viewPortHeight);
-    }
-
-    void Renderer::setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) {
-        this->viewport.set(hOffset, vOffset, viewPortWidth, viewPortHeight);
-    }
-
-    Vector4u Renderer::getViewport() {
-        return this->viewport;
-    }
-
-    Vector2u Renderer::getRenderSize() {
-        return this->renderSize;
     }
 
     void Renderer::getViewDescriptorForCamera(WeakPointer<Camera> camera, ViewDescriptor& viewDescriptor) {

@@ -21,9 +21,8 @@ namespace Core {
         if (this->getRenderer()) {
             this->updateDefaultRenderTargetSize(Vector2u(width, height));
             if (updateViewport) {
-                this->updateDefaultRenderTargetViewport(Vector4u(0, 0, width, height));
+                this->setViewport(0, 0, width, height);
             }
-            this->getRenderer()->setRenderSize(width, height, updateViewport);
         }
     }
 
@@ -31,14 +30,12 @@ namespace Core {
         if (this->getRenderer()) {
             this->updateDefaultRenderTargetSize(Vector2u(width, height));
             this->updateDefaultRenderTargetViewport(Vector4u(hOffset, vOffset, viewPortWidth, viewPortHeight));
-            this->getRenderer()->setRenderSize(width, height, hOffset, vOffset, viewPortWidth, viewPortHeight);
         }
     }
 
     void Graphics::setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) {
         if (this->getRenderer()) {
             this->updateDefaultRenderTargetViewport(Vector4u(hOffset, vOffset, viewPortWidth, viewPortHeight));
-            this->getRenderer()->setViewport(hOffset, vOffset, viewPortWidth, viewPortHeight);
         }
     }
 }

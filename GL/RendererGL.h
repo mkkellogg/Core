@@ -23,7 +23,6 @@ namespace Core {
                     const ViewDescriptor& viewDescriptor, 
                     std::vector<WeakPointer<Object3D>>& objectList, 
                     std::vector<WeakPointer<Light>>& lightList) override;
-        void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) override;
 
     private:
         RendererGL();

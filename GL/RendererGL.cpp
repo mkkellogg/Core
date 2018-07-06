@@ -20,11 +20,6 @@ namespace Core {
     RendererGL::~RendererGL() {
     }
 
-    void RendererGL::setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) {
-        Renderer::setViewport(hOffset, vOffset, viewPortWidth, viewPortHeight);
-        glViewport(hOffset, vOffset, viewPortWidth, viewPortHeight);
-    }
-
     void RendererGL::render(WeakPointer<Scene> scene) {
         // TODO: Move these state calls to a place where they are not called every frame
         glClearColor(0, 0, 0, 1);

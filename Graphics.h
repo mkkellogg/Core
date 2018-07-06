@@ -33,7 +33,8 @@ namespace Core {
         void render(std::shared_ptr<Scene> scene);
         void setRenderSize(UInt32 width, UInt32 height, Bool updateViewport = true);
         void setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
-        void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
+        virtual void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) = 0;
+        virtual Vector4u getViewport() = 0;
 
         virtual WeakPointer<Texture2D> createTexture2D(const TextureAttributes& attributes) = 0;
         virtual WeakPointer<CubeTexture> createCubeTexture(const TextureAttributes& attributes) = 0;

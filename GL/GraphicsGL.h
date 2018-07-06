@@ -32,6 +32,9 @@ namespace Core {
         void init() override;
         WeakPointer<Renderer> getRenderer() override;
         
+        void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) override;
+        Vector4u getViewport() override;
+        
         WeakPointer<Texture2D> createTexture2D(const TextureAttributes& attributes) override;
         WeakPointer<CubeTexture> createCubeTexture(const TextureAttributes& attributes) override;
         void destroyTexture2D(WeakPointer<Texture2D> texture) override;
@@ -76,5 +79,6 @@ namespace Core {
         std::vector<std::shared_ptr<RenderTargetGL>> renderTargets;
         WeakPointer<RenderTargetGL> currentRenderTarget;
         ShaderManagerGL shaderDirectory;
+        Vector4u viewport;
     };
 }

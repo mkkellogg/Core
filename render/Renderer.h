@@ -26,12 +26,7 @@ namespace Core {
                             const ViewDescriptor& viewDescriptor, 
                             std::vector<WeakPointer<Object3D>>& objectList,
                             std::vector<WeakPointer<Light>>& lightList);
-        void setRenderSize(UInt32 width, UInt32 height, Bool updateViewport = true);
-        void setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
-        virtual void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
-        Vector4u getViewport();
-        Vector2u getRenderSize();
-
+                            
     private:
         void getViewDescriptorForCamera(WeakPointer<Camera> camera, ViewDescriptor& viewDescriptor);
         void processScene(WeakPointer<Scene> scene,
@@ -46,8 +41,5 @@ namespace Core {
 
     protected:
         Renderer();
-
-        Vector2u renderSize;
-        Vector4u viewport;
     };
 }
