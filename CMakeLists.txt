@@ -44,13 +44,14 @@ set(INCLUDE_FILES
     scene/Octree.h
     asset/AssetLoader.h
     asset/ModelLoader.h
-    material/BasicMaterial.h
     material/Material.h
-    material/StandardUniforms.h
+    material/DepthOnlyMaterial.h
+    material/BasicMaterial.h
     material/BasicTexturedMaterial.h
     material/BasicTexturedLitMaterial.h
-    material/StandardAttributes.h
     material/BasicCubeMaterial.h
+    material/StandardUniforms.h
+    material/StandardAttributes.h
     material/Shader.h
     material/MaterialLibrary.h
     material/ShaderMaterialCharacteristic.h
@@ -145,6 +146,7 @@ set(SOURCE_FILES
     light/Light.cpp
     light/PointLight.cpp
     material/Material.cpp
+    material/DepthOnlyMaterial.cpp
     material/BasicMaterial.cpp
     material/BasicTexturedMaterial.cpp
     material/BasicTexturedLitMaterial.cpp

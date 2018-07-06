@@ -10,6 +10,7 @@
 #include "Renderer.h"
 #include "ViewDescriptor.h"
 #include "RenderTarget.h"
+#include "../material/DepthOnlyMaterial.h"
 
 namespace Core {
 
@@ -24,6 +25,9 @@ namespace Core {
     }
 
     void Renderer::render(WeakPointer<Scene> scene) {
+        if (!this->depthMaterial.isValid()) {
+            this->depthMaterial = Engine::instance()->createMaterial<DepthOnlyMaterial>();
+        }
         std::vector<WeakPointer<Object3D>> objectList;
         std::vector<WeakPointer<Camera>> cameraList;
         std::vector<WeakPointer<Light>> lightList;
@@ -32,7 +36,6 @@ namespace Core {
 
         for (auto camera : cameraList) {
             WeakPointer<RenderTarget> currentRenderTarget = graphics->getCurrentRenderTarget();
-           // Vector2u currentRenderSize = this->getRenderSize();
             Vector4u currentViewport = currentRenderTarget->getViewport();
             
             WeakPointer<RenderTarget> nextRenderTarget = camera->getRenderTarget();
@@ -51,7 +54,6 @@ namespace Core {
             render(scene, viewDescriptor, objectList, lightList);
 
             graphics->activateRenderTarget(currentRenderTarget);
-            //this->setRenderSize(currentRenderSize.x, currentRenderSize.y);
             graphics->setViewport(currentViewport.x, currentViewport.y, currentViewport.z, currentViewport.w);
         }
     }

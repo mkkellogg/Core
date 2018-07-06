@@ -15,6 +15,7 @@ namespace Core {
     class Camera;
     class Light;
     class ViewDescriptor;
+    class DepthOnlyMaterial;
 
     class Renderer {
     public:
@@ -41,5 +42,6 @@ namespace Core {
 
     protected:
         Renderer();
+        WeakPointer<DepthOnlyMaterial> depthMaterial;
     };
 }
