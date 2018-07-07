@@ -23,6 +23,8 @@ namespace Core {
     class Scene;
     class ShaderManager;
     class RenderTarget;
+    class RenderTarget2D;
+    class RenderTargetCube;
     
     class Graphics {
     public:
@@ -56,8 +58,10 @@ namespace Core {
         virtual void setBlendingEnabled(Bool enabled) = 0;
         virtual void setBlendingFunction(RenderState::BlendingMethod source, RenderState::BlendingMethod dest) = 0;
 
-        virtual WeakPointer<RenderTarget> createRenderTarget(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
-                                                             const TextureAttributes& colorTextureAttributes, Vector2u size) = 0;
+        virtual WeakPointer<RenderTarget2D> createRenderTarget2D(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
+                                                                 const TextureAttributes& colorTextureAttributes, Vector2u size) = 0;
+        virtual WeakPointer<RenderTargetCube> createRenderTargetCube(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
+                                                                     const TextureAttributes& colorTextureAttributes, Vector2u size) = 0;
         virtual WeakPointer<RenderTarget> getDefaultRenderTarget() = 0;
         virtual WeakPointer<RenderTarget> getCurrentRenderTarget() = 0;
         virtual void updateDefaultRenderTargetSize(Vector2u size) = 0;

@@ -29,7 +29,7 @@ namespace Core {
             this->depthMaterial = Engine::instance()->createMaterial<DepthOnlyMaterial>();
         }
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-        
+
         std::vector<WeakPointer<Object3D>> objectList;
         std::vector<WeakPointer<Camera>> cameraList;
         std::vector<WeakPointer<Light>> lightList;
@@ -54,7 +54,7 @@ namespace Core {
             this->getViewDescriptorForCamera(camera, viewDescriptor);
             render(scene, viewDescriptor, objectList, lightList);
 
-            graphics->activateRenderTarget(currentRenderTarget);
+          //  graphics->activateRenderTarget(currentRenderTarget);
             graphics->setViewport(currentViewport.x, currentViewport.y, currentViewport.z, currentViewport.w);
         }
     }

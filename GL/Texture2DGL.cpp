@@ -77,11 +77,9 @@ namespace Core {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, attributes.MipMapLevel);
         }
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-
-        auto textureFormat = graphicsGL->getGLTextureFormat(attributes.Format);
-        auto pixelFormat = graphicsGL->getGLPixelFormat(attributes.Format);
-        auto pixelType = graphicsGL->getGLPixelType(attributes.Format);
+        GLenum textureFormat = graphicsGL->getGLTextureFormat(attributes.Format);
+        GLenum pixelFormat = graphicsGL->getGLPixelFormat(attributes.Format);
+        GLenum pixelType = graphicsGL->getGLPixelType(attributes.Format);
 
         glTexImage2D(GL_TEXTURE_2D, 0, textureFormat, width, height, 0, pixelFormat, pixelType, data);
 

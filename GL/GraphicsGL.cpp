@@ -7,7 +7,8 @@
 #include "RendererGL.h"
 #include "ShaderGL.h"
 #include "Texture2DGL.h"
-#include "RenderTargetGL.h"
+#include "RenderTarget2DGL.h"
+#include "RenderTargetCubeGL.h"
 
 namespace Core {
 
@@ -147,23 +148,38 @@ namespace Core {
         glBlendFunc(getGLBlendProperty(source), getGLBlendProperty(dest));
     }
 
-    WeakPointer<RenderTarget> GraphicsGL::createRenderTarget(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
-                                                             const TextureAttributes& colorTextureAttributes, Vector2u size) {
+    WeakPointer<RenderTarget2D> GraphicsGL::createRenderTarget2D(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
+                                                                 const TextureAttributes& colorTextureAttributes, Vector2u size) {
         TextureAttributes colorAttributes;
-        RenderTargetGL* renderTargetPtr = new(std::nothrow) RenderTargetGL(hasColor, hasDepth, enableStencilBuffer, colorAttributes, size);
+        RenderTarget2DGL* renderTargetPtr = new(std::nothrow) RenderTarget2DGL(hasColor, hasDepth, enableStencilBuffer, colorAttributes, size);
         if (renderTargetPtr == nullptr) {
-            throw AllocationException("GraphicsGL::createRenderTarget -> Unable to allocate render target.");
+            throw AllocationException("GraphicsGL::createRenderTarget2D -> Unable to allocate render target.");
         }
-        std::shared_ptr<RenderTargetGL> target(renderTargetPtr);
+        std::shared_ptr<RenderTarget2DGL> target(renderTargetPtr);
         target->init();
-        this->renderTargets.push_back(target);
+        this->renderTarget2Ds.push_back(target);
 
-        WeakPointer<RenderTargetGL> weakPtr = target;
+        WeakPointer<RenderTarget2DGL> weakPtr = target;
+        return weakPtr;
+    }
+
+    WeakPointer<RenderTargetCube> GraphicsGL::createRenderTargetCube(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
+                                                                     const TextureAttributes& colorTextureAttributes, Vector2u size) {
+        TextureAttributes colorAttributes;
+        RenderTargetCubeGL* renderTargetPtr = new(std::nothrow) RenderTargetCubeGL(hasColor, hasDepth, enableStencilBuffer, colorAttributes, size);
+        if (renderTargetPtr == nullptr) {
+            throw AllocationException("GraphicsGL::createRenderTargetCube -> Unable to allocate render target.");
+        }
+        std::shared_ptr<RenderTargetCubeGL> target(renderTargetPtr);
+        target->init();
+        this->renderTargetCubes.push_back(target);
+
+        WeakPointer<RenderTargetCubeGL> weakPtr = target;
         return weakPtr;
     }
 
     WeakPointer<RenderTarget> GraphicsGL::getDefaultRenderTarget() {
-        return std::static_pointer_cast<RenderTarget>(this->defaultRenderTarget);
+        return this->defaultRenderTarget;
     }
 
     WeakPointer<RenderTarget> GraphicsGL::getCurrentRenderTarget() {
@@ -172,25 +188,28 @@ namespace Core {
 
     Bool GraphicsGL::activateRenderTarget(WeakPointer<RenderTarget> target) {
         if (!target.isValid()) {
-            throw NullPointerException("RenderTargetGL::activeRenderTarget -> 'target' is not valid.");
+            throw NullPointerException("GraphicsGL::activateRenderTarget -> 'target' is not valid.");
         }
 
         RenderTarget * renderTarget = target.get();
         RenderTargetGL * renderTargetGL = dynamic_cast<RenderTargetGL *>(renderTarget);
-
+       
         if (renderTargetGL == nullptr) {
-            throw InvalidArgumentException("RenderTargetGL::activeRenderTarget -> Render target is not a valid OpenGL render target.");
+            throw InvalidArgumentException("GraphicsGL::activateRenderTarget -> Render target is not a valid OpenGL render target.");
         }
 
         if (this->currentRenderTarget.isValid()) {
+
             // prevent activating the currently active target.
-            RenderTargetGL * currentTargetGL = this->currentRenderTarget.get();
-            if (currentTargetGL->getFBOID() == renderTargetGL->getFBOID())return true;
+            RenderTarget * currentTarget = this->currentRenderTarget.get();
+            RenderTargetGL * currentRenderTargetGL = dynamic_cast<RenderTargetGL *>(currentTarget);
+
+            if (currentRenderTargetGL != nullptr && currentRenderTargetGL->getFBOID() == renderTargetGL->getFBOID())return true;
         }
 
         glBindFramebuffer(GL_FRAMEBUFFER, renderTargetGL->getFBOID());
 
-        this->currentRenderTarget = WeakPointer<RenderTarget>::dynamicPointerCast<RenderTargetGL>(target);
+        this->currentRenderTarget = target;
 
         //GetCurrentBufferBits();
 
@@ -324,14 +343,15 @@ namespace Core {
         return renderer;
     }
 
-    std::shared_ptr<RenderTargetGL> GraphicsGL::createDefaultRenderTarget() {
+    std::shared_ptr<RenderTarget2DGL> GraphicsGL::createDefaultRenderTarget() {
         TextureAttributes colorAttributes;
         Vector2u renderSize(1024, 1024);
-        RenderTargetGL* defaultTargetPtr = new(std::nothrow) RenderTargetGL(false, false, false, colorAttributes, renderSize);
+        RenderTarget2DGL* defaultTargetPtr = new(std::nothrow) RenderTarget2DGL(false, false, false, colorAttributes, renderSize);
         if (defaultTargetPtr == nullptr) {
             throw AllocationException("GraphicsGL::createDefaultRenderTarget -> Unable to allocate default render target.");
         }
-        std::shared_ptr<RenderTargetGL> defaultTarget(defaultTargetPtr);
+        std::shared_ptr<RenderTarget2DGL> defaultTarget(defaultTargetPtr);
+        this->renderTarget2Ds.push_back(defaultTarget);
         return defaultTarget;
     }
 }

@@ -68,6 +68,8 @@ set(INCLUDE_FILES
     render/MeshRenderer.h
     render/RenderState.h
     render/RenderTarget.h
+    render/RenderTarget2D.h
+    render/RenderTargetCube.h
     render/ViewDescriptor.h
     light/Light.h
     light/PointLight.h
@@ -108,6 +110,8 @@ set(INCLUDE_FILES
     GL/AttributeArrayGPUStorageGL.h
     GL/IndexBufferGL.h
     GL/RenderTargetGL.h
+    GL/RenderTarget2DGL.h
+    GL/RenderTargetCubeGL.h
     Graphics.h
     Engine.h)
 
@@ -143,6 +147,8 @@ set(SOURCE_FILES
     render/Renderer.cpp
     render/ObjectRenderers.cpp
     render/RenderTarget.cpp
+    render/RenderTarget2D.cpp
+    render/RenderTargetCube.cpp
     light/Light.cpp
     light/PointLight.cpp
     material/Material.cpp
@@ -172,7 +178,9 @@ set(SOURCE_FILES
     GL/ShaderGL.cpp
     GL/IndexBufferGL.cpp
     GL/ShaderManagerGL.cpp
-    GL/RenderTargetGL.cpp)
+    GL/RenderTargetGL.cpp
+    GL/RenderTarget2DGL.cpp
+    GL/RenderTargetCubeGL.cpp)
     #RendererES3.cpp)
 
 add_library(${EXECUTABLE_NAME} ${SOURCE_FILES})

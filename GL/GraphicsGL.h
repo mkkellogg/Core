@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-#include "../util/WeakPointer.h"
+#include "../util/PersistentWeakPointer.h"
 #include "../Graphics.h"
 #include "../common/gl.h"
 #include "../geometry/AttributeType.h"
@@ -18,6 +18,8 @@ namespace Core {
     class ShaderGL;
     class CubeTextureGL;
     class RenderTargetGL;
+    class RenderTarget2DGL;
+    class RenderTargetCubeGL;
 
     class GraphicsGL final : public Graphics {
         friend class Engine;
@@ -55,7 +57,9 @@ namespace Core {
         void setBlendingEnabled(Bool enabled) override;
         void setBlendingFunction(RenderState::BlendingMethod source, RenderState::BlendingMethod dest) override;
 
-        WeakPointer<RenderTarget> createRenderTarget(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
+        WeakPointer<RenderTarget2D> createRenderTarget2D(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
+                                                     const TextureAttributes& colorTextureAttributes, Vector2u size) override;
+        WeakPointer<RenderTargetCube> createRenderTargetCube(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
                                                      const TextureAttributes& colorTextureAttributes, Vector2u size) override;
         WeakPointer<RenderTarget> getDefaultRenderTarget() override;
         WeakPointer<RenderTarget> getCurrentRenderTarget() override;
@@ -72,16 +76,17 @@ namespace Core {
     private:
         GraphicsGL(GLVersion version);
         std::shared_ptr<RendererGL> createRenderer();
-        std::shared_ptr<RenderTargetGL> createDefaultRenderTarget();
+        std::shared_ptr<RenderTarget2DGL> createDefaultRenderTarget();
 
         GLVersion glVersion;
         std::shared_ptr<RendererGL> renderer;
         std::vector<std::shared_ptr<Texture2DGL>> textures2D;
         std::vector<std::shared_ptr<CubeTextureGL>> cubeTextures;
         std::vector<std::shared_ptr<ShaderGL>> shaders;
-        std::shared_ptr<RenderTargetGL> defaultRenderTarget;
-        std::vector<std::shared_ptr<RenderTargetGL>> renderTargets;
-        WeakPointer<RenderTargetGL> currentRenderTarget;
+        PersistentWeakPointer<RenderTarget2DGL> defaultRenderTarget;
+        std::vector<std::shared_ptr<RenderTarget2DGL>> renderTarget2Ds;
+        std::vector<std::shared_ptr<RenderTargetCubeGL>> renderTargetCubes;
+        PersistentWeakPointer<RenderTarget> currentRenderTarget;
         ShaderManagerGL shaderDirectory;
         Vector4u viewport;
     };

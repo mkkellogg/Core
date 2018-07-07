@@ -1,4 +1,5 @@
 #include "PointLight.h"
+#include "../Engine.h"
 
 namespace Core {
 
@@ -9,6 +10,18 @@ namespace Core {
     }
 
     PointLight::~PointLight() {
+        
+    }
+
+    void PointLight::init() {
+       /* TextureAttributes textureAttributes;
+        textureAttributes.Format = TextureFormat::R32F;
+        textureAttributes.FilterMode = TextureFilter::Linear;
+        textureAttributes.IsCube = treue;
+        this->shadowMap = Engine::instance()->getGraphicsSystem()->createTexture2D(textureAttributes);*/
+    }
+
+    WeakPointer<Texture> PointLight::getShadowMap() {
 
     }
 
