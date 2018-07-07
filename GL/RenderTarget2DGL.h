@@ -28,13 +28,11 @@ namespace Core {
 
        
         ~RenderTarget2DGL();
-        Bool init();
+        Bool init() override;
 
-    private:
+    protected:
 
         RenderTarget2DGL(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
-                         const TextureAttributes& colorTextureAttributes, Vector2u size);
-
-        void destroy();
+                         const TextureAttributes& colorTextureAttributes, Vector2u size);  
     };
 }

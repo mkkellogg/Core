@@ -102,12 +102,11 @@ namespace Core {
         static WeakPointer<U> dynamicPointerCast(const WeakPointer<T>& src) {
             WeakPointer<T>& _src = const_cast<WeakPointer<T>&>(src);
             T* s1 = _src.get();
-            if (!s1) {
-                _src.tryUpdatePtr();
-                s1 = _src.get();
+            
+            U* s2 = nullptr;
+            if (s1 != nullptr) {
+                s2 = dynamic_cast<U*>(s1);
             }
-
-            U* s2 = dynamic_cast<U*>(s1);
 
             // TODO: is this correct / safe ?
             // we are definitely assuming no specializations of WeakPointer exist that might

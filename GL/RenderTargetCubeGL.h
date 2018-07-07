@@ -27,13 +27,11 @@ namespace Core {
     public:
         
         ~RenderTargetCubeGL();
-        Bool init();
+        Bool init() override;
 
     private:
 
         RenderTargetCubeGL(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
                            const TextureAttributes& colorTextureAttributes, Vector2u size);
-
-        void destroy();
     };
 }

@@ -11,8 +11,24 @@ namespace Core {
         this->viewport = Vector4u(0, 0, this->size.x, this->size.y);
         this->colorTextureAttributes = colorTextureAttributes;
 
+        this->depthTextureAttributes.FilterMode = TextureFilter::Point;
+        this->depthTextureAttributes.WrapMode = TextureWrap::Clamp;
+        this->depthTextureAttributes.IsDepthTexture = true;
+
         depthBufferIsTexture = false;
         colorBufferIsTexture = false;
+
+        if (this->hasColorBuffer) {
+            colorBufferIsTexture = true;
+        }
+
+        if (this->hasDepthBuffer && !this->enableStencilBuffer) {
+            depthBufferIsTexture = true;
+        }
+        else if (this->hasDepthBuffer && this->enableStencilBuffer) {
+            depthBufferIsTexture = false;
+        }
+
     }
 
     RenderTarget::~RenderTarget() {

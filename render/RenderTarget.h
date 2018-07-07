@@ -7,6 +7,7 @@
 #include "../geometry/Vector4.h"
 #include "RenderBuffer.h"
 #include "../image/TextureAttr.h"
+#include "RenderTargetException.h"
 
 namespace Core {
 
@@ -15,12 +16,6 @@ namespace Core {
 
     class RenderTarget {
     public:
-
-        class RenderTargetException: Exception {
-        public:
-            RenderTargetException(const std::string& msg): Exception(msg) {}
-            RenderTargetException(const char* msg): Exception(msg) {}
-        };
 
         virtual ~RenderTarget();
 
@@ -55,6 +50,7 @@ namespace Core {
         PersistentWeakPointer<Texture> depthTexture;
         // texture attributes of [colorTexture]
         TextureAttributes colorTextureAttributes;
+        TextureAttributes depthTextureAttributes;
 
         RenderTarget(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer, const TextureAttributes& colorTextureAttributes, Vector2u size);
 

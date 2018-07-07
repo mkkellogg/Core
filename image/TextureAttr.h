@@ -40,7 +40,6 @@ namespace Core {
         UInt32 MipMapLevel;
         Bool IsDepthTexture;
         Bool UseAlpha;
-        Bool IsCube;
         TextureFilter FilterMode;
         TextureWrap WrapMode;
         TextureFormat Format;

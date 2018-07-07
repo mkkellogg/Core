@@ -17,7 +17,6 @@ namespace Core {
        /* TextureAttributes textureAttributes;
         textureAttributes.Format = TextureFormat::R32F;
         textureAttributes.FilterMode = TextureFilter::Linear;
-        textureAttributes.IsCube = treue;
         this->shadowMap = Engine::instance()->getGraphicsSystem()->createTexture2D(textureAttributes);*/
     }
 
