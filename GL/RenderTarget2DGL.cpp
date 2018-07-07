@@ -36,13 +36,13 @@ namespace Core {
         }
 
         // generate a depth texture attachment
-        if (hasDepthBuffer && !enableStencilBuffer) {
+        if (this->hasDepthBuffer && !this->enableStencilBuffer) {
             this->depthTexture = Engine::instance()->createTexture2D(this->depthTextureAttributes);
             this->buildAndVerifyTexture(this->depthTexture);
             
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, this->depthTexture->getTextureID(), 0);
         }
-        else if (hasDepthBuffer && enableStencilBuffer) {
+        else if (this->hasDepthBuffer && this->enableStencilBuffer) {
             this->initDepthStencilBufferCombo(this->size.x, this->size.y);
         }
 

@@ -25,11 +25,11 @@ namespace Core {
     }
 
     void Texture2DGL::setupTexture(UInt32 width, UInt32 height, Byte* data) {
-        GLuint tex;
-
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         WeakPointer<GraphicsGL> graphicsGL =  WeakPointer<Graphics>::dynamicPointerCast<GraphicsGL>(graphics);
 
+        GLuint tex;
+        
         // generate the OpenGL texture
         glGenTextures(1, &tex);
         if (!tex) {
@@ -81,8 +81,16 @@ namespace Core {
         GLenum pixelFormat = graphicsGL->getGLPixelFormat(attributes.Format);
         GLenum pixelType = graphicsGL->getGLPixelType(attributes.Format);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, textureFormat, width, height, 0, pixelFormat, pixelType, data);
-
+        if (attributes.IsDepthTexture) {
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+            glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+        }
+        else {
+            glTexImage2D(GL_TEXTURE_2D, 0, textureFormat, width, height, 0, pixelFormat, pixelType, data);
+        }
+       
         glBindTexture(GL_TEXTURE_2D, 0);
         this->textureId = (Int32)tex;
     }

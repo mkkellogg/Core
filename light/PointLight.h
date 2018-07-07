@@ -17,7 +17,7 @@ namespace Core {
         ~PointLight();
 
         void init() override;
-        WeakPointer<Texture> getShadowMap() override;
+        WeakPointer<RenderTarget> getShadowMap() override;
         
         void setAttenuation(Real attenuation);
         Real getAttenuation() const;

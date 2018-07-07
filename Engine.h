@@ -54,7 +54,8 @@ namespace Core {
 
         template <typename T>
         WeakPointer<typename std::enable_if<std::is_base_of<Light, T>::value, T>::type> createLight(WeakPointer<Object3D> owner) {
-            std::shared_ptr<T> light= std::shared_ptr<T>(new T(owner));
+            std::shared_ptr<T> light = std::shared_ptr<T>(new T(owner));
+            light->init();
             this->lights.push_back(light);
             WeakPointer<T> lightPtr = light;
             owner->addComponent(lightPtr);

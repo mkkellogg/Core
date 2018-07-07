@@ -11,7 +11,7 @@ namespace Core {
 
     // forward declarations
     class Engine;
-    class Texture;
+    class RenderTarget;
 
     class Light : public Object3DComponent {
         friend class Engine;
@@ -20,7 +20,7 @@ namespace Core {
         virtual ~Light() = 0;
 
         virtual void init() = 0;
-        virtual WeakPointer<Texture> getShadowMap();
+        virtual WeakPointer<RenderTarget> getShadowMap();
 
         const Color& getColor() const;
         void setColor(const Color& color);

@@ -13,8 +13,8 @@ namespace Core {
         
     }
 
-    WeakPointer<Texture> Light::getShadowMap() {
-        return WeakPointer<Texture>();
+    WeakPointer<RenderTarget> Light::getShadowMap() {
+        return WeakPointer<RenderTarget>();
     }
 
     const Color& Light::getColor() const {

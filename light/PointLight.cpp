@@ -1,5 +1,6 @@
 #include "PointLight.h"
 #include "../Engine.h"
+#include "../render/RenderTargetCube.h"
 
 namespace Core {
 
@@ -14,14 +15,16 @@ namespace Core {
     }
 
     void PointLight::init() {
-       /* TextureAttributes textureAttributes;
-        textureAttributes.Format = TextureFormat::R32F;
-        textureAttributes.FilterMode = TextureFilter::Linear;
-        this->shadowMap = Engine::instance()->getGraphicsSystem()->createTexture2D(textureAttributes);*/
+        TextureAttributes colorTextureAttributes;
+       // colorTextureAttributes.Format = TextureFormat::R32F;
+        colorTextureAttributes.Format = TextureFormat::RGBA8;
+        colorTextureAttributes.FilterMode = TextureFilter::Linear;
+        Vector2u renderTargetSize(1024, 1024);
+        this->shadowMap = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorTextureAttributes, renderTargetSize);
     }
 
-    WeakPointer<Texture> PointLight::getShadowMap() {
-
+    WeakPointer<RenderTarget> PointLight::getShadowMap() {
+        return this->shadowMap;
     }
 
     void PointLight::setAttenuation(Real attenuation) {
