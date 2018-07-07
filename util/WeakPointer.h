@@ -28,27 +28,26 @@ namespace Core {
         WeakPointer(std::weak_ptr<T> ptr, Bool cacheShared = true) : std::weak_ptr<T>(ptr), _ptr(nullptr), _cacheShared(cacheShared), _cachedSharedSet(false) {
         }
 
-        WeakPointer(std::shared_ptr<T> ptr, Bool cacheShared = true) : std::weak_ptr<T>(ptr), _cacheShared(cacheShared), _cachedSharedSet(false) {
-            this->_ptr = ptr.get();
+        WeakPointer(std::shared_ptr<T> ptr, Bool cacheShared = true) : std::weak_ptr<T>(ptr), _ptr(nullptr), _cacheShared(cacheShared), _cachedSharedSet(false) {
         }
 
         template <typename U>
         WeakPointer(const WeakPointer<U>& ptr, Bool cacheShared = true) : std::weak_ptr<T>(ptr),  _cacheShared(cacheShared), _cachedSharedSet(false) {
-            this->_ptr = static_cast<T*>(const_cast<WeakPointer<U>&>(ptr).get());
+            this->_ptr = static_cast<T*>(const_cast<WeakPointer<U>&>(ptr)._getPtr());
         }
 
         template <typename U>
         WeakPointer<typename std::enable_if<std::is_base_of<T, U>::value, T>::type>& operator =(const WeakPointer<U>& other) {
             if ((void *)&other == (void *)this) return *this;
             std::weak_ptr<T>::operator=(other);
-            this->_ptr = const_cast<WeakPointer<U>&>(other).get();
+            this->_ptr = const_cast<WeakPointer<U>&>(other)._getPtr();
             return *this;
             
         }
 
         WeakPointer& operator =(std::shared_ptr<T>& other) {
             std::weak_ptr<T>::operator=(other);
-            this->_ptr = other.get();
+            this->_ptr = other._getPtr();
             return *this;
         }
 
@@ -58,15 +57,19 @@ namespace Core {
         }
 
         const T* operator ->() const {
-            return const_cast<WeakPointer<T>*>(this)->_getPtr();
+            return const_cast<WeakPointer<T>*>(this)->tryGetPtr();
         }
 
         // TODO: Make this thread-safe. The following code is only valid in a SINGLE THREADED context!
         T* operator ->() {
-            return this->_getPtr();
+            return this->tryGetPtr();
         }
 
         T *get() {
+            return this->tryGetPtr();
+        }
+
+        T * _getPtr() {
             return this->_ptr;
         }
 
@@ -114,7 +117,7 @@ namespace Core {
         }
 
     protected:
-        T* _getPtr() {
+        T* tryGetPtr() {
 
 #ifdef __CORE_WEAK_POINTER_CACHE_SHARED
             if (this->_cacheShared) {
@@ -148,7 +151,6 @@ namespace Core {
             }
             this->_ptr = temp.get();
         }
-
 
         T * _ptr;
 
