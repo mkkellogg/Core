@@ -53,7 +53,7 @@ namespace Core {
         TextureAttributes depthTextureAttributes;
 
         RenderTarget(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer, const TextureAttributes& colorTextureAttributes, Vector2u size);
-
+        Bool buildAndVerifyTexture(WeakPointer<Texture> texture);
 
     };
 

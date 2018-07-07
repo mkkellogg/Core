@@ -1,5 +1,6 @@
 #include "RenderTarget.h"
 #include "../base/BitMask.h"
+#include "../image/Texture.h"
 
 namespace Core {
 
@@ -77,5 +78,13 @@ namespace Core {
 
     Bool RenderTarget::isDepthBufferTexture() const {
         return depthBufferIsTexture;
+    }
+
+    Bool RenderTarget::buildAndVerifyTexture(WeakPointer<Texture> texture) {
+        if (!texture.isValid()) {
+            throw RenderTargetException("RenderTarget::buildAndVerifyTexture -> Texture is not valid.");
+        }
+        texture->build(this->size.x, this->size.y);
+        return true;
     }
 }

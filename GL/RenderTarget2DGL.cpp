@@ -30,10 +30,7 @@ namespace Core {
         // generate a color texture attachment
         if (this->hasColorBuffer) {
             colorTexture = Engine::instance()->createTexture2D(this->colorTextureAttributes);
-            colorTexture->build(this->size.x, this->size.y);
-            if (!colorTexture.isValid()) {
-                throw RenderTargetException("RenderTarget2DGL::init -> Unable to create color texture.");
-            }
+            this->buildAndVerifyTexture(this->colorTexture);
 
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->colorTexture->getTextureID(), 0);
         }
@@ -41,11 +38,8 @@ namespace Core {
         // generate a depth texture attachment
         if (hasDepthBuffer && !enableStencilBuffer) {
             this->depthTexture = Engine::instance()->createTexture2D(this->depthTextureAttributes);
-            if (!this->depthTexture.isValid()) {
-                throw RenderTargetException("RenderTarget2DGL::init -> Unable to create depth texture.");
-            }
-            this->depthTexture->build(this->size.x, this->size.y);
-
+            this->buildAndVerifyTexture(this->depthTexture);
+            
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, this->depthTexture->getTextureID(), 0);
         }
         else if (hasDepthBuffer && enableStencilBuffer) {
