@@ -16,32 +16,28 @@ namespace Core {
     class Light;
     class ViewDescriptor;
     class DepthOnlyMaterial;
+    class Material;
 
     class Renderer {
     public:
         virtual ~Renderer();
 
         virtual Bool init();
-        virtual void render(WeakPointer<Scene> scene);
-        virtual void render(WeakPointer<Scene> scene, 
-                            const ViewDescriptor& viewDescriptor, 
-                            std::vector<WeakPointer<Object3D>>& objectList,
-                            std::vector<WeakPointer<Light>>& lightList);
-                            
-    private:
-        void getViewDescriptorForCamera(WeakPointer<Camera> camera, ViewDescriptor& viewDescriptor);
-        void processScene(WeakPointer<Scene> scene,
-                    std::vector<WeakPointer<Object3D>>& outObjects,
-                    std::vector<WeakPointer<Camera>>& outCameras,
-                    std::vector<WeakPointer<Light>>& outLights);
-        void processSceneStep(WeakPointer<Object3D> object, 
-                              const Matrix4x4& curTransform, 
-                              std::vector<WeakPointer<Object3D>>& outObjects,
-                              std::vector<WeakPointer<Camera>>& outCameras, 
-                              std::vector<WeakPointer<Light>>& outLights);
-
+        void render(WeakPointer<Scene> scene);
+        void render(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
+                    std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial = WeakPointer<Material>::nullPtr());
+                       
     protected:
         Renderer();
+        void getViewDescriptorForCamera(WeakPointer<Camera> camera, ViewDescriptor& viewDescriptor);
+        void getViewDescriptorForCamera(const Matrix4x4& worldMatrix, const Matrix4x4& projectionMatrix, ViewDescriptor& viewDescriptor);
+        void processScene(WeakPointer<Scene> scene, std::vector<WeakPointer<Object3D>>& outObjects,
+                          std::vector<WeakPointer<Camera>>& outCameras, std::vector<WeakPointer<Light>>& outLights);
+        void processSceneStep(WeakPointer<Object3D> object, const Matrix4x4& curTransform, std::vector<WeakPointer<Object3D>>& outObjects,
+                              std::vector<WeakPointer<Camera>>& outCameras, std::vector<WeakPointer<Light>>& outLights);
+        void render(const ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objectList, std::vector<WeakPointer<Light>>& lightList);
+        void renderShadowMaps(std::vector<WeakPointer<Light>>& lights, std::vector<WeakPointer<Object3D>>& objects);
+
         WeakPointer<DepthOnlyMaterial> depthMaterial;
     };
 }

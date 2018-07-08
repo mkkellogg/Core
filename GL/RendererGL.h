@@ -18,12 +18,7 @@ namespace Core {
     public:
         ~RendererGL();
         Bool init() override;
-        void render(WeakPointer<Scene> scene) override;
-        void render(WeakPointer<Scene> scene, 
-                    const ViewDescriptor& viewDescriptor, 
-                    std::vector<WeakPointer<Object3D>>& objectList, 
-                    std::vector<WeakPointer<Light>>& lightList) override;
-
+  
     private:
         RendererGL();
     };

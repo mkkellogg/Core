@@ -32,6 +32,7 @@ namespace Core {
         virtual void init() = 0;
 
         virtual WeakPointer<Renderer> getRenderer() = 0;
+        virtual void preRender() = 0;
         void render(std::shared_ptr<Scene> scene);
         void setRenderSize(UInt32 width, UInt32 height, Bool updateViewport = true);
         void setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
@@ -67,6 +68,7 @@ namespace Core {
         virtual void updateDefaultRenderTargetSize(Vector2u size) = 0;
         virtual void updateDefaultRenderTargetViewport(Vector4u viewport) = 0;
         virtual Bool activateRenderTarget(WeakPointer<RenderTarget> target) = 0;
+        virtual Bool activateCubeRenderTargetSide(CubeTextureSide side) = 0;
 
     };
 }

@@ -143,7 +143,11 @@ namespace Core {
         static const Vector3<T, customStorage> UnitY;
         static const Vector3<T, customStorage> UnitX;
         static const Vector3<T, customStorage> Forward;
+        static const Vector3<T, customStorage> Backward;
+        static const Vector3<T, customStorage> Left;
+        static const Vector3<T, customStorage> Right;
         static const Vector3<T, customStorage> Up;
+        static const Vector3<T, customStorage> Down;
 
         Vector3() : Vector3(0.0, 0.0, 0.0) {}
         Vector3(const Vector3Base<T, true>& src) : Vector3(src.x, src.y, src.z) {}
@@ -237,5 +241,17 @@ namespace Core {
     const Vector3<T, customStorage> Vector3<T, customStorage>::Forward{0.0, 0.0, -1.0};
 
     template <typename T, bool customStorage>
+    const Vector3<T, customStorage> Vector3<T, customStorage>::Backward{0.0, 0.0, 1.0};
+
+    template <typename T, bool customStorage>
+    const Vector3<T, customStorage> Vector3<T, customStorage>::Left{-1.0, 0.0, 0.0};
+
+    template <typename T, bool customStorage>
+    const Vector3<T, customStorage> Vector3<T, customStorage>::Right{1.0, 0.0, 0.0};
+
+    template <typename T, bool customStorage>
     const Vector3<T, customStorage> Vector3<T, customStorage>::Up{0.0, 1.0, 0.0};
+
+    template <typename T, bool customStorage>
+    const Vector3<T, customStorage> Vector3<T, customStorage>::Down{0.0, -1.0, 0.0};
 }

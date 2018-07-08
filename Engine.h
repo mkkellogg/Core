@@ -53,8 +53,9 @@ namespace Core {
         WeakPointer<Camera> createCamera(WeakPointer<Object3D> owner);
 
         template <typename T>
-        WeakPointer<typename std::enable_if<std::is_base_of<Light, T>::value, T>::type> createLight(WeakPointer<Object3D> owner) {
+        WeakPointer<typename std::enable_if<std::is_base_of<Light, T>::value, T>::type> createLight(WeakPointer<Object3D> owner, Bool shadowsEnabled) {
             std::shared_ptr<T> light = std::shared_ptr<T>(new T(owner));
+            light->setShadowsEnabled(shadowsEnabled);
             light->init();
             this->lights.push_back(light);
             WeakPointer<T> lightPtr = light;

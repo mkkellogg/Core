@@ -33,6 +33,7 @@ namespace Core {
         ~GraphicsGL();
         void init() override;
         WeakPointer<Renderer> getRenderer() override;
+        void preRender() override;
         
         void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) override;
         Vector4u getViewport() override;
@@ -66,7 +67,9 @@ namespace Core {
         void updateDefaultRenderTargetSize(Vector2u size) override;
         void updateDefaultRenderTargetViewport(Vector4u viewport) override;
         Bool activateRenderTarget(WeakPointer<RenderTarget> target) override;
+        Bool activateCubeRenderTargetSide(CubeTextureSide side) override;
 
+        static GLenum getGLCubeTarget(CubeTextureSide side);
         static GLuint convertAttributeType(AttributeType type);
         static GLenum getGLBlendProperty(RenderState::BlendingMethod property);
         static GLenum getGLTextureFormat(TextureFormat format);

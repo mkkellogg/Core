@@ -15,12 +15,13 @@ namespace Core {
     }
 
     void PointLight::init() {
-        TextureAttributes colorTextureAttributes;
-       // colorTextureAttributes.Format = TextureFormat::R32F;
-        colorTextureAttributes.Format = TextureFormat::RGBA8;
-        colorTextureAttributes.FilterMode = TextureFilter::Linear;
-        Vector2u renderTargetSize(1024, 1024);
-        this->shadowMap = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorTextureAttributes, renderTargetSize);
+        if (this->shadowsEnabled) {
+            TextureAttributes colorTextureAttributes;
+            colorTextureAttributes.Format = TextureFormat::R32F;
+            colorTextureAttributes.FilterMode = TextureFilter::Linear;
+            Vector2u renderTargetSize(1024, 1024);
+            this->shadowMap = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorTextureAttributes, renderTargetSize);
+        }
     }
 
     WeakPointer<RenderTarget> PointLight::getShadowMap() {

@@ -1,5 +1,6 @@
 #include <algorithm>
 
+#include "../common/Exception.h"
 #include "GraphicsGL.h"
 #include "AttributeArrayGPUStorageGL.h"
 #include "CubeTextureGL.h"
@@ -9,6 +10,12 @@
 #include "Texture2DGL.h"
 #include "RenderTarget2DGL.h"
 #include "RenderTargetCubeGL.h"
+
+#if !defined(DYNAMIC_ES3)
+static GLboolean gl3stubInit() {
+    return GL_TRUE;
+}
+#endif
 
 namespace Core {
 
@@ -40,6 +47,20 @@ namespace Core {
 
     WeakPointer<Renderer> GraphicsGL::getRenderer() {
         return std::static_pointer_cast<Renderer>(this->renderer);
+    }
+
+    void GraphicsGL::preRender() {
+        // TODO: Move these state calls to a place where they are not called every frame
+        glClearColor(0, 0, 0, 1);
+        glFrontFace(GL_CW);
+        glCullFace(GL_BACK);
+        glEnable(GL_CULL_FACE);
+        glEnable(GL_DEPTH_TEST);
+        glDepthMask(GL_TRUE);
+        glDepthFunc(GL_LEQUAL);
+        glDisable(GL_BLEND);
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
     void GraphicsGL::setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) {
@@ -208,12 +229,31 @@ namespace Core {
         }
 
         glBindFramebuffer(GL_FRAMEBUFFER, renderTargetGL->getFBOID());
-
         this->currentRenderTarget = target;
 
         //GetCurrentBufferBits();
 
         return true;
+    }
+
+    Bool GraphicsGL::activateCubeRenderTargetSide(CubeTextureSide side) {
+        if (this->currentRenderTarget.isValid()) {
+            RenderTargetCubeGL * currentTargetCubeGL = dynamic_cast<RenderTargetCubeGL *>(this->currentRenderTarget.get());
+            if (currentTargetCubeGL == nullptr) {
+                throw Exception("GraphicsGL::activateCubeRenderTargetSide -> Current render target is not a valid OpenGL render target.");
+            }
+
+            CubeTextureGL * texGL = dynamic_cast<CubeTextureGL*>(currentTargetCubeGL->getColorTexture().get());
+            if (texGL == nullptr) {
+                throw InvalidArgumentException("GraphicsGL::activateCubeRenderTargetSide -> Render target texture is not a valid OpenGL texture.");
+            }
+         
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, getGLCubeTarget(side), texGL->getTextureID(), 0);
+
+            return true;
+        }
+
+        return false;
     }
 
     void GraphicsGL::updateDefaultRenderTargetSize(Vector2u size) {
@@ -222,6 +262,36 @@ namespace Core {
 
     void GraphicsGL::updateDefaultRenderTargetViewport(Vector4u viewport) {
         this->defaultRenderTarget->viewport = viewport;
+    }
+
+     /*
+     * Get the OpenGL constant for texture cube side that corresponds
+     * to [side].
+     */
+    GLenum GraphicsGL::getGLCubeTarget(CubeTextureSide side) {
+        GLenum target;
+        switch (side) {
+            case CubeTextureSide::Back:
+            target = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
+            break;
+            case CubeTextureSide::Front:
+            target = GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
+            break;
+            case CubeTextureSide::Top:
+            target = GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
+            break;
+            case CubeTextureSide::Bottom:
+            target = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
+            break;
+            case CubeTextureSide::Left:
+            target = GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
+            break;
+            case CubeTextureSide::Right:
+            target = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+            break;
+        }
+
+        return target;
     }
 
     GLenum GraphicsGL::getGLBlendProperty(RenderState::BlendingMethod property) {

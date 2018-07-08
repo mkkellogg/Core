@@ -14,6 +14,7 @@ namespace Core {
 
     void Graphics::render(std::shared_ptr<Scene> scene) {
         if (this->getRenderer()) {
+            this->preRender();
             this->getRenderer()->render(scene);
         }
     }
