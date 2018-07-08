@@ -28,7 +28,7 @@ namespace Core {
         template <typename U>
         PersistentWeakPointer<typename std::enable_if<std::is_base_of<T, U>::value, T>::type>& operator =(const WeakPointer<U>& other) {
             if ((void *)&other == (void *)this) return *this;
-            std::weak_ptr<T>::operator=(other);
+            WeakPointer<T>::operator=(other);
             return *this;
             
         }
