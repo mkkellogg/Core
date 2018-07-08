@@ -115,6 +115,10 @@ namespace Core {
             return s2 != nullptr ? WeakPointer<U>(reinterpret_cast<WeakPointer<U>&>(_src)) : WeakPointer<U>();
         }
 
+        static WeakPointer nullPtr() {
+            return WeakPointer();
+        }
+
     protected:
         T* tryGetPtr() {
 
