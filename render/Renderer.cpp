@@ -106,7 +106,7 @@ namespace Core {
         Vector2u nextSize = nextRenderTarget->getSize();
         Vector4u nextViewport = nextRenderTarget->getViewport();
         graphics->setViewport(nextViewport.x, nextViewport.y, nextViewport.z, nextViewport.w);
-        camera->setAspectRatioFromDimensions(nextSize.x, nextSize.y);
+        camera->setAspectRatioFromDimensions(nextViewport.z, nextViewport.w);
         graphics->activateRenderTarget(nextRenderTarget);
     
         RenderTargetCube * renderTargetCube = dynamic_cast<RenderTargetCube*>(nextRenderTarget.get());
