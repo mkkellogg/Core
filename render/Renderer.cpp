@@ -118,15 +118,15 @@ namespace Core {
                 Matrix4x4 cameraTransform = camera->getOwner()->getTransform().getWorldMatrix();
                 cameraTransform.multiply(orientations[i]);
                 this->getViewDescriptorForCamera(cameraTransform, camera->getProjectionMatrix(), viewDescriptor);
-                viewDescriptor.overrideMaterial = this->distanceMaterial;
-                render(viewDescriptor, objects, lights, this->distanceMaterial);
+                viewDescriptor.overrideMaterial = overrideMaterial;
+                render(viewDescriptor, objects, lights);
             }
         }
         else {
             ViewDescriptor viewDescriptor;
             viewDescriptor.overrideMaterial = overrideMaterial;
             this->getViewDescriptorForCamera(camera, viewDescriptor);
-            viewDescriptor.overrideMaterial = this->depthMaterial;
+            viewDescriptor.overrideMaterial = overrideMaterial;
             render(viewDescriptor, objects, lights);
         }
 
@@ -140,8 +140,7 @@ namespace Core {
         graphics->setViewport(currentViewport.x, currentViewport.y, currentViewport.z, currentViewport.w);
     }
 
-    void Renderer::render(const ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objectList,
-                          std::vector<WeakPointer<Light>>& lightList, WeakPointer<Material> overrideMaterial) {
+    void Renderer::render(const ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objectList, std::vector<WeakPointer<Light>>& lightList) {
 
         for (auto object : objectList) {
             std::shared_ptr<Object3D> objectShared = object.lock();
@@ -173,7 +172,7 @@ namespace Core {
                 shadowMapCameraObject->getTransform().getWorldMatrix().copy(lightTransform);
                 shadowMapCamera->setRenderTarget(shadowMapRenderTarget);
 
-                this->render(shadowMapCamera, objects, lights);
+                this->render(shadowMapCamera, objects, lights, this->distanceMaterial);
             }
         }
     }
