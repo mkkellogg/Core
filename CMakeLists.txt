@@ -46,6 +46,7 @@ set(INCLUDE_FILES
     asset/ModelLoader.h
     material/Material.h
     material/DepthOnlyMaterial.h
+    material/DistanceOnlyMaterial.h
     material/BasicMaterial.h
     material/BasicTexturedMaterial.h
     material/BasicTexturedLitMaterial.h
@@ -153,6 +154,7 @@ set(SOURCE_FILES
     light/PointLight.cpp
     material/Material.cpp
     material/DepthOnlyMaterial.cpp
+    material/DistanceOnlyMaterial.cpp
     material/BasicMaterial.cpp
     material/BasicTexturedMaterial.cpp
     material/BasicTexturedLitMaterial.cpp

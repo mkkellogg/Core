@@ -16,6 +16,7 @@ namespace Core {
     class Light;
     class ViewDescriptor;
     class DepthOnlyMaterial;
+    class DistanceOnlyMaterial;
     class Material;
 
     class Renderer {
@@ -35,9 +36,11 @@ namespace Core {
                           std::vector<WeakPointer<Camera>>& outCameras, std::vector<WeakPointer<Light>>& outLights);
         void processSceneStep(WeakPointer<Object3D> object, const Matrix4x4& curTransform, std::vector<WeakPointer<Object3D>>& outObjects,
                               std::vector<WeakPointer<Camera>>& outCameras, std::vector<WeakPointer<Light>>& outLights);
-        void render(const ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objectList, std::vector<WeakPointer<Light>>& lightList);
+        void render(const ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objectList, 
+                    std::vector<WeakPointer<Light>>& lightList, WeakPointer<Material> overrideMaterial = WeakPointer<Material>::nullPtr());
         void renderShadowMaps(std::vector<WeakPointer<Light>>& lights, std::vector<WeakPointer<Object3D>>& objects);
 
         WeakPointer<DepthOnlyMaterial> depthMaterial;
+        WeakPointer<DistanceOnlyMaterial> distanceMaterial;
     };
 }

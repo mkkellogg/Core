@@ -14,6 +14,7 @@
 #include "RenderTarget2D.h"
 #include "../image/TextureAttr.h"
 #include "../material/DepthOnlyMaterial.h"
+#include "../material/DistanceOnlyMaterial.h"
 #include "../math/Matrix4x4.h"
 #include "../math/Quaternion.h"
 
@@ -32,6 +33,7 @@ namespace Core {
     void Renderer::render(WeakPointer<Scene> scene) {
         if (!this->depthMaterial.isValid()) {
             this->depthMaterial = Engine::instance()->createMaterial<DepthOnlyMaterial>();
+            this->distanceMaterial = Engine::instance()->createMaterial<DistanceOnlyMaterial>();
         }
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
 
@@ -116,13 +118,15 @@ namespace Core {
                 Matrix4x4 cameraTransform = camera->getOwner()->getTransform().getWorldMatrix();
                 cameraTransform.multiply(orientations[i]);
                 this->getViewDescriptorForCamera(cameraTransform, camera->getProjectionMatrix(), viewDescriptor);
-                render(viewDescriptor, objects, lights);
+                viewDescriptor.overrideMaterial = this->distanceMaterial;
+                render(viewDescriptor, objects, lights, this->distanceMaterial);
             }
         }
         else {
             ViewDescriptor viewDescriptor;
             viewDescriptor.overrideMaterial = overrideMaterial;
             this->getViewDescriptorForCamera(camera, viewDescriptor);
+            viewDescriptor.overrideMaterial = this->depthMaterial;
             render(viewDescriptor, objects, lights);
         }
 
@@ -136,7 +140,8 @@ namespace Core {
         graphics->setViewport(currentViewport.x, currentViewport.y, currentViewport.z, currentViewport.w);
     }
 
-    void Renderer::render(const ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objectList, std::vector<WeakPointer<Light>>& lightList) {
+    void Renderer::render(const ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objectList,
+                          std::vector<WeakPointer<Light>>& lightList, WeakPointer<Material> overrideMaterial) {
 
         for (auto object : objectList) {
             std::shared_ptr<Object3D> objectShared = object.lock();

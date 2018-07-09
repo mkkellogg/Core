@@ -14,6 +14,9 @@ namespace Core {
         this->setShader(ShaderType::Vertex, "Depth", ShaderManagerGL::Depth_vertex);
         this->setShader(ShaderType::Fragment, "Depth", ShaderManagerGL::Depth_fragment);
 
+        this->setShader(ShaderType::Vertex, "Distance", ShaderManagerGL::Distance_vertex);
+        this->setShader(ShaderType::Fragment, "Distance", ShaderManagerGL::Distance_fragment);
+
         this->setShader(ShaderType::Vertex, "Basic", ShaderManagerGL::Basic_vertex);
         this->setShader(ShaderType::Fragment, "Basic", ShaderManagerGL::Basic_fragment);
 
@@ -50,7 +53,28 @@ namespace Core {
         "#version 100\n"
         "precision mediump float;\n"
         "void main() {\n"
-        "    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n"
+        "    gl_FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 0.0);\n"
+        "}\n";
+
+    const char ShaderManagerGL::Distance_vertex[] =
+        "#include \"Test\"\n"
+        "#version 100\n"
+        "attribute vec4 pos;\n"
+        "uniform mat4 projection;\n"
+        "uniform mat4 viewMatrix;\n"
+        "uniform mat4 modelMatrix;\n"
+        "varying vec4 vPos;\n"
+        "void main() {\n"
+        "    vPos = modelMatrix * pos;\n"
+        "    gl_Position = projection * viewMatrix * vPos;\n"
+        "}\n";
+
+    const char ShaderManagerGL::Distance_fragment[] =   
+        "#version 100\n"
+        "precision mediump float;\n"
+        "varying vec4 vPos;\n"
+        "void main() {\n"
+        "    gl_FragColor = vec4(length(vPos.xyz), 0.0, 0.0, 0.0);\n"
         "}\n";
 
     const char ShaderManagerGL::Basic_vertex[] =
