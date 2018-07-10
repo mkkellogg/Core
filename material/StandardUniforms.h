@@ -25,8 +25,9 @@ namespace Core {
         LightEnabled = 16,
         LightMatrix = 17,
         LightShadowMap = 18,
-        _Count = 19,  // Must always be last in the list (before _None)
-        _None = 20,
+        LightShadowCubeMap = 19,
+        _Count = 20,  // Must always be last in the list (before _None)
+        _None = 21,
     };
 
     class StandardUniforms {
