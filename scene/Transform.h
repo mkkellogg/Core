@@ -23,6 +23,8 @@ namespace Core {
         const Matrix4x4& getConstLocalMatrix() const;
         Matrix4x4& getWorldMatrix();
         const Matrix4x4& getConstWorldMatrix() const;
+        Matrix4x4& getInverseWorldMatrix();
+        const Matrix4x4& getConstInverseWorldMatrix() const;
 
         void toLocalMatrix(Matrix4x4& dest) const;
         void toWorldMatrix(Matrix4x4& dest) const;
@@ -54,6 +56,7 @@ namespace Core {
     private:
         Matrix4x4 localMatrix;
         Matrix4x4 worldMatrix;
+        Matrix4x4 inverseWorldMatrix; 
         const Object3D& target;
     };
 }

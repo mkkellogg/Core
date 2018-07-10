@@ -19,16 +19,24 @@ namespace Core {
         return this->localMatrix;
     }
 
-    Matrix4x4& Transform::getWorldMatrix() {
-        return this->worldMatrix;
-    }
-
     const Matrix4x4& Transform::getConstLocalMatrix() const {
         return this->localMatrix;
     }
 
+    Matrix4x4& Transform::getWorldMatrix() {
+        return this->worldMatrix;
+    }
+
     const Matrix4x4& Transform::getConstWorldMatrix() const {
         return this->worldMatrix;
+    }
+
+    Matrix4x4& Transform::getInverseWorldMatrix() {
+        return this->inverseWorldMatrix;
+    }
+
+    const Matrix4x4& Transform::getConstInverseWorldMatrix() const {
+        return this->inverseWorldMatrix;
     }
 
     /*
