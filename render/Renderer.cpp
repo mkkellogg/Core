@@ -209,6 +209,9 @@ namespace Core {
             Transform& objTransform = obj->getTransform();
             nextTransform.multiply(objTransform.getLocalMatrix());
             objTransform.getWorldMatrix().copy(nextTransform);
+            Matrix4x4& inverseWorld = objTransform.getInverseWorldMatrix();
+            inverseWorld.copy(nextTransform);
+            inverseWorld.invert();
             outObjects.push_back(obj);
 
             for (GameObjectIterator<Object3DComponent> compItr = obj->beginIterateComponents(); compItr != obj->endIterateComponents(); ++compItr) {

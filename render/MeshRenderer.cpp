@@ -1,8 +1,10 @@
 #include "MeshRenderer.h"
 #include "RenderableContainer.h"
 #include "../render/Camera.h"
+#include "../render/RenderTarget.h"
 #include "../material/Material.h"
 #include "../material/Shader.h"
+#include "../image/Texture.h"
 #include "../geometry/AttributeArrayGPUStorage.h"
 #include "../geometry/AttributeArray.h"
 #include "../geometry/Mesh.h"
@@ -77,12 +79,16 @@ namespace Core {
         Int32 lightColorLoc = material->getShaderLocation(StandardUniform::LightColor);
         Int32 lightEnabledLoc = material->getShaderLocation(StandardUniform::LightEnabled);
 
+        Int32 lightMatrixLoc = material->getShaderLocation(StandardUniform::LightMatrix);
+        Int32 lightShadowMapLoc = material->getShaderLocation(StandardUniform::LightShadowMap);
+        Int32 lightShadowCubeMapLoc = material->getShaderLocation(StandardUniform::LightShadowCubeMap);
+
         if (lights.size() > 0) {
             if (lightEnabledLoc >= 0) {
                 shader->setUniform1i(lightEnabledLoc, 1);
             }
             for(UInt32 i = 0; i < lights.size(); i++) {
-                const WeakPointer<Light> light = lights[i];
+                WeakPointer<Light> light = lights[i];
                 LightType lightType = light->getType();
                 if (lightColorLoc >= 0) {
                     Color color = light->getColor();
@@ -90,11 +96,15 @@ namespace Core {
                 }
 
                 if (lightTypeLoc >= 0) {
-                    shader->setUniform1i(lightRangeLoc, (Int32)lightType);
+                    shader->setUniform1i(lightTypeLoc, (Int32)lightType);
                 }
 
                 if (lightIntensityLoc >= 0) {
                     shader->setUniform1f(lightIntensityLoc, light->getIntensity());
+                }
+
+                if (lightMatrixLoc >= 0) {
+                    shader->setUniformMatrix4(lightMatrixLoc, light->getOwner()->getTransform().getConstInverseWorldMatrix());
                 }
 
                 if (lightType == LightType::Point) {
@@ -108,6 +118,12 @@ namespace Core {
                         pointLight->getOwner()->getTransform().getWorldMatrix().transform(pos);
                         shader->setUniform4f(lightPositionLoc, pos.x, pos.y, pos.z, 1.0f);
                     }
+
+                    if (lightShadowCubeMapLoc >= 0 && pointLight->getShadowsEnabled()) {
+                        shader->setTextureCube(2, pointLight->getShadowMap()->getColorTexture()->getTextureID());
+                        shader->setUniform1i(lightShadowCubeMapLoc, 2);
+                    }
+
                 }
             }
 
