@@ -23,8 +23,10 @@ namespace Core {
         LightType = 14,
         LightRange = 15,
         LightEnabled = 16,
-        _Count = 17,  // Must always be last in the list (before _None)
-        _None = 18,
+        LightMatrix = 17,
+        LightShadowMap = 18,
+        _Count = 19,  // Must always be last in the list (before _None)
+        _None = 20,
     };
 
     class StandardUniforms {
