@@ -104,7 +104,7 @@ namespace Core {
     sceneRootPtr->addChild(skyboxObj);
 
     WeakPointer<Core::Object3D> cameraObj = Engine::instance()->createObject3D<Core::Object3D>();
-    camera = Engine::instance()->createCamera(cameraObj);
+    camera = Engine::instance()->createPerspectiveCamera(cameraObj, Camera::DEFAULT_FOV, Camera::DEFAULT_ASPECT_RATIO, 0.1f, 100);
     sceneRootPtr->addChild(cameraObj);
 
   }

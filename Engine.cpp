@@ -149,8 +149,16 @@ namespace Core {
         return newMesh;
     }
 
-    WeakPointer<Camera> Engine::createCamera(WeakPointer<Object3D> owner) {
-        std::shared_ptr<Camera> newCamera = std::shared_ptr<Camera>(new Camera(owner));
+    WeakPointer<Camera> Engine::createPerspectiveCamera(WeakPointer<Object3D> owner, Real fov, Real aspect, Real near, Real far) {
+        std::shared_ptr<Camera> newCamera = std::shared_ptr<Camera>(Camera::createPerspectiveCamera(owner, fov, aspect, near, far));
+        this->cameras.push_back(newCamera);
+        WeakPointer<Camera> cameraPtr(newCamera);
+        owner->addComponent(cameraPtr);
+        return cameraPtr;
+    }
+
+    WeakPointer<Camera> Engine::createOrthographicCamera(WeakPointer<Object3D> owner, Real top, Real bottom, Real left, Real right, Real near, Real far) {
+        std::shared_ptr<Camera> newCamera = std::shared_ptr<Camera>(Camera::createOrthographicCamera(owner, top, bottom, left, right, near, far));
         this->cameras.push_back(newCamera);
         WeakPointer<Camera> cameraPtr(newCamera);
         owner->addComponent(cameraPtr);

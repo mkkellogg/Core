@@ -161,7 +161,7 @@ namespace Core {
         if (!shadowMapCamera.isValid()) {
             shadowMapCameraObject = Engine::instance()->createObject3D();
             shadowMapCameraObject->getTransform().updateWorldMatrix();
-            shadowMapCamera = Engine::instance()->createCamera(shadowMapCameraObject);
+            shadowMapCamera = Engine::instance()->createOrthographicCamera(shadowMapCameraObject, 1024, 1024, 1024, 1024, 0.1, 1000);
         }
 
         for (auto light: lights) {
@@ -170,6 +170,12 @@ namespace Core {
                 WeakPointer<Object3D> lightObject = light->getOwner();
                 Matrix4x4 lightTransform = lightObject->getTransform().getWorldMatrix();
                 shadowMapCameraObject->getTransform().getWorldMatrix().copy(lightTransform);
+                Vector4u renderTargetDimensions = shadowMapRenderTarget->getViewport();
+
+                Real halfWidth = renderTargetDimensions.z / 2.0f;
+                Real halfHeight = renderTargetDimensions.w / 2.0f;
+
+                shadowMapCamera->setDimensions(halfHeight, -halfHeight, -halfWidth, halfWidth);                
                 shadowMapCamera->setRenderTarget(shadowMapRenderTarget);
 
                 this->render(shadowMapCamera, objects, lights, this->distanceMaterial);

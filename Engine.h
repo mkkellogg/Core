@@ -50,7 +50,8 @@ namespace Core {
         WeakPointer<Scene> getActiveScene();
         WeakPointer<Scene> createScene();
 
-        WeakPointer<Camera> createCamera(WeakPointer<Object3D> owner);
+        WeakPointer<Camera> createPerspectiveCamera(WeakPointer<Object3D> owner, Real fov, Real aspect, Real near, Real far);
+        WeakPointer<Camera> createOrthographicCamera(WeakPointer<Object3D> owner, Real top, Real bottom, Real left, Real right, Real near, Real far);
 
         template <typename T>
         WeakPointer<typename std::enable_if<std::is_base_of<Light, T>::value, T>::type> createLight(WeakPointer<Object3D> owner, Bool shadowsEnabled) {

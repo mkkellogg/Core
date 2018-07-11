@@ -13,32 +13,38 @@ namespace Core {
     const UInt32 Camera::DEFAULT_FOV = 70;
     const UInt32 Camera::DEFAULT_WIDTH = 1200;
     const UInt32 Camera::DEFAULT_HEIGHT = 800;
-    const Real Camera::DEFAULT_RATIO = (Real)Camera::DEFAULT_WIDTH / (Real)Camera::DEFAULT_HEIGHT;
+    const Real Camera::DEFAULT_ASPECT_RATIO = (Real)Camera::DEFAULT_WIDTH / (Real)Camera::DEFAULT_HEIGHT;
     const Real Camera::DEFAULT_NEARP = 0.1;
     const Real Camera::DEFAULT_FARP = 100.0;
 
-    Camera::Camera(WeakPointer<Object3D> owner)
-        : Object3DComponent(owner), fov(Camera::DEFAULT_FOV), aspectRatio(Camera::DEFAULT_RATIO), nearP(Camera::DEFAULT_NEARP), farP(Camera::DEFAULT_FARP) {
-        this->updateProjection(this->fov, this->aspectRatio, this->nearP, this->farP);
+    Camera::Camera(WeakPointer<Object3D> owner): Object3DComponent(owner) {
     }
 
-    Camera::Camera(WeakPointer<Object3D> owner, Real fov, Real ratio, Real nearP, Real farP)
-        : Object3DComponent(owner), fov(fov), aspectRatio(ratio), nearP(nearP), farP(farP) {
-        this->updateProjection(this->fov, this->aspectRatio, this->nearP, this->farP);
-    }
-
-    void Camera::updateProjection(Real fov, Real ratio, Real nearP, Real farP) {
-        Camera::buildPerspectiveProjectionMatrix(fov, ratio, nearP, farP, this->projectionMatrix);
+    void Camera::updateProjection() {
+        if (this->isOrtho) {
+            Camera::buildOrthographicProjectionMatrix(this->top, this->bottom, this->left, this->right, this->near, this->far, this->projectionMatrix);
+        }
+        else {
+            Camera::buildPerspectiveProjectionMatrix(this->fov, this->aspectRatio, this->near, this->far, this->projectionMatrix);
+        }
     }
 
     void Camera::setAspectRatio(Real ratio) {
         this->aspectRatio = ratio;
-        this->updateProjection(this->fov, this->aspectRatio, this->nearP, this->farP);
+        this->updateProjection();
     }
 
     void Camera::setAspectRatioFromDimensions(UInt32 width, UInt32 height) {
         this->aspectRatio = (Real)width / (Real)height;
-        this->updateProjection(this->fov, this->aspectRatio, this->nearP, this->farP);
+        this->updateProjection();
+    }
+
+    void Camera::setDimensions(Real top, Real  bottom, Real left, Real right) {
+        this->top = top;
+        this->bottom = bottom;
+        this->left = left;
+        this->right = right;
+        this->updateProjection();
     }
 
     const Matrix4x4& Camera::getProjectionMatrix() const {
@@ -95,5 +101,70 @@ namespace Core {
         data[2 * 4 + 3] = -1.0f;
         data[3 * 4 + 3] = 0.0f;
         out.copy(data);
+    }
+
+    void Camera::buildOrthographicProjectionMatrix(Real top, Real bottom, Real left, Real right, Real near, Real far, Matrix4x4& matrix) {
+        matrix.setIdentity();
+
+        Real data[16];
+        memset(data, 0, 16 * sizeof(Real));
+
+        Real r_width = 1.0f / (right - left);
+        Real r_height = 1.0f / (top - bottom);
+        Real r_depth = 1.0f / (far - near);
+        Real x = 2.0f * (r_width);
+        Real y = 2.0f * (r_height);
+        Real z = -2.0f * (r_depth);
+        Real tx = -(right + left) * r_width;
+        Real ty = -(top + bottom) * r_height;
+        Real tz = -(far + near) * r_depth;
+        data[0] = x;
+        data[5] = y;
+        data[10] = z;
+        data[12] = tx;
+        data[13] = ty;
+        data[14] = tz;
+        data[15] = 1.0f;
+        data[1] = 0.0f;
+        data[2] = 0.0f;
+        data[3] = 0.0f;
+        data[4] = 0.0f;
+        data[6] = 0.0f;
+        data[7] = 0.0f;
+        data[8] = 0.0f;
+        data[9] = 0.0f;
+        data[11] = 0.0f;
+
+        matrix.copy(data);
+    }
+
+    Camera* Camera::createPerspectiveCamera(WeakPointer<Object3D> owner, Real fov, Real aspectRatio, Real near, Real far) {
+        Camera * cam = new(std::nothrow) Camera(owner);
+        if (cam == nullptr) {
+            throw AllocationException("Camera::createPerspectiveCamera -> Could not allocation new Camera object.");
+        }
+        cam->fov = fov;
+        cam->aspectRatio = aspectRatio;
+        cam->near = near;
+        cam->far = far;
+        cam->isOrtho = false;
+        Camera::buildPerspectiveProjectionMatrix(fov, aspectRatio, near, far, cam->projectionMatrix);
+        return cam;
+    }
+
+    Camera* Camera::createOrthographicCamera(WeakPointer<Object3D> owner, Real top, Real bottom, Real left, Real right, Real near, Real far) {
+        Camera * cam = new(std::nothrow) Camera(owner);
+        if (cam == nullptr) {
+            throw AllocationException("Camera::createOrthographicCamera -> Could not allocation new Camera object.");
+        }
+        cam->top = top;
+        cam->bottom = bottom;
+        cam->left = left;
+        cam->right = right;
+        cam->near = near;
+        cam->far = far;
+        cam->isOrtho = true;
+        Camera::buildOrthographicProjectionMatrix(top, bottom, left, right, near, far, cam->projectionMatrix);
+        return cam;
     }
 }

@@ -19,13 +19,13 @@ namespace Core {
         static const UInt32 DEFAULT_FOV;
         static const UInt32 DEFAULT_WIDTH;
         static const UInt32 DEFAULT_HEIGHT;
-        static const Real DEFAULT_RATIO;
+        static const Real DEFAULT_ASPECT_RATIO;
         static const Real DEFAULT_NEARP;
         static const Real DEFAULT_FARP;
 
-        void setAspectRatio(Real ratio);
+        void setAspectRatio(Real ratio);       
         void setAspectRatioFromDimensions(UInt32 width, UInt32 height);
-        void updateProjection(Real fov, Real ratio, Real nearP, Real farP);
+        void setDimensions(Real top, Real  bottom, Real left, Real right);
         const Matrix4x4& getProjectionMatrix() const;
         const Matrix4x4& getWorlInverseTransposeMatrix() const;
         void lookAt(const Point3r& target);
@@ -33,17 +33,31 @@ namespace Core {
         void unProject(Vector3Base<Real>& vec);
         void setRenderTarget(WeakPointer<RenderTarget> renderTarget);
         WeakPointer<RenderTarget> getRenderTarget();
+        void setOrtho(Bool isOrtho);
 
-        static void buildPerspectiveProjectionMatrix(Real fov, Real ratio, Real nearP, Real farP, Matrix4x4& out);
+        static void buildPerspectiveProjectionMatrix(Real fov, Real aspectRatio, Real near, Real far, Matrix4x4& out);
+        static void buildOrthographicProjectionMatrix(Real top, Real bottom, Real left, Real right, Real near, Real far, Matrix4x4& matrix);
 
     private:
         Camera(WeakPointer<Object3D> owner);
-        Camera(WeakPointer<Object3D> owner, Real fov, Real ratio, Real nearP, Real farP);
+        void updateProjection();
+
+        static Camera* createPerspectiveCamera(WeakPointer<Object3D> owner, Real fov, Real aspectRatio, Real near, Real far);
+        static Camera* createOrthographicCamera(WeakPointer<Object3D> owner, Real top, Real bottom, Real left, Real right, Real near, Real far);
+
+        Bool isOrtho;
 
         Real fov;
         Real aspectRatio;
-        Real nearP;
-        Real farP;
+
+        Real near;
+        Real far;
+
+        Real top;
+        Real bottom;
+        Real left;
+        Real right;
+
         Matrix4x4 projectionMatrix;
         PersistentWeakPointer<RenderTarget> renderTarget;
     };
