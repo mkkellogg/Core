@@ -19,6 +19,7 @@ namespace Core {
     }
 
     void MeshRenderer::renderObject(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh, const std::vector<WeakPointer<Light>>& lights) {
+       
         
         WeakPointer<Material> material;
         if (viewDescriptor.overrideMaterial.isValid()) {
@@ -27,6 +28,7 @@ namespace Core {
         else {
             material = this->material;
         }
+
         WeakPointer<Shader> shader = material->getShader();
         this->graphics->activateShader(shader);
 
@@ -50,8 +52,7 @@ namespace Core {
         }
 
         if (viewMatrixLoc >= 0) {;
-            Matrix4x4 viewMatrix = viewDescriptor.viewMatrix;
-            viewMatrix.invert();
+            Matrix4x4 viewMatrix = viewDescriptor.viewInverseMatrix;
             shader->setUniformMatrix4(viewMatrixLoc, viewMatrix);
         }
 
@@ -135,6 +136,7 @@ namespace Core {
             }
             this->drawMesh(mesh);
         }
+
     }
 
     void MeshRenderer::render(const ViewDescriptor& viewDescriptor, const std::vector<WeakPointer<Light>>& lights) {

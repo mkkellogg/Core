@@ -46,20 +46,6 @@ namespace Core {
             this->buildAndVerifyTexture(this->depthTexture);
 
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, this->depthTexture->getTextureID(), 0);
-
-            /*
-
-            this->depthTexture = Engine::instance()->createCubeTexture(this->depthTextureAttributes);
-            this->buildAndVerifyTexture(this->depthTexture);
-
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP_POSITIVE_X, this->depthTexture->getTextureID(), 0);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, this->depthTexture->getTextureID(), 0);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, this->depthTexture->getTextureID(), 0);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, this->depthTexture->getTextureID(), 0);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, this->depthTexture->getTextureID(), 0);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, this->depthTexture->getTextureID(), 0);
-
-            */
         }
         else if (this->hasDepthBuffer && this->enableStencilBuffer) {
             this->initDepthStencilBufferCombo(this->size.x, this->size.y);

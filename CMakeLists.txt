@@ -48,6 +48,7 @@ set(INCLUDE_FILES
     material/DepthOnlyMaterial.h
     material/DistanceOnlyMaterial.h
     material/BasicMaterial.h
+    material/BasicLitMaterial.h
     material/BasicTexturedMaterial.h
     material/BasicTexturedLitMaterial.h
     material/BasicCubeMaterial.h
@@ -156,6 +157,7 @@ set(SOURCE_FILES
     material/DepthOnlyMaterial.cpp
     material/DistanceOnlyMaterial.cpp
     material/BasicMaterial.cpp
+    material/BasicLitMaterial.cpp
     material/BasicTexturedMaterial.cpp
     material/BasicTexturedLitMaterial.cpp
     material/BasicCubeMaterial.cpp

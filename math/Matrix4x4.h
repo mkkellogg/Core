@@ -100,6 +100,8 @@ namespace Core {
         static void scale(const Real* source, Real* dest, Real x, Real y, Real z);
         static void preScale(const Real* source, Real* dest, Real x, Real y, Real z);
 
+        void lookAt(const Vector3Components<Real>& src, const Vector3Components<Real>& target, const Vector3Components<Real>& up);
+
     private:
         Real data[SIZE_MATRIX_4X4];
     };

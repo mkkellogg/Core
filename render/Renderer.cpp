@@ -18,6 +18,8 @@
 #include "../math/Matrix4x4.h"
 #include "../math/Quaternion.h"
 
+#include "../common/gl.h"
+
 namespace Core {
 
     Renderer::Renderer() {
@@ -61,34 +63,29 @@ namespace Core {
         if (!initialized) {
             initialized = true;
 
+            Vector3r vup(0.0, 1.0, 0.0);
+            Vector3r origin(0.0, 0.0, 0.0);
             orientations.push_back(forward);
 
-            Quaternion rot;
-            rot.fromAngleAxis(Math::PI / 2.0f, 0.0f, 1.0f, 0.0f);
-            left = rot.rotationMatrix();
-            orientations.push_back(left);
-
-            rot = Quaternion::Identity;
-            rot.fromAngleAxis(Math::PI, 0.0f, 1.0f, 0.0f);
-            backward = rot.rotationMatrix();
+            backward.lookAt(origin, Vector3r(0.0f, 0.0f, 1.0f), vup);
             orientations.push_back(backward);
 
-            rot = Quaternion::Identity;
-            rot.fromAngleAxis(-Math::PI / 2.0f, 0.0f, 1.0f, 0.0f);
-            right = rot.rotationMatrix();
-            orientations.push_back(right);
-
-            rot = Quaternion::Identity;
-            rot.fromAngleAxis(Math::PI / 2.0f, 1.0f, 0.0f, 0.0f);
-            up = rot.rotationMatrix();
+            up.lookAt(origin, Vector3r(0.0f, 1.0f, 0.0f), Vector3r(0.0, 0.0, -1.0f));
             orientations.push_back(up);
 
-            rot = Quaternion::Identity;
-            rot.fromAngleAxis(-Math::PI / 2.0f, 1.0f, 0.0f, 0.0f);
-            down = rot.rotationMatrix();
+            down.lookAt(origin, Vector3r(0.0f, -1.0f, 0.0f), Vector3r(0.0, 0.0, 1.0f));
             orientations.push_back(down);
-        }
 
+       
+                 left.lookAt(origin, Vector3r(-1.0f, 0.0f, 0.0f), vup);
+            orientations.push_back(left);
+
+            right.lookAt(origin, Vector3r(1.0f, 0.0f, 0.0f), vup);
+            orientations.push_back(right);
+
+
+         
+        }
 
 
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
@@ -113,10 +110,15 @@ namespace Core {
         if (renderTargetCube != nullptr) {
             for (unsigned int i = 0; i < 6; i++) {
                 graphics->activateCubeRenderTargetSide((CubeTextureSide)i);
+                
+            glClearColor(0, 0, 0, 1);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 ViewDescriptor viewDescriptor;
-                viewDescriptor.overrideMaterial = overrideMaterial;
                 Matrix4x4 cameraTransform = camera->getOwner()->getTransform().getWorldMatrix();
                 cameraTransform.multiply(orientations[i]);
+                if (i != 4)continue;
+          //  cameraTransform.setIdentity();
+            //cameraTransform.preTranslate(0, 0, 10);
                 this->getViewDescriptorForCamera(cameraTransform, camera->getProjectionMatrix(), viewDescriptor);
                 viewDescriptor.overrideMaterial = overrideMaterial;
                 render(viewDescriptor, objects, lights);
@@ -124,7 +126,6 @@ namespace Core {
         }
         else {
             ViewDescriptor viewDescriptor;
-            viewDescriptor.overrideMaterial = overrideMaterial;
             this->getViewDescriptorForCamera(camera, viewDescriptor);
             viewDescriptor.overrideMaterial = overrideMaterial;
             render(viewDescriptor, objects, lights);
@@ -160,10 +161,11 @@ namespace Core {
         static PersistentWeakPointer<Object3D> shadowMapCameraObject;
         if (!shadowMapCamera.isValid()) {
             shadowMapCameraObject = Engine::instance()->createObject3D();
-            shadowMapCameraObject->getTransform().updateWorldMatrix();
-            shadowMapCamera = Engine::instance()->createOrthographicCamera(shadowMapCameraObject, 1024, 1024, 1024, 1024, 0.1, 1000);
+          //  shadowMapCamera = Engine::instance()->createOrthographicCamera(shadowMapCameraObject, 1024, 1024, 1024, 1024, 0.1, 1000);
+            shadowMapCamera = Engine::instance()->createPerspectiveCamera(shadowMapCameraObject, 90.0f, 1.0f, 0.1f, 100);
         }
 
+        std::vector<WeakPointer<Light>> dummyLights;
         for (auto light: lights) {
             if (light->getShadowsEnabled()) {
                 WeakPointer<RenderTarget> shadowMapRenderTarget = light->getShadowMap();
@@ -172,13 +174,13 @@ namespace Core {
                 shadowMapCameraObject->getTransform().getWorldMatrix().copy(lightTransform);
                 Vector4u renderTargetDimensions = shadowMapRenderTarget->getViewport();
 
-                Real halfWidth = renderTargetDimensions.z / 2.0f;
-                Real halfHeight = renderTargetDimensions.w / 2.0f;
+              //  Real halfWidth = renderTargetDimensions.z / 2.0f;
+               // Real halfHeight = renderTargetDimensions.w / 2.0f;
 
-                shadowMapCamera->setDimensions(halfHeight, -halfHeight, -halfWidth, halfWidth);                
+              //  shadowMapCamera->setDimensions(halfHeight, -halfHeight, -halfWidth, halfWidth);                
                 shadowMapCamera->setRenderTarget(shadowMapRenderTarget);
-
-                this->render(shadowMapCamera, objects, lights, this->distanceMaterial);
+                       
+                this->render(shadowMapCamera, objects, dummyLights, this->distanceMaterial);
             }
         }
     }
@@ -188,8 +190,10 @@ namespace Core {
     }
 
     void Renderer::getViewDescriptorForCamera(const Matrix4x4& worldMatrix, const Matrix4x4& projectionMatrix, ViewDescriptor& viewDescriptor) {
-        viewDescriptor.viewMatrix.copy(worldMatrix);
         viewDescriptor.projectionMatrix.copy(projectionMatrix);
+        viewDescriptor.viewMatrix.copy(worldMatrix);
+        viewDescriptor.viewInverseMatrix.copy(viewDescriptor.viewMatrix);
+        viewDescriptor.viewInverseMatrix.invert();
         viewDescriptor.viewInverseTransposeMatrix.copy(viewDescriptor.viewMatrix);
         viewDescriptor.viewInverseTransposeMatrix.transpose();
         viewDescriptor.viewInverseTransposeMatrix.invert();

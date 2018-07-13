@@ -902,4 +902,42 @@ namespace Core {
             dest[12 + smi] = source[3 + mi];
         }
     }
+
+    void Matrix4x4::lookAt(const Vector3Components<Real>& src, const Vector3Components<Real>& target, const Vector3Components<Real>& up) {
+        Point3r _src(src.x, src.y, src.z);
+        Point3r _target(target.x, target.y, target.z);
+        Vector3r toTarget = _target - _src;
+        toTarget.normalize();
+
+        Vector3r vUp(up.x, up.y, up.z);
+        Vector3r vRight;
+
+        Vector3r::cross(toTarget, vUp, vRight);
+        vRight.normalize();
+
+        Vector3r::cross(vRight, toTarget, vUp);
+        vUp.normalize();
+
+        auto fullMat = this->getData();
+
+        fullMat[0] = vRight.x;
+        fullMat[1] = vRight.y;
+        fullMat[2] = vRight.z;
+        fullMat[3] = 0.0f;
+
+        fullMat[4] = vUp.x;
+        fullMat[5] = vUp.y;
+        fullMat[6] = vUp.z;
+        fullMat[7] = 0.0f;
+
+        fullMat[8] = -toTarget.x;
+        fullMat[9] = -toTarget.y;
+        fullMat[10] = -toTarget.z;
+        fullMat[11] = 0.0f;
+
+        fullMat[12] = src.x;
+        fullMat[13] = src.y;
+        fullMat[14] = src.z;
+        fullMat[15] = 1.0f;
+    }
 }

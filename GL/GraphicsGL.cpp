@@ -247,7 +247,7 @@ namespace Core {
             if (texGL == nullptr) {
                 throw InvalidArgumentException("GraphicsGL::activateCubeRenderTargetSide -> Render target texture is not a valid OpenGL texture.");
             }
-         
+
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, getGLCubeTarget(side), texGL->getTextureID(), 0);
 
             return true;

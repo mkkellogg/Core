@@ -12,6 +12,7 @@ namespace Core {
     public:
 
         Matrix4x4 viewMatrix;
+        Matrix4x4 viewInverseMatrix;
         Matrix4x4 viewInverseTransposeMatrix;
         Matrix4x4 projectionMatrix;
         PersistentWeakPointer<Material> overrideMaterial;
