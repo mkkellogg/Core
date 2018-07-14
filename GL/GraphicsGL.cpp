@@ -171,8 +171,8 @@ namespace Core {
 
     WeakPointer<RenderTarget2D> GraphicsGL::createRenderTarget2D(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
                                                                  const TextureAttributes& colorTextureAttributes, Vector2u size) {
-        TextureAttributes colorAttributes;
-        RenderTarget2DGL* renderTargetPtr = new(std::nothrow) RenderTarget2DGL(hasColor, hasDepth, enableStencilBuffer, colorAttributes, size);
+
+        RenderTarget2DGL* renderTargetPtr = new(std::nothrow) RenderTarget2DGL(hasColor, hasDepth, enableStencilBuffer, colorTextureAttributes, size);
         if (renderTargetPtr == nullptr) {
             throw AllocationException("GraphicsGL::createRenderTarget2D -> Unable to allocate render target.");
         }
@@ -186,8 +186,8 @@ namespace Core {
 
     WeakPointer<RenderTargetCube> GraphicsGL::createRenderTargetCube(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
                                                                      const TextureAttributes& colorTextureAttributes, Vector2u size) {
-        TextureAttributes colorAttributes;
-        RenderTargetCubeGL* renderTargetPtr = new(std::nothrow) RenderTargetCubeGL(hasColor, hasDepth, enableStencilBuffer, colorAttributes, size);
+       
+        RenderTargetCubeGL* renderTargetPtr = new(std::nothrow) RenderTargetCubeGL(hasColor, hasDepth, enableStencilBuffer, colorTextureAttributes, size);
         if (renderTargetPtr == nullptr) {
             throw AllocationException("GraphicsGL::createRenderTargetCube -> Unable to allocate render target.");
         }
@@ -337,20 +337,16 @@ namespace Core {
      /*
      * Get the OpenGL texture format that corresponds to [format].
      */
-    GLenum GraphicsGL::getGLTextureFormat(TextureFormat format) {
+    GLint GraphicsGL::getGLTextureFormat(TextureFormat format) {
         switch (format) {
             case TextureFormat::R32F:
-            return GL_R32F;
-            break;
+                return GL_R32F;
             case TextureFormat::RGBA8:
-            return GL_RGBA8;
-            break;
+                return GL_RGBA8;
             case TextureFormat::RGBA16F:
-            return GL_RGBA16F;
-            break;
+                return GL_RGBA16F;
             case TextureFormat::RGBA32F:
-            return GL_RGBA32F;
-            break;
+                return GL_RGBA32F;
 
         }
 
@@ -363,17 +359,13 @@ namespace Core {
     GLenum GraphicsGL::getGLPixelFormat(TextureFormat format) {
         switch (format) {
             case TextureFormat::R32F:
-            return GL_RED;
-            break;
+                return GL_RED;
             case TextureFormat::RGBA8:
-            return GL_RGBA;
-            break;
+                return GL_RGBA;
             case TextureFormat::RGBA16F:
-            return GL_RGBA;
-            break;
+                return GL_RGBA;
             case TextureFormat::RGBA32F:
-            return GL_RGBA;
-            break;
+                return GL_RGBA;
 
         }
 
@@ -386,17 +378,13 @@ namespace Core {
     GLenum GraphicsGL::getGLPixelType(TextureFormat format) {
         switch (format) {
             case TextureFormat::R32F:
-            return GL_FLOAT;
-            break;
+                return GL_FLOAT;
             case TextureFormat::RGBA8:
-            return GL_UNSIGNED_BYTE;
-            break;
+                return GL_UNSIGNED_BYTE;
             case TextureFormat::RGBA16F:
-            return GL_FLOAT;
-            break;
+                return GL_FLOAT;
             case TextureFormat::RGBA32F:
-            return GL_FLOAT;
-            break;
+                return GL_FLOAT;
 
         }
 

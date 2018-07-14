@@ -59,7 +59,7 @@ namespace Core {
                                      GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
                                      GL_TEXTURE_CUBE_MAP_NEGATIVE_X, GL_TEXTURE_CUBE_MAP_POSITIVE_X};
 
-        GLenum textureFormat = graphicsGL->getGLTextureFormat(attributes.Format);
+        GLint textureFormat = graphicsGL->getGLTextureFormat(attributes.Format);
         GLenum pixelFormat = graphicsGL->getGLPixelFormat(attributes.Format);
         GLenum pixelType = graphicsGL->getGLPixelType(attributes.Format);
 

@@ -64,23 +64,30 @@ namespace Core {
             initialized = true;
 
             Vector3r vup(0.0, 1.0, 0.0);
+            Vector3r vdown(0.0, -1.0, 0.0);
             Vector3r origin(0.0, 0.0, 0.0);
+            forward.lookAt(origin, Vector3r(0.0f, 0.0f, 1.0f), vup);
+             forward.scale(1.0, -1.0, 1.0);
             orientations.push_back(forward);
 
-            backward.lookAt(origin, Vector3r(0.0f, 0.0f, 1.0f), vup);
+            backward.lookAt(origin, Vector3r(0.0f, 0.0f, -1.0f), vup);
+            backward.scale(1.0, -1.0, 1.0);
             orientations.push_back(backward);
 
-            up.lookAt(origin, Vector3r(0.0f, 1.0f, 0.0f), Vector3r(0.0, 0.0, -1.0f));
+            up.lookAt(origin, Vector3r(0.0f, 1.0f, 0.0f), Vector3r(0.0, 0.0, 1.0f));
             orientations.push_back(up);
 
-            down.lookAt(origin, Vector3r(0.0f, -1.0f, 0.0f), Vector3r(0.0, 0.0, 1.0f));
+            down.lookAt(origin, Vector3r(0.0f, -1.0f, 0.0f), Vector3r(0.0, 0.0, -1.0f));
             orientations.push_back(down);
-
        
-                 left.lookAt(origin, Vector3r(-1.0f, 0.0f, 0.0f), vup);
+            //left.lookAt(origin, Vector3r(-1.0f, 0.0f, 0.0f), Vector3r(0.0, -1.0, 1.0f));
+            //left.scale(-1.0, 1.0, 1.0);
+            left.rotate(0.0, 1.0, 0.0, Math::PI / 2.0f);
+            // left.scale(1.0, -1.0, 1.0);
             orientations.push_back(left);
 
             right.lookAt(origin, Vector3r(1.0f, 0.0f, 0.0f), vup);
+           //  right.scale(1.0, -1.0, 1.0);
             orientations.push_back(right);
 
 
@@ -114,9 +121,17 @@ namespace Core {
             glClearColor(0, 0, 0, 1);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 ViewDescriptor viewDescriptor;
-                Matrix4x4 cameraTransform = camera->getOwner()->getTransform().getWorldMatrix();
-                cameraTransform.multiply(orientations[i]);
-                if (i != 4)continue;
+                //Matrix4x4 cameraTransform = camera->getOwner()->getTransform().getWorldMatrix();
+               // cameraTransform.multiply(orientations[i]);
+
+                Point3r lightOrigin;
+                camera->getOwner()->getTransform().getWorldMatrix().transform(lightOrigin);
+                 Matrix4x4 cameraTransform = orientations[i];
+             cameraTransform.preTranslate(lightOrigin.x, lightOrigin.y, lightOrigin.z);
+
+               if (i != 0 && i !=3)continue;
+       //             glClearColor(1, 0, 0, 1);
+        //    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
           //  cameraTransform.setIdentity();
             //cameraTransform.preTranslate(0, 0, 10);
                 this->getViewDescriptorForCamera(cameraTransform, camera->getProjectionMatrix(), viewDescriptor);
@@ -162,7 +177,7 @@ namespace Core {
         if (!shadowMapCamera.isValid()) {
             shadowMapCameraObject = Engine::instance()->createObject3D();
           //  shadowMapCamera = Engine::instance()->createOrthographicCamera(shadowMapCameraObject, 1024, 1024, 1024, 1024, 0.1, 1000);
-            shadowMapCamera = Engine::instance()->createPerspectiveCamera(shadowMapCameraObject, 90.0f, 1.0f, 0.1f, 100);
+            shadowMapCamera = Engine::instance()->createPerspectiveCamera(shadowMapCameraObject, Math::PI / 2.0f, 1.0f, 0.1f, 100);
         }
 
         std::vector<WeakPointer<Light>> dummyLights;

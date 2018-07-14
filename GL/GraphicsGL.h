@@ -72,7 +72,7 @@ namespace Core {
         static GLenum getGLCubeTarget(CubeTextureSide side);
         static GLuint convertAttributeType(AttributeType type);
         static GLenum getGLBlendProperty(RenderState::BlendingMethod property);
-        static GLenum getGLTextureFormat(TextureFormat format);
+        static GLint getGLTextureFormat(TextureFormat format);
         static GLenum getGLPixelFormat(TextureFormat format);
         static GLenum getGLPixelType(TextureFormat format);
 

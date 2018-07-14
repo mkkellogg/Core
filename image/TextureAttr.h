@@ -28,10 +28,10 @@ namespace Core {
     };
 
     enum class TextureFormat {
-        RGBA8,
-        RGBA16F,
-        RGBA32F,
-        R32F
+        RGBA8 = 1,
+        RGBA16F = 2,
+        RGBA32F = 3,
+        R32F = 4
     };
 
     class TextureAttributes {
