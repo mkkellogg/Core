@@ -122,20 +122,10 @@ namespace Core {
                 
             glClearColor(0, 0, 0, 1);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
                 ViewDescriptor viewDescriptor;
-                //Matrix4x4 cameraTransform = camera->getOwner()->getTransform().getWorldMatrix();
-               // cameraTransform.multiply(orientations[i]);
-
-                Point3r lightOrigin;
-                camera->getOwner()->getTransform().getWorldMatrix().transform(lightOrigin);
-                 Matrix4x4 cameraTransform = orientations[i];
-             cameraTransform.preTranslate(lightOrigin.x, lightOrigin.y, lightOrigin.z);
-
-              // if (i >=4 || i <= 0)continue;
-       //             glClearColor(1, 0, 0, 1);
-        //    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-          //  cameraTransform.setIdentity();
-            //cameraTransform.preTranslate(0, 0, 10);
+                Matrix4x4 cameraTransform = camera->getOwner()->getTransform().getWorldMatrix();
+                cameraTransform.multiply(orientations[i]);
                 this->getViewDescriptorForCamera(cameraTransform, camera->getProjectionMatrix(), viewDescriptor);
                 viewDescriptor.overrideMaterial = overrideMaterial;
                 render(viewDescriptor, objects, lights);
@@ -178,7 +168,6 @@ namespace Core {
         static PersistentWeakPointer<Object3D> shadowMapCameraObject;
         if (!shadowMapCamera.isValid()) {
             shadowMapCameraObject = Engine::instance()->createObject3D();
-          //  shadowMapCamera = Engine::instance()->createOrthographicCamera(shadowMapCameraObject, 1024, 1024, 1024, 1024, 0.1, 1000);
             shadowMapCamera = Engine::instance()->createPerspectiveCamera(shadowMapCameraObject, Math::PI / 2.0f, 1.0f, 0.1f, 100);
         }
 
@@ -190,13 +179,8 @@ namespace Core {
                 Matrix4x4 lightTransform = lightObject->getTransform().getWorldMatrix();
                 shadowMapCameraObject->getTransform().getWorldMatrix().copy(lightTransform);
                 Vector4u renderTargetDimensions = shadowMapRenderTarget->getViewport();
-
-              //  Real halfWidth = renderTargetDimensions.z / 2.0f;
-               // Real halfHeight = renderTargetDimensions.w / 2.0f;
-
-              //  shadowMapCamera->setDimensions(halfHeight, -halfHeight, -halfWidth, halfWidth);                
-                shadowMapCamera->setRenderTarget(shadowMapRenderTarget);
-                       
+               
+                shadowMapCamera->setRenderTarget(shadowMapRenderTarget);                       
                 this->render(shadowMapCamera, objects, dummyLights, this->distanceMaterial);
             }
         }
