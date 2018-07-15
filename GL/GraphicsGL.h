@@ -62,6 +62,9 @@ namespace Core {
                                                      const TextureAttributes& colorTextureAttributes, Vector2u size) override;
         WeakPointer<RenderTargetCube> createRenderTargetCube(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
                                                      const TextureAttributes& colorTextureAttributes, Vector2u size) override;
+
+        void setClearColor(Color color) override;
+        void clearActiveRenderTarget(Bool colorBuffer, Bool depthBuffer, Bool stencilBuffer) override;
         WeakPointer<RenderTarget> getDefaultRenderTarget() override;
         WeakPointer<RenderTarget> getCurrentRenderTarget() override;
         void updateDefaultRenderTargetSize(Vector2u size) override;

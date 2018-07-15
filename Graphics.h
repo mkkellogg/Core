@@ -9,6 +9,7 @@
 #include "render/RenderState.h"
 #include "geometry/Vector2.h"
 #include "geometry/Vector4.h"
+#include "color/Color.h"
 
 namespace Core {
 
@@ -63,6 +64,9 @@ namespace Core {
                                                                  const TextureAttributes& colorTextureAttributes, Vector2u size) = 0;
         virtual WeakPointer<RenderTargetCube> createRenderTargetCube(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
                                                                      const TextureAttributes& colorTextureAttributes, Vector2u size) = 0;
+                                                                     
+        virtual void setClearColor(Color color) = 0;
+        virtual void clearActiveRenderTarget(Bool colorBuffer, Bool depthBuffer, Bool stencilBuffer) = 0;
         virtual WeakPointer<RenderTarget> getDefaultRenderTarget() = 0;
         virtual WeakPointer<RenderTarget> getCurrentRenderTarget() = 0;
         virtual void updateDefaultRenderTargetSize(Vector2u size) = 0;

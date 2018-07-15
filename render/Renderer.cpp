@@ -18,8 +18,6 @@
 #include "../math/Matrix4x4.h"
 #include "../math/Quaternion.h"
 
-#include "../common/gl.h"
-
 namespace Core {
 
     Renderer::Renderer() {
@@ -119,9 +117,8 @@ namespace Core {
         if (renderTargetCube != nullptr) {
             for (unsigned int i = 0; i < 6; i++) {
                 graphics->activateCubeRenderTargetSide((CubeTextureSide)i);
-                
-            glClearColor(0, 0, 0, 1);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                graphics->setClearColor(Color(0.0, 0.0, 0.0, 0.0));
+                graphics->clearActiveRenderTarget(true, true, true);        
 
                 ViewDescriptor viewDescriptor;
                 Matrix4x4 cameraTransform = camera->getOwner()->getTransform().getWorldMatrix();

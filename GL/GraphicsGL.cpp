@@ -199,6 +199,18 @@ namespace Core {
         return weakPtr;
     }
 
+    void GraphicsGL::setClearColor(Color color) {
+        glClearColor(color.r, color.g, color.b, color.a);
+    }
+
+    void GraphicsGL::clearActiveRenderTarget(Bool colorBuffer, Bool depthBuffer, Bool stencilBuffer) {
+        UInt32 mask = 0x00000000;
+        if (colorBuffer) mask |= GL_COLOR_BUFFER_BIT;
+        if (depthBuffer) mask |= GL_DEPTH_BUFFER_BIT;
+        if (stencilBuffer) mask |= GL_STENCIL_BUFFER_BIT;
+        glClear(mask);
+    }
+
     WeakPointer<RenderTarget> GraphicsGL::getDefaultRenderTarget() {
         return this->defaultRenderTarget;
     }
