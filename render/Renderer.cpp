@@ -64,14 +64,16 @@ namespace Core {
             initialized = true;
 
             Vector3r vup(0.0, 1.0, 0.0);
+            Vector3r vbackward(0.0, 0.0, -1.0);
+            Vector3r vfront(0.0, 0.0, 1.0);
             Vector3r vdown(0.0, -1.0, 0.0);
             Vector3r origin(0.0, 0.0, 0.0);
-            forward.lookAt(origin, Vector3r(0.0f, 0.0f, 1.0f), vup);
-             forward.scale(1.0, -1.0, 1.0);
+            forward.lookAt(origin, Vector3r(0.0f, 0.0f, 1.0f), vdown);
+            // forward.scale(1.0, -1.0, 1.0);
             orientations.push_back(forward);
 
-            backward.lookAt(origin, Vector3r(0.0f, 0.0f, -1.0f), vup);
-            backward.scale(1.0, -1.0, 1.0);
+            backward.lookAt(origin, Vector3r(0.0f, 0.0f, -1.0f), vdown);
+          //  backward.scale(1.0, -1.0, 1.0);
             orientations.push_back(backward);
 
             up.lookAt(origin, Vector3r(0.0f, 1.0f, 0.0f), Vector3r(0.0, 0.0, 1.0f));
@@ -80,13 +82,13 @@ namespace Core {
             down.lookAt(origin, Vector3r(0.0f, -1.0f, 0.0f), Vector3r(0.0, 0.0, -1.0f));
             orientations.push_back(down);
        
-            //left.lookAt(origin, Vector3r(-1.0f, 0.0f, 0.0f), Vector3r(0.0, -1.0, 1.0f));
+            left.lookAt(origin, Vector3r(-1.0f, 0.0f, 0.0f), vdown);
             //left.scale(-1.0, 1.0, 1.0);
-            left.rotate(0.0, 1.0, 0.0, Math::PI / 2.0f);
+         //   left.rotate(1.0, 0.0, 0.0, Math::PI / 2.0f);
             // left.scale(1.0, -1.0, 1.0);
             orientations.push_back(left);
 
-            right.lookAt(origin, Vector3r(1.0f, 0.0f, 0.0f), vup);
+            right.lookAt(origin, Vector3r(1.0f, 0.0f, 0.0f), vdown);
            //  right.scale(1.0, -1.0, 1.0);
             orientations.push_back(right);
 
@@ -129,7 +131,7 @@ namespace Core {
                  Matrix4x4 cameraTransform = orientations[i];
              cameraTransform.preTranslate(lightOrigin.x, lightOrigin.y, lightOrigin.z);
 
-               if (i != 0 && i !=3)continue;
+              // if (i >=4 || i <= 0)continue;
        //             glClearColor(1, 0, 0, 1);
         //    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
           //  cameraTransform.setIdentity();

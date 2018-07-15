@@ -68,9 +68,9 @@ namespace Core {
         "uniform mat4 modelMatrix;\n"
         "out vec4 vPos;\n"
         "void main() {\n"
-        "    vPos = modelMatrix * pos;\n"
+        "    vPos = viewMatrix * modelMatrix * pos;\n"
       //  "    vPos.y = 1.0 - vPos.y;\n"
-        "    gl_Position = projection * viewMatrix * vPos;\n"
+        "    gl_Position = projection * vPos;\n"
         "}\n";
 
     const char ShaderManagerGL::Distance_fragment[] =   
@@ -184,7 +184,7 @@ namespace Core {
       //  "           float shadowDepth = float(texture(lightShadowCubeMap, lightLocalFragPos));\n"
        // "           float shadowDepth = float(shadowDepthVec);\n"
         "            float shadowDepth = unpack(shadowDepthVec) * 1000.0;\n"
-        "           if (shadowDepth < /*length(lightLocalFragPos)*/ 3.0 || shadowDepth < .001) {\n"
+        "           if (shadowDepth > length(lightLocalFragPos) || shadowDepth < .001) {\n"
         "               vec3 toLight = normalize(vec3(realLightPos - fragPos));\n"
         "               float aAtten = max(dot(normalize(vNormal), toLight), 0.0);\n"
         "               out_color = vec4(vColor.rgb * aAtten, vColor.a);\n"
