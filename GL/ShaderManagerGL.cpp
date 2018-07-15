@@ -94,8 +94,8 @@ namespace Core {
         "}\n"
         "void main() {\n"
         "   float len = length(vPos.xyz);\n"
-       "    out_color = pack(len / 1000.0);\n"
-     //  "    gl_FragColor = vec4(1.0, 0.0, 0.0, 0.0);\n"
+     //  "    out_color = pack(len / 1000.0);\n"
+       "    gl_FragColor = vec4(len, 0.0, 0.0, 0.0);\n"
         "}\n";
 
     const char ShaderManagerGL::Basic_vertex[] =
@@ -122,7 +122,7 @@ namespace Core {
         "}\n";
 
      const char ShaderManagerGL::BasicLit_vertex[] =  
-        "#version 330\n"
+        "#version 150\n"
         "attribute vec4 pos;\n"
         "attribute vec4 color;\n"
         "attribute vec4 normal;\n"
@@ -141,7 +141,7 @@ namespace Core {
         "}\n";
 
     const char ShaderManagerGL::BasicLit_fragment[] =   
-        "#version 330\n"
+        "#version 150\n"
         "#extension GL_NV_shadow_samplers_cube : enable\n"
         "precision highp float;\n"
         "uniform sampler2D lightShadowMap;\n"
@@ -181,10 +181,9 @@ namespace Core {
         "           vec3 lightLocalFragPos = fragPos.xyz - lightPos.xyz;\n"
         //"           lightLocalFragPos.y = -lightLocalFragPos.y;\n"
         "           vec4 shadowDepthVec = texture(lightShadowCubeMap, lightLocalFragPos);\n"
-      //  "           float shadowDepth = float(texture(lightShadowCubeMap, lightLocalFragPos));\n"
-       // "           float shadowDepth = float(shadowDepthVec);\n"
-        "            float shadowDepth = unpack(shadowDepthVec) * 1000.0;\n"
-        "           if (shadowDepth > length(lightLocalFragPos) || shadowDepth < .001) {\n"
+        "           float shadowDepth = shadowDepthVec.r;\n"
+       // "            float shadowDepth = unpack(shadowDepthVec) * 1000.0;\n"
+        "           if (shadowDepth + .01 > length(lightLocalFragPos) || shadowDepth < .001) {\n"
         "               vec3 toLight = normalize(vec3(realLightPos - fragPos));\n"
         "               float aAtten = max(dot(normalize(vNormal), toLight), 0.0);\n"
         "               out_color = vec4(vColor.rgb * aAtten, vColor.a);\n"
@@ -226,7 +225,8 @@ namespace Core {
         "}\n";
 
     const char ShaderManagerGL::BasicTexturedLit_vertex[] =  
-        "#version 100\n"
+        "#version 150\n"
+        "precision highp float;\n"
         "attribute vec4 pos;\n"
         "attribute vec4 color;\n"
         "attribute vec4 normal;\n"
@@ -235,10 +235,10 @@ namespace Core {
         "uniform mat4 viewMatrix;\n"
         "uniform mat4 modelMatrix;\n"
         "uniform mat4 modelInverseTransposeMatrix;\n"
-        "varying vec4 vColor;\n"
-        "varying vec3 vNormal;\n"
-        "varying vec2 vUV;\n"
-        "varying vec4 vPos;\n"
+        "out vec4 vColor;\n"
+        "out vec3 vNormal;\n"
+        "out vec2 vUV;\n"
+        "out vec4 vPos;\n"
         "void main() {\n"
         "    vPos = modelMatrix * pos;\n"
         "    gl_Position = projection * viewMatrix * vPos;\n"
@@ -248,8 +248,8 @@ namespace Core {
         "}\n";
 
     const char ShaderManagerGL::BasicTexturedLit_fragment[] =   
-        "#version 100\n"
-        "precision mediump float;\n"
+        "#version 150\n"
+        "precision highp float;\n"
         "uniform sampler2D textureA;\n"
         "uniform sampler2D lightShadowMap;\n"
         "uniform samplerCube lightShadowCubeMap;\n"
@@ -259,30 +259,32 @@ namespace Core {
         "uniform int lightType;\n"
         "uniform int lightEnabled;\n"
         "uniform vec4 lightColor;\n"
-        "varying vec4 vColor;\n"
-        "varying vec3 vNormal;\n"
-        "varying vec2 vUV;\n"
-        "varying vec4 vPos;\n"
+        "in vec4 vColor;\n"
+        "in vec3 vNormal;\n"
+        "in vec2 vUV;\n"
+        "in vec4 vPos;\n"
+        "out vec4 out_color;\n"
         "void main() {\n"
         "    if (lightEnabled != 0) {\n"
-        "       vec4 textureColor = texture2D(textureA, vUV);\n"
+        "       vec4 textureColor = texture(textureA, vUV);\n"
         "       vec4 fragPos = vPos;\n"
         "       if (lightType == 2) {\n"
         "           vec4 realLightPos = lightPos;\n"
-        "           vec3 lightLocalFragPos = vec3(lightMatrix * vec4(fragPos.xyz, 0.0));\n"
-      //  "           vec3 lightLocalFragPos = fragPos.xyz - lightPos.xyz;\n"
-        "           vec4 shadowDepthVec = textureCube(lightShadowCubeMap, lightLocalFragPos);\n"
+        "           vec3 lightLocalFragPos = fragPos.xyz - lightPos.xyz;\n"
+        //"           lightLocalFragPos.y = -lightLocalFragPos.y;\n"
+        "           vec4 shadowDepthVec = texture(lightShadowCubeMap, lightLocalFragPos);\n"
         "           float shadowDepth = shadowDepthVec.r;\n"
-        "           if (shadowDepth > length(lightLocalFragPos) || shadowDepth < .001) {\n"
+       // "            float shadowDepth = unpack(shadowDepthVec) * 1000.0;\n"
+        "           if (shadowDepth + .01 > length(lightLocalFragPos) || shadowDepth < .001) {\n"
         "               vec3 toLight = normalize(vec3(realLightPos - fragPos));\n"
         "               float aAtten = max(dot(normalize(vNormal), toLight), 0.0);\n"
-        "               gl_FragColor = vec4(textureColor.rgb * aAtten, textureColor.a);\n"
+        "               out_color = vec4(textureColor.rgb * aAtten, textureColor.a);\n"
         "           }\n"
-      //  "           gl_FragColor = vec4(shadowDepth, 0.0, 0.0, 1.0);\n"
+      //  "           out_color = vec4(shadowDepth, 0.0, 0.0, 1.0);\n"
         "       }\n"
         "    } \n"
         "    else { \n"
-        "         gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n"
+        "         out_color = vec4(0.0, 0.0, 0.0, 1.0);\n"
         "    }\n"
         "}\n";
 
