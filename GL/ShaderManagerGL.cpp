@@ -11,6 +11,8 @@ namespace Core {
         this->setShader(ShaderType::Vertex, "Test", ShaderManagerGL::Test_vertex);
         this->setShader(ShaderType::Fragment, "Test", ShaderManagerGL::Test_fragment);
 
+        this->setShader(ShaderType::Base, "Lighting", ShaderManagerGL::Lighting);
+
         this->setShader(ShaderType::Vertex, "Depth", ShaderManagerGL::Depth_vertex);
         this->setShader(ShaderType::Fragment, "Depth", ShaderManagerGL::Depth_fragment);
 
@@ -40,6 +42,36 @@ namespace Core {
     const char ShaderManagerGL::Test_fragment[] =
         "// some fragment comments\n"
         "// some morefragment comments\n";
+
+    const char ShaderManagerGL::Lighting[] =
+        "uniform sampler2D lightShadowMap;\n"
+        "uniform samplerCube lightShadowCubeMap;\n"
+        "uniform float lightShadowBias;\n"
+        "uniform mat4 lightMatrix;\n"
+        "uniform vec4 lightPos;\n"
+        "uniform float lightRange;\n"
+        "uniform int lightType;\n"
+        "uniform int lightEnabled;\n"
+        "uniform vec4 lightColor;\n"
+
+        "vec4 litColor(in vec4 baseColor, in vec4 fragPos, in vec3 fragNormal) {\n"
+        "    if (lightEnabled != 0) {\n"
+        "        if (lightType == 2) {\n"
+        "            vec3 lightLocalFragPos = vec3(lightMatrix * fragPos);\n"
+        "            vec4 shadowDepthVec = texture(lightShadowCubeMap, lightLocalFragPos);\n"
+        "            float shadowDepth = shadowDepthVec.r;\n"
+        "            vec3 toLight = normalize(vec3(lightPos - fragPos));\n"
+        "            float dot = max(dot(toLight, fragNormal), 0.0);\n"
+        "            float bias = (1.0 - dot) * lightShadowBias;\n"
+        "            if (shadowDepth + bias > length(lightLocalFragPos) || shadowDepth < .001) {\n"
+        "                float aAtten = dot;\n"
+        "                return vec4(baseColor.rgb * aAtten, baseColor.a);\n"
+        "            }\n"
+        "            return vec4(0.0, 0.0, 0.0, 1.0);\n"
+        "        }\n"
+        "    }\n"
+        "    return baseColor;\n"
+        "}\n";
 
     const char ShaderManagerGL::Depth_vertex[] =
         "#include \"Test\"\n"
@@ -129,40 +161,14 @@ namespace Core {
         "#version 150\n"
         "#extension GL_NV_shadow_samplers_cube : enable\n"
         "precision highp float;\n"
-        "uniform sampler2D lightShadowMap;\n"
-        "uniform samplerCube lightShadowCubeMap;\n"
-        "uniform float lightShadowBias;\n"
-        "uniform mat4 lightMatrix;\n"
-        "uniform vec4 lightPos;\n"
-        "uniform float lightRange;\n"
-        "uniform int lightType;\n"
-        "uniform int lightEnabled;\n"
-        "uniform vec4 lightColor;\n"
+        "#include \"Lighting\"\n"
         "in vec4 vColor;\n"
         "in vec3 vNormal;\n"
         "in vec4 vPos;\n"
         "out vec4 out_color;\n"
 
         "void main() {\n"
-        "    if (lightEnabled != 0) {\n"
-        "       vec4 fragPos = vPos;\n"
-        "       if (lightType == 2) {\n"
-            "       vec3 lightLocalFragPos = vec3(lightMatrix * vPos);\n"
-        "           vec4 shadowDepthVec = texture(lightShadowCubeMap, lightLocalFragPos);\n"
-        "           float shadowDepth = shadowDepthVec.r;\n"
-        "           vec3 toLight = normalize(vec3(lightPos - fragPos));\n"
-        "           vec3 normal = normalize(vNormal);\n"
-        "           float dot = max(dot(toLight, normal), 0.0);\n"
-        "           float bias = (1.0 - dot) * lightShadowBias;\n"
-        "           if (shadowDepth + bias > length(lightLocalFragPos) || shadowDepth < .001) {\n"
-        "               float aAtten = dot;\n"
-        "               out_color = vec4(vColor.rgb * aAtten, vColor.a);\n"
-        "           }\n"
-        "       }\n"
-        "    } \n"
-        "    else { \n"
-        "         out_color = vec4(0.0, 0.0, 0.0, 1.0);\n"
-        "    }\n"
+        "   out_color = litColor(vColor, vPos, normalize(vNormal));\n"
         "}\n";
 
     const char ShaderManagerGL::BasicTextured_vertex[] =  
@@ -219,42 +225,15 @@ namespace Core {
     const char ShaderManagerGL::BasicTexturedLit_fragment[] =   
         "#version 150\n"
         "precision highp float;\n"
+        "#include \"Lighting\"\n"
         "uniform sampler2D textureA;\n"
-        "uniform sampler2D lightShadowMap;\n"
-        "uniform samplerCube lightShadowCubeMap;\n"
-        "uniform float lightShadowBias;\n"
-        "uniform mat4 lightMatrix;\n"
-        "uniform vec4 lightPos;\n"
-        "uniform float lightRange;\n"
-        "uniform int lightType;\n"
-        "uniform int lightEnabled;\n"
-        "uniform vec4 lightColor;\n"
         "in vec4 vColor;\n"
         "in vec3 vNormal;\n"
         "in vec2 vUV;\n"
         "in vec4 vPos;\n"
         "out vec4 out_color;\n"
         "void main() {\n"
-        "    if (lightEnabled != 0) {\n"
-        "       vec4 textureColor = texture(textureA, vUV);\n"
-        "       vec4 fragPos = vPos;\n"
-        "       if (lightType == 2) {\n"
-            "       vec3 lightLocalFragPos = vec3(lightMatrix * vPos);\n"
-        "           vec4 shadowDepthVec = texture(lightShadowCubeMap, lightLocalFragPos);\n"
-        "           float shadowDepth = shadowDepthVec.r;\n"
-        "           vec3 toLight = normalize(vec3(lightPos - fragPos));\n"
-        "           vec3 normal = normalize(vNormal);\n"
-        "           float dot = max(dot(toLight, normal), 0.0);\n"
-        "           float bias = (1.0 - dot) * lightShadowBias;\n"
-        "           if (shadowDepth + bias > length(lightLocalFragPos) || shadowDepth < .001) {\n"
-        "               float aAtten = dot;\n"
-        "               out_color = vec4(textureColor.rgb * aAtten, textureColor.a);\n"
-        "           }\n"
-        "       }\n"
-        "    } \n"
-        "    else { \n"
-        "         out_color = vec4(0.0, 0.0, 0.0, 1.0);\n"
-        "    }\n"
+        "   out_color = litColor(texture(textureA, vUV), vPos, normalize(vNormal));\n"
         "}\n";
 
     const char ShaderManagerGL::BasicCube_vertex[] =  

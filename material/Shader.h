@@ -17,6 +17,12 @@ namespace Core {
             ShaderVariableException(const char* msg): Exception(msg) {}
         };
 
+        class ShaderCompilationException: Exception {
+        public:
+            ShaderCompilationException(const std::string& msg): Exception(msg) {}
+            ShaderCompilationException(const char* msg): Exception(msg) {}
+        };
+
         Shader();
         Shader(const std::string& vertex, const std::string& fragment);
         Shader(const char vertex[], const char fragment[]);

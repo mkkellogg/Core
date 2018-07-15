@@ -21,6 +21,9 @@ namespace Core {
             case ShaderType::Fragment:
                 entry.fragmentSource = shaderSrc;
                 break;
+            case ShaderType::Base:
+                entry.baseSource = shaderSrc;
+                break;
         }
     }
 
@@ -29,13 +32,16 @@ namespace Core {
             Entry& entry = this->entries[name];
             switch (type) {
                 case ShaderType::Vertex:
-                    return processShaderSource(type, entry.vertexSource);
-                    break;
+                    if (entry.vertexSource.size() > 0)
+                        return processShaderSource(type, entry.vertexSource);
                 case ShaderType::Fragment:
-                    return processShaderSource(type, entry.fragmentSource);
-                    break;
+                    if (entry.fragmentSource.size() > 0)
+                        return processShaderSource(type, entry.fragmentSource);          
             }
+            if (entry.baseSource.size() > 0)
+                return processShaderSource(type, entry.baseSource);
         }
+
         throw ShaderManagerException(std::string("Could not locate requested shader ") + name);
     }
 

@@ -85,7 +85,11 @@ namespace Core {
     Bool ShaderGL::checkGlError(const char *funcName) {
         GLint err = glGetError();
         if (err != GL_NO_ERROR) {
-            Debug::PrintError("GL error after %s(): 0x%08x\n", funcName, err);
+            std::string msg("GL error after ");
+            msg += funcName;
+            msg += "0x";
+            msg += err;
+            throw ShaderCompilationException(msg);
             return true;
         }
         return false;
@@ -105,16 +109,23 @@ namespace Core {
         glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
         if (!compiled) {
             GLint infoLogLen = 0;
+            std::string msg("Could not compile ");
+            msg += shaderType == ShaderType::Vertex ? "vertex" : "fragment";
+            msg += " shader\n\n";
             glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLen);
             if (infoLogLen > 0) {
                 GLchar *infoLog = (GLchar *)malloc(infoLogLen);
                 if (infoLog) {
                     glGetShaderInfoLog(shader, infoLogLen, NULL, infoLog);
-                    Debug::PrintError("Could not compile %s shader:\n%s\n", shaderType == ShaderType::Vertex ? "vertex" : "fragment", infoLog);
+                    msg += infoLog;
+                    msg += "\n\n";        
                     free(infoLog);
                 }
             }
             glDeleteShader(shader);
+            msg += src;
+            msg += "\n\n";            
+            throw ShaderCompilationException(msg);
             return 0;
         }
         return shader;
@@ -145,7 +156,6 @@ namespace Core {
         glLinkProgram(program);
         glGetProgramiv(program, GL_LINK_STATUS, &linked);
         if (!linked) {
-            Debug::PrintError("Could not link program");
             GLint infoLogLen = 0;
             glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLen);
             if (infoLogLen) {
@@ -153,12 +163,15 @@ namespace Core {
                 if (infoLog) {
                     glGetProgramInfoLog(program, infoLogLen, NULL, infoLog);
                     sprintf(errorString, "Could not link program:\n%s\n", infoLog);
-                    Debug::PrintError(errorString);
                     free(infoLog);
                 }
             }
+            else {
+                sprintf(errorString, "Could not link program");
+            }
             glDeleteProgram(program);
             program = 0;
+            throw ShaderCompilationException(errorString);
         }
 
         this->ready = true;

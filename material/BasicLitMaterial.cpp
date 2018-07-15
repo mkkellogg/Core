@@ -17,6 +17,7 @@ namespace Core {
         ShaderManager& shaderDirectory = graphics->getShaderManager();
         const std::string& vertexSrc = shaderDirectory.getShader(ShaderType::Vertex, "BasicLit");
         const std::string& fragmentSrc = shaderDirectory.getShader(ShaderType::Fragment, "BasicLit");
+        
         Bool ready = this->buildFromSource(vertexSrc, fragmentSrc);
         if (!ready) {
             return false;

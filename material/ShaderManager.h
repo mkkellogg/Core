@@ -23,16 +23,7 @@ namespace Core {
                 
             }
 
-            Entry(const std::string& vertexSrc, const std::string& fragmentSrc) {
-                this->vertexSource = vertexSrc;
-                this->fragmentSource = fragmentSrc;
-            }
-
-            Entry(const char vertexSrc[], const char fragmentSrc[]) {
-                this->vertexSource = vertexSrc;
-                this->fragmentSource = fragmentSrc;
-            }
-
+            std::string baseSource;
             std::string vertexSource;
             std::string fragmentSource;
         };
