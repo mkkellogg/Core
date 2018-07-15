@@ -68,6 +68,8 @@ namespace Core {
                 return this->lightShadowMapLocation;
             case StandardUniform::LightShadowCubeMap:
                 return this->lightShadowCubeMapLocation;
+            case StandardUniform::LightShadowBias:
+                return this->lightShadowMapLocation;
             default:
                 return -1;
         }
@@ -98,6 +100,7 @@ namespace Core {
         newMaterial->lightMatrixLocation = this->lightMatrixLocation;
         newMaterial->lightShadowMapLocation = this->lightShadowMapLocation;
         newMaterial->lightShadowCubeMapLocation = this->lightShadowCubeMapLocation;
+        newMaterial->lightShadowMapLocation = this->lightShadowMapLocation;
         return newMaterial;
     }
 
@@ -119,5 +122,6 @@ namespace Core {
         this->lightMatrixLocation = this->shader->getUniformLocation("lightMatrix");
         this->lightShadowMapLocation = this->shader->getUniformLocation("lightShadowMap");
         this->lightShadowCubeMapLocation = this->shader->getUniformLocation("lightShadowCubeMap");
+        this->lightShadowMapLocation = this->shader->getUniformLocation("lightShadowBias");
     }
 }

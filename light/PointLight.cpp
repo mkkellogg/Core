@@ -18,8 +18,8 @@ namespace Core {
         if (this->shadowsEnabled) {
             TextureAttributes colorTextureAttributes;
             colorTextureAttributes.Format = TextureFormat::R32F;
-            colorTextureAttributes.FilterMode = TextureFilter::Point;
-            Vector2u renderTargetSize(1024, 1024);
+            colorTextureAttributes.FilterMode = TextureFilter::Linear;
+            Vector2u renderTargetSize(2048, 2048);
             this->shadowMap = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorTextureAttributes, renderTargetSize);
         }
     }

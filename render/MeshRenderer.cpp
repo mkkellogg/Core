@@ -83,6 +83,7 @@ namespace Core {
         Int32 lightMatrixLoc = material->getShaderLocation(StandardUniform::LightMatrix);
         Int32 lightShadowMapLoc = material->getShaderLocation(StandardUniform::LightShadowMap);
         Int32 lightShadowCubeMapLoc = material->getShaderLocation(StandardUniform::LightShadowCubeMap);
+        Int32 lightShadowBiasLoc = material->getShaderLocation(StandardUniform::LightShadowBias);
 
         if (lights.size() > 0) {
             if (lightEnabledLoc >= 0) {
@@ -102,6 +103,10 @@ namespace Core {
 
                 if (lightIntensityLoc >= 0) {
                     shader->setUniform1f(lightIntensityLoc, light->getIntensity());
+                }
+
+                if (lightShadowBiasLoc >= 0) {
+                    shader->setUniform1f(lightShadowBiasLoc, light->getShadowBias());
                 }
 
                 if (lightMatrixLoc >= 0) {

@@ -7,6 +7,7 @@ namespace Core {
         this->intensity = 1;
         this->shadowsEnabled = false;
         this->cullingMask = IntMaskUtil::createMask();
+        this->shadowBias = 0.03f;
     }
 
     Light::~Light() {
@@ -55,5 +56,13 @@ namespace Core {
 
     LightType Light::getType() const {
         return this->type;
+    }
+
+    void Light::setShadowBias(Real bias) {
+        this->shadowBias = bias;
+    }
+
+    Real Light::getShadowBias() const {
+        return this->shadowBias;
     }
 }
