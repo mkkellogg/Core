@@ -67,11 +67,9 @@ namespace Core {
             Vector3r vdown(0.0, -1.0, 0.0);
             Vector3r origin(0.0, 0.0, 0.0);
             forward.lookAt(origin, Vector3r(0.0f, 0.0f, 1.0f), vdown);
-            // forward.scale(1.0, -1.0, 1.0);
             orientations.push_back(forward);
 
             backward.lookAt(origin, Vector3r(0.0f, 0.0f, -1.0f), vdown);
-          //  backward.scale(1.0, -1.0, 1.0);
             orientations.push_back(backward);
 
             up.lookAt(origin, Vector3r(0.0f, 1.0f, 0.0f), Vector3r(0.0, 0.0, 1.0f));
@@ -81,13 +79,9 @@ namespace Core {
             orientations.push_back(down);
        
             left.lookAt(origin, Vector3r(-1.0f, 0.0f, 0.0f), vdown);
-            //left.scale(-1.0, 1.0, 1.0);
-         //   left.rotate(1.0, 0.0, 0.0, Math::PI / 2.0f);
-            // left.scale(1.0, -1.0, 1.0);
             orientations.push_back(left);
 
             right.lookAt(origin, Vector3r(1.0f, 0.0f, 0.0f), vdown);
-           //  right.scale(1.0, -1.0, 1.0);
             orientations.push_back(right);
 
 
@@ -137,10 +131,6 @@ namespace Core {
 
 
 
-
-
-
-
         graphics->activateRenderTarget(currentRenderTarget);
         graphics->setViewport(currentViewport.x, currentViewport.y, currentViewport.z, currentViewport.w);
     }
@@ -176,7 +166,6 @@ namespace Core {
                 Matrix4x4 lightTransform = lightObject->getTransform().getWorldMatrix();
                 shadowMapCameraObject->getTransform().getWorldMatrix().copy(lightTransform);
                 Vector4u renderTargetDimensions = shadowMapRenderTarget->getViewport();
-               
                 shadowMapCamera->setRenderTarget(shadowMapRenderTarget);                       
                 this->render(shadowMapCamera, objects, dummyLights, this->distanceMaterial);
             }
