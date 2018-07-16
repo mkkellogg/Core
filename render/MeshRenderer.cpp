@@ -37,6 +37,7 @@ namespace Core {
 
         this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::Position, mesh->getVertexPositions());
         this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::Normal, mesh->getVertexNormals());
+        this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::FaceNormal, mesh->getVertexFaceNormals());
         this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::Color, mesh->getVertexColors());
         this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::UV0, mesh->getVertexUVs0());
 

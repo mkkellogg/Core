@@ -27,6 +27,7 @@ namespace Core {
         WeakPointer<Texture> texture;
         Int32 positionLocation;
         Int32 normalLocation;
+        Int32 faceNormalLocation;
         Int32 colorLocation;
         Int32 textureLocation;
         Int32 uvLocation;

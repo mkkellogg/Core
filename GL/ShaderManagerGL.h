@@ -16,7 +16,7 @@ namespace Core {
         static const char Test_vertex[];
         static const char Test_fragment[];
 
-        static const char Lighting[];
+        static const char Lighting_fragment[];
 
         static const char Depth_vertex[];
         static const char Depth_fragment[];

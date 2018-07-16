@@ -29,8 +29,10 @@ namespace Core {
         switch (attribute) {
             case StandardAttribute::Position:
                 return this->positionLocation;
-             case StandardAttribute::Normal:
+            case StandardAttribute::Normal:
                 return this->normalLocation;
+            case StandardAttribute::FaceNormal:
+                return this->faceNormalLocation;
             case StandardAttribute::Color:
                 return this->colorLocation;
             case StandardAttribute::UV0:
@@ -94,6 +96,7 @@ namespace Core {
         newMaterial->texture = this->texture;
         newMaterial->positionLocation = this->positionLocation;
         newMaterial->normalLocation = this->normalLocation;
+        newMaterial->faceNormalLocation = this->faceNormalLocation;
         newMaterial->colorLocation = this->colorLocation;
         newMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
         newMaterial->viewMatrixLocation = this->viewMatrixLocation;
@@ -117,6 +120,7 @@ namespace Core {
     void BasicTexturedLitMaterial::bindShaderVarLocations() {
         this->positionLocation = this->shader->getAttributeLocation("pos");
         this->normalLocation = this->shader->getAttributeLocation("normal");
+        this->faceNormalLocation = this->shader->getAttributeLocation("faceNormal");
         this->colorLocation = this->shader->getAttributeLocation("color");
         this->textureLocation = this->shader->getAttributeLocation("textureA");
         this->uvLocation = this->shader->getAttributeLocation("uv");

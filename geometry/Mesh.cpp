@@ -136,10 +136,6 @@ namespace Core {
     }
 
     void Mesh::update() {
-        if (this->shoudCalculateNormals /*|| calculateTangents || buildFaces*/) {
-            if (!this->buildVertexCrossMap())return;
-        }
-
         //if (calculateBoundingBox)CalculateBoundingBox();
         if (this->shoudCalculateNormals){
             this->calculateNormals((Real)this->normalsSmoothingThreshold);
@@ -168,7 +164,7 @@ namespace Core {
         if (!StandardAttributes::hasAttribute(this->enabledAttributes, StandardAttribute::Normal))return;
 
         if (this->vertexCrossMap == nullptr) {
-            throw Exception("Mesh::calculateNormal() -> 'vertexCrossMap' is null.");
+            this->buildVertexCrossMap();
         }
 
         UInt32 realVertexCount = this->vertexCount;
@@ -294,6 +290,7 @@ namespace Core {
         //if (invertNormals)InvertNormals(); 
 
         vertexNormals->updateGPUStorageData();
+        vertexFaceNormals->updateGPUStorageData();
     }
 
     /*
