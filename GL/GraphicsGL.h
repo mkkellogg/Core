@@ -34,6 +34,7 @@ namespace Core {
         void init() override;
         WeakPointer<Renderer> getRenderer() override;
         void preRender() override;
+        void postRender() override;
         
         void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) override;
         Vector4u getViewport() override;

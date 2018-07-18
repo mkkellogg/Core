@@ -34,6 +34,7 @@ namespace Core {
 
         virtual WeakPointer<Renderer> getRenderer() = 0;
         virtual void preRender() = 0;
+        virtual void postRender() = 0;
         void render(std::shared_ptr<Scene> scene);
         void setRenderSize(UInt32 width, UInt32 height, Bool updateViewport = true);
         void setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);

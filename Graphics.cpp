@@ -16,6 +16,7 @@ namespace Core {
         if (this->getRenderer()) {
             this->preRender();
             this->getRenderer()->render(scene);
+            this->postRender();
         }
     }
     void Graphics::setRenderSize(UInt32 width, UInt32 height, Bool updateViewport) {

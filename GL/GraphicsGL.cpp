@@ -63,6 +63,10 @@ namespace Core {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
+    void GraphicsGL::postRender() {
+
+    }
+
     void GraphicsGL::setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) {
         glViewport(hOffset, vOffset, viewPortWidth, viewPortHeight);
         this->viewport.set(hOffset, vOffset, viewPortWidth, viewPortHeight);
