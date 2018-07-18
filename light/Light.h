@@ -40,6 +40,9 @@ namespace Core {
         void setShadowBias(Real bias);
         Real getShadowBias() const;
 
+        void setShadowMapSize(UInt32 size);
+        UInt32 getShadowMapSize() const;
+
     protected:
         Light(LightType type, WeakPointer<Object3D> owner);
 
@@ -49,5 +52,6 @@ namespace Core {
         IntMask cullingMask;
         LightType type;
         Real shadowBias;
+        UInt32 shadowMapSize;
     };
 }

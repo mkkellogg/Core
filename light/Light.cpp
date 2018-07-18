@@ -8,6 +8,7 @@ namespace Core {
         this->shadowsEnabled = false;
         this->cullingMask = IntMaskUtil::createMask();
         this->shadowBias = 0.03f;
+        this->shadowMapSize = 1024;
     }
 
     Light::~Light() {
@@ -64,5 +65,13 @@ namespace Core {
 
     Real Light::getShadowBias() const {
         return this->shadowBias;
+    }
+
+    void Light::setShadowMapSize(UInt32 size) {
+        this->shadowMapSize = size;
+    }
+
+    UInt32 Light::getShadowMapSize() const {
+        return this->shadowMapSize;
     }
 }

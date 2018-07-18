@@ -19,7 +19,7 @@ namespace Core {
             TextureAttributes colorTextureAttributes;
             colorTextureAttributes.Format = TextureFormat::R32F;
             colorTextureAttributes.FilterMode = TextureFilter::Linear;
-            Vector2u renderTargetSize(2048, 2048);
+            Vector2u renderTargetSize(this->shadowMapSize, this->shadowMapSize);
             this->shadowMap = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorTextureAttributes, renderTargetSize);
         }
     }
