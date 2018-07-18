@@ -23,6 +23,7 @@ namespace Core {
         virtual Int32 getShaderLocation(StandardUniform uniform) = 0;
         virtual void sendCustomUniformsToShader() = 0;
         virtual WeakPointer<Material> clone() = 0;
+        virtual UInt32 textureCount();
 
     protected:
         Bool buildFromSource(const std::string& vertexSource, const std::string& fragmentSource);

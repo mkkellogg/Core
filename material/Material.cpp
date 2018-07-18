@@ -32,4 +32,8 @@ namespace Core {
         this->setShader(shader);
         return true;
     }
+
+    UInt32 Material::textureCount() {
+        return 0;
+    }
 }

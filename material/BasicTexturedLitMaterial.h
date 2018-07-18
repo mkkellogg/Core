@@ -19,6 +19,7 @@ namespace Core {
         virtual void sendCustomUniformsToShader() override;
         virtual WeakPointer<Material> clone() override;
         void setTexture(WeakPointer<Texture> texture);
+        virtual UInt32 textureCount() override;
 
     protected:
         BasicTexturedLitMaterial(WeakPointer<Graphics> graphics);

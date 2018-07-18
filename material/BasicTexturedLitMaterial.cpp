@@ -139,4 +139,8 @@ namespace Core {
         this->lightShadowCubeMapLocation = this->shader->getUniformLocation("lightShadowCubeMap");
         this->lightShadowMapLocation = this->shader->getUniformLocation("lightShadowBias");
     }
+
+    UInt32 BasicTexturedLitMaterial::textureCount() {
+        return 1;
+    }
 }

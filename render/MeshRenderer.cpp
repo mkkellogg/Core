@@ -86,6 +86,8 @@ namespace Core {
         Int32 lightShadowCubeMapLoc = material->getShaderLocation(StandardUniform::LightShadowCubeMap);
         Int32 lightShadowBiasLoc = material->getShaderLocation(StandardUniform::LightShadowBias);
 
+        UInt32 currentTextureSlot = material->textureCount();
+
         if (lights.size() > 0) {
             if (lightEnabledLoc >= 0) {
                 shader->setUniform1i(lightEnabledLoc, 1);
@@ -127,8 +129,8 @@ namespace Core {
                     }
 
                     if (lightShadowCubeMapLoc >= 0 && pointLight->getShadowsEnabled()) {
-                        shader->setTextureCube(2, pointLight->getShadowMap()->getColorTexture()->getTextureID());
-                        shader->setUniform1i(lightShadowCubeMapLoc, 2);
+                        shader->setTextureCube(currentTextureSlot, pointLight->getShadowMap()->getColorTexture()->getTextureID());
+                        shader->setUniform1i(lightShadowCubeMapLoc, currentTextureSlot);
                     }
 
                 }
