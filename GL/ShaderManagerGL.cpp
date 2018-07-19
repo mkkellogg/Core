@@ -56,7 +56,10 @@ namespace Core {
 
         "vec4 litColor(in vec4 baseColor, in vec4 fragPos, in vec3 fragNormal) {\n"
         "    if (lightEnabled != 0) {\n"
-        "        if (lightType == 2) {\n"
+        "        if (lightType == 0) {\n"
+        "            return vec4(baseColor.rgb * lightColor.rgb, 1.0);\n"
+        "        }\n"
+        "        else if (lightType == 2) {\n"
         "            vec3 lightLocalFragPos = vec3(lightMatrix * fragPos);\n"
         "            vec4 shadowDepthVec = texture(lightShadowCubeMap, lightLocalFragPos);\n"
         "            float shadowDepth = shadowDepthVec.r;\n"

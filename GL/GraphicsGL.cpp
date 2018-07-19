@@ -280,7 +280,7 @@ namespace Core {
         this->defaultRenderTarget->viewport = viewport;
     }
 
-     /*
+    /*
      * Get the OpenGL constant for texture cube side that corresponds
      * to [side].
      */
