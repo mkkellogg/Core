@@ -5,6 +5,7 @@
 
 #include "../util/WeakPointer.h"
 #include "../scene/Object3DComponent.h"
+#include "RenderPath.h"
 #include "ViewDescriptor.h"
 
 namespace Core {
@@ -16,8 +17,8 @@ namespace Core {
 
     class BaseObjectRenderer : public Object3DComponent {
     public:
-        BaseObjectRenderer(WeakPointer<Object3D> owner) : Object3DComponent(owner) {
-        }
-        virtual void render(const ViewDescriptor& viewDescriptor, const std::vector<WeakPointer<Light>>& lights) = 0;
+        BaseObjectRenderer(WeakPointer<Object3D> owner) : Object3DComponent(owner) {}
+        virtual Bool forwardRender(const ViewDescriptor& viewDescriptor, const std::vector<WeakPointer<Light>>& lights);
+        virtual Bool supportsRenderPath(RenderPath renderPath);
     };
 }

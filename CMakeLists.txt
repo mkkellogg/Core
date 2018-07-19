@@ -59,6 +59,7 @@ set(INCLUDE_FILES
     material/ShaderMaterialCharacteristic.h
     material/ShaderType.h
     Demo.h
+    render/RenderPath.h
     render/BaseRenderableContainer.h
     render/RenderableContainer.h
     render/Renderable.h
@@ -143,6 +144,7 @@ set(SOURCE_FILES
     scene/Scene.cpp
     scene/Transform.cpp
     scene/Octree.cpp
+    render/BaseObjectRenderer.cpp
     render/BaseRenderableContainer.cpp
     render/RenderableContainer.cpp
     render/MeshRenderer.cpp

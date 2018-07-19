@@ -1,31 +1,27 @@
 #include "MeshRenderer.h"
-#include "RenderableContainer.h"
-#include "../render/Camera.h"
-#include "../render/RenderTarget.h"
+#include "../Engine.h"
+#include "../geometry/AttributeArray.h"
+#include "../geometry/AttributeArrayGPUStorage.h"
+#include "../geometry/Mesh.h"
+#include "../image/Texture.h"
+#include "../light/PointLight.h"
 #include "../material/Material.h"
 #include "../material/Shader.h"
-#include "../image/Texture.h"
-#include "../geometry/AttributeArrayGPUStorage.h"
-#include "../geometry/AttributeArray.h"
-#include "../geometry/Mesh.h"
-#include "../light/PointLight.h"
-#include "../Engine.h"
+#include "../render/Camera.h"
+#include "../render/RenderTarget.h"
+#include "RenderableContainer.h"
 
 namespace Core {
 
-    MeshRenderer::MeshRenderer(WeakPointer<Graphics> graphics, 
-                               WeakPointer<Material> material, 
-                               WeakPointer<Object3D> owner): ObjectRenderer<Mesh>(graphics, owner), material(material) {
+    MeshRenderer::MeshRenderer(WeakPointer<Graphics> graphics, WeakPointer<Material> material, WeakPointer<Object3D> owner)
+        : ObjectRenderer<Mesh>(graphics, owner), material(material) {
     }
 
-    void MeshRenderer::renderObject(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh, const std::vector<WeakPointer<Light>>& lights) {
-       
-        
+    Bool MeshRenderer::forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh, const std::vector<WeakPointer<Light>>& lights) {
         WeakPointer<Material> material;
         if (viewDescriptor.overrideMaterial.isValid()) {
             material = viewDescriptor.overrideMaterial;
-        }
-        else {
+        } else {
             material = this->material;
         }
 
@@ -48,11 +44,12 @@ namespace Core {
         Int32 viewInverseTransposeMatrixLoc = material->getShaderLocation(StandardUniform::ViewInverseTransposeMatrix);
 
         if (projectionLoc >= 0) {
-            const Matrix4x4 &projMatrix = viewDescriptor.projectionMatrix;
+            const Matrix4x4& projMatrix = viewDescriptor.projectionMatrix;
             shader->setUniformMatrix4(projectionLoc, projMatrix);
         }
 
-        if (viewMatrixLoc >= 0) {;
+        if (viewMatrixLoc >= 0) {
+            ;
             Matrix4x4 viewMatrix = viewDescriptor.viewInverseMatrix;
             shader->setUniformMatrix4(viewMatrixLoc, viewMatrix);
         }
@@ -92,12 +89,20 @@ namespace Core {
             if (lightEnabledLoc >= 0) {
                 shader->setUniform1i(lightEnabledLoc, 1);
             }
-            for(UInt32 i = 0; i < lights.size(); i++) {
+            for (UInt32 i = 0; i < lights.size(); i++) {
+                if (i == 0) {
+                    graphics->setBlendingEnabled(false);
+                } else {
+                    graphics->setBlendingEnabled(true);
+                    graphics->setBlendingFunction(RenderState::BlendingMethod::One, RenderState::BlendingMethod::One);
+                }
+
                 WeakPointer<Light> light = lights[i];
                 LightType lightType = light->getType();
                 if (lightColorLoc >= 0) {
                     Color color = light->getColor();
-                    shader->setUniform4f(lightPositionLoc, color.r, color.g, color.b, color.a);
+                    // std::cerr << " setting light color: " << color.r << ", " << color.g << ", " << color.b << std::endl;
+                    shader->setUniform4f(lightColorLoc, color.r, color.g, color.b, color.a);
                 }
 
                 if (lightTypeLoc >= 0) {
@@ -132,32 +137,40 @@ namespace Core {
                         shader->setTextureCube(currentTextureSlot, pointLight->getShadowMap()->getColorTexture()->getTextureID());
                         shader->setUniform1i(lightShadowCubeMapLoc, currentTextureSlot);
                     }
-
                 }
+
+                this->drawMesh(mesh);
             }
 
-            this->drawMesh(mesh);
-        }
-        else {
+        } else {
             if (lightEnabledLoc >= 0) {
                 shader->setUniform1i(lightEnabledLoc, 0);
             }
             this->drawMesh(mesh);
         }
 
+        return true;
     }
 
-    void MeshRenderer::render(const ViewDescriptor& viewDescriptor, const std::vector<WeakPointer<Light>>& lights) {
+    Bool MeshRenderer::forwardRender(const ViewDescriptor& viewDescriptor, const std::vector<WeakPointer<Light>>& lights) {
         std::shared_ptr<RenderableContainer<Mesh>> thisContainer = std::dynamic_pointer_cast<RenderableContainer<Mesh>>(this->owner.lock());
         if (thisContainer) {
             auto renderables = thisContainer->getRenderables();
             for (auto mesh : renderables) {
-                this->renderObject(viewDescriptor, mesh, lights);
+                this->forwardRenderObject(viewDescriptor, mesh, lights);
             }
         }
+
+        return true;
     }
 
-    void MeshRenderer::checkAndSetShaderAttribute(WeakPointer<Mesh> mesh, WeakPointer<Material> material, StandardAttribute attribute, WeakPointer<AttributeArrayBase> array) {
+    Bool MeshRenderer::supportsRenderPath(RenderPath renderPath) {
+        if (renderPath == RenderPath::Forward) return true;
+        return false;
+    }
+
+    void MeshRenderer::checkAndSetShaderAttribute(WeakPointer<Mesh> mesh, WeakPointer<Material> material, StandardAttribute attribute,
+                                                  WeakPointer<AttributeArrayBase> array) {
         if (mesh->isAttributeEnabled(attribute)) {
             Int32 shaderLocation = material->getShaderLocation(attribute);
             if (array->getGPUStorage()) {

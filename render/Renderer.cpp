@@ -143,7 +143,7 @@ namespace Core {
             if (containerPtr) {
                 WeakPointer<BaseObjectRenderer> objectRenderer = containerPtr->getBaseRenderer();
                 if (objectRenderer) {
-                    objectRenderer->render(viewDescriptor, lightList);
+                    objectRenderer->forwardRender(viewDescriptor, lightList);
                 }
             }
         }
