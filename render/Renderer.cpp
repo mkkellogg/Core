@@ -17,6 +17,7 @@
 #include "../material/DistanceOnlyMaterial.h"
 #include "../math/Matrix4x4.h"
 #include "../math/Quaternion.h"
+#include "../light/PointLight.h"
 
 namespace Core {
 
@@ -160,14 +161,21 @@ namespace Core {
 
         std::vector<WeakPointer<Light>> dummyLights;
         for (auto light: lights) {
-            if (light->getShadowsEnabled()) {
-                WeakPointer<RenderTarget> shadowMapRenderTarget = light->getShadowMap();
-                WeakPointer<Object3D> lightObject = light->getOwner();
-                Matrix4x4 lightTransform = lightObject->getTransform().getWorldMatrix();
-                shadowMapCameraObject->getTransform().getWorldMatrix().copy(lightTransform);
-                Vector4u renderTargetDimensions = shadowMapRenderTarget->getViewport();
-                shadowMapCamera->setRenderTarget(shadowMapRenderTarget);                       
-                this->render(shadowMapCamera, objects, dummyLights, this->distanceMaterial);
+            if (isShadowCastingCapableLight(light)) {
+                switch(light->getType()) {
+                    case LightType::Point:
+                    {
+                        WeakPointer<PointLight> pointLight = WeakPointer<Light>::dynamicPointerCast<PointLight>(light);
+                        WeakPointer<RenderTarget> shadowMapRenderTarget = pointLight->getShadowMap();
+                        WeakPointer<Object3D> lightObject = light->getOwner();
+                        Matrix4x4 lightTransform = lightObject->getTransform().getWorldMatrix();
+                        shadowMapCameraObject->getTransform().getWorldMatrix().copy(lightTransform);
+                        Vector4u renderTargetDimensions = shadowMapRenderTarget->getViewport();
+                        shadowMapCamera->setRenderTarget(shadowMapRenderTarget);                       
+                        this->render(shadowMapCamera, objects, dummyLights, this->distanceMaterial);
+                    }
+                    break;
+                }
             }
         }
     }
@@ -229,5 +237,13 @@ namespace Core {
 
             this->processSceneStep(obj, nextTransform, outObjects, outCameras, outLights);
         }
+    }
+
+    Bool Renderer::isShadowCastingCapableLight(WeakPointer<Light> light) {
+        LightType lightType = light->getType();
+        if (lightType == LightType::Ambient || lightType == LightType::Planar) {
+            return false;
+        }
+        return true;
     }
 }

@@ -75,7 +75,9 @@ set(INCLUDE_FILES
     render/RenderTargetCube.h
     render/ViewDescriptor.h
     light/Light.h
+    light/ShadowLight.h
     light/PointLight.h
+    light/DirectionalLight.h
     light/AmbientLight.h
     light/LightType.h
     light/LightCullType.h
@@ -155,7 +157,9 @@ set(SOURCE_FILES
     render/RenderTarget2D.cpp
     render/RenderTargetCube.cpp
     light/Light.cpp
+    light/ShadowLight.cpp
     light/PointLight.cpp
+    light/DirectionalLight.cpp
     light/AmbientLight.cpp
     material/Material.cpp
     material/DepthOnlyMaterial.cpp

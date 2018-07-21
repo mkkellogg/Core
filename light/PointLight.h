@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../util/PersistentWeakPointer.h"
-#include "Light.h"
+#include "ShadowLight.h"
 #include "../geometry/Vector3.h"
 
 namespace Core {
@@ -10,14 +10,14 @@ namespace Core {
     class Engine;
     class RenderTargetCube;
 
-    class PointLight final : public Light {
+    class PointLight final : public ShadowLight {
         friend class Engine;
 
     public:
         ~PointLight();
 
         void init() override;
-        WeakPointer<RenderTarget> getShadowMap() override;
+        WeakPointer<RenderTarget> getShadowMap();
         
         void setAttenuation(Real attenuation);
         Real getAttenuation() const;

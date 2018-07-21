@@ -14,6 +14,7 @@
 #include "render/RenderableContainer.h"
 #include "render/Renderer.h"
 #include "light/Light.h"
+#include "light/ShadowLight.h"
 
 namespace Core {
 
@@ -54,9 +55,20 @@ namespace Core {
         WeakPointer<Camera> createOrthographicCamera(WeakPointer<Object3D> owner, Real top, Real bottom, Real left, Real right, Real near, Real far);
 
         template <typename T>
-        WeakPointer<typename std::enable_if<std::is_base_of<Light, T>::value, T>::type> createLight(WeakPointer<Object3D> owner, Bool shadowsEnabled) {
+        WeakPointer<typename std::enable_if<std::is_base_of<Light, T>::value, T>::type> createLight(WeakPointer<Object3D> owner) {
+            std::shared_ptr<T> light = std::shared_ptr<T>(new T(owner));
+            light->init();
+            this->lights.push_back(light);
+            WeakPointer<T> lightPtr = light;
+            owner->addComponent(lightPtr);
+            return lightPtr;
+        }
+
+        template <typename T>
+        WeakPointer<typename std::enable_if<std::is_base_of<ShadowLight, T>::value, T>::type> createShadowCastingLight(WeakPointer<Object3D> owner, Bool shadowsEnabled, UInt32 shadowMapSize) {
             std::shared_ptr<T> light = std::shared_ptr<T>(new T(owner));
             light->setShadowsEnabled(shadowsEnabled);
+            light->setShadowMapSize(shadowMapSize);
             light->init();
             this->lights.push_back(light);
             WeakPointer<T> lightPtr = light;

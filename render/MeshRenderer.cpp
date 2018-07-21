@@ -113,16 +113,18 @@ namespace Core {
                     shader->setUniform1f(lightIntensityLoc, light->getIntensity());
                 }
 
-                if (lightShadowBiasLoc >= 0) {
-                    shader->setUniform1f(lightShadowBiasLoc, light->getShadowBias());
-                }
-
                 if (lightMatrixLoc >= 0) {
                     shader->setUniformMatrix4(lightMatrixLoc, light->getOwner()->getTransform().getConstInverseWorldMatrix());
                 }
 
                 if (lightType == LightType::Point) {
+
                     WeakPointer<PointLight> pointLight = WeakPointer<Light>::dynamicPointerCast<PointLight>(light);
+
+                    if (lightShadowBiasLoc >= 0) {
+                        shader->setUniform1f(lightShadowBiasLoc, pointLight->getShadowBias());
+                    }
+                    
                     if (lightRangeLoc >= 0) {
                         shader->setUniform1f(lightRangeLoc, pointLight->getRadius());
                     }

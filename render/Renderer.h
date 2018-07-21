@@ -30,15 +30,16 @@ namespace Core {
                        
     protected:
         Renderer();
+        void render(const ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objectList, 
+                    std::vector<WeakPointer<Light>>& lightList);
+        void renderShadowMaps(std::vector<WeakPointer<Light>>& lights, std::vector<WeakPointer<Object3D>>& objects);
         void getViewDescriptorForCamera(WeakPointer<Camera> camera, ViewDescriptor& viewDescriptor);
         void getViewDescriptorForCamera(const Matrix4x4& worldMatrix, const Matrix4x4& projectionMatrix, ViewDescriptor& viewDescriptor);
         void processScene(WeakPointer<Scene> scene, std::vector<WeakPointer<Object3D>>& outObjects,
                           std::vector<WeakPointer<Camera>>& outCameras, std::vector<WeakPointer<Light>>& outLights);
         void processSceneStep(WeakPointer<Object3D> object, const Matrix4x4& curTransform, std::vector<WeakPointer<Object3D>>& outObjects,
                               std::vector<WeakPointer<Camera>>& outCameras, std::vector<WeakPointer<Light>>& outLights);
-        void render(const ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objectList, 
-                    std::vector<WeakPointer<Light>>& lightList);
-        void renderShadowMaps(std::vector<WeakPointer<Light>>& lights, std::vector<WeakPointer<Object3D>>& objects);
+        static Bool isShadowCastingCapableLight(WeakPointer<Light> light);
 
         WeakPointer<DepthOnlyMaterial> depthMaterial;
         WeakPointer<DistanceOnlyMaterial> distanceMaterial;

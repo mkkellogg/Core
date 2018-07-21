@@ -11,7 +11,6 @@ namespace Core {
 
     // forward declarations
     class Engine;
-    class RenderTarget;
 
     class Light : public Object3DComponent {
         friend class Engine;
@@ -20,7 +19,6 @@ namespace Core {
         virtual ~Light() = 0;
 
         virtual void init() = 0;
-        virtual WeakPointer<RenderTarget> getShadowMap();
 
         const Color& getColor() const;
         void setColor(const Color& color);
@@ -29,29 +27,17 @@ namespace Core {
         void setIntensity(Real intensity);
         Real getIntensity() const;
 
-        void setShadowsEnabled(Bool enabled);
-        Bool getShadowsEnabled() const;
-
         void setCullingMask(IntMask mask);
         IntMask getCullingMask() const;
 
         LightType getType() const;
-
-        void setShadowBias(Real bias);
-        Real getShadowBias() const;
-
-        void setShadowMapSize(UInt32 size);
-        UInt32 getShadowMapSize() const;
 
     protected:
         Light(LightType type, WeakPointer<Object3D> owner);
 
         Color color;
         Real intensity;
-        Bool shadowsEnabled;
         IntMask cullingMask;
         LightType type;
-        Real shadowBias;
-        UInt32 shadowMapSize;
     };
 }
