@@ -21,9 +21,10 @@ namespace Core {
         void init() override;
         WeakPointer<RenderTarget> getShadowMap(UInt32 cascadeIndex);
 
-      
+        UInt32 getCascadeCount();
+
     protected:
-        DirectionalLight(WeakPointer<Object3D> owner, UInt32 cascadeCount);
+        DirectionalLight(WeakPointer<Object3D> owner, UInt32 cascadeCount, Bool shadowsEnabled, UInt32 shadowMapSize, Real shadowBias);
 
         UInt32 cascadeCount;
         std::vector<PersistentWeakPointer<RenderTarget2D>> shadowMaps;

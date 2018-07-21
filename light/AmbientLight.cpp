@@ -4,7 +4,7 @@
 
 namespace Core {
 
-    AmbientLight::AmbientLight(WeakPointer<Object3D> owner): Light(LightType::Ambient, owner) {
+    AmbientLight::AmbientLight(WeakPointer<Object3D> owner): Light(owner, LightType::Ambient) {
         
     }
 

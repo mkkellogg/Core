@@ -17,6 +17,8 @@ namespace Core {
         ~PointLight();
 
         void init() override;
+        void setShadowsEnabled(Bool enabled) override;
+
         WeakPointer<RenderTarget> getShadowMap();
         
         void setAttenuation(Real attenuation);
@@ -26,13 +28,15 @@ namespace Core {
         void setRadius(Real radius);
       
     protected:
-        PointLight(WeakPointer<Object3D> owner);
+        PointLight(WeakPointer<Object3D> owner, Bool shadowsEnabled, UInt32 shadowMapSize, Real shadowBias);
 
         void calcAttentuationForCurrentRadius();
+        void buildShadowMap();
 
         Real attenuation;
         Bool attenuationOverride;
         Real radius;
+
         PersistentWeakPointer<RenderTargetCube> shadowMap;
     };
 }

@@ -4,7 +4,8 @@
 
 namespace Core {
 
-    PointLight::PointLight(WeakPointer<Object3D> owner): ShadowLight(LightType::Point, owner) {
+    PointLight::PointLight(WeakPointer<Object3D> owner, Bool shadowsEnabled, UInt32 shadowMapSize, Real shadowBias): 
+        ShadowLight(owner, LightType::Point, shadowsEnabled, shadowMapSize, shadowBias) {
         this->attenuationOverride = false;
         this->attenuation = 1.0f;
         this->radius = 1.0f;
@@ -16,11 +17,14 @@ namespace Core {
 
     void PointLight::init() {
         if (this->shadowsEnabled) {
-            TextureAttributes colorTextureAttributes;
-            colorTextureAttributes.Format = TextureFormat::R32F;
-            colorTextureAttributes.FilterMode = TextureFilter::Linear;
-            Vector2u renderTargetSize(this->shadowMapSize, this->shadowMapSize);
-            this->shadowMap = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorTextureAttributes, renderTargetSize);
+            this->buildShadowMap();
+        }
+    }
+
+    void PointLight::setShadowsEnabled(Bool enabled) {
+        ShadowLight::setShadowsEnabled(enabled);
+        if (enabled && !this->shadowMap.isValid()) {
+            this->buildShadowMap();
         }
     }
 
@@ -51,5 +55,13 @@ namespace Core {
             // multiplying by 0.95f causes the light to fully attenuate slightly before reaching maximum range
             this->attenuation = 1.0f / (this->radius * 0.95f);
         }
+    }
+
+    void PointLight::buildShadowMap() {
+        TextureAttributes colorTextureAttributes;
+        colorTextureAttributes.Format = TextureFormat::R32F;
+        colorTextureAttributes.FilterMode = TextureFilter::Linear;
+        Vector2u renderTargetSize(this->shadowMapSize, this->shadowMapSize);
+        this->shadowMap = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorTextureAttributes, renderTargetSize);
     }
 }

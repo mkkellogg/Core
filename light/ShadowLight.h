@@ -17,14 +17,13 @@ namespace Core {
         void setShadowBias(Real bias);
         Real getShadowBias() const;
 
-        void setShadowsEnabled(Bool enabled);
+        virtual void setShadowsEnabled(Bool enabled);
         Bool getShadowsEnabled() const;
 
-        void setShadowMapSize(UInt32 size);
         UInt32 getShadowMapSize() const;
 
     protected:
-        ShadowLight(LightType type, WeakPointer<Object3D> owner);
+        ShadowLight(WeakPointer<Object3D> owner, LightType type, Bool shadowsEnabled, UInt32 shadowMapSize, Real shadowBias);
 
         Bool shadowsEnabled;
         Real shadowBias;

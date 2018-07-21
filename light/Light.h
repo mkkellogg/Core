@@ -33,7 +33,7 @@ namespace Core {
         LightType getType() const;
 
     protected:
-        Light(LightType type, WeakPointer<Object3D> owner);
+        Light(WeakPointer<Object3D> owner, LightType type);
 
         Color color;
         Real intensity;

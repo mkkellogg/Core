@@ -5,12 +5,17 @@
 
 namespace Core {
 
-    DirectionalLight::DirectionalLight(WeakPointer<Object3D> owner, UInt32 cascadeCount): ShadowLight(LightType::Directional, owner), cascadeCount(cascadeCount) {
+    DirectionalLight::DirectionalLight(WeakPointer<Object3D> owner, UInt32 cascadeCount, Bool shadowsEnabled, UInt32 shadowMapSize, Real shadowBias): 
+        ShadowLight(owner, LightType::Directional, shadowsEnabled, shadowMapSize, shadowBias), cascadeCount(cascadeCount) {
 
     }
 
     DirectionalLight::~DirectionalLight() {
         
+    }
+
+    UInt32 DirectionalLight::getCascadeCount() {
+        return this->cascadeCount;
     }
 
     void DirectionalLight::init() {

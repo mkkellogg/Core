@@ -2,7 +2,7 @@
 
 namespace Core {
 
-    Light::Light(LightType type, WeakPointer<Object3D> owner): Object3DComponent(owner), type(type) {
+    Light::Light(WeakPointer<Object3D> owner, LightType type): Object3DComponent(owner), type(type) {
         this->color.set(1, 1, 1, 1);
         this->intensity = 1;
         this->cullingMask = IntMaskUtil::createMask();

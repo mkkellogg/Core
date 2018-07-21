@@ -2,14 +2,12 @@
 
 namespace Core {
 
-    ShadowLight::ShadowLight(LightType type, WeakPointer<Object3D> owner): Light(type, owner) {
-        this->shadowsEnabled = false;
-        this->shadowBias = 0.03f;
-        this->shadowMapSize = 1024;
+    ShadowLight::ShadowLight(WeakPointer<Object3D> owner, LightType type, Bool shadowsEnabled, UInt32 shadowMapSize, Real shadowBias): 
+        Light(owner, type), shadowsEnabled(shadowsEnabled), shadowMapSize(shadowMapSize), shadowBias(shadowBias) {
     }
 
     ShadowLight::~ShadowLight() {
-        
+
     }
 
     void ShadowLight::setShadowsEnabled(Bool enabled) {
@@ -26,10 +24,6 @@ namespace Core {
 
     Real ShadowLight::getShadowBias() const {
         return this->shadowBias;
-    }
-
-    void ShadowLight::setShadowMapSize(UInt32 size) {
-        this->shadowMapSize = size;
     }
 
     UInt32 ShadowLight::getShadowMapSize() const {
