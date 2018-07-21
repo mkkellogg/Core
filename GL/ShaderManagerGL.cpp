@@ -104,7 +104,6 @@ namespace Core {
         "out vec4 vPos;\n"
         "void main() {\n"
         "    vPos = viewMatrix * modelMatrix * pos;\n"
-      //  "    vPos.y = 1.0 - vPos.y;\n"
         "    gl_Position = projection * vPos;\n"
         "}\n";
 
@@ -227,7 +226,6 @@ namespace Core {
         "    vColor = color;\n"
         "    vec4 eNormal = normal;\n"
         "    vec3 toLight = normalize(lightPos.xyz - vPos.xyz);\n"
-      //  "    if (dot(toLight, faceNormal.xyz) <= 0.0) eNormal = faceNormal;\n"
         "    vNormal = vec3(modelInverseTransposeMatrix * eNormal);\n"
         "    vFaceNormal = vec3(modelInverseTransposeMatrix * faceNormal);\n"
         "}\n";
