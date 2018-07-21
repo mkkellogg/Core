@@ -78,8 +78,8 @@ namespace Core {
 
         template <typename T>
         WeakPointer<typename std::enable_if<std::is_base_of<DirectionalLight, T>::value, T>::type> 
-        createDirectionalLight(WeakPointer<Object3D> owner, UInt32 cascadeCount, WeakPointer<Camera> targetCamera, Bool shadowsEnabled, UInt32 shadowMapSize, Real shadowBias) {
-            std::shared_ptr<T> light = std::shared_ptr<T>(new T(owner, cascadeCount, targetCamera, shadowsEnabled, shadowMapSize, shadowBias));
+        createDirectionalLight(WeakPointer<Object3D> owner, UInt32 cascadeCount, Bool shadowsEnabled, UInt32 shadowMapSize, Real shadowBias) {
+            std::shared_ptr<T> light = std::shared_ptr<T>(new T(owner, cascadeCount, shadowsEnabled, shadowMapSize, shadowBias));
             light->init();
             this->lights.push_back(light);
             WeakPointer<T> lightPtr = light;

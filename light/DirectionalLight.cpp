@@ -5,20 +5,17 @@
 #include "../common/Exception.h"
 #include "../render/Camera.h"
 #include "../geometry/Vector3.h"
-
-#define DIRECTIONAL_LIGHT_MAX_CASCADES 8
+#include "../math/Math.h"
 
 namespace Core {
 
-    DirectionalLight::DirectionalLight(WeakPointer<Object3D> owner, UInt32 cascadeCount, WeakPointer<Camera> targetCamera, Bool shadowsEnabled, UInt32 shadowMapSize, Real shadowBias): 
-        ShadowLight(owner, LightType::Directional, shadowsEnabled, shadowMapSize, shadowBias), targetCamera(targetCamera) {
-        if (cascadeCount <= DIRECTIONAL_LIGHT_MAX_CASCADES) {
-            this->cascadeCount = cascadeCount;
-        }
-        else {
-            this->cascadeCount = DIRECTIONAL_LIGHT_MAX_CASCADES;
-        }
+    DirectionalLight::DirectionalLight(WeakPointer<Object3D> owner, UInt32 cascadeCount, Bool shadowsEnabled, UInt32 shadowMapSize, Real shadowBias): 
+        ShadowLight(owner, LightType::Directional, shadowsEnabled, shadowMapSize, shadowBias) {
+        this->cascadeCount = Math::min((UInt32)DIRECTIONAL_LIGHT_MAX_CASCADES, (UInt32)cascadeCount);
         this->direction.set(0.0f, -1.0f, 0.0f);
+        for (UInt32 i = 0; i < this->cascadeCount; i++) {
+            this->projections.push_back(DirectionalLight::OrthoProjection());
+        }
     }
 
     DirectionalLight::~DirectionalLight() {
@@ -55,15 +52,15 @@ namespace Core {
         return this->direction;
     }
 
-    std::vector<Matrix4x4>& DirectionalLight::buildProjections() {
+    std::vector<DirectionalLight::OrthoProjection>& DirectionalLight::buildProjections(WeakPointer<Camera> targetCamera) {
         static Real boundaries[DIRECTIONAL_LIGHT_MAX_CASCADES];
 
         if (!this->shadowsEnabled) {
             throw Exception("DirectionalLight::buildProjections() -> Cannot build shadow map projections for non-shadow-casting light");
         }
 
-        Real near = this->targetCamera->getNear();
-        Real far = this->targetCamera->getFar();
+        Real near = targetCamera->getNear();
+        Real far = targetCamera->getFar();
 
         Real frustumLength = far - near;
         Real currentBoundary = near;
@@ -77,7 +74,7 @@ namespace Core {
         }
         boundaries[boundaryIndex] = far;
 
-        WeakPointer<Object3D> targetCameraOwner = this->targetCamera->getOwner();
+        WeakPointer<Object3D> targetCameraOwner = targetCamera->getOwner();
         if (!targetCameraOwner.isValid()) {
             throw Exception("DirectionalLight::buildProjections() -> Target camera not attached to scene object.");
         }
@@ -95,7 +92,7 @@ namespace Core {
         Matrix4x4 lightTransformInverse = lightTransform;
         lightTransformInverse.invert();
 
-        Bool isOrtho = this->targetCamera->isOrtho();
+        Bool isOrtho = targetCamera->isOrtho();
         for (UInt32 i = 1; i <= boundaryIndex; i++) {
             Real aspectRatio = isOrtho ? 1.0 : targetCamera->getAspectRatio();
             if (isOrtho) {
@@ -152,6 +149,15 @@ namespace Core {
                     minZ = j == 0 ? corner.z : Math::min(minZ, corner.z);
                     maxZ = j == 0 ? corner.z : Math::max(maxZ, corner.z);
                 }
+
+                OrthoProjection& orthoProjection = this->projections[i];
+
+                orthoProjection.right = maxX;
+                orthoProjection.left = minX;
+                orthoProjection.bottom = minY;
+                orthoProjection.top = maxY;
+                orthoProjection.far = maxZ;
+                orthoProjection.near = minZ;
             }
         }   
 

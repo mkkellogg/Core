@@ -34,6 +34,8 @@ namespace Core {
     void Renderer::render(WeakPointer<Scene> scene) {
         if (!this->depthMaterial.isValid()) {
             this->depthMaterial = Engine::instance()->createMaterial<DepthOnlyMaterial>();
+        }
+        if (!this->distanceMaterial.isValid()) {
             this->distanceMaterial = Engine::instance()->createMaterial<DistanceOnlyMaterial>();
         }
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
@@ -43,8 +45,9 @@ namespace Core {
         std::vector<WeakPointer<Light>> lightList;
         this->processScene(scene, objectList, cameraList, lightList);
 
-        this->renderShadowMaps(lightList, objectList);
+        this->renderShadowMaps(lightList, LightType::Point, objectList);
         for (auto camera : cameraList) {
+            this->renderShadowMaps(lightList, LightType::Directional, objectList, camera);
             this->render(camera, objectList, lightList);
         }
     }
@@ -151,7 +154,8 @@ namespace Core {
 
     }
 
-    void Renderer::renderShadowMaps(std::vector<WeakPointer<Light>>& lights, std::vector<WeakPointer<Object3D>>& objects) {
+    void Renderer::renderShadowMaps(std::vector<WeakPointer<Light>>& lights, LightType lightType,
+                                    std::vector<WeakPointer<Object3D>>& objects, WeakPointer<Camera> renderCamera) {
         static PersistentWeakPointer<Camera> perspectiveShadowMapCamera;
         static PersistentWeakPointer<Object3D> perspectiveShadowMapCameraObject;
         static PersistentWeakPointer<Camera> orthoShadowMapCamera;
@@ -159,26 +163,49 @@ namespace Core {
         if (!perspectiveShadowMapCamera.isValid()) {
             perspectiveShadowMapCameraObject = Engine::instance()->createObject3D();
             perspectiveShadowMapCamera = Engine::instance()->createPerspectiveCamera(perspectiveShadowMapCameraObject, Math::PI / 2.0f, 1.0f, 0.1f, 100);
+            orthoShadowMapCameraObject = Engine::instance()->createObject3D();
+            orthoShadowMapCamera = Engine::instance()->createOrthographicCamera(orthoShadowMapCameraObject, 1.0f, -1.0f, -1.0f, 1.0f, 0.1f, 100.0f);
         }
 
         std::vector<WeakPointer<Light>> dummyLights;
         for (auto light: lights) {
             if (isShadowCastingCapableLight(light)) {
-                switch(light->getType()) {
-                    case LightType::Point:
-                    {
-                        WeakPointer<PointLight> pointLight = WeakPointer<Light>::dynamicPointerCast<PointLight>(light);
-                        if (pointLight->getShadowsEnabled()) {
-                            WeakPointer<RenderTarget> shadowMapRenderTarget = pointLight->getShadowMap();
-                            WeakPointer<Object3D> lightObject = light->getOwner();
-                            Matrix4x4 lightTransform = lightObject->getTransform().getWorldMatrix();
-                            perspectiveShadowMapCameraObject->getTransform().getWorldMatrix().copy(lightTransform);
-                            Vector4u renderTargetDimensions = shadowMapRenderTarget->getViewport();
-                            perspectiveShadowMapCamera->setRenderTarget(shadowMapRenderTarget);                       
-                            this->render(perspectiveShadowMapCamera, objects, dummyLights, this->distanceMaterial);
+                LightType clightType = light->getType();
+                if (clightType == lightType) {
+                    switch(lightType) {
+                        case LightType::Point:
+                        {
+                            WeakPointer<PointLight> pointLight = WeakPointer<Light>::dynamicPointerCast<PointLight>(light);
+                            if (pointLight->getShadowsEnabled()) {
+                                WeakPointer<RenderTarget> shadowMapRenderTarget = pointLight->getShadowMap();
+                                WeakPointer<Object3D> lightObject = light->getOwner();
+                                Matrix4x4 lightTransform = lightObject->getTransform().getWorldMatrix();
+                                perspectiveShadowMapCameraObject->getTransform().getWorldMatrix().copy(lightTransform);
+                                Vector4u renderTargetDimensions = shadowMapRenderTarget->getViewport();
+                                perspectiveShadowMapCamera->setRenderTarget(shadowMapRenderTarget);                       
+                                this->render(perspectiveShadowMapCamera, objects, dummyLights, this->distanceMaterial);
+                            }
+                        }
+                        break;
+                        case LightType::Directional:
+                        {
+                            WeakPointer<DirectionalLight> directionalLight = WeakPointer<Light>::dynamicPointerCast<DirectionalLight>(light);
+                            if (directionalLight->getShadowsEnabled()) {
+                                std::vector<DirectionalLight::OrthoProjection>& projections = directionalLight->buildProjections(renderCamera);
+                                for (UInt32 i = 0; i < directionalLight->getCascadeCount(); i++) {
+                                    DirectionalLight::OrthoProjection& proj = projections[i];   
+                                    orthoShadowMapCamera->setDimensions(proj.top, proj.bottom, proj.left, proj.right);        
+                                    orthoShadowMapCamera->setNearAndFar(proj.near, proj.far);
+                                    perspectiveShadowMapCameraObject->getTransform().getWorldMatrix().setIdentity();
+                                    Vector3r dir = directionalLight->getDirection();
+                                    orthoShadowMapCamera->lookAt(Point3r(dir.x, dir.y, dir.z));
+                                    WeakPointer<RenderTarget> shadowMapRenderTarget = directionalLight->getShadowMap(i);
+                                    orthoShadowMapCamera->setRenderTarget(shadowMapRenderTarget); 
+                                    this->render(orthoShadowMapCamera, objects, dummyLights, this->depthMaterial);
+                                }
+                            }
                         }
                     }
-                    break;
                 }
             }
         }

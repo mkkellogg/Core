@@ -63,7 +63,6 @@ namespace Core {
         "        else if (lightType == 1) {\n"
         "            vec3 toLight = vec3(-lightDir);\n"
         "            float baseDot = max(cos(acos(dot(toLight, fragNormal)) * 1.025), 0.0); \n"  
-        //"            float baseDot = max(dot(toLight, fragNormal), 0.0);\n"
         "            return vec4(lightColor.rgb * baseColor.rgb * baseDot, baseColor.a);\n"      
         "        }\n"
         "        else if (lightType == 2) {\n"
