@@ -26,14 +26,24 @@ namespace Core {
         void setAspectRatio(Real ratio);       
         void setAspectRatioFromDimensions(UInt32 width, UInt32 height);
         void setDimensions(Real top, Real  bottom, Real left, Real right);
+        void setNear(Real near);
+        void setFar(Real far);
+        void setNearAndFar(Real near, Real far);
+        Real getAspectRatio() const;
+        Real getFOV() const;
+        Real getNear();
+        Real getFar();
         const Matrix4x4& getProjectionMatrix() const;
         const Matrix4x4& getWorlInverseTransposeMatrix() const;
         void lookAt(const Point3r& target);
-        void project(Vector3Base<Real>& vec);
-        void unProject(Vector3Base<Real>& vec);
+        void project(Vector3Base<Real>& vec) const;
+        void unProject(Vector3Base<Real>& vec) const;
         void setRenderTarget(WeakPointer<RenderTarget> renderTarget);
         WeakPointer<RenderTarget> getRenderTarget();
-        void setOrtho(Bool isOrtho);
+        void setOrtho(Bool ortho);
+        Bool isOrtho() const;
+
+
 
         static void buildPerspectiveProjectionMatrix(Real fov, Real aspectRatio, Real near, Real far, Matrix4x4& out);
         static void buildOrthographicProjectionMatrix(Real top, Real bottom, Real left, Real right, Real near, Real far, Matrix4x4& matrix);
@@ -45,7 +55,7 @@ namespace Core {
         static Camera* createPerspectiveCamera(WeakPointer<Object3D> owner, Real fov, Real aspectRatio, Real near, Real far);
         static Camera* createOrthographicCamera(WeakPointer<Object3D> owner, Real top, Real bottom, Real left, Real right, Real near, Real far);
 
-        Bool isOrtho;
+        Bool ortho;
 
         Real fov;
         Real aspectRatio;

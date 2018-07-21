@@ -21,7 +21,7 @@ namespace Core {
     }
 
     void Camera::updateProjection() {
-        if (this->isOrtho) {
+        if (this->ortho) {
             Camera::buildOrthographicProjectionMatrix(this->top, this->bottom, this->left, this->right, this->near, this->far, this->projectionMatrix);
         }
         else {
@@ -47,6 +47,36 @@ namespace Core {
         this->updateProjection();
     }
 
+    void Camera::setNear(Real near) {
+        this->setNearAndFar(near, this->far);
+    }
+
+    void Camera::setFar(Real far) {
+        this->setNearAndFar(this->near, far);
+    }
+
+    void Camera::setNearAndFar(Real near, Real far) {
+        this->near = near;
+        this->far = far;
+        this->updateProjection();
+    }
+
+    Real Camera::getAspectRatio() const {
+        return this->aspectRatio;
+    }
+
+    Real Camera::getFOV() const {
+        return this->fov;
+    }
+
+    Real Camera::getNear() {
+        return this->near;
+    }
+
+    Real Camera::getFar() {
+        return this->far;
+    }
+
     const Matrix4x4& Camera::getProjectionMatrix() const {
         return this->projectionMatrix;
     }
@@ -56,7 +86,7 @@ namespace Core {
         owner->getTransform().lookAt(target);
     }
 
-    void Camera::project(Vector3Base<Real>& vec) {
+    void Camera::project(Vector3Base<Real>& vec) const {
         Core::Matrix4x4 projection = this->projectionMatrix;
         Real w = vec.getW();
         projection.transform(vec);
@@ -67,7 +97,7 @@ namespace Core {
         }
     }
 
-    void Camera::unProject(Vector3Base<Real>& vec) {
+    void Camera::unProject(Vector3Base<Real>& vec) const {
         Core::Matrix4x4 projection = this->projectionMatrix;
         projection.invert();
         Real w = vec.getW();
@@ -85,6 +115,14 @@ namespace Core {
 
     WeakPointer<RenderTarget> Camera::getRenderTarget() {
         return this->renderTarget;
+    }
+
+    void Camera::setOrtho(Bool ortho) {
+        this->ortho = ortho;
+    }
+
+    Bool Camera::isOrtho() const {
+        return this->ortho;
     }
 
     void Camera::buildPerspectiveProjectionMatrix(Real fov, Real ratio, Real nearP, Real farP, Matrix4x4& out) {
@@ -147,7 +185,7 @@ namespace Core {
         cam->aspectRatio = aspectRatio;
         cam->near = near;
         cam->far = far;
-        cam->isOrtho = false;
+        cam->ortho = false;
         Camera::buildPerspectiveProjectionMatrix(fov, aspectRatio, near, far, cam->projectionMatrix);
         return cam;
     }
@@ -163,7 +201,7 @@ namespace Core {
         cam->right = right;
         cam->near = near;
         cam->far = far;
-        cam->isOrtho = true;
+        cam->ortho = true;
         Camera::buildOrthographicProjectionMatrix(top, bottom, left, right, near, far, cam->projectionMatrix);
         return cam;
     }
