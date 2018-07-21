@@ -17,8 +17,8 @@ namespace Core {
         ~PointLight();
 
         void init() override;
-        void setShadowsEnabled(Bool enabled) override;
 
+        void setShadowsEnabled(Bool enabled) override;
         WeakPointer<RenderTarget> getShadowMap();
         
         void setAttenuation(Real attenuation);
