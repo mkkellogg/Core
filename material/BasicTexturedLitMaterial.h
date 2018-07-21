@@ -38,6 +38,7 @@ namespace Core {
         Int32 modelInverseTransposeMatrixLocation;
 
         Int32 lightPositionLocation;
+        Int32 lightDirectionLocation;
         Int32 lightRangeLocation;
         Int32 lightTypeLocation;
         Int32 lightIntensityLocation;

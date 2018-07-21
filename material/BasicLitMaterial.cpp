@@ -53,6 +53,8 @@ namespace Core {
                 return this->modelInverseTransposeMatrixLocation;
             case StandardUniform::LightPosition:
                 return this->lightPositionLocation;
+            case StandardUniform::LightDirection:
+                return this->lightDirectionLocation;
             case StandardUniform::LightRange:
                 return this->lightRangeLocation;
             case StandardUniform::LightType:
@@ -93,6 +95,7 @@ namespace Core {
         newMaterial->modelInverseTransposeMatrixLocation = this->modelInverseTransposeMatrixLocation;
         newMaterial->uvLocation = this->uvLocation;
         newMaterial->lightPositionLocation = this->lightPositionLocation;
+        newMaterial->lightDirectionLocation = this->lightDirectionLocation;
         newMaterial->lightRangeLocation = this->lightRangeLocation;
         newMaterial->lightTypeLocation = this->lightTypeLocation;
         newMaterial->lightIntensityLocation = this->lightIntensityLocation;
@@ -115,6 +118,7 @@ namespace Core {
         this->modelMatrixLocation = this->shader->getUniformLocation("modelMatrix");
         this->modelInverseTransposeMatrixLocation = this->shader->getUniformLocation("modelInverseTransposeMatrix");
         this->lightPositionLocation = this->shader->getUniformLocation("lightPos");
+        this->lightDirectionLocation = this->shader->getUniformLocation("lightDir");
         this->lightRangeLocation = this->shader->getUniformLocation("lightRange");
         this->lightTypeLocation = this->shader->getUniformLocation("lightType");
         this->lightIntensityLocation = this->shader->getUniformLocation("lightIntensity");

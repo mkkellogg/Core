@@ -28,6 +28,10 @@ namespace Core {
         UInt32 getCascadeCount();
         std::vector<Matrix4x4>& buildProjections();
 
+        void setDirection(const Vector3r& direction);
+        void setDirection(Real x, Real y, Real z);
+        Vector3r getDirection() const;
+
     protected:
         DirectionalLight(WeakPointer<Object3D> owner, UInt32 cascadeCount, WeakPointer<Camera> targetCamera, Bool shadowsEnabled, UInt32 shadowMapSize, Real shadowBias);
         void buildShadowMaps();
@@ -36,5 +40,6 @@ namespace Core {
         std::vector<PersistentWeakPointer<RenderTarget2D>> shadowMaps;
         std::vector<Matrix4x4> projections;
         UInt32 cascadeCount;
+        Vector3r direction;
     };
 }

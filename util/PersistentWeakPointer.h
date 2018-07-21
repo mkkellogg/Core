@@ -21,7 +21,7 @@ namespace Core {
         }
 
         template <typename U>
-        PersistentWeakPointer(WeakPointer<U>& ptr) : WeakPointer<T>(ptr, false) {
+        PersistentWeakPointer(const WeakPointer<U>& ptr) : WeakPointer<T>(ptr, false) {
         }
 
 

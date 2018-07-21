@@ -5,6 +5,7 @@
 #include "../geometry/Mesh.h"
 #include "../image/Texture.h"
 #include "../light/PointLight.h"
+#include "../light/DirectionalLight.h"
 #include "../material/Material.h"
 #include "../material/Shader.h"
 #include "../render/Camera.h"
@@ -72,6 +73,7 @@ namespace Core {
         }
 
         Int32 lightPositionLoc = material->getShaderLocation(StandardUniform::LightPosition);
+        Int32 lightDirectionLoc = material->getShaderLocation(StandardUniform::LightDirection);
         Int32 lightRangeLoc = material->getShaderLocation(StandardUniform::LightRange);
         Int32 lightTypeLoc = material->getShaderLocation(StandardUniform::LightType);
         Int32 lightIntensityLoc = material->getShaderLocation(StandardUniform::LightIntensity);
@@ -138,6 +140,15 @@ namespace Core {
                     if (lightShadowCubeMapLoc >= 0 && pointLight->getShadowsEnabled()) {
                         shader->setTextureCube(currentTextureSlot, pointLight->getShadowMap()->getColorTexture()->getTextureID());
                         shader->setUniform1i(lightShadowCubeMapLoc, currentTextureSlot);
+                    }
+                }
+                else if (lightType == LightType::Directional) {
+                    WeakPointer<DirectionalLight> directionalLight = WeakPointer<Light>::dynamicPointerCast<DirectionalLight>(light);
+
+                     if (lightDirectionLoc >= 0) {
+                        Vector3r dir = directionalLight->getDirection();
+                        directionalLight->getOwner()->getTransform().getWorldMatrix().transform(dir);
+                        shader->setUniform4f(lightDirectionLoc, dir.x, dir.y, dir.z, 0.0f);
                     }
                 }
 

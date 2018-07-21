@@ -1,6 +1,7 @@
 #include "DirectionalLight.h"
 #include "../Engine.h"
 #include "../render/RenderTarget2D.h"
+#include "../render/RenderTargetCube.h"
 #include "../common/Exception.h"
 #include "../render/Camera.h"
 #include "../geometry/Vector3.h"
@@ -17,6 +18,7 @@ namespace Core {
         else {
             this->cascadeCount = DIRECTIONAL_LIGHT_MAX_CASCADES;
         }
+        this->direction.set(0.0f, -1.0f, 0.0f);
     }
 
     DirectionalLight::~DirectionalLight() {
@@ -37,6 +39,20 @@ namespace Core {
 
     UInt32 DirectionalLight::getCascadeCount() {
         return this->cascadeCount;
+    }
+
+    void DirectionalLight::setDirection(const Vector3r& direction) {
+        this->direction = direction;
+        this->direction.normalize();
+    }
+
+    void DirectionalLight::setDirection(Real x, Real y, Real z) {
+        this->direction.set(x, y, z);
+        this->direction.normalize();
+    }
+
+    Vector3r DirectionalLight::getDirection() const {
+        return this->direction;
     }
 
     std::vector<Matrix4x4>& DirectionalLight::buildProjections() {
@@ -155,7 +171,9 @@ namespace Core {
         colorTextureAttributes.FilterMode = TextureFilter::Linear;
         Vector2u renderTargetSize(this->shadowMapSize, this->shadowMapSize);
         for (UInt32 i = 0; i < this->cascadeCount; i++) {
-            this->shadowMaps[i] = Engine::instance()->getGraphicsSystem()->createRenderTarget2D(true, true, false, colorTextureAttributes, renderTargetSize);
+            auto graphics = Engine::instance()->getGraphicsSystem();
+            PersistentWeakPointer<RenderTarget2D> map = graphics->createRenderTarget2D(true, true, false, colorTextureAttributes, renderTargetSize);
+            this->shadowMaps.push_back(map);
         }
     }
 

@@ -152,11 +152,13 @@ namespace Core {
     }
 
     void Renderer::renderShadowMaps(std::vector<WeakPointer<Light>>& lights, std::vector<WeakPointer<Object3D>>& objects) {
-        static PersistentWeakPointer<Camera> shadowMapCamera;
-        static PersistentWeakPointer<Object3D> shadowMapCameraObject;
-        if (!shadowMapCamera.isValid()) {
-            shadowMapCameraObject = Engine::instance()->createObject3D();
-            shadowMapCamera = Engine::instance()->createPerspectiveCamera(shadowMapCameraObject, Math::PI / 2.0f, 1.0f, 0.1f, 100);
+        static PersistentWeakPointer<Camera> perspectiveShadowMapCamera;
+        static PersistentWeakPointer<Object3D> perspectiveShadowMapCameraObject;
+        static PersistentWeakPointer<Camera> orthoShadowMapCamera;
+        static PersistentWeakPointer<Object3D> orthoShadowMapCameraObject;
+        if (!perspectiveShadowMapCamera.isValid()) {
+            perspectiveShadowMapCameraObject = Engine::instance()->createObject3D();
+            perspectiveShadowMapCamera = Engine::instance()->createPerspectiveCamera(perspectiveShadowMapCameraObject, Math::PI / 2.0f, 1.0f, 0.1f, 100);
         }
 
         std::vector<WeakPointer<Light>> dummyLights;
@@ -166,13 +168,15 @@ namespace Core {
                     case LightType::Point:
                     {
                         WeakPointer<PointLight> pointLight = WeakPointer<Light>::dynamicPointerCast<PointLight>(light);
-                        WeakPointer<RenderTarget> shadowMapRenderTarget = pointLight->getShadowMap();
-                        WeakPointer<Object3D> lightObject = light->getOwner();
-                        Matrix4x4 lightTransform = lightObject->getTransform().getWorldMatrix();
-                        shadowMapCameraObject->getTransform().getWorldMatrix().copy(lightTransform);
-                        Vector4u renderTargetDimensions = shadowMapRenderTarget->getViewport();
-                        shadowMapCamera->setRenderTarget(shadowMapRenderTarget);                       
-                        this->render(shadowMapCamera, objects, dummyLights, this->distanceMaterial);
+                        if (pointLight->getShadowsEnabled()) {
+                            WeakPointer<RenderTarget> shadowMapRenderTarget = pointLight->getShadowMap();
+                            WeakPointer<Object3D> lightObject = light->getOwner();
+                            Matrix4x4 lightTransform = lightObject->getTransform().getWorldMatrix();
+                            perspectiveShadowMapCameraObject->getTransform().getWorldMatrix().copy(lightTransform);
+                            Vector4u renderTargetDimensions = shadowMapRenderTarget->getViewport();
+                            perspectiveShadowMapCamera->setRenderTarget(shadowMapRenderTarget);                       
+                            this->render(perspectiveShadowMapCamera, objects, dummyLights, this->distanceMaterial);
+                        }
                     }
                     break;
                 }
