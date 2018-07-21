@@ -108,6 +108,7 @@ set(INCLUDE_FILES
     common/complextypes.h
     common/debug.h
     common/Exception.h
+    common/Constants.h
     GL/GraphicsGL.h
     GL/RendererGL.h
     GL/Texture2DGL.h
@@ -123,6 +124,7 @@ set(INCLUDE_FILES
 
 set(SOURCE_FILES
     common/Debug.cpp
+    common/Constants.cpp
     asset/AssetLoader.cpp
     asset/ModelLoader.cpp
     filesys/FileSystem.cpp

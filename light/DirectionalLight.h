@@ -7,8 +7,7 @@
 #include "ShadowLight.h"
 #include "../geometry/Vector3.h"
 #include "../math/Matrix4x4.h"
-
-#define DIRECTIONAL_LIGHT_MAX_CASCADES 3
+#include "../common/Constants.h"
 
 namespace Core {
 

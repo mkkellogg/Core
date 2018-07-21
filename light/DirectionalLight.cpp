@@ -11,7 +11,7 @@ namespace Core {
 
     DirectionalLight::DirectionalLight(WeakPointer<Object3D> owner, UInt32 cascadeCount, Bool shadowsEnabled, UInt32 shadowMapSize, Real shadowBias): 
         ShadowLight(owner, LightType::Directional, shadowsEnabled, shadowMapSize, shadowBias) {
-        this->cascadeCount = Math::min((UInt32)DIRECTIONAL_LIGHT_MAX_CASCADES, (UInt32)cascadeCount);
+        this->cascadeCount = Math::min(Constants::MaxDirectionalCascades, cascadeCount);
         this->direction.set(0.0f, -1.0f, 0.0f);
         for (UInt32 i = 0; i < this->cascadeCount; i++) {
             this->projections.push_back(DirectionalLight::OrthoProjection());
@@ -53,7 +53,12 @@ namespace Core {
     }
 
     std::vector<DirectionalLight::OrthoProjection>& DirectionalLight::buildProjections(WeakPointer<Camera> targetCamera) {
-        static Real boundaries[DIRECTIONAL_LIGHT_MAX_CASCADES];
+        static std::vector<Real> boundaries;
+        if (boundaries.size() < Constants::MaxDirectionalCascades) {
+            for (UInt32 i = 0; i < Constants::MaxDirectionalCascades; i++) {
+                boundaries.push_back(0.0f);
+            }
+        }
 
         if (!this->shadowsEnabled) {
             throw Exception("DirectionalLight::buildProjections() -> Cannot build shadow map projections for non-shadow-casting light");

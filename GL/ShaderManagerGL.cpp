@@ -1,4 +1,7 @@
+#include <string>
+
 #include "ShaderManagerGL.h"
+#include "../common/Constants.h"
 
 namespace Core {
 
@@ -43,7 +46,7 @@ namespace Core {
         "// some fragment comments\n"
         "// some morefragment comments\n";
 
-    const char ShaderManagerGL::Lighting_fragment[] =
+    const std::string ShaderManagerGL::Lighting_fragment =
         "uniform sampler2D lightShadowMap;\n"
         "uniform samplerCube lightShadowCubeMap;\n"
         "uniform float lightShadowBias;\n"
