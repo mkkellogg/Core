@@ -83,7 +83,7 @@ namespace Core {
         for (UInt32 i = 1; i <= boundaryIndex; i++) {
             Real aspectRatio = isOrtho ? 1.0 : targetCamera->getAspectRatio();
 
-            // TODO: support ortho rendering cmaeras!!!
+            // TODO: support ortho rendering cameras!!!
             if (isOrtho) {
 
             }
@@ -124,12 +124,10 @@ namespace Core {
                 for (UInt32 j = 0 ; j < NumFrustumCorners ; j++) {
 
                     // Transform the frustum coordinate from view to world space
-                    Point3r vW = frustumCorners[j];
-                    targetCameraTransform.transform(vW);
-
+                    Point3r corner = frustumCorners[j];
+                    targetCameraTransform.transform(corner);
                     // Transform the frustum coordinate from world to light space
-                    lightTransformInverse.transform(vW);
-                    Point3r corner =  vW;
+                    lightTransformInverse.transform(corner);
 
                     minX = j == 0 ? corner.x : Math::min(minX, corner.x);
                     maxX = j == 0 ? corner.x : Math::max(maxX, corner.x);

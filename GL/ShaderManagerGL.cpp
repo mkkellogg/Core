@@ -91,7 +91,7 @@ namespace Core {
             "    uvCoords.y = 0.5 * projCoords.y + 0.5; \n"
 
             "    float z = 0.5 * projCoords.z + 0.5; \n"
-            "    float depth = texture(lightShadowMap[cascadeIndex], uvCoords).x; \n"
+            "    float depth = texture(lightShadowMap[cascadeIndex], uvCoords).r; \n"
 
             "    if (depth < z + 0.00001) \n"
             "        return 0;\n"
@@ -106,9 +106,12 @@ namespace Core {
             "        }\n"
             "        else if (lightType == 1) {\n"
             "            int shadowCount = 0; \n"
+            "            float lastNear = 0.0; \n"
             "            for (int i = 0 ; i < lightCascadeCount ; i++) { \n"
             "               if (clipSpacePosZ <= lightCascadeEnd[i]) { \n"
             "                   shadowCount += calcDirShadowFactor(i, lightSpacePos[i]); \n"
+            "                   lastNear = lightCascadeEnd[i]; \n"
+            "                   break; \n"
             "               } \n"
             "            } \n"
             "            if (shadowCount == 0) { \n"

@@ -194,15 +194,15 @@ namespace Core {
                             WeakPointer<DirectionalLight> directionalLight = WeakPointer<Light>::dynamicPointerCast<DirectionalLight>(light);
                             if (directionalLight->getShadowsEnabled()) {
                                 std::vector<DirectionalLight::OrthoProjection>& projections = directionalLight->buildProjections(renderCamera);
+                                Vector3r dir = Vector3r::Forward;
+                                directionalLight->getOwner()->getTransform().transform(dir);
+                                orthoShadowMapCameraObject->getTransform().getLocalMatrix().setIdentity();
+                                orthoShadowMapCameraObject->getTransform().lookAt(Point3r(dir.x, dir.y, dir.z));
+                                orthoShadowMapCameraObject->getTransform().getWorldMatrix().copy(orthoShadowMapCameraObject->getTransform().getConstLocalMatrix());
                                 for (UInt32 i = 0; i < directionalLight->getCascadeCount(); i++) {
                                     DirectionalLight::OrthoProjection& proj = projections[i];   
                                     orthoShadowMapCamera->setDimensions(proj.top, proj.bottom, proj.left, proj.right);        
                                     orthoShadowMapCamera->setNearAndFar(proj.near, proj.far);
-                                    Vector3r dir = Vector3r::Forward;
-                                    directionalLight->getOwner()->getTransform().transform(dir);
-                                    perspectiveShadowMapCameraObject->getTransform().getWorldMatrix().setIdentity();
-                                    perspectiveShadowMapCameraObject->getTransform().lookAt(Point3r(dir.x, dir.y, dir.z));
-                                    perspectiveShadowMapCameraObject->getTransform().getWorldMatrix().copy(perspectiveShadowMapCameraObject->getTransform().getConstLocalMatrix());
                                     WeakPointer<RenderTarget> shadowMapRenderTarget = directionalLight->getShadowMap(i);
                                     orthoShadowMapCamera->setRenderTarget(shadowMapRenderTarget); 
                                     this->render(orthoShadowMapCamera, objects, dummyLights, this->depthMaterial);

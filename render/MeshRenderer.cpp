@@ -155,7 +155,8 @@ namespace Core {
 
                     Int32 cascadeCountLoc = material->getShaderLocation(StandardUniform::LightCascadeCount);
                     if (cascadeCountLoc >= 0) {
-                        shader->setUniform1f(cascadeCountLoc, cascadeCount);
+                        //std:: cerr << "setting cascade count: " << cascadeCountLoc << ", " << cascadeCount << std::endl;
+                        shader->setUniform1i(cascadeCountLoc, cascadeCount);
                     }
 
                     for (UInt32 l = 0; l < cascadeCount; l++) {
@@ -171,7 +172,7 @@ namespace Core {
                             Matrix4x4 view = directionalLight->getOwner()->getTransform().getWorldMatrix();
                             view.invert();
                             view.preMultiply(directionalLight->getProjectionMatrix(l));
-                            shader->setUniformMatrix4(projectionLoc, view);
+                            shader->setUniformMatrix4(viewProjectionLoc, view);
                         }
 
                         Int32 cascadeEndLoc = material->getShaderLocation(StandardUniform::LightCascadeEnd, l);
