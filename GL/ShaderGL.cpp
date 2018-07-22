@@ -43,9 +43,10 @@ namespace Core {
     }
 
     void ShaderGL::setTexture2D(UInt32 slot, UInt32 textureID) {
-        static UInt32 slots[] = {GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2};
+        static UInt32 slots[] = {GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2, GL_TEXTURE3, GL_TEXTURE4};
 
-        if (slot >= 3) {
+        if (slot >= 5) {
+            std::cerr << "slot: " << slot << std::endl;
             throw Shader::ShaderVariableException("ShaderGL::setTexture2D() value for [slot] is too high.");
         }
         glActiveTexture(slots[slot]);
@@ -53,9 +54,10 @@ namespace Core {
     }
 
     void ShaderGL::setTextureCube(UInt32 slot, UInt32 textureID) {
-        static UInt32 slots[] = {GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2};
+        static UInt32 slots[] = {GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2, GL_TEXTURE3, GL_TEXTURE4};
 
-        if (slot >= 3) {
+        if (slot >= 5) {
+            std::cerr << "slot: " << slot << std::endl;
             throw Shader::ShaderVariableException("ShaderGL::setTextureCube() value for [slot] is too high.");
         }
         glActiveTexture(slots[slot]);

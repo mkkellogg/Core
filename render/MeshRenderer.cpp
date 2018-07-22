@@ -72,8 +72,6 @@ namespace Core {
             shader->setUniformMatrix4(viewInverseTransposeMatrixLoc, viewInverseTransposeMatrix);
         }
 
-        Int32 lightPositionLoc = material->getShaderLocation(StandardUniform::LightPosition);
-        Int32 lightDirectionLoc = material->getShaderLocation(StandardUniform::LightDirection);
         Int32 lightRangeLoc = material->getShaderLocation(StandardUniform::LightRange);
         Int32 lightTypeLoc = material->getShaderLocation(StandardUniform::LightType);
         Int32 lightIntensityLoc = material->getShaderLocation(StandardUniform::LightIntensity);
@@ -81,8 +79,6 @@ namespace Core {
         Int32 lightEnabledLoc = material->getShaderLocation(StandardUniform::LightEnabled);
 
         Int32 lightMatrixLoc = material->getShaderLocation(StandardUniform::LightMatrix);
-        Int32 lightShadowMapLoc = material->getShaderLocation(StandardUniform::LightShadowMap);
-        Int32 lightShadowCubeMapLoc = material->getShaderLocation(StandardUniform::LightShadowCubeMap);
         Int32 lightShadowBiasLoc = material->getShaderLocation(StandardUniform::LightShadowBias);
 
         UInt32 currentTextureSlot = material->textureCount();
@@ -131,24 +127,57 @@ namespace Core {
                         shader->setUniform1f(lightRangeLoc, pointLight->getRadius());
                     }
 
+                    Int32 lightPositionLoc = material->getShaderLocation(StandardUniform::LightPosition);
                     if (lightPositionLoc >= 0) {
                         Point3r pos;
                         pointLight->getOwner()->getTransform().getWorldMatrix().transform(pos);
                         shader->setUniform4f(lightPositionLoc, pos.x, pos.y, pos.z, 1.0f);
                     }
 
+                    Int32 lightShadowCubeMapLoc = material->getShaderLocation(StandardUniform::LightShadowCubeMap);
                     if (lightShadowCubeMapLoc >= 0 && pointLight->getShadowsEnabled()) {
                         shader->setTextureCube(currentTextureSlot, pointLight->getShadowMap()->getColorTexture()->getTextureID());
                         shader->setUniform1i(lightShadowCubeMapLoc, currentTextureSlot);
+                        currentTextureSlot++;
                     }
                 }
                 else if (lightType == LightType::Directional) {
                     WeakPointer<DirectionalLight> directionalLight = WeakPointer<Light>::dynamicPointerCast<DirectionalLight>(light);
 
-                     if (lightDirectionLoc >= 0) {
-                        Vector3r dir = directionalLight->getDirection();
+                    Int32 lightDirectionLoc = material->getShaderLocation(StandardUniform::LightDirection);
+                    if (lightDirectionLoc >= 0) {
+                        Vector3r dir = Vector3r::Forward;
                         directionalLight->getOwner()->getTransform().getWorldMatrix().transform(dir);
                         shader->setUniform4f(lightDirectionLoc, dir.x, dir.y, dir.z, 0.0f);
+                    }
+
+                    UInt32 cascadeCount = directionalLight->getCascadeCount();
+
+                    Int32 cascadeCountLoc = material->getShaderLocation(StandardUniform::LightCascadeCount);
+                    if (cascadeCountLoc >= 0) {
+                        shader->setUniform1f(cascadeCountLoc, cascadeCount);
+                    }
+
+                    for (UInt32 l = 0; l < cascadeCount; l++) {
+                        Int32 shadowMapLoc = material->getShaderLocation(StandardUniform::LightShadowMap, l);
+                        if (shadowMapLoc >= 0) {
+                            shader->setTexture2D(currentTextureSlot, directionalLight->getShadowMap(l));
+                            shader->setUniform1i(shadowMapLoc, currentTextureSlot);
+                            currentTextureSlot++;
+                        }
+
+                        Int32 viewProjectionLoc = material->getShaderLocation(StandardUniform::LightViewProjection, l);
+                        if (viewProjectionLoc >= 0) {
+                            Matrix4x4 view = directionalLight->getOwner()->getTransform().getWorldMatrix();
+                            view.invert();
+                            view.preMultiply(directionalLight->getProjectionMatrix(l));
+                            shader->setUniformMatrix4(projectionLoc, view);
+                        }
+
+                        Int32 cascadeEndLoc = material->getShaderLocation(StandardUniform::LightCascadeEnd, l);
+                        if (cascadeEndLoc >= 0) {
+                            shader->setUniform1f(cascadeEndLoc, directionalLight->getCascadeBoundary(l + 1));
+                        }
                     }
                 }
 

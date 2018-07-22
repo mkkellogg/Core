@@ -43,6 +43,9 @@ namespace Core {
         "LIGHT_ENABLED",
         "LIGHT_MATRIX",
         "LIGHT_SHADOW_MAP",
+        "LIGHT_VIEW_PROJECTION",
+        "LIGHT_CASCADE_END",
+        "LIGHT_CASCADE_COUNT",
         "LIGHT_SHADOW_CUBE_MAP",
         "LIGHT_SHADOW_BIAS"
     };

@@ -19,8 +19,8 @@ namespace Core {
         WeakPointer<Shader> getShader();
         
         virtual Bool build() = 0;
-        virtual Int32 getShaderLocation(StandardAttribute attribute) = 0;
-        virtual Int32 getShaderLocation(StandardUniform uniform) = 0;
+        virtual Int32 getShaderLocation(StandardAttribute attribute, UInt32 offset = 0) = 0;
+        virtual Int32 getShaderLocation(StandardUniform uniform, UInt32 offset = 0) = 0;
         virtual void sendCustomUniformsToShader() = 0;
         virtual WeakPointer<Material> clone() = 0;
         virtual UInt32 textureCount();

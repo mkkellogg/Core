@@ -51,7 +51,6 @@ namespace Core {
 
     void GraphicsGL::preRender() {
         // TODO: Move these state calls to a place where they are not called every frame
-        glClearColor(0, 0, 0, 1);
         glFrontFace(GL_CW);
         glCullFace(GL_BACK);
         glEnable(GL_CULL_FACE);
@@ -59,8 +58,6 @@ namespace Core {
         glDepthMask(GL_TRUE);
         glDepthFunc(GL_LEQUAL);
         glDisable(GL_BLEND);
-
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
     void GraphicsGL::postRender() {

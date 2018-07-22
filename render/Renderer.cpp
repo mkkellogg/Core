@@ -127,6 +127,8 @@ namespace Core {
             }
         }
         else {
+            graphics->setClearColor(Color(1.0, 1.0, 1.0, 1.0));
+            graphics->clearActiveRenderTarget(true, true, true);    
             ViewDescriptor viewDescriptor;
             this->getViewDescriptorForCamera(camera, viewDescriptor);
             viewDescriptor.overrideMaterial = overrideMaterial;
@@ -196,9 +198,11 @@ namespace Core {
                                     DirectionalLight::OrthoProjection& proj = projections[i];   
                                     orthoShadowMapCamera->setDimensions(proj.top, proj.bottom, proj.left, proj.right);        
                                     orthoShadowMapCamera->setNearAndFar(proj.near, proj.far);
+                                    Vector3r dir = Vector3r::Forward;
+                                    directionalLight->getOwner()->getTransform().transform(dir);
                                     perspectiveShadowMapCameraObject->getTransform().getWorldMatrix().setIdentity();
-                                    Vector3r dir = directionalLight->getDirection();
-                                    orthoShadowMapCamera->lookAt(Point3r(dir.x, dir.y, dir.z));
+                                    perspectiveShadowMapCameraObject->getTransform().lookAt(Point3r(dir.x, dir.y, dir.z));
+                                    perspectiveShadowMapCameraObject->getTransform().getWorldMatrix().copy(perspectiveShadowMapCameraObject->getTransform().getConstLocalMatrix());
                                     WeakPointer<RenderTarget> shadowMapRenderTarget = directionalLight->getShadowMap(i);
                                     orthoShadowMapCamera->setRenderTarget(shadowMapRenderTarget); 
                                     this->render(orthoShadowMapCamera, objects, dummyLights, this->depthMaterial);

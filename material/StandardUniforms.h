@@ -25,8 +25,11 @@ namespace Core {
         LightEnabled = 16,
         LightMatrix = 17,
         LightShadowMap = 18,
-        LightShadowCubeMap = 19,
-        LightShadowBias = 20,
+        LightViewProjection = 19,
+        LightCascadeEnd = 20,
+        LightCascadeCount = 21,
+        LightShadowCubeMap = 22,
+        LightShadowBias = 23,
         _Count = 21,  // Must always be last in the list (before _None)
         _None = 22,
     };

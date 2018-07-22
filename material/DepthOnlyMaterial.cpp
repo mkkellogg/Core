@@ -25,7 +25,7 @@ namespace Core {
         return true;
     }
 
-    Int32 DepthOnlyMaterial::getShaderLocation(StandardAttribute attribute) {
+    Int32 DepthOnlyMaterial::getShaderLocation(StandardAttribute attribute, UInt32 offset) {
         switch (attribute) {
             case StandardAttribute::Position:
                 return this->positionLocation;
@@ -34,7 +34,7 @@ namespace Core {
         }
     }
 
-    Int32 DepthOnlyMaterial::getShaderLocation(StandardUniform uniform) {
+    Int32 DepthOnlyMaterial::getShaderLocation(StandardUniform uniform, UInt32 offset) {
         switch (uniform) {
             case StandardUniform::ProjectionMatrix:
                 return this->projectionMatrixLocation;

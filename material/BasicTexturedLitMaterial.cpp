@@ -25,7 +25,7 @@ namespace Core {
         return true;
     }
 
-    Int32 BasicTexturedLitMaterial::getShaderLocation(StandardAttribute attribute) {
+    Int32 BasicTexturedLitMaterial::getShaderLocation(StandardAttribute attribute, UInt32 offset) {
         switch (attribute) {
             case StandardAttribute::Position:
                 return this->positionLocation;
@@ -42,7 +42,7 @@ namespace Core {
         }
     }
 
-    Int32 BasicTexturedLitMaterial::getShaderLocation(StandardUniform uniform) {
+    Int32 BasicTexturedLitMaterial::getShaderLocation(StandardUniform uniform, UInt32 offset) {
         switch (uniform) {
             case StandardUniform::ProjectionMatrix:
                 return this->projectionMatrixLocation;
@@ -75,7 +75,7 @@ namespace Core {
             case StandardUniform::LightShadowCubeMap:
                 return this->lightShadowCubeMapLocation;
             case StandardUniform::LightShadowBias:
-                return this->lightShadowMapLocation;
+                return this->lightShadowBiasLocation;
             default:
                 return -1;
         }
@@ -116,7 +116,7 @@ namespace Core {
         newMaterial->lightMatrixLocation = this->lightMatrixLocation;
         newMaterial->lightShadowMapLocation = this->lightShadowMapLocation;
         newMaterial->lightShadowCubeMapLocation = this->lightShadowCubeMapLocation;
-        newMaterial->lightShadowMapLocation = this->lightShadowMapLocation;
+        newMaterial->lightShadowBiasLocation = this->lightShadowBiasLocation;
         return newMaterial;
     }
 
@@ -141,7 +141,7 @@ namespace Core {
         this->lightMatrixLocation = this->shader->getUniformLocation("lightMatrix");
         this->lightShadowMapLocation = this->shader->getUniformLocation("lightShadowMap");
         this->lightShadowCubeMapLocation = this->shader->getUniformLocation("lightShadowCubeMap");
-        this->lightShadowMapLocation = this->shader->getUniformLocation("lightShadowBias");
+        this->lightShadowBiasLocation = this->shader->getUniformLocation("lightShadowBias");
     }
 
     UInt32 BasicTexturedLitMaterial::textureCount() {

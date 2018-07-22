@@ -6,7 +6,7 @@ namespace Core {
 
     class Constants {
     public:
-        static const UInt32 MaxDirectionalCascades;
+        static const UInt32 MaxDirectionalCascades = 3;
 
     };
 

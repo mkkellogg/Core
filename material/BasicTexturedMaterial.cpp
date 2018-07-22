@@ -25,7 +25,7 @@ namespace Core {
         return true;
     }
 
-    Int32 BasicTexturedMaterial::getShaderLocation(StandardAttribute attribute) {
+    Int32 BasicTexturedMaterial::getShaderLocation(StandardAttribute attribute, UInt32 offset) {
         switch (attribute) {
             case StandardAttribute::Position:
                 return this->positionLocation;
@@ -40,7 +40,7 @@ namespace Core {
         }
     }
 
-    Int32 BasicTexturedMaterial::getShaderLocation(StandardUniform uniform) {
+    Int32 BasicTexturedMaterial::getShaderLocation(StandardUniform uniform, UInt32 offset) {
         switch (uniform) {
             case StandardUniform::ProjectionMatrix:
                 return this->projectionMatrixLocation;

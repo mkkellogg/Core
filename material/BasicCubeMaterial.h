@@ -14,8 +14,8 @@ namespace Core {
 
     public:
         virtual Bool build() override;
-        virtual Int32 getShaderLocation(StandardAttribute attribute) override;
-        virtual Int32 getShaderLocation(StandardUniform uniform) override;
+        virtual Int32 getShaderLocation(StandardAttribute attribute, UInt32 offset = 0) override;
+        virtual Int32 getShaderLocation(StandardUniform uniform, UInt32 offset = 0) override;
         virtual void sendCustomUniformsToShader() override;
         virtual WeakPointer<Material> clone() override;
         void setTexture(WeakPointer<CubeTexture> texture);

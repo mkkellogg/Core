@@ -11,7 +11,7 @@ namespace Core {
         Real& b;
         Real& a;
 
-        Color4Components(Real* data, const Real& x, const Real& y, const Real& z, const Real w);
+        Color4Components(Real* data, const Real& r, const Real& g, const Real& b, const Real a);
         virtual ~Color4Components() = 0;
 
         void set(const Real& r, const Real& g, const Real& b, const Real& a);

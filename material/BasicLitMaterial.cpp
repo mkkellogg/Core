@@ -26,7 +26,7 @@ namespace Core {
         return true;
     }
 
-    Int32 BasicLitMaterial::getShaderLocation(StandardAttribute attribute) {
+    Int32 BasicLitMaterial::getShaderLocation(StandardAttribute attribute, UInt32 offset) {
         switch (attribute) {
             case StandardAttribute::Position:
                 return this->positionLocation;
@@ -41,7 +41,10 @@ namespace Core {
         }
     }
 
-    Int32 BasicLitMaterial::getShaderLocation(StandardUniform uniform) {
+    Int32 BasicLitMaterial::getShaderLocation(StandardUniform uniform, UInt32 offset) {
+        if (offset >= Constants::MaxDirectionalCascades) {
+            throw InvalidArgumentException("BasicLitMaterial::getShaderLocation() -> invalid offset.");
+        }
         switch (uniform) {
             case StandardUniform::ProjectionMatrix:
                 return this->projectionMatrixLocation;
@@ -67,12 +70,18 @@ namespace Core {
                 return this->lightEnabledLocation;
             case StandardUniform::LightMatrix:
                 return this->lightMatrixLocation;
+            case StandardUniform::LightViewProjection:
+                return this->lightViewProjectionLocations[offset];
             case StandardUniform::LightShadowMap:
-                return this->lightShadowMapLocation;
+                return this->lightShadowMapLocations[offset];
+            case StandardUniform::LightCascadeEnd:
+                return this->lightCascadeEndLocations[offset];
+            case StandardUniform::LightCascadeCount:
+                return this->lightCascadeCountLocation;
             case StandardUniform::LightShadowCubeMap:
                 return this->lightShadowCubeMapLocation;
             case StandardUniform::LightShadowBias:
-                return this->lightShadowMapLocation;
+                return this->lightShadowBiasLocation;
             default:
                 return -1;
         }
@@ -102,9 +111,14 @@ namespace Core {
         newMaterial->lightColorLocation = this->lightColorLocation;
         newMaterial->lightEnabledLocation = this->lightEnabledLocation;
         newMaterial->lightMatrixLocation = this->lightMatrixLocation;
-        newMaterial->lightShadowMapLocation = this->lightShadowMapLocation;
+        for (UInt32 i =0; i < Constants::MaxDirectionalCascades; i++) {
+            this->lightViewProjectionLocations[i] = this->lightViewProjectionLocations[i];
+            this->lightShadowMapLocations[i] = this->lightShadowMapLocations[i];
+            this->lightCascadeEndLocations[i] = this->lightCascadeEndLocations[i];
+        }
+        newMaterial->lightCascadeCountLocation = this->lightCascadeCountLocation;
         newMaterial->lightShadowCubeMapLocation = this->lightShadowCubeMapLocation;
-        newMaterial->lightShadowMapLocation = this->lightShadowMapLocation;
+        newMaterial->lightShadowBiasLocation = this->lightShadowBiasLocation;
         return newMaterial;
     }
 
@@ -125,8 +139,15 @@ namespace Core {
         this->lightColorLocation = this->shader->getUniformLocation("lightColor");
         this->lightEnabledLocation = this->shader->getUniformLocation("lightEnabled");
         this->lightMatrixLocation = this->shader->getUniformLocation("lightMatrix");
-        this->lightShadowMapLocation = this->shader->getUniformLocation("lightShadowMap");
+
+        for (UInt32 i =0; i < Constants::MaxDirectionalCascades; i++) {
+            this->lightViewProjectionLocations[i] = this->shader->getUniformLocation(std::string("lightViewProjection["+std::to_string(i)+"]"));
+            this->lightShadowMapLocations[i] = this->shader->getUniformLocation(std::string("lightShadowMap["+std::to_string(i)+"]"));
+            this->lightCascadeEndLocations[i] = this->shader->getUniformLocation(std::string("lightCascadeEnd["+std::to_string(i)+"]"));
+        }
+        this->lightCascadeCountLocation = this->shader->getUniformLocation("lightCascadeCount");
+
         this->lightShadowCubeMapLocation = this->shader->getUniformLocation("lightShadowCubeMap");
-        this->lightShadowMapLocation = this->shader->getUniformLocation("lightShadowBias");
+        this->lightShadowBiasLocation = this->shader->getUniformLocation("lightShadowBias");
     }
 }

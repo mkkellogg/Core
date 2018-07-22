@@ -12,38 +12,40 @@ namespace Core {
     public:
 
         ~ShaderManagerGL();
+        ShaderManagerGL();
 
-        static const char Test_vertex[];
-        static const char Test_fragment[];
+        std::string Test_vertex;
+        std::string Test_fragment;
 
-        static const std::string Lighting_fragment;
+        std::string Lighting_vertex;
+        std::string Lighting_fragment;
 
-        static const char Depth_vertex[];
-        static const char Depth_fragment[];
+        std::string Depth_vertex;
+        std::string Depth_fragment;
 
-        static const char Distance_vertex[];
-        static const char Distance_fragment[];
+        std::string Distance_vertex;
+        std::string Distance_fragment;
 
-        static const char Basic_vertex[];
-        static const char Basic_fragment[];
+        std::string Basic_vertex;
+        std::string Basic_fragment;
 
-        static const char BasicLit_vertex[];
-        static const char BasicLit_fragment[];
+        std::string BasicLit_vertex;
+        std::string BasicLit_fragment;
 
-        static const char BasicTextured_vertex[];
-        static const char BasicTextured_fragment[];
+        std::string BasicTextured_vertex;
+        std::string BasicTextured_fragment;
 
-        static const char BasicTexturedLit_vertex[];
-        static const char BasicTexturedLit_fragment[];
+        std::string BasicTexturedLit_vertex;
+        std::string BasicTexturedLit_fragment;
 
-        static const char BasicCube_vertex[];
-        static const char BasicCube_fragment[];
+        std::string BasicCube_vertex;
+        std::string BasicCube_fragment;
 
         void init();
 
     protected:
 
-        
+        static const std::string BaseString;
     };
 
 }
