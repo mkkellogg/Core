@@ -20,6 +20,7 @@ namespace Core {
     static Real aCos(Real n);
     static Real sin(Real n);
     static Real tan(Real n);
+    static Real aTan(Real n);
     static Real abs(Real n);
     static UInt32 iAbs(Int32 n);
     static Real min(Real a, Real b);

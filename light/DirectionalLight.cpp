@@ -5,6 +5,7 @@
 #include "../common/Exception.h"
 #include "../render/Camera.h"
 #include "../geometry/Vector3.h"
+#include "../geometry/Vector4.h"
 #include "../math/Math.h"
 
 namespace Core {
@@ -49,13 +50,14 @@ namespace Core {
         Real near = targetCamera->getNear();
         Real far = targetCamera->getFar();
 
-        Real frustumLength = far - near;
+        Real frustumLength = Math::abs(far - near);
         Real currentBoundary = near;
         Real currentFraction = 1.0f / (Real)this->cascadeCount;
         UInt32 boundaryIndex = 0;
-        while (currentBoundary < far) {
+        while (boundaryIndex < this->cascadeCount) {
             this->cascadeBoundaries[boundaryIndex] = currentBoundary;
             currentBoundary += (currentFraction * frustumLength);
+            if (currentBoundary > far) currentBoundary = far;
             currentFraction += 0.1f;
             boundaryIndex++;
         }
@@ -81,16 +83,19 @@ namespace Core {
 
         Bool isOrtho = targetCamera->isOrtho();
         for (UInt32 i = 1; i <= boundaryIndex; i++) {
-            Real aspectRatio = isOrtho ? 1.0 : targetCamera->getAspectRatio();
-
+            
             // TODO: support ortho rendering cameras!!!
             if (isOrtho) {
 
             }
             else {
+                Real aspectRatio = targetCamera->getAspectRatio();
                 Real fov = targetCamera->getFOV();
                 Real tanHalfHFOV = Math::tan(fov / 2.0f);
-                Real tanHalfVFOV = Math::tan((fov * aspectRatio) / 2.0f);
+
+                Real fovV = Math::aTan(tanHalfHFOV / aspectRatio);
+                Real tanHalfVFOV = Math::tan((fov / aspectRatio) / 2.0f);
+                //Real tanHalfVFOV = Math::tan(fovV / 2.0f);
 
                 Real xn = this->cascadeBoundaries[i - 1] * tanHalfHFOV;
                 Real xf = this->cascadeBoundaries[i] * tanHalfHFOV;
@@ -112,8 +117,6 @@ namespace Core {
                     Point3r(-xf, -yf, this->cascadeBoundaries[i]) 
                 };
 
-                Point3r frustumCornersL[NumFrustumCorners];
-
                 float minX = 0.0f;
                 float maxX = 0.0f;
                 float minY = 0.0f;
@@ -124,8 +127,10 @@ namespace Core {
                 for (UInt32 j = 0 ; j < NumFrustumCorners ; j++) {
 
                     // Transform the frustum coordinate from view to world space
-                    Point3r corner = frustumCorners[j];
+
+                    Point3r corner = frustumCorners[j];                               
                     targetCameraTransform.transform(corner);
+
                     // Transform the frustum coordinate from world to light space
                     lightTransformInverse.transform(corner);
 
@@ -175,7 +180,7 @@ namespace Core {
     }
 
     WeakPointer<RenderTarget> DirectionalLight::getShadowMap(UInt32 cascadeIndex) {
-        if (cascadeIndex >= this-> cascadeCount) {
+        if (cascadeIndex >= this->cascadeCount) {
             throw OutOfRangeException("DirectionalLight::getShadowMap() -> 'cascadeIndex' is out of range.");
         }
         return this->shadowMaps[cascadeIndex];
@@ -184,7 +189,7 @@ namespace Core {
     void DirectionalLight::buildShadowMaps() {
         TextureAttributes colorTextureAttributes;
         colorTextureAttributes.Format = TextureFormat::R32F;
-        colorTextureAttributes.FilterMode = TextureFilter::Linear;
+        colorTextureAttributes.FilterMode = TextureFilter::Point;
         Vector2u renderTargetSize(this->shadowMapSize, this->shadowMapSize);
         for (UInt32 i = 0; i < this->cascadeCount; i++) {
             auto graphics = Engine::instance()->getGraphicsSystem();

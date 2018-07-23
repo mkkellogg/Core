@@ -12,6 +12,7 @@ namespace Core {
         static Core::Real _sin(Core::Real a) { return sin(a); }
         static Core::Real _cos(Core::Real a) { return cos(a); }
         static Core::Real _tan(Core::Real a) { return tan(a); }
+        static Core::Real _atan(Core::Real a) { return atan(a); }
     };
 
     const Real Math::PI = 3.14159265358979f;
@@ -72,6 +73,10 @@ namespace Core {
 
     Real Math::tan(Real n) {
         return MathProxy::_tan(n);
+    }
+
+    Real Math::aTan(Real n) {
+        return MathProxy::_atan(n);
     }
 
     Real Math::abs(Real n) {
