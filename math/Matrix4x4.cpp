@@ -413,7 +413,6 @@ namespace Core {
      */
     void Matrix4x4::transform(const Vector3Base<Real> &vector, Vector3Base<Real> &out) const {
         Real w = vector.getW();
-                std::cerr << "transforming! " << "," << w << std::endl;
         Vector4<Real> temp(vector.x, vector.y, vector.z, w);
         this->transform(temp);
         out.x = temp.x;

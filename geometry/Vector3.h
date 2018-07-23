@@ -150,8 +150,8 @@ namespace Core {
         static const Vector3<T, customStorage> Down;
 
         Vector3() : Vector3(0.0, 0.0, 0.0) {}
-        Vector3(const Vector3Base<T, true>& src) : Vector3(src.x, src.y, src.z) {}
-        Vector3(const Vector3Base<T, false>& src) : Vector3(src.x, src.y, src.z) {}
+        Vector3(const Vector3<T, true>& src) : Vector3(src.x, src.y, src.z) {}
+        Vector3(const Vector3<T, false>& src) : Vector3(src.x, src.y, src.z) {}
         Vector3(const T& x, const T& y, const T& z) : Vector3Base<T, customStorage>(x, y, z) {
             _set(x, y, z);
         }
@@ -177,15 +177,18 @@ namespace Core {
         }
 
         Vector3 operator*(const T& scale) const {
-            return Vector3(Vector3Base<T, customStorage>::operator*(scale));
+            Vector3Base<T, customStorage> temp = Vector3Base<T, customStorage>::operator*(scale);
+            return Vector3(temp.x, temp.y, temp.z);
         }
 
         Vector3 operator-(const Vector3<T, customStorage>& other) const {
-            return Vector3(Vector3Base<T, customStorage>::operator-(other));
+            Vector3Base<T, customStorage> temp = Vector3Base<T, customStorage>::operator-(other);
+            return Vector3(temp.x, temp.y, temp.z);
         }
 
         Vector3 operator+(const Vector3<T, customStorage>& other) const {
-            return Vector3(Vector3Base<T, customStorage>::operator+(other));
+            Vector3Base<T, customStorage> temp = Vector3Base<T, customStorage>::operator+(other);
+            return Vector3(temp.x, temp.y, temp.z);
         }
     };
 
@@ -193,8 +196,8 @@ namespace Core {
     class Point3 : public Vector3Base<T, customStorage> {
     public:
         Point3() : Point3(0.0, 0.0, 0.0) {}
-        Point3(const Vector3Base<T, true>& src) : Point3(src.x, src.y, src.z) {}
-        Point3(const Vector3Base<T, false>& src) : Point3(src.x, src.y, src.z) {}
+        Point3(const Point3<T, true>& src) : Point3(src.x, src.y, src.z) {}
+        Point3(const Point3<T, false>& src) : Point3(src.x, src.y, src.z) {}
         Point3(const T& x, const T& y, const T& z) : Vector3Base<T, customStorage>(x, y, z) {
             _set(x, y, z);
         }
@@ -214,20 +217,23 @@ namespace Core {
         }
 
         Point3 operator*(const T& scale) const {
-            return Point3(Vector3Base<T, customStorage>::operator*(scale));
+            Vector3Base<T, customStorage> temp = Vector3Base<T, customStorage>::operator*(scale);
+            return Point3(temp.x, temp.y, temp.z);
         }
 
         Point3 operator-(const Vector3<T, customStorage>& other) const {
-            return Point3(Vector3Base<T, customStorage>::operator-(other));
+            Vector3Base<T, customStorage> temp = Vector3Base<T, customStorage>::operator-(other);
+            return Point3(temp.x, temp.y, temp.z);
         }
 
         Vector3<T, customStorage> operator-(const Point3<T, customStorage>& other) const {
-            auto res = Vector3Base<T, customStorage>::operator-(other);
-            return Vector3<T, customStorage>(res.x, res.y, res.z);
+            Vector3Base<T, customStorage> temp = Vector3Base<T, customStorage>::operator-(other);
+            return Vector3<T, customStorage>(temp.x, temp.y, temp.z);
         }
 
         Point3 operator+(const Vector3<T, customStorage>& other) const {
-            return Point3(Vector3Base<T, customStorage>::operator+(other));
+            Vector3Base<T, customStorage> temp = Vector3Base<T, customStorage>::operator+(other);
+            return Point3(temp.x, temp.y, temp.z);
         }
     };
 
