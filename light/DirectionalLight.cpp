@@ -149,7 +149,11 @@ namespace Core {
                 oProj.far = maxZ;
                 oProj.near = minZ;
 
-                Camera::buildOrthographicProjectionMatrix(oProj.top, oProj.bottom, oProj.left, oProj.right, oProj.near, oProj.far, this->projectionMatrices[i - 1]);                
+             
+                Matrix4x4 viewTrans = lightTransformInverse;
+                Matrix4x4& projMat =  this->projectionMatrices[i - 1];
+                Camera::buildOrthographicProjectionMatrix(oProj.top, oProj.bottom, oProj.left, oProj.right, oProj.near, oProj.far, projMat);                
+               // projMat.multiply(viewTrans);
             }
         }   
 

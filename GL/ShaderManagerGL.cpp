@@ -57,12 +57,12 @@ namespace Core {
             "uniform int lightCascadeCount;\n"
             "uniform mat4 lightViewProjection[MAX_CASCADES];\n"
             "out vec4 lightSpacePos[MAX_CASCADES];\n"
-            "out float clipSpacePosZ;\n"
-            "#define TRANSFER_LIGHTING(localPos, clipSpacePos) "
+            "out float viewSpacePosZ;\n"
+            "#define TRANSFER_LIGHTING(localPos, clipSpacePos, viewSpacePos) "
             "for (int i = 0 ; i < lightCascadeCount; i++) { "
             "    lightSpacePos[i] = lightViewProjection[i] * modelMatrix * (localPos); "
             "} "
-            "clipSpacePosZ = (clipSpacePos).z;\n";
+            "viewSpacePosZ = (viewSpacePos).z;\n";
 
         this->Lighting_fragment =
             ShaderManagerGL::BaseString + 
@@ -71,7 +71,7 @@ namespace Core {
             "uniform sampler2D lightShadowMap[MAX_CASCADES];\n"
             "uniform float lightCascadeEnd[MAX_CASCADES];\n"
             "in vec4 lightSpacePos[MAX_CASCADES];\n"
-            "in float clipSpacePosZ;\n"
+            "in float viewSpacePosZ;\n"
             "uniform samplerCube lightShadowCubeMap;\n"
             "uniform float lightShadowBias;\n"
             "uniform mat4 lightMatrix;\n"
@@ -93,10 +93,24 @@ namespace Core {
             "    float z = 0.5 * projCoords.z + 0.5; \n"
             "    float depth = texture(lightShadowMap[cascadeIndex], uvCoords).r; \n"
 
-            "    if (depth < z + 0.00001) \n"
+            "    if (depth > z - 0.00001 || depth < .00001) \n"
             "        return 0;\n"
             "    else \n"
             "        return 1; \n"
+            "} \n"
+
+            " vec4 calcDirShadowColor(int cascadeIndex, vec4 lSpacePos)\n"
+            "{ \n"
+            "    vec3 projCoords = lSpacePos.xyz / lSpacePos.w; \n"
+
+            "    vec2 uvCoords; \n"
+            "    uvCoords.x = 0.5 * projCoords.x + 0.5; \n"
+            "    uvCoords.y = 0.5 * projCoords.y + 0.5; \n"
+
+            "    float z = 0.5 * projCoords.z + 0.5; \n"
+            "    float depth = texture(lightShadowMap[cascadeIndex], uvCoords).r; \n"
+            "    return vec4(depth, 0.0, 0.0, 1.0); \n"
+    
             "} \n"
 
             "vec4 litColor(in vec4 baseColor, in vec4 fragPos, in vec3 fragNormal) {\n"
@@ -106,14 +120,13 @@ namespace Core {
             "        }\n"
             "        else if (lightType == 1) {\n"
             "            int shadowCount = 0; \n"
-            "            float lastNear = 0.0; \n"
             "            for (int i = 0 ; i < lightCascadeCount ; i++) { \n"
-            "               if (clipSpacePosZ <= lightCascadeEnd[i]) { \n"
+            "               if (viewSpacePosZ <= lightCascadeEnd[i]) { \n"
             "                   shadowCount += calcDirShadowFactor(i, lightSpacePos[i]); \n"
-            "                   lastNear = lightCascadeEnd[i]; \n"
             "                   break; \n"
             "               } \n"
             "            } \n"
+          //  "            return calcDirShadowColor(0, lightSpacePos[0]); \n"
             "            if (shadowCount == 0) { \n"
             "               vec3 toLight = vec3(-lightDir);\n"
             "               float baseDot = max(cos(acos(dot(toLight, fragNormal)) * 1.025), 0.0); \n"  
@@ -152,9 +165,9 @@ namespace Core {
             "}\n";
 
         this->Depth_vertex =
-            "#include \"Test\"\n"
-            "#version 100\n"
-            "attribute vec4 pos;\n"
+            "#version 330\n"
+            "precision highp float;\n"
+            "in vec4 pos;\n"
             "uniform mat4 projection;\n"
             "uniform mat4 viewMatrix;\n"
             "uniform mat4 modelMatrix;\n"
@@ -163,11 +176,11 @@ namespace Core {
             "}\n";
 
         this->Depth_fragment =   
-            "#version 100\n"
-            "precision mediump float;\n"
+            "#version 330\n"
+            "precision highp float;\n"
             "void main() {\n"
             "    gl_FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 0.0);\n"
-            //"    gl_FragColor = vec4(1.0, 0.0, 0.0, 0.0);\n"
+            //"    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n"
             "}\n";
 
         this->Distance_vertex =
@@ -231,10 +244,11 @@ namespace Core {
             "out vec4 vPos;\n"
             "void main() {\n"
             "    vPos = modelMatrix * pos;\n"
+            "    vec4 viewSpacePos = viewMatrix * vPos;\n"
             "    gl_Position = projection * viewMatrix * vPos;\n"
             "    vColor = color;\n"
             "    vNormal = vec3(modelInverseTransposeMatrix * normal);\n"
-            "    TRANSFER_LIGHTING(vPos, gl_Position) \n"
+            "    TRANSFER_LIGHTING(pos, gl_Position, viewSpacePos) \n"
             "}\n";
 
         this->BasicLit_fragment =   
@@ -300,6 +314,7 @@ namespace Core {
             "out vec4 vPos;\n"
             "void main() {\n"
             "    vPos = modelMatrix * pos;\n"
+            "    vec4 viewSpacePos = viewMatrix * vPos;\n"
             "    gl_Position = projection * viewMatrix * vPos;\n"
             "    vUV = uv;\n"
             "    vColor = color;\n"
@@ -307,7 +322,7 @@ namespace Core {
             "    vec3 toLight = normalize(lightPos.xyz - vPos.xyz);\n"
             "    vNormal = vec3(modelInverseTransposeMatrix * eNormal);\n"
             "    vFaceNormal = vec3(modelInverseTransposeMatrix * faceNormal);\n"
-            "    TRANSFER_LIGHTING(vPos, gl_Position) \n"
+            "    TRANSFER_LIGHTING(vPos, gl_Position, viewSpacePos) \n"
             "}\n";
 
         this->BasicTexturedLit_fragment =   

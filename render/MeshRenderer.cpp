@@ -162,17 +162,14 @@ namespace Core {
                     for (UInt32 l = 0; l < cascadeCount; l++) {
                         Int32 shadowMapLoc = material->getShaderLocation(StandardUniform::LightShadowMap, l);
                         if (shadowMapLoc >= 0) {
-                            shader->setTexture2D(currentTextureSlot, directionalLight->getShadowMap(l));
+                            shader->setTexture2D(currentTextureSlot, directionalLight->getShadowMap(l)->getColorTexture()->getTextureID());
                             shader->setUniform1i(shadowMapLoc, currentTextureSlot);
                             currentTextureSlot++;
                         }
 
                         Int32 viewProjectionLoc = material->getShaderLocation(StandardUniform::LightViewProjection, l);
                         if (viewProjectionLoc >= 0) {
-                            Matrix4x4 view = directionalLight->getOwner()->getTransform().getWorldMatrix();
-                            view.invert();
-                            view.preMultiply(directionalLight->getProjectionMatrix(l));
-                            shader->setUniformMatrix4(viewProjectionLoc, view);
+                            shader->setUniformMatrix4(viewProjectionLoc, directionalLight->getProjectionMatrix(l));
                         }
 
                         Int32 cascadeEndLoc = material->getShaderLocation(StandardUniform::LightCascadeEnd, l);

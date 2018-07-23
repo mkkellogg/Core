@@ -115,9 +115,6 @@ namespace Core {
         if (renderTargetCube != nullptr) {
             for (unsigned int i = 0; i < 6; i++) {
                 graphics->activateCubeRenderTargetSide((CubeTextureSide)i);
-                graphics->setClearColor(Color(0.0, 0.0, 0.0, 0.0));
-                graphics->clearActiveRenderTarget(true, true, true);        
-
                 ViewDescriptor viewDescriptor;
                 Matrix4x4 cameraTransform = camera->getOwner()->getTransform().getWorldMatrix();
                 cameraTransform.multiply(orientations[i]);
@@ -126,9 +123,7 @@ namespace Core {
                 render(viewDescriptor, objects, lights);
             }
         }
-        else {
-            graphics->setClearColor(Color(1.0, 1.0, 1.0, 1.0));
-            graphics->clearActiveRenderTarget(true, true, true);    
+        else {  
             ViewDescriptor viewDescriptor;
             this->getViewDescriptorForCamera(camera, viewDescriptor);
             viewDescriptor.overrideMaterial = overrideMaterial;
@@ -142,7 +137,9 @@ namespace Core {
     }
 
     void Renderer::render(const ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objectList, std::vector<WeakPointer<Light>>& lightList) {
-
+        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
+        graphics->setClearColor(Color(0.0, 0.0, 0.0, 1.0));
+        graphics->clearActiveRenderTarget(true, true, true); 
         for (auto object : objectList) {
             std::shared_ptr<Object3D> objectShared = object.lock();
             std::shared_ptr<BaseRenderableContainer> containerPtr = std::dynamic_pointer_cast<BaseRenderableContainer>(objectShared);
@@ -191,21 +188,33 @@ namespace Core {
                         break;
                         case LightType::Directional:
                         {
+                            WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
                             WeakPointer<DirectionalLight> directionalLight = WeakPointer<Light>::dynamicPointerCast<DirectionalLight>(light);
                             if (directionalLight->getShadowsEnabled()) {
                                 std::vector<DirectionalLight::OrthoProjection>& projections = directionalLight->buildProjections(renderCamera);
-                                Vector3r dir = Vector3r::Forward;
-                                directionalLight->getOwner()->getTransform().transform(dir);
-                                orthoShadowMapCameraObject->getTransform().getLocalMatrix().setIdentity();
-                                orthoShadowMapCameraObject->getTransform().lookAt(Point3r(dir.x, dir.y, dir.z));
-                                orthoShadowMapCameraObject->getTransform().getWorldMatrix().copy(orthoShadowMapCameraObject->getTransform().getConstLocalMatrix());
+                                Matrix4x4 viewTrans = directionalLight->getOwner()->getTransform().getWorldMatrix();
+                             //   viewTrans.invert();
                                 for (UInt32 i = 0; i < directionalLight->getCascadeCount(); i++) {
-                                    DirectionalLight::OrthoProjection& proj = projections[i];   
+                                    DirectionalLight::OrthoProjection& proj = projections[i];  
+
+                                   // orthoShadowMapCameraObject->getTransform().getWorldMatrix().copy(viewTrans);
+                                    orthoShadowMapCameraObject->getTransform().getWorldMatrix().setIdentity();
+                                   /* Vector3r dir = Vector3r::Forward;
+                                    viewTrans.transform(dir);
+                                    orthoShadowMapCameraObject->getTransform().lookAt(Point3r(dir.x, dir.y, dir.z));
+                                    orthoShadowMapCameraObject->getTransform().getWorldMatrix().copy(orthoShadowMapCameraObject->getTransform().getConstLocalMatrix());*/
                                     orthoShadowMapCamera->setDimensions(proj.top, proj.bottom, proj.left, proj.right);        
                                     orthoShadowMapCamera->setNearAndFar(proj.near, proj.far);
                                     WeakPointer<RenderTarget> shadowMapRenderTarget = directionalLight->getShadowMap(i);
+                                    graphics->activateRenderTarget(shadowMapRenderTarget);
                                     orthoShadowMapCamera->setRenderTarget(shadowMapRenderTarget); 
-                                    this->render(orthoShadowMapCamera, objects, dummyLights, this->depthMaterial);
+                                    Vector2u renderTargetSize = shadowMapRenderTarget->getSize();
+                                    graphics->setViewport(0, 0, renderTargetSize.x, renderTargetSize.y);
+                                    ViewDescriptor viewDesc;
+                                    this->getViewDescriptorForCamera(orthoShadowMapCameraObject->getTransform().getWorldMatrix(),
+                                                                     orthoShadowMapCamera->getProjectionMatrix(), viewDesc);
+                                    viewDesc.overrideMaterial = this->depthMaterial;
+                                    this->render(viewDesc, objects, dummyLights);
                                 }
                             }
                         }
