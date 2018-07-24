@@ -81,7 +81,14 @@ namespace Core {
         Matrix4x4 lightTransformInverse = lightTransform;
         lightTransformInverse.invert();
 
+        Real aspectRatio = targetCamera->getAspectRatio();
+        Real fov = targetCamera->getFOV();
+        Real tanHalfHFOV = Math::tan(fov / 2.0f);
+        Real fovV = Math::aTan(tanHalfHFOV / aspectRatio);
+        Real tanHalfVFOV = Math::tan((fov / aspectRatio) / 2.0f);
+        //Real tanHalfVFOV = Math::tan(fovV / 2.0f);
         Bool isOrtho = targetCamera->isOrtho();
+
         for (UInt32 i = 1; i <= boundaryIndex; i++) {
             
             // TODO: support ortho rendering cameras!!!
@@ -89,13 +96,6 @@ namespace Core {
 
             }
             else {
-                Real aspectRatio = targetCamera->getAspectRatio();
-                Real fov = targetCamera->getFOV();
-                Real tanHalfHFOV = Math::tan(fov / 2.0f);
-
-                Real fovV = Math::aTan(tanHalfHFOV / aspectRatio);
-                Real tanHalfVFOV = Math::tan((fov / aspectRatio) / 2.0f);
-                //Real tanHalfVFOV = Math::tan(fovV / 2.0f);
 
                 Real xn = this->cascadeBoundaries[i - 1] * tanHalfHFOV;
                 Real xf = this->cascadeBoundaries[i] * tanHalfHFOV;
@@ -105,16 +105,16 @@ namespace Core {
                 const UInt32 NumFrustumCorners = 8;
                 Point3r frustumCorners[NumFrustumCorners] = {
                     // near face
-                    Point3r(xn, yn, this->cascadeBoundaries[i - 1]),
-                    Point3r(-xn, yn, this->cascadeBoundaries[i - 1]),
-                    Point3r(xn, -yn, this->cascadeBoundaries[i - 1]),
-                    Point3r(-xn, -yn, this->cascadeBoundaries[i - 1]),
+                    Point3r(xn, yn, -this->cascadeBoundaries[i - 1]),
+                    Point3r(-xn, yn, -this->cascadeBoundaries[i - 1]),
+                    Point3r(xn, -yn, -this->cascadeBoundaries[i - 1]),
+                    Point3r(-xn, -yn, -this->cascadeBoundaries[i - 1]),
 
                     // far face
-                    Point3r(xf, yf, this->cascadeBoundaries[i]),
-                    Point3r(-xf, yf, this->cascadeBoundaries[i]),
-                    Point3r(xf, -yf, this->cascadeBoundaries[i]),
-                    Point3r(-xf, -yf, this->cascadeBoundaries[i]) 
+                    Point3r(xf, yf, -this->cascadeBoundaries[i]),
+                    Point3r(-xf, yf, -this->cascadeBoundaries[i]),
+                    Point3r(xf, -yf, -this->cascadeBoundaries[i]),
+                    Point3r(-xf, -yf, -this->cascadeBoundaries[i]) 
                 };
 
                 float minX = 0.0f;
@@ -127,10 +127,8 @@ namespace Core {
                 for (UInt32 j = 0 ; j < NumFrustumCorners ; j++) {
 
                     // Transform the frustum coordinate from view to world space
-
                     Point3r corner = frustumCorners[j];                               
                     targetCameraTransform.transform(corner);
-
                     // Transform the frustum coordinate from world to light space
                     lightTransformInverse.transform(corner);
 
@@ -151,14 +149,15 @@ namespace Core {
                 oProj.left = minX;
                 oProj.bottom = minY;
                 oProj.top = maxY;
-                oProj.far = maxZ;
-                oProj.near = minZ;
+                oProj.far = maxZ + 120;
+                oProj.near = minZ - 120;
 
+              //  std::cerr << oProj.left << ", " << oProj.right << " , " << oProj.top << ", " << oProj.bottom  << std::endl;
              
                 Matrix4x4 viewTrans = lightTransformInverse;
                 Matrix4x4& projMat =  this->projectionMatrices[i - 1];
                 Camera::buildOrthographicProjectionMatrix(oProj.top, oProj.bottom, oProj.left, oProj.right, oProj.near, oProj.far, projMat);                
-               // projMat.multiply(viewTrans);
+                projMat.multiply(viewTrans);
             }
         }   
 

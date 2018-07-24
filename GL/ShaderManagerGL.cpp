@@ -82,7 +82,7 @@ namespace Core {
             "uniform int lightEnabled;\n"
             "uniform vec4 lightColor;\n"
 
-            "int calcDirShadowFactor(int cascadeIndex, vec4 lSpacePos)\n"
+            "int calcDirShadowFactor(int cascadeIndex, vec4 lSpacePos, float bias)\n"
             "{ \n"
             "    vec3 projCoords = lSpacePos.xyz / lSpacePos.w; \n"
 
@@ -91,26 +91,11 @@ namespace Core {
             "    uvCoords.y = 0.5 * projCoords.y + 0.5; \n"
 
             "    float z = 0.5 * projCoords.z + 0.5; \n"
-            "    float depth = texture(lightShadowMap[cascadeIndex], uvCoords).r; \n"
-
-            "    if (depth > z - 0.00001 || depth < .00001) \n"
+            "    float depth = clamp(texture(lightShadowMap[cascadeIndex], uvCoords).r, 0.0, 1.0); \n"
+            "    if (depth > z - bias -.0005 || depth < .0001) \n"
             "        return 0;\n"
             "    else \n"
             "        return 1; \n"
-            "} \n"
-
-            " vec4 calcDirShadowColor(int cascadeIndex, vec4 lSpacePos)\n"
-            "{ \n"
-            "    vec3 projCoords = lSpacePos.xyz / lSpacePos.w; \n"
-
-            "    vec2 uvCoords; \n"
-            "    uvCoords.x = 0.5 * projCoords.x + 0.5; \n"
-            "    uvCoords.y = 0.5 * projCoords.y + 0.5; \n"
-
-            "    float z = 0.5 * projCoords.z + 0.5; \n"
-            "    float depth = texture(lightShadowMap[cascadeIndex], uvCoords).r; \n"
-            "    return vec4(depth, 0.0, 0.0, 1.0); \n"
-    
             "} \n"
 
             "vec4 litColor(in vec4 baseColor, in vec4 fragPos, in vec3 fragNormal) {\n"
@@ -120,32 +105,19 @@ namespace Core {
             "        }\n"
             "        else if (lightType == 1) {\n"
             "            int shadowCount = 0; \n"
+            "            vec3 toLight = vec3(-lightDir);\n"
+            "            float baseDot = max(cos(acos(dot(toLight, fragNormal)) * 1.025), 0.0); \n"  
+            "            float bias = (1.0 - baseDot) * lightShadowBias;"
             "            for (int i = 0 ; i < lightCascadeCount ; i++) { \n"
             "               if (viewSpacePosZ <= lightCascadeEnd[i]) { \n"
-            "                   shadowCount += calcDirShadowFactor(i, lightSpacePos[i]); \n"
+            "                   shadowCount += calcDirShadowFactor(i, lightSpacePos[i], bias); \n"
             "                   break; \n"
             "               } \n"
             "            } \n"
-          //  "            return calcDirShadowColor(0, lightSpacePos[0]); \n"
             "            if (shadowCount == 0) { \n"
-            "               vec3 toLight = vec3(-lightDir);\n"
-            "               float baseDot = max(cos(acos(dot(toLight, fragNormal)) * 1.025), 0.0); \n"  
             "               return vec4(lightColor.rgb * baseColor.rgb * baseDot, baseColor.a);\n"      
             "            }"
-            "            return vec4(0.0, 0.0, 0.0, 1.0);\n"
-
-            /*"     float tr = 0.0; \n"
-            "            for (int i = 0 ; i < lightCascadeCount ; i++) { \n"
-            "    vec3 projCoords = lightSpacePos[i].xyz / lightSpacePos[i].w; \n"
-            "    vec2 uvCoords; \n"
-            "    uvCoords.x = 0.5 * projCoords.x + 0.5; \n"
-            "    uvCoords.y = 0.5 * projCoords.y + 0.5; \n"
-            "    float z = 0.5 * projCoords.z + 0.5; \n"
-            "    tr += texture(lightShadowMap[i], uvCoords).r; \n"
-            " } \n "
-            " return vec4(tr, 0.0, 0.0, 1.0);\n"*/
-
-
+            "            return vec4(0.0, 0.0, 0.0, baseColor.a);\n"
             "        }\n"
             "        else if (lightType == 2) {\n"
             "            vec3 lightLocalFragPos = vec3(lightMatrix * fragPos);\n"
@@ -158,7 +130,7 @@ namespace Core {
             "                float aAtten = baseDot;\n"
             "                return vec4(lightColor.rgb * baseColor.rgb * aAtten, baseColor.a);\n"
             "            }\n"
-            "            return vec4(0.0, 0.0, 0.0, 1.0);\n"
+            "            return vec4(0.0, 0.0, 0.0, baseColor.a);\n"
             "        }\n"
             "    }\n"
             "    return baseColor;\n"
@@ -297,11 +269,11 @@ namespace Core {
             "#version 150\n"
             "precision highp float;\n"
             "#include \"Lighting\" \n"
-            "attribute vec4 pos;\n"
-            "attribute vec4 color;\n"
-            "attribute vec4 normal;\n"
-            "attribute vec4 faceNormal;\n"
-            "attribute vec2 uv;\n"
+            "in vec4 pos;\n"
+            "in vec4 color;\n"
+            "in vec4 normal;\n"
+            "in vec4 faceNormal;\n"
+            "in vec2 uv;\n"
             "uniform mat4 projection;\n"
             "uniform mat4 viewMatrix;\n"
             "uniform mat4 modelMatrix;\n"
@@ -322,7 +294,7 @@ namespace Core {
             "    vec3 toLight = normalize(lightPos.xyz - vPos.xyz);\n"
             "    vNormal = vec3(modelInverseTransposeMatrix * eNormal);\n"
             "    vFaceNormal = vec3(modelInverseTransposeMatrix * faceNormal);\n"
-            "    TRANSFER_LIGHTING(vPos, gl_Position, viewSpacePos) \n"
+            "    TRANSFER_LIGHTING(pos, gl_Position, viewSpacePos) \n"
             "}\n";
 
         this->BasicTexturedLit_fragment =   

@@ -139,14 +139,12 @@ namespace Core {
         this->lightColorLocation = this->shader->getUniformLocation("lightColor");
         this->lightEnabledLocation = this->shader->getUniformLocation("lightEnabled");
         this->lightMatrixLocation = this->shader->getUniformLocation("lightMatrix");
-
         for (UInt32 i =0; i < Constants::MaxDirectionalCascades; i++) {
             this->lightViewProjectionLocations[i] = this->shader->getUniformLocation(std::string("lightViewProjection["+std::to_string(i)+"]"));
             this->lightShadowMapLocations[i] = this->shader->getUniformLocation(std::string("lightShadowMap["+std::to_string(i)+"]"));
             this->lightCascadeEndLocations[i] = this->shader->getUniformLocation(std::string("lightCascadeEnd["+std::to_string(i)+"]"));
         }
         this->lightCascadeCountLocation = this->shader->getUniformLocation("lightCascadeCount");
-
         this->lightShadowCubeMapLocation = this->shader->getUniformLocation("lightShadowCubeMap");
         this->lightShadowBiasLocation = this->shader->getUniformLocation("lightShadowBias");
     }

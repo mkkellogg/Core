@@ -2,6 +2,7 @@
 
 #include "../util/WeakPointer.h"
 #include "Material.h"
+#include "../common/Constants.h"
 
 namespace Core {
 
@@ -39,13 +40,16 @@ namespace Core {
 
         Int32 lightPositionLocation;
         Int32 lightDirectionLocation;
+        Int32 lightViewProjectionLocations[Constants::MaxDirectionalCascades];
+        Int32 lightShadowMapLocations[Constants::MaxDirectionalCascades];
+        Int32 lightCascadeEndLocations[Constants::MaxDirectionalCascades];
+        Int32 lightCascadeCountLocation;
         Int32 lightRangeLocation;
         Int32 lightTypeLocation;
         Int32 lightIntensityLocation;
         Int32 lightColorLocation;
         Int32 lightEnabledLocation;
         Int32 lightMatrixLocation;
-        Int32 lightShadowMapLocation;
         Int32 lightShadowCubeMapLocation;
         Int32 lightShadowBiasLocation;
     };

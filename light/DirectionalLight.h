@@ -48,6 +48,7 @@ namespace Core {
         void buildShadowMaps();
         
         std::vector<PersistentWeakPointer<RenderTarget2D>> shadowMaps;
+        // TODO: this should be renamed to something like viewProjections
         std::vector<OrthoProjection> projections;
         std::vector<Matrix4x4> projectionMatrices;
         std::vector<Real> cascadeBoundaries;

@@ -13,6 +13,7 @@
 #include "RenderTargetCube.h"
 #include "RenderTarget2D.h"
 #include "../image/TextureAttr.h"
+#include "../image/Texture.h"
 #include "../material/DepthOnlyMaterial.h"
 #include "../material/DistanceOnlyMaterial.h"
 #include "../math/Matrix4x4.h"
@@ -193,12 +194,12 @@ namespace Core {
                             if (directionalLight->getShadowsEnabled()) {
                                 std::vector<DirectionalLight::OrthoProjection>& projections = directionalLight->buildProjections(renderCamera);
                                 Matrix4x4 viewTrans = directionalLight->getOwner()->getTransform().getWorldMatrix();
-                             //   viewTrans.invert();
+                                //viewTrans.invert();
                                 for (UInt32 i = 0; i < directionalLight->getCascadeCount(); i++) {
                                     DirectionalLight::OrthoProjection& proj = projections[i];  
 
-                                   // orthoShadowMapCameraObject->getTransform().getWorldMatrix().copy(viewTrans);
-                                    orthoShadowMapCameraObject->getTransform().getWorldMatrix().setIdentity();
+                                    orthoShadowMapCameraObject->getTransform().getWorldMatrix().copy(viewTrans);
+                                  //  orthoShadowMapCameraObject->getTransform().getWorldMatrix().setIdentity();
                                    /* Vector3r dir = Vector3r::Forward;
                                     viewTrans.transform(dir);
                                     orthoShadowMapCameraObject->getTransform().lookAt(Point3r(dir.x, dir.y, dir.z));
