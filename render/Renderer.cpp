@@ -109,7 +109,6 @@ namespace Core {
         Vector2u nextSize = nextRenderTarget->getSize();
         Vector4u nextViewport = nextRenderTarget->getViewport();
         graphics->setViewport(nextViewport.x, nextViewport.y, nextViewport.z, nextViewport.w);
-        camera->setAspectRatioFromDimensions(nextViewport.z, nextViewport.w);
         graphics->activateRenderTarget(nextRenderTarget);
     
         RenderTargetCube * renderTargetCube = dynamic_cast<RenderTargetCube*>(nextRenderTarget.get());
@@ -182,7 +181,8 @@ namespace Core {
                                 Matrix4x4 lightTransform = lightObject->getTransform().getWorldMatrix();
                                 perspectiveShadowMapCameraObject->getTransform().getWorldMatrix().copy(lightTransform);
                                 Vector4u renderTargetDimensions = shadowMapRenderTarget->getViewport();
-                                perspectiveShadowMapCamera->setRenderTarget(shadowMapRenderTarget);                       
+                                perspectiveShadowMapCamera->setRenderTarget(shadowMapRenderTarget);  
+                                perspectiveShadowMapCamera->setAspectRatioFromDimensions(renderTargetDimensions.z, renderTargetDimensions.w);                     
                                 this->render(perspectiveShadowMapCamera, objects, dummyLights, this->distanceMaterial);
                             }
                         }
@@ -207,6 +207,7 @@ namespace Core {
                                     orthoShadowMapCamera->setDimensions(proj.top, proj.bottom, proj.left, proj.right);        
                                     orthoShadowMapCamera->setNearAndFar(proj.near, proj.far);
                                     WeakPointer<RenderTarget> shadowMapRenderTarget = directionalLight->getShadowMap(i);
+                                    WeakPointer<RenderTarget> currentRenderTarget = graphics->getCurrentRenderTarget();
                                     graphics->activateRenderTarget(shadowMapRenderTarget);
                                     orthoShadowMapCamera->setRenderTarget(shadowMapRenderTarget); 
                                     Vector2u renderTargetSize = shadowMapRenderTarget->getSize();
@@ -216,6 +217,7 @@ namespace Core {
                                                                      orthoShadowMapCamera->getProjectionMatrix(), viewDesc);
                                     viewDesc.overrideMaterial = this->depthMaterial;
                                     this->render(viewDesc, objects, dummyLights);
+                                    graphics->activateRenderTarget(currentRenderTarget);
                                 }
                             }
                         }

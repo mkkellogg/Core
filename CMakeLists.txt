@@ -74,6 +74,8 @@ set(INCLUDE_FILES
     render/RenderTarget2D.h
     render/RenderTargetCube.h
     render/ViewDescriptor.h
+    render/RenderTargetException.h
+    render/RenderBuffer.h
     light/Light.h
     light/ShadowLight.h
     light/PointLight.h

@@ -87,16 +87,20 @@ namespace Core {
             if (lightEnabledLoc >= 0) {
                 shader->setUniform1i(lightEnabledLoc, 1);
             }
+
+            UInt32 renderedCount = 0;
             for (UInt32 i = 0; i < lights.size(); i++) {
-                if (i == 0) {
+
+                WeakPointer<Light> light = lights[i];
+                LightType lightType = light->getType();
+
+                if (renderedCount == 0) {
                     graphics->setBlendingEnabled(false);
                 } else {
                     graphics->setBlendingEnabled(true);
                     graphics->setBlendingFunction(RenderState::BlendingMethod::One, RenderState::BlendingMethod::One);
                 }
 
-                WeakPointer<Light> light = lights[i];
-                LightType lightType = light->getType();
                 if (lightColorLoc >= 0) {
                     Color color = light->getColor();
                     // std::cerr << " setting light color: " << color.r << ", " << color.g << ", " << color.b << std::endl;
@@ -144,6 +148,10 @@ namespace Core {
                 else if (lightType == LightType::Directional) {
                     WeakPointer<DirectionalLight> directionalLight = WeakPointer<Light>::dynamicPointerCast<DirectionalLight>(light);
 
+                    if (lightShadowBiasLoc >= 0) {
+                        shader->setUniform1f(lightShadowBiasLoc, directionalLight->getShadowBias());
+                    }
+
                     Int32 lightDirectionLoc = material->getShaderLocation(StandardUniform::LightDirection);
                     if (lightDirectionLoc >= 0) {
                         Vector3r dir = Vector3r::Forward;
@@ -178,7 +186,7 @@ namespace Core {
                         }
                     }
                 }
-
+                renderedCount++;
                 this->drawMesh(mesh);
             }
 

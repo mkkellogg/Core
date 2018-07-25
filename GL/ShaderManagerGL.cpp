@@ -92,7 +92,7 @@ namespace Core {
 
             "    float z = 0.5 * projCoords.z + 0.5; \n"
             "    float depth = clamp(texture(lightShadowMap[cascadeIndex], uvCoords).r, 0.0, 1.0); \n"
-            "    if (depth > z - bias -.0005 || depth < .0001) \n"
+            "    if (depth > z - bias - .0001 || depth < .0001) \n"
             "        return 0;\n"
             "    else \n"
             "        return 1; \n"
