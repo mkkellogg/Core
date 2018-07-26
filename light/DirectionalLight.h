@@ -44,7 +44,8 @@ namespace Core {
         Real getCascadeBoundary(UInt32 boundaryIndex);
 
     protected:
-        DirectionalLight(WeakPointer<Object3D> owner, UInt32 cascadeCount, Bool shadowsEnabled, UInt32 shadowMapSize, Real shadowBias);
+        DirectionalLight(WeakPointer<Object3D> owner, UInt32 cascadeCount, Bool shadowsEnabled, 
+                         UInt32 shadowMapSize, Real constantShadowBias, Real angularShadowBias);
         void buildShadowMaps();
         
         std::vector<PersistentWeakPointer<RenderTarget2D>> shadowMaps;

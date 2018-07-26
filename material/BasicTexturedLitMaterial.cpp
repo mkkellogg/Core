@@ -84,8 +84,10 @@ namespace Core {
                 return this->lightCascadeCountLocation;
             case StandardUniform::LightShadowCubeMap:
                 return this->lightShadowCubeMapLocation;
-            case StandardUniform::LightShadowBias:
-                return this->lightShadowBiasLocation;
+            case StandardUniform::LightAngularShadowBias:
+                return this->lightAngularShadowBiasLocation;
+             case StandardUniform::LightConstantShadowBias:
+                return this->lightConstantShadowBiasLocation;
             default:
                 return -1;
         }
@@ -131,7 +133,8 @@ namespace Core {
         }
         newMaterial->lightCascadeCountLocation = this->lightCascadeCountLocation;
         newMaterial->lightShadowCubeMapLocation = this->lightShadowCubeMapLocation;
-        newMaterial->lightShadowBiasLocation = this->lightShadowBiasLocation;
+        newMaterial->lightAngularShadowBiasLocation = this->lightAngularShadowBiasLocation;
+        newMaterial->lightConstantShadowBiasLocation = this->lightConstantShadowBiasLocation;
         return newMaterial;
     }
 
@@ -161,7 +164,8 @@ namespace Core {
         }
         this->lightCascadeCountLocation = this->shader->getUniformLocation("lightCascadeCount");
         this->lightShadowCubeMapLocation = this->shader->getUniformLocation("lightShadowCubeMap");
-        this->lightShadowBiasLocation = this->shader->getUniformLocation("lightShadowBias");
+        this->lightAngularShadowBiasLocation = this->shader->getUniformLocation("lightAngularShadowBias");
+        this->lightConstantShadowBiasLocation = this->shader->getUniformLocation("lightConstantShadowBias");
     }
 
     UInt32 BasicTexturedLitMaterial::textureCount() {

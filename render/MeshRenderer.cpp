@@ -79,7 +79,8 @@ namespace Core {
         Int32 lightEnabledLoc = material->getShaderLocation(StandardUniform::LightEnabled);
 
         Int32 lightMatrixLoc = material->getShaderLocation(StandardUniform::LightMatrix);
-        Int32 lightShadowBiasLoc = material->getShaderLocation(StandardUniform::LightShadowBias);
+        Int32 lightAngularShadowBiasLoc = material->getShaderLocation(StandardUniform::LightAngularShadowBias);
+        Int32 lightConstantShadowBiasLoc = material->getShaderLocation(StandardUniform::LightConstantShadowBias);
 
         UInt32 currentTextureSlot = material->textureCount();
 
@@ -123,8 +124,12 @@ namespace Core {
 
                     WeakPointer<PointLight> pointLight = WeakPointer<Light>::dynamicPointerCast<PointLight>(light);
 
-                    if (lightShadowBiasLoc >= 0) {
-                        shader->setUniform1f(lightShadowBiasLoc, pointLight->getShadowBias());
+                    if (lightAngularShadowBiasLoc >= 0) {
+                        shader->setUniform1f(lightAngularShadowBiasLoc, pointLight->getAngularShadowBias());
+                    }
+
+                    if (lightConstantShadowBiasLoc >= 0) {
+                        shader->setUniform1f(lightConstantShadowBiasLoc, pointLight->getConstantShadowBias());
                     }
                     
                     if (lightRangeLoc >= 0) {
@@ -148,8 +153,12 @@ namespace Core {
                 else if (lightType == LightType::Directional) {
                     WeakPointer<DirectionalLight> directionalLight = WeakPointer<Light>::dynamicPointerCast<DirectionalLight>(light);
 
-                    if (lightShadowBiasLoc >= 0) {
-                        shader->setUniform1f(lightShadowBiasLoc, directionalLight->getShadowBias());
+                    if (lightAngularShadowBiasLoc >= 0) {
+                        shader->setUniform1f(lightAngularShadowBiasLoc, directionalLight->getAngularShadowBias());
+                    }
+
+                    if (lightConstantShadowBiasLoc >= 0) {
+                        shader->setUniform1f(lightConstantShadowBiasLoc, directionalLight->getConstantShadowBias());
                     }
 
                     Int32 lightDirectionLoc = material->getShaderLocation(StandardUniform::LightDirection);

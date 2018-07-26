@@ -4,8 +4,9 @@
 
 namespace Core {
 
-    PointLight::PointLight(WeakPointer<Object3D> owner, Bool shadowsEnabled, UInt32 shadowMapSize, Real shadowBias): 
-        ShadowLight(owner, LightType::Point, shadowsEnabled, shadowMapSize, shadowBias) {
+    PointLight::PointLight(WeakPointer<Object3D> owner, Bool shadowsEnabled, 
+                           UInt32 shadowMapSize, Real constantShadowBias, Real angularShadowBias): 
+        ShadowLight(owner, LightType::Point, shadowsEnabled, shadowMapSize, constantShadowBias, angularShadowBias) {
         this->attenuationOverride = false;
         this->attenuation = 1.0f;
         this->radius = 1.0f;

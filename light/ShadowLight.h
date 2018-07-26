@@ -14,8 +14,11 @@ namespace Core {
     public:
        virtual ~ShadowLight() = 0;
 
-        void setShadowBias(Real bias);
-        Real getShadowBias() const;
+        void setConstantShadowBias(Real bias);
+        Real getConstantShadowBias() const;
+
+        void setAngularShadowBias(Real bias);
+        Real getAngularShadowBias() const;
 
         virtual void setShadowsEnabled(Bool enabled);
         Bool getShadowsEnabled() const;
@@ -23,10 +26,12 @@ namespace Core {
         UInt32 getShadowMapSize() const;
 
     protected:
-        ShadowLight(WeakPointer<Object3D> owner, LightType type, Bool shadowsEnabled, UInt32 shadowMapSize, Real shadowBias);
+        ShadowLight(WeakPointer<Object3D> owner, LightType type, Bool shadowsEnabled, 
+                    UInt32 shadowMapSize,  Real constantShadowBias, Real angularShadowBias);
 
         Bool shadowsEnabled;
-        Real shadowBias;
         UInt32 shadowMapSize;
+        Real constantShadowBias;
+        Real angularShadowBias;
     };
 }

@@ -10,8 +10,9 @@
 
 namespace Core {
 
-    DirectionalLight::DirectionalLight(WeakPointer<Object3D> owner, UInt32 cascadeCount, Bool shadowsEnabled, UInt32 shadowMapSize, Real shadowBias): 
-        ShadowLight(owner, LightType::Directional, shadowsEnabled, shadowMapSize, shadowBias) {
+    DirectionalLight::DirectionalLight(WeakPointer<Object3D> owner, UInt32 cascadeCount, Bool shadowsEnabled,
+                                       UInt32 shadowMapSize, Real constantShadowBias, Real angularShadowBias): 
+        ShadowLight(owner, LightType::Directional, shadowsEnabled, shadowMapSize, constantShadowBias, angularShadowBias) {
         this->cascadeCount = Math::min(Constants::MaxDirectionalCascades, cascadeCount);
         for (UInt32 i = 0; i < this->cascadeCount; i++) {
             this->projections.push_back(DirectionalLight::OrthoProjection());

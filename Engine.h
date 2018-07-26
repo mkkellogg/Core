@@ -67,8 +67,8 @@ namespace Core {
 
         template <typename T>
         WeakPointer<typename std::enable_if<std::is_base_of<PointLight, T>::value, T>::type> 
-        createPointLight(WeakPointer<Object3D> owner, Bool shadowsEnabled, UInt32 shadowMapSize, Real shadowBias) {
-            std::shared_ptr<T> light = std::shared_ptr<T>(new T(owner, shadowsEnabled, shadowMapSize, shadowBias));
+        createPointLight(WeakPointer<Object3D> owner, Bool shadowsEnabled, UInt32 shadowMapSize, Real constantShadowBias, Real angularShadowBias) {
+            std::shared_ptr<T> light = std::shared_ptr<T>(new T(owner, shadowsEnabled, shadowMapSize, constantShadowBias, angularShadowBias));
             light->init();
             this->lights.push_back(light);
             WeakPointer<T> lightPtr = light;
@@ -78,8 +78,8 @@ namespace Core {
 
         template <typename T>
         WeakPointer<typename std::enable_if<std::is_base_of<DirectionalLight, T>::value, T>::type> 
-        createDirectionalLight(WeakPointer<Object3D> owner, UInt32 cascadeCount, Bool shadowsEnabled, UInt32 shadowMapSize, Real shadowBias) {
-            std::shared_ptr<T> light = std::shared_ptr<T>(new T(owner, cascadeCount, shadowsEnabled, shadowMapSize, shadowBias));
+        createDirectionalLight(WeakPointer<Object3D> owner, UInt32 cascadeCount, Bool shadowsEnabled, UInt32 shadowMapSize, Real constantShadowBias, Real angularShadowBias) {
+            std::shared_ptr<T> light = std::shared_ptr<T>(new T(owner, cascadeCount, shadowsEnabled, shadowMapSize, constantShadowBias, angularShadowBias));
             light->init();
             this->lights.push_back(light);
             WeakPointer<T> lightPtr = light;

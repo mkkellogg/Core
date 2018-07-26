@@ -47,7 +47,8 @@ namespace Core {
         "LIGHT_CASCADE_END",
         "LIGHT_CASCADE_COUNT",
         "LIGHT_SHADOW_CUBE_MAP",
-        "LIGHT_SHADOW_BIAS"
+        "LIGHT_CONSTANT_SHADOW_BIAS",
+        "LIGHT_ANGULAR_SHADOW_BIAS"
     };
 
     std::unordered_map<std::string, StandardUniform> StandardUniforms::nameToUniform
@@ -69,7 +70,8 @@ namespace Core {
         {uniformNames[(UInt16)StandardUniform::LightEnabled],StandardUniform::LightMatrix},
         {uniformNames[(UInt16)StandardUniform::LightEnabled],StandardUniform::LightShadowMap},
         {uniformNames[(UInt16)StandardUniform::LightEnabled],StandardUniform::LightShadowCubeMap},
-        {uniformNames[(UInt16)StandardUniform::LightEnabled],StandardUniform::LightShadowBias},
+        {uniformNames[(UInt16)StandardUniform::LightEnabled],StandardUniform::LightConstantShadowBias},
+        {uniformNames[(UInt16)StandardUniform::LightEnabled],StandardUniform::LightAngularShadowBias}
     };
 
     const std::string& StandardUniforms::getUniformName(StandardUniform uniform) {

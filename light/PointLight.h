@@ -28,7 +28,8 @@ namespace Core {
         void setRadius(Real radius);
       
     protected:
-        PointLight(WeakPointer<Object3D> owner, Bool shadowsEnabled, UInt32 shadowMapSize, Real shadowBias);
+        PointLight(WeakPointer<Object3D> owner, Bool shadowsEnabled, 
+                   UInt32 shadowMapSize, Real constantShadowBias, Real angularShadowBias);
 
         void calcAttentuationForCurrentRadius();
         void buildShadowMap();
