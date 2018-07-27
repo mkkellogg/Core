@@ -24,11 +24,9 @@ namespace Core {
         BasicLitMaterial(WeakPointer<Graphics> graphics);
         void bindShaderVarLocations();
 
-        WeakPointer<Texture> texture;
         Int32 positionLocation;
         Int32 normalLocation;
         Int32 colorLocation;
-        Int32 uvLocation;
         Int32 projectionMatrixLocation;
         Int32 viewMatrixLocation;
         Int32 modelMatrixLocation;

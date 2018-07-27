@@ -34,8 +34,6 @@ namespace Core {
                 return this->normalLocation;
             case StandardAttribute::Color:
                 return this->colorLocation;
-            case StandardAttribute::UV0:
-                return this->uvLocation;
             default:
                 return -1;
         }
@@ -96,7 +94,6 @@ namespace Core {
     WeakPointer<Material> BasicLitMaterial::clone() {
         WeakPointer<BasicLitMaterial> newMaterial = Engine::instance()->createMaterial<BasicLitMaterial>(false);
         newMaterial->setShader(this->getShader());
-        newMaterial->texture = this->texture;
         newMaterial->positionLocation = this->positionLocation;
         newMaterial->normalLocation = this->normalLocation;
         newMaterial->colorLocation = this->colorLocation;
@@ -104,7 +101,6 @@ namespace Core {
         newMaterial->viewMatrixLocation = this->viewMatrixLocation;
         newMaterial->modelMatrixLocation = this->modelMatrixLocation;
         newMaterial->modelInverseTransposeMatrixLocation = this->modelInverseTransposeMatrixLocation;
-        newMaterial->uvLocation = this->uvLocation;
         newMaterial->lightPositionLocation = this->lightPositionLocation;
         newMaterial->lightDirectionLocation = this->lightDirectionLocation;
         newMaterial->lightRangeLocation = this->lightRangeLocation;
@@ -129,7 +125,6 @@ namespace Core {
         this->positionLocation = this->shader->getAttributeLocation("pos");
         this->normalLocation = this->shader->getAttributeLocation("normal");
         this->colorLocation = this->shader->getAttributeLocation("color");
-        this->uvLocation = this->shader->getAttributeLocation("uv");
         this->projectionMatrixLocation = this->shader->getUniformLocation("projection");
         this->viewMatrixLocation = this->shader->getUniformLocation("viewMatrix");
         this->modelMatrixLocation = this->shader->getUniformLocation("modelMatrix");

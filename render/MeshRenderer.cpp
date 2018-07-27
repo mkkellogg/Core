@@ -50,7 +50,6 @@ namespace Core {
         }
 
         if (viewMatrixLoc >= 0) {
-            ;
             Matrix4x4 viewMatrix = viewDescriptor.viewInverseMatrix;
             shader->setUniformMatrix4(viewMatrixLoc, viewMatrix);
         }
