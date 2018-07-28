@@ -82,26 +82,45 @@ namespace Core {
             "uniform int lightType;\n"
             "uniform int lightEnabled;\n"
             "uniform vec4 lightColor;\n"
+            "uniform float lightShadowMapSize;\n"
+
+            "float calDirShadowFactorSingleIndex(int index, vec2 uv, float fragDepth, float angularBias) { \n"
+            "    float shadowDepth = clamp(texture(lightShadowMap[index], uv).r, 0.0, 1.0); \n"
+            "    float realFragDepth = clamp(fragDepth - angularBias - lightConstantShadowBias, 0.0, 1.0); \n"
+          
+          //"    float depthTest = 0.0; \n"
+          //"    if (fragDepth < depth) depthTest = 1.0; \n"
+
+            "    float depthTest = step(realFragDepth, shadowDepth); \n"
+            "    float minTest = step(shadowDepth, .0001); \n"
+            "    return 1.0 - clamp(minTest + depthTest, 0.0, 1.0); \n"
+            "} \n"
 
             "float calcDirShadowFactor(int cascadeIndex, vec4 lSpacePos, float angularBias)\n"
             "{ \n"
             "    vec3 projCoords = lSpacePos.xyz / lSpacePos.w; \n"
             "    vec3 uvCoords = (projCoords * 0.5) + vec3(0.5, 0.5, 0.5); \n"
-            "    float depth = clamp(texture(lightShadowMap[cascadeIndex], uvCoords.xy).r, 0.0, 1.0); \n"
-            "    float fragDepth = clamp(uvCoords.z - angularBias - lightConstantShadowBias, 0.0, 1.0); \n"
-          
-           // "    float depthTest = 0.0; \n"
-            //"    if (fragDepth < depth) depthTest = 1.0; \n"
+            "    float px = 1.0 / lightShadowMapSize; \n"
 
-            "    float depthTest = step(fragDepth, depth); \n"
-        //    "    depthTest =(1.0 - step(depth, fragDepth)); \n"
+            "    float shadowFactor = 0.0; \n"
+            "    vec2 uv = uvCoords.xy; \n"
+            "    float z = uvCoords.z; \n"
 
-          //  "    depthTest = clamp(1.0 - depthTest, 0.0, 1.0); \n"    
-          // "      float minTest = 0.0; \n"
-          //  "      if (depth < .0001) minTest = 1.0; \n"
-            "    float minTest = step(depth, .0001); \n"
-           //   "    minTest = clamp(1.0 - minTest, 0.0, 1.0); \n"
-            "    return 1.0 - clamp(minTest + depthTest, 0.0, 1.0); \n"
+            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x - px, uv.y + px), z, angularBias); \n "
+            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x, uv.y + px), z, angularBias); \n "
+            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x + px, uv.y + px), z, angularBias); \n "
+
+            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x - px, uv.y), z, angularBias); \n "
+            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.xy), z, angularBias); \n "
+            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x + px, uv.y), z, angularBias); \n "
+
+            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x - px, uv.y - px), z, angularBias); \n "
+            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x, uv.y - px), z, angularBias); \n "
+            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x + px, uv.y - px), z, angularBias); \n "
+
+            "    shadowFactor /= 9.0; \n"
+
+            "    return shadowFactor; \n"
             "} \n"
 
             "vec4 getDirLightColor(vec4 baseColor, float bias, float atten) { \n"
@@ -166,7 +185,6 @@ namespace Core {
             "precision highp float;\n"
             "void main() {\n"
             "    gl_FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 0.0);\n"
-            //"    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n"
             "}\n";
 
         this->Distance_vertex =
@@ -247,7 +265,8 @@ namespace Core {
             "in vec4 vPos;\n"
             "out vec4 out_color;\n"
             "void main() {\n"
-            "   out_color = litColor(vec4(vColor.r, vColor.g, vColor.b, 1.0), vPos, normalize(vNormal));\n"
+           // "   out_color = litColor(vec4(vColor.r, vColor.g, vColor.b, 1.0), vPos, normalize(vNormal));\n"
+            "   out_color = litColor(vColor, vPos, normalize(vNormal));\n"
             "}\n";
 
         this->BasicTextured_vertex =  

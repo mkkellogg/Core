@@ -80,6 +80,8 @@ namespace Core {
         Int32 lightMatrixLoc = material->getShaderLocation(StandardUniform::LightMatrix);
         Int32 lightAngularShadowBiasLoc = material->getShaderLocation(StandardUniform::LightAngularShadowBias);
         Int32 lightConstantShadowBiasLoc = material->getShaderLocation(StandardUniform::LightConstantShadowBias);
+        Int32 lightShadowMapSizeLoc = material->getShaderLocation(StandardUniform::LightShadowMapSize);
+
 
         UInt32 currentTextureSlot = material->textureCount();
 
@@ -127,6 +129,10 @@ namespace Core {
                         shader->setUniform1f(lightAngularShadowBiasLoc, pointLight->getAngularShadowBias());
                     }
 
+                    if (lightShadowMapSizeLoc >= 0) {
+                        shader->setUniform1f(lightShadowMapSizeLoc, pointLight->getShadowMapSize());
+                    }
+
                     if (lightConstantShadowBiasLoc >= 0) {
                         shader->setUniform1f(lightConstantShadowBiasLoc, pointLight->getConstantShadowBias());
                     }
@@ -154,6 +160,10 @@ namespace Core {
 
                     if (lightAngularShadowBiasLoc >= 0) {
                         shader->setUniform1f(lightAngularShadowBiasLoc, directionalLight->getAngularShadowBias());
+                    }
+
+                     if (lightShadowMapSizeLoc >= 0) {
+                        shader->setUniform1f(lightShadowMapSizeLoc, directionalLight->getShadowMapSize());
                     }
 
                     if (lightConstantShadowBiasLoc >= 0) {
