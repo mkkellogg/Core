@@ -74,6 +74,8 @@ namespace Core {
                 return this->lightShadowMapLocations[offset];
             case StandardUniform::LightCascadeEnd:
                 return this->lightCascadeEndLocations[offset];
+            case StandardUniform::LightShadowMapAspect:
+                return this->lightShadowMapAspectLocations[offset];
             case StandardUniform::LightCascadeCount:
                 return this->lightCascadeCountLocation;
             case StandardUniform::LightShadowCubeMap:
@@ -112,9 +114,10 @@ namespace Core {
         newMaterial->lightEnabledLocation = this->lightEnabledLocation;
         newMaterial->lightMatrixLocation = this->lightMatrixLocation;
         for (UInt32 i =0; i < Constants::MaxDirectionalCascades; i++) {
-            this->lightViewProjectionLocations[i] = this->lightViewProjectionLocations[i];
-            this->lightShadowMapLocations[i] = this->lightShadowMapLocations[i];
-            this->lightCascadeEndLocations[i] = this->lightCascadeEndLocations[i];
+            newMaterial->lightViewProjectionLocations[i] = this->lightViewProjectionLocations[i];
+            newMaterial->lightShadowMapLocations[i] = this->lightShadowMapLocations[i];
+            newMaterial->lightCascadeEndLocations[i] = this->lightCascadeEndLocations[i];
+            newMaterial->lightShadowMapAspectLocations[i] = this->lightShadowMapAspectLocations[i];
         }
         newMaterial->lightCascadeCountLocation = this->lightCascadeCountLocation;
         newMaterial->lightShadowCubeMapLocation = this->lightShadowCubeMapLocation;
@@ -144,6 +147,7 @@ namespace Core {
             this->lightViewProjectionLocations[i] = this->shader->getUniformLocation(std::string("lightViewProjection["+std::to_string(i)+"]"));
             this->lightShadowMapLocations[i] = this->shader->getUniformLocation(std::string("lightShadowMap["+std::to_string(i)+"]"));
             this->lightCascadeEndLocations[i] = this->shader->getUniformLocation(std::string("lightCascadeEnd["+std::to_string(i)+"]"));
+            this->lightShadowMapAspectLocations[i] = this->shader->getUniformLocation(std::string("lightShadowMapAspect["+std::to_string(i)+"]"));
         }
         this->lightCascadeCountLocation = this->shader->getUniformLocation("lightCascadeCount");
         this->lightShadowCubeMapLocation = this->shader->getUniformLocation("lightShadowCubeMap");

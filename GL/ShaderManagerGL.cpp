@@ -70,6 +70,7 @@ namespace Core {
             "uniform int lightCascadeCount;\n"
             "uniform sampler2D lightShadowMap[MAX_CASCADES];\n"
             "uniform float lightCascadeEnd[MAX_CASCADES];\n"
+            "uniform float lightShadowMapAspect[MAX_CASCADES];\n"
             "in vec4 lightSpacePos[MAX_CASCADES];\n"
             "in float viewSpacePosZ;\n"
             "uniform samplerCube lightShadowCubeMap;\n"
@@ -101,24 +102,25 @@ namespace Core {
             "    vec3 projCoords = lSpacePos.xyz / lSpacePos.w; \n"
             "    vec3 uvCoords = (projCoords * 0.5) + vec3(0.5, 0.5, 0.5); \n"
             "    float px = 1.0 / lightShadowMapSize; \n"
+            "    float py =  lightShadowMapAspect[cascadeIndex] / lightShadowMapSize; \n"
 
             "    float shadowFactor = 0.0; \n"
             "    vec2 uv = uvCoords.xy; \n"
             "    float z = uvCoords.z; \n"
 
-            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x - px, uv.y + px), z, angularBias); \n "
-            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x, uv.y + px), z, angularBias); \n "
-            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x + px, uv.y + px), z, angularBias); \n "
+            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x - px, uv.y + py), z, angularBias) * 0.75; \n "
+            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x, uv.y + py), z, angularBias); \n "
+            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x + px, uv.y + py), z, angularBias) * 0.75; \n "
 
             "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x - px, uv.y), z, angularBias); \n "
             "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.xy), z, angularBias); \n "
             "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x + px, uv.y), z, angularBias); \n "
 
-            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x - px, uv.y - px), z, angularBias); \n "
-            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x, uv.y - px), z, angularBias); \n "
-            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x + px, uv.y - px), z, angularBias); \n "
+            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x - px, uv.y - py), z, angularBias) * 0.75; \n "
+            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x, uv.y - py), z, angularBias); \n "
+            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x + px, uv.y - py), z, angularBias) * 0.75; \n "
 
-            "    shadowFactor /= 9.0; \n"
+            "    shadowFactor /= 8.0; \n"
 
             "    return shadowFactor; \n"
             "} \n"
@@ -265,8 +267,8 @@ namespace Core {
             "in vec4 vPos;\n"
             "out vec4 out_color;\n"
             "void main() {\n"
-           // "   out_color = litColor(vec4(vColor.r, vColor.g, vColor.b, 1.0), vPos, normalize(vNormal));\n"
-            "   out_color = litColor(vColor, vPos, normalize(vNormal));\n"
+            "   out_color = litColor(vec4(vColor.r, vColor.g, vColor.b, 1.0), vPos, normalize(vNormal));\n"
+           // "   out_color = litColor(vColor, vPos, normalize(vNormal));\n"
             "}\n";
 
         this->BasicTextured_vertex =  

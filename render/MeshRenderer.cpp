@@ -82,7 +82,6 @@ namespace Core {
         Int32 lightConstantShadowBiasLoc = material->getShaderLocation(StandardUniform::LightConstantShadowBias);
         Int32 lightShadowMapSizeLoc = material->getShaderLocation(StandardUniform::LightShadowMapSize);
 
-
         UInt32 currentTextureSlot = material->textureCount();
 
         if (lights.size() > 0) {
@@ -162,7 +161,7 @@ namespace Core {
                         shader->setUniform1f(lightAngularShadowBiasLoc, directionalLight->getAngularShadowBias());
                     }
 
-                     if (lightShadowMapSizeLoc >= 0) {
+                    if (lightShadowMapSizeLoc >= 0) {
                         shader->setUniform1f(lightShadowMapSizeLoc, directionalLight->getShadowMapSize());
                     }
 
@@ -201,6 +200,13 @@ namespace Core {
                         Int32 cascadeEndLoc = material->getShaderLocation(StandardUniform::LightCascadeEnd, l);
                         if (cascadeEndLoc >= 0) {
                             shader->setUniform1f(cascadeEndLoc, directionalLight->getCascadeBoundary(l + 1));
+                        }
+
+                        Int32 lightShadowMapAspectLoc = material->getShaderLocation(StandardUniform::LightShadowMapAspect, l);
+                        if (lightShadowMapAspectLoc >= 0) {
+                            DirectionalLight::OrthoProjection& proj = directionalLight->getProjection(l);
+                            Real aspect = Math::abs((proj.right - proj.left) / (proj.top - proj.bottom));
+                            shader->setUniform1f(lightShadowMapAspectLoc, aspect);
                         }
                     }
                 }

@@ -39,6 +39,7 @@ namespace Core {
 
         UInt32 getCascadeCount();
         std::vector<OrthoProjection>& buildProjections(WeakPointer<Camera> targetCamera);
+        OrthoProjection& getProjection(UInt32 cascadeIndex);
         Matrix4x4& getProjectionMatrix(UInt32 cascadeIndex);
 
         Real getCascadeBoundary(UInt32 boundaryIndex);

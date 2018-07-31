@@ -37,6 +37,7 @@ namespace Core {
         Int32 lightViewProjectionLocations[Constants::MaxDirectionalCascades];
         Int32 lightShadowMapLocations[Constants::MaxDirectionalCascades];
         Int32 lightCascadeEndLocations[Constants::MaxDirectionalCascades];
+        Int32 lightShadowMapAspectLocations[Constants::MaxDirectionalCascades];
         Int32 lightCascadeCountLocation;
         Int32 lightRangeLocation;
         Int32 lightTypeLocation;

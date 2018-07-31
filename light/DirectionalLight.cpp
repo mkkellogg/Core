@@ -165,6 +165,13 @@ namespace Core {
         return this->projections;
     }
 
+    DirectionalLight::OrthoProjection& DirectionalLight::getProjection(UInt32 cascadeIndex) {
+        if (cascadeIndex >= this->cascadeCount) {
+            throw OutOfRangeException("DirectionalLight::getProjection() -> 'cascadeIndex' is out of range.");
+        }
+        return this->projections[cascadeIndex];
+    }
+
     Matrix4x4& DirectionalLight::getProjectionMatrix(UInt32 cascadeIndex) {
         if (cascadeIndex >= this->cascadeCount) {
             throw OutOfRangeException("DirectionalLight::getProjectionMatrix() -> 'cascadeIndex' is out of range.");
