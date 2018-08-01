@@ -97,12 +97,13 @@ namespace Core {
             "    return 1.0 - clamp(minTest + depthTest, 0.0, 1.0); \n"
             "} \n"
 
-            "float calcDirShadowFactor(int cascadeIndex, vec4 lSpacePos, float angularBias)\n"
+            "float calcDirShadowFactor(int cascadeIndex, vec4 lSpacePos, float angularBias, float baseDot)\n"
             "{ \n"
             "    vec3 projCoords = lSpacePos.xyz / lSpacePos.w; \n"
             "    vec3 uvCoords = (projCoords * 0.5) + vec3(0.5, 0.5, 0.5); \n"
-            "    float px = 1.0 / lightShadowMapSize; \n"
-            "    float py =  lightShadowMapAspect[cascadeIndex] / lightShadowMapSize; \n"
+            "    float pxMag = 1.0 + (1.0 - baseDot);\n"
+            "    float px = 1.0 / lightShadowMapSize * pxMag; \n"
+            "    float py =  lightShadowMapAspect[cascadeIndex] / lightShadowMapSize * pxMag; \n"
 
             "    float shadowFactor = 0.0; \n"
             "    vec2 uv = uvCoords.xy; \n"
@@ -119,21 +120,29 @@ namespace Core {
             "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x - px, uv.y - py), z, angularBias) * 0.75; \n "
             "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x, uv.y - py), z, angularBias); \n "
             "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x + px, uv.y - py), z, angularBias) * 0.75; \n "
+            
 
-            "    shadowFactor /= 8.0; \n"
+           /* " for (int y = -1 ; y <= 1 ; y++) { \n"
+            "    for (int x = -1 ; x <= 1 ; x++) { \n"
+            "        shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x + x * px, uv.y + y * py), z, angularBias); \n"
+            "    } \n"
+            "} \n "*/
+
+
+            "    shadowFactor /= 9.0; \n"
 
             "    return shadowFactor; \n"
             "} \n"
 
-            "vec4 getDirLightColor(vec4 baseColor, float bias, float atten) { \n"
+            "vec4 getDirLightColor(vec4 baseColor, float bias, float baseDot) { \n"
             "    float shadowFactor = 0.0;\n"
             "    for (int i = 0 ; i < lightCascadeCount ; i++) { \n"
             "        if (viewSpacePosZ <= lightCascadeEnd[i]) { \n"
-            "            shadowFactor = calcDirShadowFactor(i, lightSpacePos[i], bias); \n"
+            "            shadowFactor = calcDirShadowFactor(i, lightSpacePos[i], bias, baseDot); \n"
             "            break; \n"
             "        } \n"
             "    } \n"
-            "    return vec4((1.0 - shadowFactor) * lightColor.rgb * baseColor.rgb * atten, baseColor.a);\n"      
+            "    return vec4((1.0 - shadowFactor) * lightColor.rgb * baseColor.rgb * baseDot, baseColor.a);\n"      
             "} \n"
 
             "vec4 getPointLightColor(vec4 baseColor, vec3 lightLocalFragPos, float bias, float atten) { \n"
@@ -269,6 +278,7 @@ namespace Core {
             "void main() {\n"
             "   out_color = litColor(vec4(vColor.r, vColor.g, vColor.b, 1.0), vPos, normalize(vNormal));\n"
            // "   out_color = litColor(vColor, vPos, normalize(vNormal));\n"
+           // "   out_color = litColor(vec4(1.0, 0.0, 0.0, 1.0), vPos, normalize(vNormal));\n"
             "}\n";
 
         this->BasicTextured_vertex =  
