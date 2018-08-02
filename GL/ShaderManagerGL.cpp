@@ -102,14 +102,14 @@ namespace Core {
             "    vec3 projCoords = lSpacePos.xyz / lSpacePos.w; \n"
             "    vec3 uvCoords = (projCoords * 0.5) + vec3(0.5, 0.5, 0.5); \n"
             "    float pxMag = 1.0 + (1.0 - baseDot);\n"
-            "    float px = 1.0 / lightShadowMapSize * pxMag; \n"
-            "    float py =  lightShadowMapAspect[cascadeIndex] / lightShadowMapSize * pxMag; \n"
+            "    float px = 1.0 / lightShadowMapSize; \n"
+            "    float py =  lightShadowMapAspect[cascadeIndex] / lightShadowMapSize; \n"
 
             "    float shadowFactor = 0.0; \n"
             "    vec2 uv = uvCoords.xy; \n"
             "    float z = uvCoords.z; \n"
 
-            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x - px, uv.y + py), z, angularBias) * 0.75; \n "
+           /* "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x - px, uv.y + py), z, angularBias) * 0.75; \n "
             "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x, uv.y + py), z, angularBias); \n "
             "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x + px, uv.y + py), z, angularBias) * 0.75; \n "
 
@@ -120,16 +120,16 @@ namespace Core {
             "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x - px, uv.y - py), z, angularBias) * 0.75; \n "
             "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x, uv.y - py), z, angularBias); \n "
             "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x + px, uv.y - py), z, angularBias) * 0.75; \n "
-            
+            */
 
-           /* " for (int y = -1 ; y <= 1 ; y++) { \n"
-            "    for (int x = -1 ; x <= 1 ; x++) { \n"
+            " for (int y = -2 ; y <= 2 ; y++) { \n"
+            "    for (int x = -2 ; x <= 2 ; x++) { \n"
             "        shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x + x * px, uv.y + y * py), z, angularBias); \n"
             "    } \n"
-            "} \n "*/
+            "} \n "
 
 
-            "    shadowFactor /= 9.0; \n"
+            "    shadowFactor /= 25.0; \n"
 
             "    return shadowFactor; \n"
             "} \n"
