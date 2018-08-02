@@ -62,7 +62,9 @@ namespace Core {
         TextureAttributes colorTextureAttributes;
         colorTextureAttributes.Format = TextureFormat::R32F;
         colorTextureAttributes.FilterMode = TextureFilter::Linear;
+        TextureAttributes depthTextureAttributes;
         Vector2u renderTargetSize(this->shadowMapSize, this->shadowMapSize);
-        this->shadowMap = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorTextureAttributes, renderTargetSize);
+        this->shadowMap = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorTextureAttributes,
+                                                                                          depthTextureAttributes, renderTargetSize);
     }
 }

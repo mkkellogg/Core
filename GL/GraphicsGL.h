@@ -60,9 +60,11 @@ namespace Core {
         void setBlendingFunction(RenderState::BlendingMethod source, RenderState::BlendingMethod dest) override;
 
         WeakPointer<RenderTarget2D> createRenderTarget2D(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
-                                                     const TextureAttributes& colorTextureAttributes, Vector2u size) override;
+                                                     const TextureAttributes& colorTextureAttributes, 
+                                                     const TextureAttributes& depthTextureAttributes, Vector2u size) override;
         WeakPointer<RenderTargetCube> createRenderTargetCube(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
-                                                     const TextureAttributes& colorTextureAttributes, Vector2u size) override;
+                                                     const TextureAttributes& colorTextureAttributes,
+                                                     const TextureAttributes& depthTextureAttributes, Vector2u size) override;
 
         void setClearColor(Color color) override;
         void clearActiveRenderTarget(Bool colorBuffer, Bool depthBuffer, Bool stencilBuffer) override;

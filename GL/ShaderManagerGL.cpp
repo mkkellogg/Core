@@ -68,7 +68,7 @@ namespace Core {
             ShaderManagerGL::BaseString + 
             "const int MAX_CASCADES =" + std::to_string(Constants::MaxDirectionalCascades) + ";\n" +
             "uniform int lightCascadeCount;\n"
-            "uniform sampler2D lightShadowMap[MAX_CASCADES];\n"
+            "uniform sampler2DShadow lightShadowMap[MAX_CASCADES];\n"
             "uniform float lightCascadeEnd[MAX_CASCADES];\n"
             "uniform float lightShadowMapAspect[MAX_CASCADES];\n"
             "in vec4 lightSpacePos[MAX_CASCADES];\n"
@@ -85,31 +85,60 @@ namespace Core {
             "uniform vec4 lightColor;\n"
             "uniform float lightShadowMapSize;\n"
 
+            "vec2 poissonDisk[16] = vec2[]( \n"
+            "vec2( -0.94201624, -0.39906216 ), \n"
+            "vec2( 0.94558609, -0.76890725 ), \n"
+            "vec2( -0.094184101, -0.92938870 ), \n"
+            "vec2( 0.34495938, 0.29387760 ), \n"
+            "vec2( -0.91588581, 0.45771432 ), \n"
+            "vec2( -0.81544232, -0.87912464 ),\n" 
+            "vec2( -0.38277543, 0.27676845 ),\n" 
+            "vec2( 0.97484398, 0.75648379 ), \n"
+            "vec2( 0.44323325, -0.97511554 ), \n"
+            "vec2( 0.53742981, -0.47373420 ), \n"
+            "vec2( -0.26496911, -0.41893023 ), \n"
+            "vec2( 0.79197514, 0.19090188 ), \n"
+            "vec2( -0.24188840, 0.99706507 ),\n" 
+            "vec2( -0.81409955, 0.91437590 ),\n" 
+            "vec2( 0.19984126, 0.78641367 ), \n"
+            "vec2( 0.14383161, -0.14100790 ) \n"
+            ");\n"
+
+            "#define EPSILON 0.00001 \n"
+
+            "// Returns a random number based on a vec3 and an int.\n"
+            "float random(vec3 seed, int i){\n"
+            "    vec4 seed4 = vec4(seed,i);\n"
+            "    float dot_product = dot(seed4, vec4(12.9898,78.233,45.164,94.673));\n"
+            "    return fract(sin(dot_product) * 43758.5453);\n"
+            "}\n"
+
             "float calDirShadowFactorSingleIndex(int index, vec2 uv, float fragDepth, float angularBias) { \n"
-            "    float shadowDepth = clamp(texture(lightShadowMap[index], uv).r, 0.0, 1.0); \n"
+            "    vec3 coords = vec3(uv.xy, fragDepth - angularBias - lightConstantShadowBias); \n"
+            "    float shadowDepth = clamp(texture(lightShadowMap[index], coords), 0.0, 1.0); \n"
             "    float realFragDepth = clamp(fragDepth - angularBias - lightConstantShadowBias, 0.0, 1.0); \n"
           
           //"    float depthTest = 0.0; \n"
           //"    if (fragDepth < depth) depthTest = 1.0; \n"
 
-            "    float depthTest = step(realFragDepth, shadowDepth); \n"
-            "    float minTest = step(shadowDepth, .0001); \n"
-            "    return 1.0 - clamp(minTest + depthTest, 0.0, 1.0); \n"
+            //"    float depthTest = step(realFragDepth, shadowDepth); \n"
+            //"    float minTest = step(shadowDepth, .0001); \n"
+            //"    return 1.0 - clamp(minTest + depthTest, 0.0, 1.0); \n"
+            " return (1.0-shadowDepth); \n"
             "} \n"
 
             "float calcDirShadowFactor(int cascadeIndex, vec4 lSpacePos, float angularBias, float baseDot)\n"
             "{ \n"
             "    vec3 projCoords = lSpacePos.xyz / lSpacePos.w; \n"
             "    vec3 uvCoords = (projCoords * 0.5) + vec3(0.5, 0.5, 0.5); \n"
-            "    float pxMag = 1.0 + (1.0 - baseDot);\n"
-            "    float px = 1.0 / lightShadowMapSize * pxMag; \n"
-            "    float py =  lightShadowMapAspect[cascadeIndex] / lightShadowMapSize * pxMag; \n"
+            "    float px = 1.0 / lightShadowMapSize; \n"
+            "    float py =  lightShadowMapAspect[cascadeIndex] / lightShadowMapSize; \n"
 
             "    float shadowFactor = 0.0; \n"
             "    vec2 uv = uvCoords.xy; \n"
             "    float z = uvCoords.z; \n"
 
-            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x - px, uv.y + py), z, angularBias) * 0.75; \n "
+            /*"    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x - px, uv.y + py), z, angularBias) * 0.75; \n "
             "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x, uv.y + py), z, angularBias); \n "
             "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x + px, uv.y + py), z, angularBias) * 0.75; \n "
 
@@ -120,16 +149,16 @@ namespace Core {
             "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x - px, uv.y - py), z, angularBias) * 0.75; \n "
             "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x, uv.y - py), z, angularBias); \n "
             "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x + px, uv.y - py), z, angularBias) * 0.75; \n "
-            
+            */
 
-           /* " for (int y = -1 ; y <= 1 ; y++) { \n"
-            "    for (int x = -1 ; x <= 1 ; x++) { \n"
+            " for (int y = -2 ; y <= 2 ; y++) { \n"
+            "    for (int x = -2 ; x <= 2 ; x++) { \n"
             "        shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x + x * px, uv.y + y * py), z, angularBias); \n"
             "    } \n"
-            "} \n "*/
+            "} \n "
 
 
-            "    shadowFactor /= 9.0; \n"
+            "    shadowFactor /= 25.0; \n"
 
             "    return shadowFactor; \n"
             "} \n"
@@ -162,7 +191,7 @@ namespace Core {
             "        else if (lightType == 1) {\n"
             "            int shadowCount = 0; \n"
             "            vec3 toLight = vec3(-lightDir);\n"
-            "            float baseDot = max(cos(acos(dot(toLight, fragNormal)) * 1.055), 0.0); \n"  
+            "            float baseDot = max(cos(acos(dot(toLight, fragNormal)) * 1.1), 0.0); \n"  
             "            float bias = (1.0 - baseDot) * lightAngularShadowBias;"
             "            return getDirLightColor(baseColor, bias, baseDot); \n"
             "        }\n"
@@ -277,7 +306,7 @@ namespace Core {
             "out vec4 out_color;\n"
             "void main() {\n"
             "   out_color = litColor(vec4(vColor.r, vColor.g, vColor.b, 1.0), vPos, normalize(vNormal));\n"
-           // "   out_color = litColor(vColor, vPos, normalize(vNormal));\n"
+            //"   out_color = litColor(vColor, vPos, normalize(vNormal));\n"
            // "   out_color = litColor(vec4(1.0, 0.0, 0.0, 1.0), vPos, normalize(vNormal));\n"
             "}\n";
 

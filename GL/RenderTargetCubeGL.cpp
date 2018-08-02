@@ -10,8 +10,9 @@
 namespace Core {
 
     RenderTargetCubeGL::RenderTargetCubeGL(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
-                                       const TextureAttributes& colorTextureAttributes, Vector2u size) :
-        RenderTargetCube(hasColor, hasDepth, enableStencilBuffer, colorTextureAttributes, size), RenderTargetGL() {
+                                       const TextureAttributes& colorTextureAttributes,
+                                       const TextureAttributes& depthTextureAttributes, Vector2u size) :
+        RenderTargetCube(hasColor, hasDepth, enableStencilBuffer, colorTextureAttributes, depthTextureAttributes, size), RenderTargetGL() {
 
     }
 
