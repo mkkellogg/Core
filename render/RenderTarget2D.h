@@ -9,7 +9,8 @@ namespace Core {
         virtual ~RenderTarget2D();
 
     protected:
-        RenderTarget2D(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer, const TextureAttributes& colorTextureAttributes, Vector2u size);
+        RenderTarget2D(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer, const TextureAttributes& colorTextureAttributes, 
+                       const TextureAttributes& depthTextureAttributes, Vector2u size);
 
     };
 

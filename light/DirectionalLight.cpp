@@ -197,10 +197,13 @@ namespace Core {
         TextureAttributes colorTextureAttributes;
         colorTextureAttributes.Format = TextureFormat::R32F;
         colorTextureAttributes.FilterMode = TextureFilter::Point;
+        TextureAttributes depthTextureAttributes;
+        depthTextureAttributes.FilterMode = TextureFilter::Linear;
         Vector2u renderTargetSize(this->shadowMapSize, this->shadowMapSize);
         for (UInt32 i = 0; i < this->cascadeCount; i++) {
             auto graphics = Engine::instance()->getGraphicsSystem();
-            PersistentWeakPointer<RenderTarget2D> map = graphics->createRenderTarget2D(true, true, false, colorTextureAttributes, renderTargetSize);
+            PersistentWeakPointer<RenderTarget2D> map = graphics->createRenderTarget2D(true, true, false, colorTextureAttributes,
+                                                                                       depthTextureAttributes, renderTargetSize);
             this->shadowMaps.push_back(map);
         }
     }

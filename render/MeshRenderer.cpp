@@ -187,7 +187,7 @@ namespace Core {
                     for (UInt32 l = 0; l < cascadeCount; l++) {
                         Int32 shadowMapLoc = material->getShaderLocation(StandardUniform::LightShadowMap, l);
                         if (shadowMapLoc >= 0) {
-                            shader->setTexture2D(currentTextureSlot, directionalLight->getShadowMap(l)->getColorTexture()->getTextureID());
+                            shader->setTexture2D(currentTextureSlot, directionalLight->getShadowMap(l)->getDepthTexture()->getTextureID());
                             shader->setUniform1i(shadowMapLoc, currentTextureSlot);
                             currentTextureSlot++;
                         }

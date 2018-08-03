@@ -62,9 +62,11 @@ namespace Core {
         virtual void setBlendingFunction(RenderState::BlendingMethod source, RenderState::BlendingMethod dest) = 0;
 
         virtual WeakPointer<RenderTarget2D> createRenderTarget2D(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
-                                                                 const TextureAttributes& colorTextureAttributes, Vector2u size) = 0;
+                                                                 const TextureAttributes& colorTextureAttributes,
+                                                                 const TextureAttributes& depthTextureAttributes, Vector2u size) = 0;
         virtual WeakPointer<RenderTargetCube> createRenderTargetCube(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
-                                                                     const TextureAttributes& colorTextureAttributes, Vector2u size) = 0;
+                                                                     const TextureAttributes& colorTextureAttributes,
+                                                                     const TextureAttributes& depthTextureAttributes, Vector2u size) = 0;
                                                                      
         virtual void setClearColor(Color color) = 0;
         virtual void clearActiveRenderTarget(Bool colorBuffer, Bool depthBuffer, Bool stencilBuffer) = 0;

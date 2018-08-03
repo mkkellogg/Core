@@ -10,8 +10,9 @@
 namespace Core {
 
     RenderTarget2DGL::RenderTarget2DGL(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
-                                       const TextureAttributes& colorTextureAttributes, Vector2u size) :
-        RenderTarget2D(hasColor, hasDepth, enableStencilBuffer, colorTextureAttributes, size), RenderTargetGL() {
+                                       const TextureAttributes& colorTextureAttributes, 
+                                       const TextureAttributes& depthTextureAttributes, Vector2u size) :
+        RenderTarget2D(hasColor, hasDepth, enableStencilBuffer, colorTextureAttributes, depthTextureAttributes, size), RenderTargetGL() {
 
     }
 

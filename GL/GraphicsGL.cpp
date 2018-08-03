@@ -171,9 +171,11 @@ namespace Core {
     }
 
     WeakPointer<RenderTarget2D> GraphicsGL::createRenderTarget2D(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
-                                                                 const TextureAttributes& colorTextureAttributes, Vector2u size) {
+                                                                 const TextureAttributes& colorTextureAttributes, 
+                                                                 const TextureAttributes& depthTextureAttributes, Vector2u size) {
 
-        RenderTarget2DGL* renderTargetPtr = new(std::nothrow) RenderTarget2DGL(hasColor, hasDepth, enableStencilBuffer, colorTextureAttributes, size);
+        RenderTarget2DGL* renderTargetPtr = new(std::nothrow) RenderTarget2DGL(hasColor, hasDepth, enableStencilBuffer,
+                                                                               colorTextureAttributes, depthTextureAttributes, size);
         if (renderTargetPtr == nullptr) {
             throw AllocationException("GraphicsGL::createRenderTarget2D -> Unable to allocate render target.");
         }
@@ -186,9 +188,11 @@ namespace Core {
     }
 
     WeakPointer<RenderTargetCube> GraphicsGL::createRenderTargetCube(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
-                                                                     const TextureAttributes& colorTextureAttributes, Vector2u size) {
+                                                                     const TextureAttributes& colorTextureAttributes,
+                                                                     const TextureAttributes& depthTextureAttributes, Vector2u size) {
        
-        RenderTargetCubeGL* renderTargetPtr = new(std::nothrow) RenderTargetCubeGL(hasColor, hasDepth, enableStencilBuffer, colorTextureAttributes, size);
+        RenderTargetCubeGL* renderTargetPtr = new(std::nothrow) RenderTargetCubeGL(hasColor, hasDepth, enableStencilBuffer,
+                                                                                   colorTextureAttributes, depthTextureAttributes, size);
         if (renderTargetPtr == nullptr) {
             throw AllocationException("GraphicsGL::createRenderTargetCube -> Unable to allocate render target.");
         }
@@ -416,8 +420,10 @@ namespace Core {
 
     std::shared_ptr<RenderTarget2DGL> GraphicsGL::createDefaultRenderTarget() {
         TextureAttributes colorAttributes;
+        TextureAttributes depthAttributes;
         Vector2u renderSize(1024, 1024);
-        RenderTarget2DGL* defaultTargetPtr = new(std::nothrow) RenderTarget2DGL(false, false, false, colorAttributes, renderSize);
+        RenderTarget2DGL* defaultTargetPtr = new(std::nothrow) RenderTarget2DGL(false, false, false, colorAttributes,
+                                                                                depthAttributes, renderSize);
         if (defaultTargetPtr == nullptr) {
             throw AllocationException("GraphicsGL::createDefaultRenderTarget -> Unable to allocate default render target.");
         }

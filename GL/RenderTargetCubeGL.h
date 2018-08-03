@@ -32,6 +32,7 @@ namespace Core {
     private:
 
         RenderTargetCubeGL(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
-                           const TextureAttributes& colorTextureAttributes, Vector2u size);
+                           const TextureAttributes& colorTextureAttributes, 
+                           const TextureAttributes& depthTextureAttributes, Vector2u size);
     };
 }
