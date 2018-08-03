@@ -13,9 +13,6 @@ namespace Core {
 
     void ShaderManagerGL::init() {
 
-        this->setShader(ShaderType::Vertex, "Test", ShaderManagerGL::Test_vertex);
-        this->setShader(ShaderType::Fragment, "Test", ShaderManagerGL::Test_fragment);
-
         this->setShader(ShaderType::Vertex, "Lighting", ShaderManagerGL::Lighting_vertex);
         this->setShader(ShaderType::Fragment, "Lighting", ShaderManagerGL::Lighting_fragment);
 
@@ -42,14 +39,6 @@ namespace Core {
     }
 
     ShaderManagerGL::ShaderManagerGL() {
-
-        this->Test_vertex =
-            "// some comments\n"
-            "// some more comments\n";
-
-        this->Test_fragment =
-            "// some fragment comments\n"
-            "// some morefragment comments\n";
 
         this->Lighting_vertex =
             ShaderManagerGL::BaseString + 
@@ -85,81 +74,32 @@ namespace Core {
             "uniform vec4 lightColor;\n"
             "uniform float lightShadowMapSize;\n"
 
-            "vec2 poissonDisk[16] = vec2[]( \n"
-            "vec2( -0.94201624, -0.39906216 ), \n"
-            "vec2( 0.94558609, -0.76890725 ), \n"
-            "vec2( -0.094184101, -0.92938870 ), \n"
-            "vec2( 0.34495938, 0.29387760 ), \n"
-            "vec2( -0.91588581, 0.45771432 ), \n"
-            "vec2( -0.81544232, -0.87912464 ),\n" 
-            "vec2( -0.38277543, 0.27676845 ),\n" 
-            "vec2( 0.97484398, 0.75648379 ), \n"
-            "vec2( 0.44323325, -0.97511554 ), \n"
-            "vec2( 0.53742981, -0.47373420 ), \n"
-            "vec2( -0.26496911, -0.41893023 ), \n"
-            "vec2( 0.79197514, 0.19090188 ), \n"
-            "vec2( -0.24188840, 0.99706507 ),\n" 
-            "vec2( -0.81409955, 0.91437590 ),\n" 
-            "vec2( 0.19984126, 0.78641367 ), \n"
-            "vec2( 0.14383161, -0.14100790 ) \n"
-            ");\n"
-
-            "#define EPSILON 0.00001 \n"
-
-            "// Returns a random number based on a vec3 and an int.\n"
-            "float random(vec3 seed, int i){\n"
-            "    vec4 seed4 = vec4(seed,i);\n"
-            "    float dot_product = dot(seed4, vec4(12.9898,78.233,45.164,94.673));\n"
-            "    return fract(sin(dot_product) * 43758.5453);\n"
-            "}\n"
-
             "float calDirShadowFactorSingleIndex(int index, vec2 uv, float fragDepth, float angularBias) { \n"
             "    vec3 coords = vec3(uv.xy, fragDepth - angularBias - lightConstantShadowBias); \n"
             "    float shadowDepth = clamp(texture(lightShadowMap[index], coords), 0.0, 1.0); \n"
             "    float realFragDepth = clamp(fragDepth - angularBias - lightConstantShadowBias, 0.0, 1.0); \n"
-          
-          //"    float depthTest = 0.0; \n"
-          //"    if (fragDepth < depth) depthTest = 1.0; \n"
-
-            //"    float depthTest = step(realFragDepth, shadowDepth); \n"
-            //"    float minTest = step(shadowDepth, .0001); \n"
-            //"    return 1.0 - clamp(minTest + depthTest, 0.0, 1.0); \n"
-            " return (1.0-shadowDepth); \n"
+            "    return (1.0-shadowDepth); \n"
             "} \n"
 
             "float calcDirShadowFactor(int cascadeIndex, vec4 lSpacePos, float angularBias, float baseDot)\n"
             "{ \n"
             "    vec3 projCoords = lSpacePos.xyz / lSpacePos.w; \n"
             "    vec3 uvCoords = (projCoords * 0.5) + vec3(0.5, 0.5, 0.5); \n"
-            "    float px = 1.0 / lightShadowMapSize; \n"
-            "    float py =  lightShadowMapAspect[cascadeIndex] / lightShadowMapSize; \n"
+            "    float pxMag = clamp(1.0 / (baseDot + .0001), 1.0, 1.0); \n"
+            "    float px = 1.0 / lightShadowMapSize * pxMag; \n"
+            "    float py =  lightShadowMapAspect[cascadeIndex] / lightShadowMapSize * pxMag; \n"
 
             "    float shadowFactor = 0.0; \n"
             "    vec2 uv = uvCoords.xy; \n"
             "    float z = uvCoords.z; \n"
 
-            /*"    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x - px, uv.y + py), z, angularBias) * 0.75; \n "
-            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x, uv.y + py), z, angularBias); \n "
-            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x + px, uv.y + py), z, angularBias) * 0.75; \n "
-
-            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x - px, uv.y), z, angularBias); \n "
-            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.xy), z, angularBias); \n "
-            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x + px, uv.y), z, angularBias); \n "
-
-            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x - px, uv.y - py), z, angularBias) * 0.75; \n "
-            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x, uv.y - py), z, angularBias); \n "
-            "    shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x + px, uv.y - py), z, angularBias) * 0.75; \n "
-            */
-
-            " for (int y = -2 ; y <= 2 ; y++) { \n"
-            "    for (int x = -2 ; x <= 2 ; x++) { \n"
-            "        shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x + x * px, uv.y + y * py), z, angularBias); \n"
-            "    } \n"
-            "} \n "
-
+            "    for (int y = -2 ; y <= 2 ; y++) { \n"
+            "        for (int x = -2 ; x <= 2 ; x++) { \n"
+            "            shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x + x * px, uv.y + y * py), z, angularBias); \n"
+            "        } \n"
+            "    } \n "
 
             "    shadowFactor /= 25.0; \n"
-
             "    return shadowFactor; \n"
             "} \n"
 
@@ -228,7 +168,6 @@ namespace Core {
             "}\n";
 
         this->Distance_vertex =
-            "#include \"Test\"\n"
             "#version 330\n"
             "attribute vec4 pos;\n"
             "uniform mat4 projection;\n"
@@ -251,7 +190,6 @@ namespace Core {
             "}\n";
 
         this->Basic_vertex =
-            "#include \"Test\"\n"
             "#version 100\n"
             "attribute vec4 pos;\n"
             "attribute vec4 color;\n"
