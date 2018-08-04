@@ -194,29 +194,27 @@ namespace Core {
                         if (directionalLight->getShadowsEnabled()) {
                             std::vector<DirectionalLight::OrthoProjection>& projections = directionalLight->buildProjections(renderCamera);
                             Matrix4x4 viewTrans = directionalLight->getOwner()->getTransform().getWorldMatrix();
-                            //viewTrans.invert();
                             for (UInt32 i = 0; i < directionalLight->getCascadeCount(); i++) {
                                 DirectionalLight::OrthoProjection& proj = projections[i];  
-
-                                orthoShadowMapCameraObject->getTransform().getWorldMatrix().copy(viewTrans);
-                                //  orthoShadowMapCameraObject->getTransform().getWorldMatrix().setIdentity();
-                                /* Vector3r dir = Vector3r::Forward;
-                                viewTrans.transform(dir);
-                                orthoShadowMapCameraObject->getTransform().lookAt(Point3r(dir.x, dir.y, dir.z));
-                                orthoShadowMapCameraObject->getTransform().getWorldMatrix().copy(orthoShadowMapCameraObject->getTransform().getConstLocalMatrix());*/
+                                Matrix4x4& shadowCameraMatrix = orthoShadowMapCameraObject->getTransform().getWorldMatrix();
+                                shadowCameraMatrix.copy(viewTrans);
                                 orthoShadowMapCamera->setDimensions(proj.top, proj.bottom, proj.left, proj.right);        
                                 orthoShadowMapCamera->setNearAndFar(proj.near, proj.far);
                                 WeakPointer<RenderTarget> shadowMapRenderTarget = directionalLight->getShadowMap(i);
+
+
+                                ViewDescriptor viewDesc;
+                                this->getViewDescriptorForCamera(shadowCameraMatrix, orthoShadowMapCamera->getProjectionMatrix(), viewDesc);
+                                viewDesc.overrideMaterial = this->depthMaterial;
+
                                 WeakPointer<RenderTarget> currentRenderTarget = graphics->getCurrentRenderTarget();
                                 graphics->activateRenderTarget(shadowMapRenderTarget);
                                 orthoShadowMapCamera->setRenderTarget(shadowMapRenderTarget); 
                                 Vector2u renderTargetSize = shadowMapRenderTarget->getSize();
                                 graphics->setViewport(0, 0, renderTargetSize.x, renderTargetSize.y);
-                                ViewDescriptor viewDesc;
-                                this->getViewDescriptorForCamera(orthoShadowMapCameraObject->getTransform().getWorldMatrix(),
-                                                                    orthoShadowMapCamera->getProjectionMatrix(), viewDesc);
-                                viewDesc.overrideMaterial = this->depthMaterial;
+                                
                                 this->render(viewDesc, objects, dummyLights);
+                                
                                 graphics->activateRenderTarget(currentRenderTarget);
                             }
                         }
