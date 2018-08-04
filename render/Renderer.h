@@ -28,9 +28,12 @@ namespace Core {
         void render(WeakPointer<Scene> scene);
         void render(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
                     std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial = WeakPointer<Material>::nullPtr());
-                       
     protected:
         Renderer();
+        void renderStandard(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
+                            std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial);
+        void renderCube(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
+                        std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial);
         void render(const ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objectList, 
                     std::vector<WeakPointer<Light>>& lightList);
         void renderShadowMaps(std::vector<WeakPointer<Light>>& lights, LightType lightType, 
