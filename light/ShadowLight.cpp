@@ -5,6 +5,7 @@ namespace Core {
     ShadowLight::ShadowLight(WeakPointer<Object3D> owner, LightType type, Bool shadowsEnabled, 
                             UInt32 shadowMapSize, Real constantShadowBias, Real angularShadowBias): 
         Light(owner, type), shadowsEnabled(shadowsEnabled), shadowMapSize(shadowMapSize), constantShadowBias(constantShadowBias), angularShadowBias(angularShadowBias) {
+            shadowSoftness = Softness::Hard;
     }
 
     ShadowLight::~ShadowLight() {
@@ -37,5 +38,13 @@ namespace Core {
 
     UInt32 ShadowLight::getShadowMapSize() const {
         return this->shadowMapSize;
+    }
+
+    void ShadowLight::setShadowSoftness(Softness softness) {
+        this->shadowSoftness = softness;
+    }
+
+    ShadowLight::Softness ShadowLight::getShadowSoftness() const {
+        return this->shadowSoftness;
     }
 }

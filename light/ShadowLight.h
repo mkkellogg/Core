@@ -12,7 +12,14 @@ namespace Core {
         friend class Engine;
 
     public:
-       virtual ~ShadowLight() = 0;
+
+        enum class Softness {
+            Hard = 0,
+            Soft = 1,
+            VerySoft = 2
+        };
+
+        virtual ~ShadowLight() = 0;
 
         void setConstantShadowBias(Real bias);
         Real getConstantShadowBias() const;
@@ -25,6 +32,9 @@ namespace Core {
 
         UInt32 getShadowMapSize() const;
 
+        void setShadowSoftness(Softness softness);
+        Softness getShadowSoftness() const;
+
     protected:
         ShadowLight(WeakPointer<Object3D> owner, LightType type, Bool shadowsEnabled, 
                     UInt32 shadowMapSize,  Real constantShadowBias, Real angularShadowBias);
@@ -33,5 +43,6 @@ namespace Core {
         UInt32 shadowMapSize;
         Real constantShadowBias;
         Real angularShadowBias;
+        Softness shadowSoftness;
     };
 }

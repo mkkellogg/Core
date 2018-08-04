@@ -81,6 +81,7 @@ namespace Core {
         Int32 lightAngularShadowBiasLoc = material->getShaderLocation(StandardUniform::LightAngularShadowBias);
         Int32 lightConstantShadowBiasLoc = material->getShaderLocation(StandardUniform::LightConstantShadowBias);
         Int32 lightShadowMapSizeLoc = material->getShaderLocation(StandardUniform::LightShadowMapSize);
+        Int32 lightShadowSoftnessLoc = material->getShaderLocation(StandardUniform::LightShadowSoftness);
 
         UInt32 currentTextureSlot = material->textureCount();
 
@@ -104,7 +105,6 @@ namespace Core {
 
                 if (lightColorLoc >= 0) {
                     Color color = light->getColor();
-                    // std::cerr << " setting light color: " << color.r << ", " << color.g << ", " << color.b << std::endl;
                     shader->setUniform4f(lightColorLoc, color.r, color.g, color.b, color.a);
                 }
 
@@ -134,6 +134,10 @@ namespace Core {
 
                     if (lightConstantShadowBiasLoc >= 0) {
                         shader->setUniform1f(lightConstantShadowBiasLoc, pointLight->getConstantShadowBias());
+                    }
+
+                    if (lightShadowSoftnessLoc >= 0) {
+                        shader->setUniform1i(lightShadowSoftnessLoc, (UInt32)pointLight->getShadowSoftness());
                     }
                     
                     if (lightRangeLoc >= 0) {
@@ -169,6 +173,10 @@ namespace Core {
                         shader->setUniform1f(lightConstantShadowBiasLoc, directionalLight->getConstantShadowBias());
                     }
 
+                    if (lightShadowSoftnessLoc >= 0) {
+                        shader->setUniform1i(lightShadowSoftnessLoc, (UInt32)directionalLight->getShadowSoftness());
+                    }
+
                     Int32 lightDirectionLoc = material->getShaderLocation(StandardUniform::LightDirection);
                     if (lightDirectionLoc >= 0) {
                         Vector3r dir = Vector3r::Forward;
@@ -180,7 +188,6 @@ namespace Core {
 
                     Int32 cascadeCountLoc = material->getShaderLocation(StandardUniform::LightCascadeCount);
                     if (cascadeCountLoc >= 0) {
-                        //std:: cerr << "setting cascade count: " << cascadeCountLoc << ", " << cascadeCount << std::endl;
                         shader->setUniform1i(cascadeCountLoc, cascadeCount);
                     }
 

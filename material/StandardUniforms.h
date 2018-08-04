@@ -33,8 +33,9 @@ namespace Core {
         LightAngularShadowBias = 24,
         LightShadowMapSize = 25,
         LightShadowMapAspect = 26,
-        _Count = 27,  // Must always be last in the list (before _None)
-        _None = 28,
+        LightShadowSoftness = 27,
+        _Count = 28,  // Must always be last in the list (before _None)
+        _None = 29,
     };
 
     class StandardUniforms {
