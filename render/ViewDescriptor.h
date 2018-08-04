@@ -7,6 +7,7 @@ namespace Core {
 
     // forward declarations
     class Material;
+    class RenderTarget;
 
     class ViewDescriptor {
     public:
@@ -16,6 +17,8 @@ namespace Core {
         Matrix4x4 viewInverseTransposeMatrix;
         Matrix4x4 projectionMatrix;
         PersistentWeakPointer<Material> overrideMaterial;
+        PersistentWeakPointer<RenderTarget> renderTarget;
+        Int32 cubeFace = -1;
 
     };
 

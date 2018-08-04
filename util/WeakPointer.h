@@ -25,10 +25,10 @@ namespace Core {
         WeakPointer(Bool cacheShared = true): std::weak_ptr<T>(), _ptr(nullptr), _cacheShared(cacheShared), _cachedSharedSet(false)  {
         }
 
-        WeakPointer(std::weak_ptr<T> ptr, Bool cacheShared = true) : std::weak_ptr<T>(ptr), _ptr(nullptr), _cacheShared(cacheShared), _cachedSharedSet(false) {
+        WeakPointer(const std::weak_ptr<T>& ptr, Bool cacheShared = true) : std::weak_ptr<T>(ptr), _ptr(nullptr), _cacheShared(cacheShared), _cachedSharedSet(false) {
         }
 
-        WeakPointer(std::shared_ptr<T> ptr, Bool cacheShared = true) : std::weak_ptr<T>(ptr), _ptr(nullptr), _cacheShared(cacheShared), _cachedSharedSet(false) {
+        WeakPointer(const std::shared_ptr<T>& ptr, Bool cacheShared = true) : std::weak_ptr<T>(ptr), _ptr(nullptr), _cacheShared(cacheShared), _cachedSharedSet(false) {
         }
 
         template <typename U>

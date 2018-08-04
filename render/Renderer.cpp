@@ -55,19 +55,10 @@ namespace Core {
 
     void Renderer::render(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial) {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-        WeakPointer<RenderTarget> currentRenderTarget = graphics->getCurrentRenderTarget();
-        Vector4u currentViewport = graphics->getViewport();
-        
-        WeakPointer<RenderTarget> nextRenderTarget = camera->getRenderTarget();
+         WeakPointer<RenderTarget> nextRenderTarget = camera->getRenderTarget();
         if (!nextRenderTarget.isValid()) {
             nextRenderTarget = graphics->getDefaultRenderTarget();
         }
-
-        Vector2u nextSize = nextRenderTarget->getSize();
-        Vector4u nextViewport = nextRenderTarget->getViewport();
-        graphics->setViewport(nextViewport.x, nextViewport.y, nextViewport.z, nextViewport.w);
-        graphics->activateRenderTarget(nextRenderTarget);
-
         RenderTargetCube * renderTargetCube = dynamic_cast<RenderTargetCube*>(nextRenderTarget.get());
         if (renderTargetCube != nullptr) {
             this->renderCube(camera, objects, lights, overrideMaterial);
@@ -75,9 +66,6 @@ namespace Core {
         else {
             this->renderStandard(camera, objects, lights, overrideMaterial);
         }
-
-        graphics->activateRenderTarget(currentRenderTarget);
-        graphics->setViewport(currentViewport.x, currentViewport.y, currentViewport.z, currentViewport.w);
     }
 
     void Renderer::renderStandard(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects,
@@ -127,20 +115,33 @@ namespace Core {
 
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         for (unsigned int i = 0; i < 6; i++) {
-            graphics->activateCubeRenderTargetSide((CubeTextureSide)i);
             ViewDescriptor viewDescriptor;
             Matrix4x4 cameraTransform = camera->getOwner()->getTransform().getWorldMatrix();
             cameraTransform.multiply(orientations[i]);
-            this->getViewDescriptorForCamera(cameraTransform, camera->getProjectionMatrix(), viewDescriptor);
+            this->getViewDescriptorForCamera(camera->getRenderTarget(), cameraTransform,
+                                             camera->getProjectionMatrix(), viewDescriptor);
             viewDescriptor.overrideMaterial = overrideMaterial;
+            viewDescriptor.cubeFace = i;
             render(viewDescriptor, objects, lights);
         }
     }
 
     void Renderer::render(const ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objectList, std::vector<WeakPointer<Light>>& lightList) {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
+        WeakPointer<RenderTarget> currentRenderTarget = graphics->getCurrentRenderTarget();
+        Vector4u currentViewport = graphics->getViewport();
+
+        WeakPointer<RenderTarget> nextRenderTarget = viewDescriptor.renderTarget; 
+        graphics->activateRenderTarget(nextRenderTarget);
+        if (viewDescriptor.cubeFace >= 0) {
+            graphics->activateCubeRenderTargetSide((CubeTextureSide)viewDescriptor.cubeFace);
+        }
+        Vector2u renderTargetSize = nextRenderTarget->getSize();
+        Vector4u viewport = nextRenderTarget->getViewport();
+        graphics->setViewport(viewport.x, viewport.y, viewport.z, viewport.w);
         graphics->setClearColor(Color(0.0, 0.0, 0.0, 1.0));
         graphics->clearActiveRenderTarget(true, true, true); 
+
         for (auto object : objectList) {
             std::shared_ptr<Object3D> objectShared = object.lock();
             std::shared_ptr<BaseRenderableContainer> containerPtr = std::dynamic_pointer_cast<BaseRenderableContainer>(objectShared);
@@ -151,6 +152,9 @@ namespace Core {
                 }
             }
         }
+
+        graphics->activateRenderTarget(currentRenderTarget);
+        graphics->setViewport(currentViewport.x, currentViewport.y, currentViewport.z, currentViewport.w);
     }
 
     void Renderer::renderShadowMaps(std::vector<WeakPointer<Light>>& lights, LightType lightType,
@@ -196,26 +200,13 @@ namespace Core {
                             Matrix4x4 viewTrans = directionalLight->getOwner()->getTransform().getWorldMatrix();
                             for (UInt32 i = 0; i < directionalLight->getCascadeCount(); i++) {
                                 DirectionalLight::OrthoProjection& proj = projections[i];  
-                                Matrix4x4& shadowCameraMatrix = orthoShadowMapCameraObject->getTransform().getWorldMatrix();
-                                shadowCameraMatrix.copy(viewTrans);
                                 orthoShadowMapCamera->setDimensions(proj.top, proj.bottom, proj.left, proj.right);        
                                 orthoShadowMapCamera->setNearAndFar(proj.near, proj.far);
-                                WeakPointer<RenderTarget> shadowMapRenderTarget = directionalLight->getShadowMap(i);
-
 
                                 ViewDescriptor viewDesc;
-                                this->getViewDescriptorForCamera(shadowCameraMatrix, orthoShadowMapCamera->getProjectionMatrix(), viewDesc);
+                                this->getViewDescriptorForCamera(directionalLight->getShadowMap(i), viewTrans, orthoShadowMapCamera->getProjectionMatrix(), viewDesc);
                                 viewDesc.overrideMaterial = this->depthMaterial;
-
-                                WeakPointer<RenderTarget> currentRenderTarget = graphics->getCurrentRenderTarget();
-                                graphics->activateRenderTarget(shadowMapRenderTarget);
-                                orthoShadowMapCamera->setRenderTarget(shadowMapRenderTarget); 
-                                Vector2u renderTargetSize = shadowMapRenderTarget->getSize();
-                                graphics->setViewport(0, 0, renderTargetSize.x, renderTargetSize.y);
-                                
                                 this->render(viewDesc, objects, dummyLights);
-                                
-                                graphics->activateRenderTarget(currentRenderTarget);
                             }
                         }
                     }
@@ -225,10 +216,18 @@ namespace Core {
     }
     
     void Renderer::getViewDescriptorForCamera(WeakPointer<Camera> camera, ViewDescriptor& viewDescriptor) {
-        this->getViewDescriptorForCamera(camera->getOwner()->getTransform().getWorldMatrix(), camera->getProjectionMatrix(), viewDescriptor);
+        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
+        WeakPointer<RenderTarget> cameraRenderTarget = camera->getRenderTarget();
+         if (!cameraRenderTarget.isValid()) {
+            cameraRenderTarget = graphics->getDefaultRenderTarget();
+        }
+        this->getViewDescriptorForCamera(cameraRenderTarget,
+                                         camera->getOwner()->getTransform().getWorldMatrix(),
+                                         camera->getProjectionMatrix(), viewDescriptor);
     }
 
-    void Renderer::getViewDescriptorForCamera(const Matrix4x4& worldMatrix, const Matrix4x4& projectionMatrix, ViewDescriptor& viewDescriptor) {
+    void Renderer::getViewDescriptorForCamera(WeakPointer<RenderTarget> renderTarget, const Matrix4x4& worldMatrix, 
+                                              const Matrix4x4& projectionMatrix, ViewDescriptor& viewDescriptor) {
         viewDescriptor.projectionMatrix.copy(projectionMatrix);
         viewDescriptor.viewMatrix.copy(worldMatrix);
         viewDescriptor.viewInverseMatrix.copy(viewDescriptor.viewMatrix);
@@ -236,6 +235,7 @@ namespace Core {
         viewDescriptor.viewInverseTransposeMatrix.copy(viewDescriptor.viewMatrix);
         viewDescriptor.viewInverseTransposeMatrix.transpose();
         viewDescriptor.viewInverseTransposeMatrix.invert();
+        viewDescriptor.renderTarget = renderTarget;
     }
 
     void Renderer::processScene(WeakPointer<Scene> scene, 
