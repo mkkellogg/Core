@@ -197,8 +197,12 @@ namespace Core {
         TextureAttributes colorTextureAttributes;
         colorTextureAttributes.Format = TextureFormat::R32F;
         colorTextureAttributes.FilterMode = TextureFilter::Point;
+        colorTextureAttributes.WrapMode = TextureWrap::Border;
+        colorTextureAttributes.BorderWrapColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
         TextureAttributes depthTextureAttributes;
         depthTextureAttributes.FilterMode = TextureFilter::Linear;
+        depthTextureAttributes.WrapMode = TextureWrap::Border;
+        depthTextureAttributes.BorderWrapColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
         Vector2u renderTargetSize(this->shadowMapSize, this->shadowMapSize);
         for (UInt32 i = 0; i < this->cascadeCount; i++) {
             auto graphics = Engine::instance()->getGraphicsSystem();

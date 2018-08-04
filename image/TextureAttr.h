@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../common/types.h"
+#include "../color/Color.h"
 
 namespace Core {
 
@@ -16,7 +17,8 @@ namespace Core {
     enum class TextureWrap {
         Repeat,
         Clamp,
-        Mirror
+        Mirror,
+        Border
     };
 
     enum class TextureFilter {
@@ -43,6 +45,7 @@ namespace Core {
         TextureFilter FilterMode;
         TextureWrap WrapMode;
         TextureFormat Format;
+        Color BorderWrapColor;
 
         TextureAttributes();
         ~TextureAttributes();

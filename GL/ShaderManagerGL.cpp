@@ -120,6 +120,9 @@ namespace Core {
             "    vec2 uv = uvCoords.xy; \n"
             "    float z = uvCoords.z; \n"
 
+            "    if (uvCoords.x < 0 || uvCoords.x > 1.0) return 0.0; \n"
+            "    if (uvCoords.y < 0 || uvCoords.y > 1.0) return 0.0; \n"
+
            /*"    for (int y = -2 ; y <= 2 ; y++) { \n"
             "        for (int x = -2 ; x <= 2 ; x++) { \n"
             "            int i = ((y + 2) * 5 + (x + 2)) % 4; \n"
