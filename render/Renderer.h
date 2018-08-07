@@ -40,8 +40,7 @@ namespace Core {
         void renderShadowMaps(std::vector<WeakPointer<Light>>& lights, LightType lightType, 
                               std::vector<WeakPointer<Object3D>>& objects, WeakPointer<Camera> renderCamera = WeakPointer<Camera>());
         void getViewDescriptorForCamera(WeakPointer<Camera> camera, ViewDescriptor& viewDescriptor);
-        void getViewDescriptorForCamera(WeakPointer<RenderTarget> renderTarget, const Matrix4x4& worldMatrix, 
-                                        const Matrix4x4& projectionMatrix, ViewDescriptor& viewDescriptor);
+        void getViewDescriptor(const Matrix4x4& worldMatrix, const Matrix4x4& projectionMatrix, ViewDescriptor& viewDescriptor);
         void processScene(WeakPointer<Scene> scene, std::vector<WeakPointer<Object3D>>& outObjects,
                           std::vector<WeakPointer<Camera>>& outCameras, std::vector<WeakPointer<Light>>& outLights);
         void processSceneStep(WeakPointer<Object3D> object, const Matrix4x4& curTransform, std::vector<WeakPointer<Object3D>>& outObjects,

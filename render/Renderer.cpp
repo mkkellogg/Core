@@ -118,10 +118,10 @@ namespace Core {
             ViewDescriptor viewDescriptor;
             Matrix4x4 cameraTransform = camera->getOwner()->getTransform().getWorldMatrix();
             cameraTransform.multiply(orientations[i]);
-            this->getViewDescriptorForCamera(camera->getRenderTarget(), cameraTransform,
-                                             camera->getProjectionMatrix(), viewDescriptor);
+            this->getViewDescriptor(cameraTransform, camera->getProjectionMatrix(), viewDescriptor);
             viewDescriptor.overrideMaterial = overrideMaterial;
             viewDescriptor.cubeFace = i;
+            viewDescriptor.renderTarget = camera->getRenderTarget();
             render(viewDescriptor, objects, lights);
         }
     }
@@ -204,8 +204,9 @@ namespace Core {
                                 orthoShadowMapCamera->setNearAndFar(proj.near, proj.far);
 
                                 ViewDescriptor viewDesc;
-                                this->getViewDescriptorForCamera(directionalLight->getShadowMap(i), viewTrans, orthoShadowMapCamera->getProjectionMatrix(), viewDesc);
+                                this->getViewDescriptor(viewTrans, orthoShadowMapCamera->getProjectionMatrix(), viewDesc);
                                 viewDesc.overrideMaterial = this->depthMaterial;
+                                viewDesc.renderTarget = directionalLight->getShadowMap(i);
                                 this->render(viewDesc, objects, dummyLights);
                             }
                         }
@@ -221,21 +222,19 @@ namespace Core {
          if (!cameraRenderTarget.isValid()) {
             cameraRenderTarget = graphics->getDefaultRenderTarget();
         }
-        this->getViewDescriptorForCamera(cameraRenderTarget,
-                                         camera->getOwner()->getTransform().getWorldMatrix(),
-                                         camera->getProjectionMatrix(), viewDescriptor);
+        this->getViewDescriptor(camera->getOwner()->getTransform().getWorldMatrix(),
+                                camera->getProjectionMatrix(), viewDescriptor);
+        viewDescriptor.renderTarget = cameraRenderTarget;
     }
 
-    void Renderer::getViewDescriptorForCamera(WeakPointer<RenderTarget> renderTarget, const Matrix4x4& worldMatrix, 
+    void Renderer::getViewDescriptor(const Matrix4x4& worldMatrix, 
                                               const Matrix4x4& projectionMatrix, ViewDescriptor& viewDescriptor) {
         viewDescriptor.projectionMatrix.copy(projectionMatrix);
         viewDescriptor.viewMatrix.copy(worldMatrix);
         viewDescriptor.viewInverseMatrix.copy(viewDescriptor.viewMatrix);
         viewDescriptor.viewInverseMatrix.invert();
-        viewDescriptor.viewInverseTransposeMatrix.copy(viewDescriptor.viewMatrix);
+        viewDescriptor.viewInverseTransposeMatrix.copy(viewDescriptor.viewInverseMatrix);
         viewDescriptor.viewInverseTransposeMatrix.transpose();
-        viewDescriptor.viewInverseTransposeMatrix.invert();
-        viewDescriptor.renderTarget = renderTarget;
     }
 
     void Renderer::processScene(WeakPointer<Scene> scene, 
