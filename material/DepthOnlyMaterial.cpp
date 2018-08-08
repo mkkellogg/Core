@@ -64,6 +64,6 @@ namespace Core {
         this->positionLocation = this->shader->getAttributeLocation("pos");
         this->projectionMatrixLocation = this->shader->getUniformLocation("projection");
         this->viewMatrixLocation = this->shader->getUniformLocation("viewMatrix");
-        this->modelMatrixLocation = this->shader->getUniformLocation("modelMatrix");
+        this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);
     }
 }

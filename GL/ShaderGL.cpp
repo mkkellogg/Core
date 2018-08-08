@@ -42,6 +42,14 @@ namespace Core {
         return (Int32)glGetAttribLocation(this->glProgram, var);
     }
 
+    Int32 ShaderGL::getUniformLocation(StandardUniform uniform) const {
+        return this->getUniformLocation(StandardUniforms::getUniformName(uniform));
+    }
+
+    Int32 ShaderGL::getAttributeLocation(StandardAttribute attribute) const {
+        return this->getUniformLocation(StandardAttributes::getAttributeName(attribute));
+    }
+
     void ShaderGL::setTexture2D(UInt32 slot, UInt32 textureID) {
         static UInt32 slots[] = {GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2, GL_TEXTURE3, GL_TEXTURE4, GL_TEXTURE5};
 

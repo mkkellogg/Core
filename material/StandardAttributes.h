@@ -26,6 +26,7 @@ namespace Core {
         static std::unordered_map<std::string, StandardAttribute> nameToAttribute;
 
     public:
+        static const std::string& getAttributeName(StandardAttribute attribute);
         static StandardAttributeSet createAttributeSet();
         static void addAttribute(StandardAttributeSet* set, StandardAttribute attr);
         static void removeAttribute(StandardAttributeSet* set, StandardAttribute attr);

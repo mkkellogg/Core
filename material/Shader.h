@@ -5,6 +5,8 @@
 #include "../common/Exception.h"
 #include "../math/Matrix4x4.h"
 #include "ShaderType.h"
+#include "StandardUniforms.h"
+#include "StandardAttributes.h"
 
 namespace Core {
 
@@ -36,6 +38,8 @@ namespace Core {
         virtual Int32 getAttributeLocation(const std::string& var) const = 0;
         virtual Int32 getUniformLocation(const char var[]) const = 0;
         virtual Int32 getAttributeLocation(const char var[]) const = 0;
+        virtual Int32 getUniformLocation(StandardUniform uniform) const = 0;
+        virtual Int32 getAttributeLocation(StandardAttribute attribute) const = 0;
 
         virtual void setTexture2D(UInt32 slot, UInt32 textureID) = 0;
         virtual void setTextureCube(UInt32 slot, UInt32 textureID) = 0;

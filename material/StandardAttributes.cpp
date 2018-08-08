@@ -25,6 +25,10 @@ namespace Core {
         
     };
 
+    const std::string& StandardAttributes::getAttributeName(StandardAttribute attribute) {
+        return attributeNames[(UInt16)attribute];
+    }
+
     StandardAttributeSet StandardAttributes::createAttributeSet() {
         return (StandardAttributeSet)IntMaskUtil::createMask();
     }

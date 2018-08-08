@@ -3,6 +3,12 @@
 #include "ShaderManagerGL.h"
 #include "../common/Constants.h"
 
+auto _un = Core::StandardUniforms::getUniformName;
+auto _an = Core::StandardAttributes::getAttributeName;
+
+const std::string MODEL_MATRIX = _un(Core::StandardUniform::ModelMatrix);
+const std::string MODEL_MATRIX_DEF = "uniform mat4 " +  MODEL_MATRIX + ";\n";
+
 namespace Core {
 
     const std::string ShaderManagerGL::BaseString("");
@@ -49,7 +55,7 @@ namespace Core {
             "out float viewSpacePosZ;\n"
             "#define TRANSFER_LIGHTING(localPos, clipSpacePos, viewSpacePos) "
             "for (int i = 0 ; i < lightCascadeCount; i++) { "
-            "    lightSpacePos[i] = lightViewProjection[i] * modelMatrix * (localPos); "
+            "    lightSpacePos[i] = lightViewProjection[i] * " + MODEL_MATRIX + " * (localPos); "
             "} "
             "viewSpacePosZ = (viewSpacePos).z;\n";
 
@@ -220,9 +226,9 @@ namespace Core {
             "in vec4 pos;\n"
             "uniform mat4 projection;\n"
             "uniform mat4 viewMatrix;\n"
-            "uniform mat4 modelMatrix;\n"
+            + MODEL_MATRIX_DEF +
             "void main() {\n"
-            "    gl_Position = projection * viewMatrix * modelMatrix * pos;\n"
+            "    gl_Position = projection * viewMatrix * " +  MODEL_MATRIX + " * pos;\n"
             "}\n";
 
         this->Depth_fragment =   
@@ -237,10 +243,10 @@ namespace Core {
             "attribute vec4 pos;\n"
             "uniform mat4 projection;\n"
             "uniform mat4 viewMatrix;\n"
-            "uniform mat4 modelMatrix;\n"
+            + MODEL_MATRIX_DEF +
             "out vec4 vPos;\n"
             "void main() {\n"
-            "    vPos = viewMatrix * modelMatrix * pos;\n"
+            "    vPos = viewMatrix * " +  MODEL_MATRIX + " * pos;\n"
             "    gl_Position = projection * vPos;\n"
             "}\n";
 
@@ -261,10 +267,10 @@ namespace Core {
             "attribute vec2 uv;\n"
             "uniform mat4 projection;\n"
             "uniform mat4 viewMatrix;\n"
-            "uniform mat4 modelMatrix;\n"
+            + MODEL_MATRIX_DEF +
             "varying vec4 vColor;\n"
             "void main() {\n"
-            "    gl_Position = projection * viewMatrix * modelMatrix * pos;\n"
+            "    gl_Position = projection * viewMatrix * " +  MODEL_MATRIX + " * pos;\n"
             "    vColor = color;\n"
             "}\n";
 
@@ -285,13 +291,13 @@ namespace Core {
             "in vec4 normal;\n"
             "uniform mat4 projection;\n"
             "uniform mat4 viewMatrix;\n"
-            "uniform mat4 modelMatrix;\n"
+            + MODEL_MATRIX_DEF +
             "uniform mat4 modelInverseTransposeMatrix;\n"
             "out vec4 vColor;\n"
             "out vec3 vNormal;\n"
             "out vec4 vPos;\n"
             "void main() {\n"
-            "    vPos = modelMatrix * pos;\n"
+            "    vPos = " +  MODEL_MATRIX + " * pos;\n"
             "    vec4 viewSpacePos = viewMatrix * vPos;\n"
             "    gl_Position = projection * viewMatrix * vPos;\n"
             "    vColor = color;\n"
@@ -320,12 +326,12 @@ namespace Core {
             "attribute vec2 uv;\n"
             "uniform mat4 projection;\n"
             "uniform mat4 viewMatrix;\n"
-            "uniform mat4 modelMatrix;\n"
+            + MODEL_MATRIX_DEF +
             "varying vec4 vColor;\n"
             "varying vec3 vNormal;\n"
             "varying vec2 vUV;\n"
             "void main() {\n"
-            "    gl_Position = projection * viewMatrix * modelMatrix * pos;\n"
+            "    gl_Position = projection * viewMatrix * " +  MODEL_MATRIX + " * pos;\n"
             "    vUV = uv;\n"
             "    vColor = color;\n"
             "}\n";
@@ -352,7 +358,7 @@ namespace Core {
             "in vec2 uv;\n"
             "uniform mat4 projection;\n"
             "uniform mat4 viewMatrix;\n"
-            "uniform mat4 modelMatrix;\n"
+            + MODEL_MATRIX_DEF +
             "uniform mat4 modelInverseTransposeMatrix;\n"
             "uniform vec4 lightPos;\n"
             "out vec4 vColor;\n"
@@ -361,7 +367,7 @@ namespace Core {
             "out vec2 vUV;\n"
             "out vec4 vPos;\n"
             "void main() {\n"
-            "    vPos = modelMatrix * pos;\n"
+            "    vPos = " +  MODEL_MATRIX + " * pos;\n"
             "    vec4 viewSpacePos = viewMatrix * vPos;\n"
             "    gl_Position = projection * viewMatrix * vPos;\n"
             "    vUV = uv;\n"
