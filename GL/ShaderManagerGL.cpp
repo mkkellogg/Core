@@ -306,8 +306,8 @@ namespace Core {
             "precision highp float;\n"
             "#include \"Lighting\" \n"
             + POSITION_DEF
-            + COLOR_DEF +
-            "in vec4 normal;\n"
+            + COLOR_DEF
+            + NORMAL_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
             + MODEL_MATRIX_DEF +
@@ -320,7 +320,7 @@ namespace Core {
             "    vec4 viewSpacePos = " + VIEW_MATRIX + " * vPos;\n"
             "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * vPos;\n"
             "    vColor = " + COLOR + ";\n"
-            "    vNormal = vec3(modelInverseTransposeMatrix * normal);\n"
+            "    vNormal = vec3(modelInverseTransposeMatrix * " + NORMAL + ");\n"
             "    TRANSFER_LIGHTING(" + POSITION + ", gl_Position, viewSpacePos) \n"
             "}\n";
 
@@ -371,8 +371,8 @@ namespace Core {
             "precision highp float;\n"
             "#include \"Lighting\" \n"
             + POSITION_DEF
-            + COLOR_DEF +
-            "in vec4 normal;\n"
+            + COLOR_DEF
+            + NORMAL_DEF +
             "in vec4 faceNormal;\n"
             "in vec2 uv;\n"
             + PROJECTION_MATRIX_DEF
@@ -391,7 +391,7 @@ namespace Core {
             "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * vPos;\n"
             "    vUV = uv;\n"
             "    vColor = " + COLOR + ";\n"
-            "    vec4 eNormal = normal;\n"
+            "    vec4 eNormal = " + NORMAL + ";\n"
             "    vNormal = vec3(modelInverseTransposeMatrix * eNormal);\n"
             "    vFaceNormal = vec3(modelInverseTransposeMatrix * faceNormal);\n"
             "    TRANSFER_LIGHTING(" + POSITION + ", gl_Position, viewSpacePos) \n"

@@ -132,7 +132,7 @@ namespace Core {
 
     void BasicLitMaterial::bindShaderVarLocations() {
         this->positionLocation = this->shader->getAttributeLocation(StandardAttribute::Position);
-        this->normalLocation = this->shader->getAttributeLocation("normal");
+        this->normalLocation = this->shader->getAttributeLocation(StandardAttribute::Normal);
         this->colorLocation = this->shader->getAttributeLocation(StandardAttribute::Color);
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
