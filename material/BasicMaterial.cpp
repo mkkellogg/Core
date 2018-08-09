@@ -66,7 +66,7 @@ namespace Core {
     }
 
     void BasicMaterial::bindShaderVarLocations() {
-        this->positionLocation = this->shader->getAttributeLocation("pos");
+        this->positionLocation = this->shader->getAttributeLocation(StandardAttribute::Position);
         this->colorLocation = this->shader->getAttributeLocation("color");
         this->projectionMatrixLocation = this->shader->getUniformLocation("projection");
         this->viewMatrixLocation = this->shader->getUniformLocation("viewMatrix");

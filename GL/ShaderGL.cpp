@@ -47,7 +47,7 @@ namespace Core {
     }
 
     Int32 ShaderGL::getAttributeLocation(StandardAttribute attribute) const {
-        return this->getUniformLocation(StandardAttributes::getAttributeName(attribute));
+        return this->getAttributeLocation(StandardAttributes::getAttributeName(attribute));
     }
 
     void ShaderGL::setTexture2D(UInt32 slot, UInt32 textureID) {

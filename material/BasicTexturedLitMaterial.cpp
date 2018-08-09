@@ -148,7 +148,7 @@ namespace Core {
     }
 
     void BasicTexturedLitMaterial::bindShaderVarLocations() {
-        this->positionLocation = this->shader->getAttributeLocation("pos");
+        this->positionLocation = this->shader->getAttributeLocation(StandardAttribute::Position);
         this->normalLocation = this->shader->getAttributeLocation("normal");
         this->faceNormalLocation = this->shader->getAttributeLocation("faceNormal");
         this->colorLocation = this->shader->getAttributeLocation("color");

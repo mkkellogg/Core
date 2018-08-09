@@ -61,7 +61,7 @@ namespace Core {
     }
 
     void DistanceOnlyMaterial::bindShaderVarLocations() {
-        this->positionLocation = this->shader->getAttributeLocation("pos");
+        this->positionLocation = this->shader->getAttributeLocation(StandardAttribute::Position);
         this->projectionMatrixLocation = this->shader->getUniformLocation("projection");
         this->viewMatrixLocation = this->shader->getUniformLocation("viewMatrix");
         this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);

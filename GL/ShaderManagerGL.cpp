@@ -6,8 +6,29 @@
 auto _un = Core::StandardUniforms::getUniformName;
 auto _an = Core::StandardAttributes::getAttributeName;
 
+const std::string POSITION = _an(Core::StandardAttribute::Position);
+const std::string POSITION_DEF = "in vec4 " +  POSITION + ";\n";
+
+const std::string NORMAL = _an(Core::StandardAttribute::Normal);
+const std::string NORMAL_DEF = "attribute vec4 " +  NORMAL + ";\n";
+
+const std::string FACE_NORMAL = _an(Core::StandardAttribute::FaceNormal);
+const std::string FACE_NORMAL_DEF = "attribute vec4 " +  FACE_NORMAL + ";\n";
+
+const std::string COLOR = _an(Core::StandardAttribute::Color);
+const std::string COLOR_DEF = "attribute vec4 " +  COLOR + ";\n";
+
+const std::string UV = _an(Core::StandardAttribute::UV0);
+const std::string UV_DEF = "attribute vec2 " +  UV + ";\n";
+
 const std::string MODEL_MATRIX = _un(Core::StandardUniform::ModelMatrix);
 const std::string MODEL_MATRIX_DEF = "uniform mat4 " +  MODEL_MATRIX + ";\n";
+
+const std::string VIEW_MATRIX = _un(Core::StandardUniform::ViewMatrix);
+const std::string VIEW_MATRIX_DEF = "uniform mat4 " +  VIEW_MATRIX + ";\n";
+
+const std::string PROJECTION_MATRIX = _un(Core::StandardUniform::ProjectionMatrix);
+const std::string PROJECTION_MATRIX_DEF = "uniform mat4 " +  PROJECTION_MATRIX + ";\n";
 
 namespace Core {
 
@@ -223,12 +244,12 @@ namespace Core {
         this->Depth_vertex =
             "#version 330\n"
             "precision highp float;\n"
-            "in vec4 pos;\n"
+            + POSITION_DEF +
             "uniform mat4 projection;\n"
             "uniform mat4 viewMatrix;\n"
             + MODEL_MATRIX_DEF +
             "void main() {\n"
-            "    gl_Position = projection * viewMatrix * " +  MODEL_MATRIX + " * pos;\n"
+            "    gl_Position = projection * viewMatrix * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
             "}\n";
 
         this->Depth_fragment =   
@@ -240,13 +261,13 @@ namespace Core {
 
         this->Distance_vertex =
             "#version 330\n"
-            "attribute vec4 pos;\n"
+            + POSITION_DEF +
             "uniform mat4 projection;\n"
             "uniform mat4 viewMatrix;\n"
             + MODEL_MATRIX_DEF +
             "out vec4 vPos;\n"
             "void main() {\n"
-            "    vPos = viewMatrix * " +  MODEL_MATRIX + " * pos;\n"
+            "    vPos = viewMatrix * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
             "    gl_Position = projection * vPos;\n"
             "}\n";
 
@@ -262,7 +283,7 @@ namespace Core {
 
         this->Basic_vertex =
             "#version 100\n"
-            "attribute vec4 pos;\n"
+            + POSITION_DEF +
             "attribute vec4 color;\n"
             "attribute vec2 uv;\n"
             "uniform mat4 projection;\n"
@@ -270,7 +291,7 @@ namespace Core {
             + MODEL_MATRIX_DEF +
             "varying vec4 vColor;\n"
             "void main() {\n"
-            "    gl_Position = projection * viewMatrix * " +  MODEL_MATRIX + " * pos;\n"
+            "    gl_Position = projection * viewMatrix * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
             "    vColor = color;\n"
             "}\n";
 
@@ -286,7 +307,7 @@ namespace Core {
             "#version 330\n"
             "precision highp float;\n"
             "#include \"Lighting\" \n"
-            "in vec4 pos;\n"
+            + POSITION_DEF +
             "in vec4 color;\n"
             "in vec4 normal;\n"
             "uniform mat4 projection;\n"
@@ -297,12 +318,12 @@ namespace Core {
             "out vec3 vNormal;\n"
             "out vec4 vPos;\n"
             "void main() {\n"
-            "    vPos = " +  MODEL_MATRIX + " * pos;\n"
+            "    vPos = " +  MODEL_MATRIX + " * " + POSITION + ";\n"
             "    vec4 viewSpacePos = viewMatrix * vPos;\n"
             "    gl_Position = projection * viewMatrix * vPos;\n"
             "    vColor = color;\n"
             "    vNormal = vec3(modelInverseTransposeMatrix * normal);\n"
-            "    TRANSFER_LIGHTING(pos, gl_Position, viewSpacePos) \n"
+            "    TRANSFER_LIGHTING(" + POSITION + ", gl_Position, viewSpacePos) \n"
             "}\n";
 
         this->BasicLit_fragment =   
@@ -321,7 +342,7 @@ namespace Core {
 
         this->BasicTextured_vertex =  
             "#version 100\n"
-            "attribute vec4 pos;\n"
+            + POSITION_DEF +
             "attribute vec4 color;\n"
             "attribute vec2 uv;\n"
             "uniform mat4 projection;\n"
@@ -331,7 +352,7 @@ namespace Core {
             "varying vec3 vNormal;\n"
             "varying vec2 vUV;\n"
             "void main() {\n"
-            "    gl_Position = projection * viewMatrix * " +  MODEL_MATRIX + " * pos;\n"
+            "    gl_Position = projection * viewMatrix * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
             "    vUV = uv;\n"
             "    vColor = color;\n"
             "}\n";
@@ -351,7 +372,7 @@ namespace Core {
             "#version 330\n"
             "precision highp float;\n"
             "#include \"Lighting\" \n"
-            "in vec4 pos;\n"
+            + POSITION_DEF +
             "in vec4 color;\n"
             "in vec4 normal;\n"
             "in vec4 faceNormal;\n"
@@ -367,7 +388,7 @@ namespace Core {
             "out vec2 vUV;\n"
             "out vec4 vPos;\n"
             "void main() {\n"
-            "    vPos = " +  MODEL_MATRIX + " * pos;\n"
+            "    vPos = " +  MODEL_MATRIX + " * " + POSITION + ";\n"
             "    vec4 viewSpacePos = viewMatrix * vPos;\n"
             "    gl_Position = projection * viewMatrix * vPos;\n"
             "    vUV = uv;\n"
@@ -375,7 +396,7 @@ namespace Core {
             "    vec4 eNormal = normal;\n"
             "    vNormal = vec3(modelInverseTransposeMatrix * eNormal);\n"
             "    vFaceNormal = vec3(modelInverseTransposeMatrix * faceNormal);\n"
-            "    TRANSFER_LIGHTING(pos, gl_Position, viewSpacePos) \n"
+            "    TRANSFER_LIGHTING(" + POSITION + ", gl_Position, viewSpacePos) \n"
             "}\n";
 
         this->BasicTexturedLit_fragment =   
@@ -394,8 +415,8 @@ namespace Core {
             "}\n";
 
         this->BasicCube_vertex =  
-            "#version 100\n"
-            "attribute vec4 pos;\n"
+            "#version 330\n"
+            + POSITION_DEF +
             "attribute vec4 color;\n"
             "uniform mat4 projection;\n"
             "uniform mat4 viewMatrix;\n"
@@ -406,19 +427,19 @@ namespace Core {
             "varying vec4 vColor;\n"
             "varying vec3 vUV;\n"
             "void main() {\n"
-            "    gl_Position = projection * viewMatrix * pos;\n"
-            "    vUV = normalize(pos.xyz);\n"
+            "    gl_Position = projection * viewMatrix * " + POSITION + ";\n"
+            "    vUV = normalize(" + POSITION + ".xyz);\n"
             "    vColor = color;\n"
             "}\n";
 
         this->BasicCube_fragment =  
-            "#version 100\n"
+            "#version 330\n"
             "precision mediump float;\n"
             "uniform samplerCube skybox;\n"
             "varying vec4 vColor;\n"
             "varying vec3 vUV;\n"
             "void main() {\n"
-            "    vec4 textureColor = textureCube(skybox, vUV);\n"
+            "    vec4 textureColor = texture(skybox, vUV);\n"
             "    gl_FragColor = textureColor;\n"
             "}\n";
     }

@@ -82,7 +82,7 @@ namespace Core {
     }
 
     void BasicTexturedMaterial::bindShaderVarLocations() {
-        this->positionLocation = this->shader->getAttributeLocation("pos");
+        this->positionLocation = this->shader->getAttributeLocation(StandardAttribute::Position);
         this->normalLocation = this->shader->getAttributeLocation("normal");
         this->colorLocation = this->shader->getAttributeLocation("color");
         this->textureLocation = this->shader->getAttributeLocation("textureA");
