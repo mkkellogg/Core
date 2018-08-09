@@ -21,10 +21,14 @@ const std::string COLOR_DEF = "in vec4 " +  COLOR + ";\n";
 const std::string UV0 = _an(Core::StandardAttribute::UV0);
 const std::string UV0_DEF = "in vec2 " +  UV0 + ";\n";
 
-const std::string TEXTURE0 = _un(Core::StandardUniform::Texture0);
+const std::string TEXTURE2D0 = _un(Core::StandardUniform::Texture2D0);
+const std::string TEXTURE2D0_DEF = "uniform sampler2D " +  TEXTURE2D0 + ";\n";
 
 const std::string MODEL_MATRIX = _un(Core::StandardUniform::ModelMatrix);
 const std::string MODEL_MATRIX_DEF = "uniform mat4 " +  MODEL_MATRIX + ";\n";
+
+const std::string MODEL_INVERSE_TRANSPOSE_MATRIX = _un(Core::StandardUniform::ModelInverseTransposeMatrix);
+const std::string MODEL_INVERSE_TRANSPOSE_MATRIX_DEF = "uniform mat4 " +  MODEL_INVERSE_TRANSPOSE_MATRIX + ";\n";
 
 const std::string VIEW_MATRIX = _un(Core::StandardUniform::ViewMatrix);
 const std::string VIEW_MATRIX_DEF = "uniform mat4 " +  VIEW_MATRIX + ";\n";
@@ -90,7 +94,6 @@ namespace Core {
             "uniform float lightCascadeEnd[MAX_CASCADES];\n"
             "uniform float lightShadowMapAspect[MAX_CASCADES];\n"
             "in vec4 lightSpacePos[MAX_CASCADES];\n"
-            "in float viewSpacePosZ;\n"
             "uniform samplerCube lightShadowCubeMap;\n"
             "uniform float lightAngularShadowBias;\n"
             "uniform float lightConstantShadowBias;\n"
@@ -103,6 +106,7 @@ namespace Core {
             "uniform int lightShadowSoftness;\n"
             "uniform vec4 lightColor;\n"
             "uniform float lightShadowMapSize;\n"
+            "in float viewSpacePosZ;\n"
 
             "float calDirShadowFactorSingleIndex(int index, vec2 uv, float fragDepth, float angularBias) { \n"
             "    vec3 coords = vec3(uv.xy, fragDepth - angularBias - lightConstantShadowBias); \n"
@@ -189,7 +193,6 @@ namespace Core {
             "      scale = absY / near; \n"
             "   }"
             "   right = cross(forward, up); \n"
-
             "   right = right * pxToWorld * scale; \n"
             "   up = up * pxToWorld * scale; \n"
 
@@ -312,8 +315,8 @@ namespace Core {
             + NORMAL_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
-            + MODEL_MATRIX_DEF +
-            "uniform mat4 modelInverseTransposeMatrix;\n"
+            + MODEL_MATRIX_DEF
+            + MODEL_INVERSE_TRANSPOSE_MATRIX_DEF +
             "out vec4 vColor;\n"
             "out vec3 vNormal;\n"
             "out vec4 vPos;\n"
@@ -322,7 +325,7 @@ namespace Core {
             "    vec4 viewSpacePos = " + VIEW_MATRIX + " * vPos;\n"
             "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * vPos;\n"
             "    vColor = " + COLOR + ";\n"
-            "    vNormal = vec3(modelInverseTransposeMatrix * " + NORMAL + ");\n"
+            "    vNormal = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * " + NORMAL + ");\n"
             "    TRANSFER_LIGHTING(" + POSITION + ", gl_Position, viewSpacePos) \n"
             "}\n";
 
@@ -360,11 +363,11 @@ namespace Core {
         this->BasicTextured_fragment =   
             "#version 330\n"
             "precision mediump float;\n"
-            "uniform sampler2D textureA;\n"
+            + TEXTURE2D0_DEF + 
             "in vec4 vColor;\n"
             "in vec2 vUV;\n"
             "void main() {\n"
-            "    vec4 textureColor = texture2D(textureA, vUV);\n"
+            "    vec4 textureColor = texture2D(" + TEXTURE2D0 + ", vUV);\n"
             "    gl_FragColor = textureColor;\n"
             "}\n";
 
@@ -379,8 +382,8 @@ namespace Core {
             + UV0_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
-            + MODEL_MATRIX_DEF +
-            "uniform mat4 modelInverseTransposeMatrix;\n"
+            + MODEL_MATRIX_DEF
+            + MODEL_INVERSE_TRANSPOSE_MATRIX_DEF + 
             "uniform vec4 lightPos;\n"
             "out vec4 vColor;\n"
             "out vec3 vNormal;\n"
@@ -394,8 +397,8 @@ namespace Core {
             "    vUV = " + UV0 + ";\n"
             "    vColor = " + COLOR + ";\n"
             "    vec4 eNormal = " + NORMAL + ";\n"
-            "    vNormal = vec3(modelInverseTransposeMatrix * eNormal);\n"
-            "    vFaceNormal = vec3(modelInverseTransposeMatrix * " + FACE_NORMAL + ");\n"
+            "    vNormal = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * eNormal);\n"
+            "    vFaceNormal = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * " + FACE_NORMAL + ");\n"
             "    TRANSFER_LIGHTING(" + POSITION + ", gl_Position, viewSpacePos) \n"
             "}\n";
 
@@ -403,7 +406,7 @@ namespace Core {
             "#version 330\n"
             "precision highp float;\n"
             "#include \"Lighting\"\n"
-            "uniform sampler2D textureA;\n"
+            + TEXTURE2D0_DEF +
             "in vec4 vColor;\n"
             "in vec3 vNormal;\n"
             "in vec3 vFaceNormal;\n"
@@ -411,7 +414,7 @@ namespace Core {
             "in vec4 vPos;\n"
             "out vec4 out_color;\n"
             "void main() {\n"
-            "   out_color = litColor(texture(textureA, vUV), vPos, normalize(vNormal));\n"
+            "   out_color = litColor(texture(" + TEXTURE2D0 + ", vUV), vPos, normalize(vNormal));\n"
             "}\n";
 
         this->BasicCube_vertex =  

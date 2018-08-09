@@ -754,7 +754,7 @@ namespace Core {
     StandardUniform ModelLoader::mapTextureTypeToUniform(TextureType textureType) {
         switch (textureType) {
             case TextureType::Diffuse:
-                return StandardUniform::Texture0;
+                return StandardUniform::Texture2D0;
                 break;
             default:
                 return StandardUniform::_None;
