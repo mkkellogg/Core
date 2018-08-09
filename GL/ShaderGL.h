@@ -25,7 +25,9 @@ namespace Core {
         Int32 getUniformLocation(const char var[]) const override;
         Int32 getAttributeLocation(const char var[]) const override;
         Int32 getUniformLocation(StandardUniform uniform) const override;
+        Int32 getUniformLocation(StandardUniform uniform, UInt32 index) const override;
         Int32 getAttributeLocation(StandardAttribute attribute) const override;
+        Int32 getAttributeLocation(StandardAttribute attribute, UInt32 index) const override;
 
         void setTexture2D(UInt32 slot, UInt32 textureID) override;
         void setTextureCube(UInt32 slot, UInt32 textureID) override;

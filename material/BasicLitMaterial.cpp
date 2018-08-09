@@ -138,25 +138,25 @@ namespace Core {
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
         this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);
         this->modelInverseTransposeMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelInverseTransposeMatrix);
-        this->lightPositionLocation = this->shader->getUniformLocation("lightPos");
-        this->lightDirectionLocation = this->shader->getUniformLocation("lightDir");
-        this->lightRangeLocation = this->shader->getUniformLocation("lightRange");
-        this->lightTypeLocation = this->shader->getUniformLocation("lightType");
-        this->lightIntensityLocation = this->shader->getUniformLocation("lightIntensity");
-        this->lightColorLocation = this->shader->getUniformLocation("lightColor");
-        this->lightEnabledLocation = this->shader->getUniformLocation("lightEnabled");
-        this->lightMatrixLocation = this->shader->getUniformLocation("lightMatrix");
+        this->lightPositionLocation = this->shader->getUniformLocation(StandardUniform::LightPosition);
+        this->lightDirectionLocation = this->shader->getUniformLocation(StandardUniform::LightDirection);
+        this->lightRangeLocation = this->shader->getUniformLocation(StandardUniform::LightRange);
+        this->lightTypeLocation = this->shader->getUniformLocation(StandardUniform::LightType);
+        this->lightIntensityLocation = this->shader->getUniformLocation(StandardUniform::LightIntensity);
+        this->lightColorLocation = this->shader->getUniformLocation(StandardUniform::LightColor);
+        this->lightEnabledLocation = this->shader->getUniformLocation(StandardUniform::LightEnabled);
+        this->lightMatrixLocation = this->shader->getUniformLocation(StandardUniform::LightMatrix);
         for (UInt32 i =0; i < Constants::MaxDirectionalCascades; i++) {
-            this->lightViewProjectionLocations[i] = this->shader->getUniformLocation(std::string("lightViewProjection["+std::to_string(i)+"]"));
-            this->lightShadowMapLocations[i] = this->shader->getUniformLocation(std::string("lightShadowMap["+std::to_string(i)+"]"));
-            this->lightCascadeEndLocations[i] = this->shader->getUniformLocation(std::string("lightCascadeEnd["+std::to_string(i)+"]"));
-            this->lightShadowMapAspectLocations[i] = this->shader->getUniformLocation(std::string("lightShadowMapAspect["+std::to_string(i)+"]"));
+            this->lightViewProjectionLocations[i] = this->shader->getUniformLocation(StandardUniform::LightViewProjection, i);
+            this->lightShadowMapLocations[i] = this->shader->getUniformLocation(StandardUniform::LightShadowMap, i);
+            this->lightCascadeEndLocations[i] = this->shader->getUniformLocation(StandardUniform::LightCascadeEnd, i);
+            this->lightShadowMapAspectLocations[i] = this->shader->getUniformLocation(StandardUniform::LightShadowMapAspect, i);
         }
-        this->lightCascadeCountLocation = this->shader->getUniformLocation("lightCascadeCount");
-        this->lightShadowCubeMapLocation = this->shader->getUniformLocation("lightShadowCubeMap");
-        this->lightAngularShadowBiasLocation = this->shader->getUniformLocation("lightAngularShadowBias");
-        this->lightConstantShadowBiasLocation = this->shader->getUniformLocation("lightConstantShadowBias");
-        this->lightShadowMapSizeLocation = this->shader->getUniformLocation("lightShadowMapSize");
-        this->lightShadowSoftnessLocation = this->shader->getUniformLocation("lightShadowSoftness");
+        this->lightCascadeCountLocation = this->shader->getUniformLocation(StandardUniform::LightCascadeCount);
+        this->lightShadowCubeMapLocation = this->shader->getUniformLocation(StandardUniform::LightShadowCubeMap);
+        this->lightAngularShadowBiasLocation = this->shader->getUniformLocation(StandardUniform::LightAngularShadowBias);
+        this->lightConstantShadowBiasLocation = this->shader->getUniformLocation(StandardUniform::LightConstantShadowBias);
+        this->lightShadowMapSizeLocation = this->shader->getUniformLocation(StandardUniform::LightShadowMapSize);
+        this->lightShadowSoftnessLocation = this->shader->getUniformLocation(StandardUniform::LightShadowSoftness);
     }
 }

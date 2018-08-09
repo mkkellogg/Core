@@ -46,9 +46,18 @@ namespace Core {
         return this->getUniformLocation(StandardUniforms::getUniformName(uniform));
     }
 
+    Int32 ShaderGL::getUniformLocation(StandardUniform uniform, UInt32 index) const {
+        return this->getUniformLocation(StandardUniforms::getUniformName(uniform) + "[" + std::to_string(index) + "]");
+    }
+
     Int32 ShaderGL::getAttributeLocation(StandardAttribute attribute) const {
         return this->getAttributeLocation(StandardAttributes::getAttributeName(attribute));
     }
+
+    Int32 ShaderGL::getAttributeLocation(StandardAttribute attribute, UInt32 index) const {
+        return this->getAttributeLocation(StandardAttributes::getAttributeName(attribute) + "[" + std::to_string(index) + "]");
+    }
+
 
     void ShaderGL::setTexture2D(UInt32 slot, UInt32 textureID) {
         static UInt32 slots[] = {GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2, GL_TEXTURE3, GL_TEXTURE4, GL_TEXTURE5};

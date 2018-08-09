@@ -39,7 +39,9 @@ namespace Core {
         virtual Int32 getUniformLocation(const char var[]) const = 0;
         virtual Int32 getAttributeLocation(const char var[]) const = 0;
         virtual Int32 getUniformLocation(StandardUniform uniform) const = 0;
+        virtual Int32 getUniformLocation(StandardUniform uniform, UInt32 index) const = 0;
         virtual Int32 getAttributeLocation(StandardAttribute attribute) const = 0;
+        virtual Int32 getAttributeLocation(StandardAttribute attribute, UInt32 index) const = 0;
 
         virtual void setTexture2D(UInt32 slot, UInt32 textureID) = 0;
         virtual void setTextureCube(UInt32 slot, UInt32 textureID) = 0;
