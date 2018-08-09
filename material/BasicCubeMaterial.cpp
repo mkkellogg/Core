@@ -69,7 +69,7 @@ namespace Core {
 
     void BasicCubeMaterial::bindShaderVarLocations() {
         this->positionLocation = this->shader->getAttributeLocation(StandardAttribute::Position);
-        this->colorLocation = this->shader->getAttributeLocation("color");
+        this->colorLocation = this->shader->getAttributeLocation(StandardAttribute::Color);
         this->textureLocation = this->shader->getUniformLocation("skybox");
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);

@@ -84,7 +84,7 @@ namespace Core {
     void BasicTexturedMaterial::bindShaderVarLocations() {
         this->positionLocation = this->shader->getAttributeLocation(StandardAttribute::Position);
         this->normalLocation = this->shader->getAttributeLocation("normal");
-        this->colorLocation = this->shader->getAttributeLocation("color");
+        this->colorLocation = this->shader->getAttributeLocation(StandardAttribute::Color);
         this->textureLocation = this->shader->getAttributeLocation("textureA");
         this->uvLocation = this->shader->getAttributeLocation("uv");
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);

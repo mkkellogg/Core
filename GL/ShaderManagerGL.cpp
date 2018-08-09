@@ -10,16 +10,16 @@ const std::string POSITION = _an(Core::StandardAttribute::Position);
 const std::string POSITION_DEF = "in vec4 " +  POSITION + ";\n";
 
 const std::string NORMAL = _an(Core::StandardAttribute::Normal);
-const std::string NORMAL_DEF = "attribute vec4 " +  NORMAL + ";\n";
+const std::string NORMAL_DEF = "in vec4 " +  NORMAL + ";\n";
 
 const std::string FACE_NORMAL = _an(Core::StandardAttribute::FaceNormal);
-const std::string FACE_NORMAL_DEF = "attribute vec4 " +  FACE_NORMAL + ";\n";
+const std::string FACE_NORMAL_DEF = "in vec4 " +  FACE_NORMAL + ";\n";
 
 const std::string COLOR = _an(Core::StandardAttribute::Color);
-const std::string COLOR_DEF = "attribute vec4 " +  COLOR + ";\n";
+const std::string COLOR_DEF = "in vec4 " +  COLOR + ";\n";
 
 const std::string UV = _an(Core::StandardAttribute::UV0);
-const std::string UV_DEF = "attribute vec2 " +  UV + ";\n";
+const std::string UV_DEF = "in vec2 " +  UV + ";\n";
 
 const std::string MODEL_MATRIX = _un(Core::StandardUniform::ModelMatrix);
 const std::string MODEL_MATRIX_DEF = "uniform mat4 " +  MODEL_MATRIX + ";\n";
@@ -275,30 +275,28 @@ namespace Core {
             "#version 330\n"
             "precision highp float;\n"
             "in vec4 vPos;\n"
-            "out vec4 out_color;\n"
             "void main() {\n"
             "    float len = length(vPos.xyz);\n"
             "    gl_FragColor = vec4(len, 0.0, 0.0, 0.0);\n"
             "}\n";
 
         this->Basic_vertex =
-            "#version 100\n"
-            + POSITION_DEF +
-            "attribute vec4 color;\n"
-            "attribute vec2 uv;\n"
+            "#version 330\n"
+            + POSITION_DEF
+            + COLOR_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
             + MODEL_MATRIX_DEF +
-            "varying vec4 vColor;\n"
+            "out vec4 vColor;\n"
             "void main() {\n"
             "    gl_Position = " + PROJECTION_MATRIX + "  * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
-            "    vColor = color;\n"
+            "    vColor = " + COLOR + ";\n"
             "}\n";
 
         this->Basic_fragment =   
-            "#version 100\n"
+            "#version 330\n"
             "precision mediump float;\n"
-            "varying vec4 vColor;\n"
+            "in vec4 vColor;\n"
             "void main() {\n"
             "    gl_FragColor = vColor;\n"
             "}\n";
@@ -307,8 +305,8 @@ namespace Core {
             "#version 330\n"
             "precision highp float;\n"
             "#include \"Lighting\" \n"
-            + POSITION_DEF +
-            "in vec4 color;\n"
+            + POSITION_DEF
+            + COLOR_DEF +
             "in vec4 normal;\n"
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
@@ -321,7 +319,7 @@ namespace Core {
             "    vPos = " +  MODEL_MATRIX + " * " + POSITION + ";\n"
             "    vec4 viewSpacePos = " + VIEW_MATRIX + " * vPos;\n"
             "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * vPos;\n"
-            "    vColor = color;\n"
+            "    vColor = " + COLOR + ";\n"
             "    vNormal = vec3(modelInverseTransposeMatrix * normal);\n"
             "    TRANSFER_LIGHTING(" + POSITION + ", gl_Position, viewSpacePos) \n"
             "}\n";
@@ -341,9 +339,9 @@ namespace Core {
             "}\n";
 
         this->BasicTextured_vertex =  
-            "#version 100\n"
-            + POSITION_DEF +
-            "attribute vec4 color;\n"
+            "#version 330\n"
+            + POSITION_DEF
+            + COLOR_DEF + 
             "attribute vec2 uv;\n"
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
@@ -354,15 +352,15 @@ namespace Core {
             "void main() {\n"
             "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
             "    vUV = uv;\n"
-            "    vColor = color;\n"
+            "    vColor = " + COLOR + ";\n"
             "}\n";
 
         this->BasicTextured_fragment =   
-            "#version 100\n"
+            "#version 330\n"
             "precision mediump float;\n"
             "uniform sampler2D textureA;\n"
-            "varying vec4 vColor;\n"
-            "varying vec2 vUV;\n"
+            "in vec4 vColor;\n"
+            "in vec2 vUV;\n"
             "void main() {\n"
             "    vec4 textureColor = texture2D(textureA, vUV);\n"
             "    gl_FragColor = textureColor;\n"
@@ -372,8 +370,8 @@ namespace Core {
             "#version 330\n"
             "precision highp float;\n"
             "#include \"Lighting\" \n"
-            + POSITION_DEF +
-            "in vec4 color;\n"
+            + POSITION_DEF
+            + COLOR_DEF +
             "in vec4 normal;\n"
             "in vec4 faceNormal;\n"
             "in vec2 uv;\n"
@@ -392,7 +390,7 @@ namespace Core {
             "    vec4 viewSpacePos = " + VIEW_MATRIX + " * vPos;\n"
             "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * vPos;\n"
             "    vUV = uv;\n"
-            "    vColor = color;\n"
+            "    vColor = " + COLOR + ";\n"
             "    vec4 eNormal = normal;\n"
             "    vNormal = vec3(modelInverseTransposeMatrix * eNormal);\n"
             "    vFaceNormal = vec3(modelInverseTransposeMatrix * faceNormal);\n"
@@ -416,28 +414,28 @@ namespace Core {
 
         this->BasicCube_vertex =  
             "#version 330\n"
-            + POSITION_DEF +
-            "attribute vec4 color;\n"
+            + POSITION_DEF
+            + COLOR_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF +
             "mat4 scale = mat4(1.0, 0.0, 0.0, 0.0,\n"
             "                  0.0, 1.0, 0.0, 0.0,\n"
             "                  0.0, 0.0, 1.0, -20.0,\n"
             "                  0.0, 0.0, 0.0, 1.0);\n"
-            "varying vec4 vColor;\n"
-            "varying vec3 vUV;\n"
+            "out vec4 vColor;\n"
+            "out vec3 vUV;\n"
             "void main() {\n"
             "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " + POSITION + ";\n"
             "    vUV = normalize(" + POSITION + ".xyz);\n"
-            "    vColor = color;\n"
+            "    vColor = " + COLOR + ";\n"
             "}\n";
 
         this->BasicCube_fragment =  
             "#version 330\n"
             "precision mediump float;\n"
             "uniform samplerCube skybox;\n"
-            "varying vec4 vColor;\n"
-            "varying vec3 vUV;\n"
+            "in vec4 vColor;\n"
+            "in vec3 vUV;\n"
             "void main() {\n"
             "    vec4 textureColor = texture(skybox, vUV);\n"
             "    gl_FragColor = textureColor;\n"
