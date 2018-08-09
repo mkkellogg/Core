@@ -87,7 +87,7 @@ namespace Core {
         this->colorLocation = this->shader->getAttributeLocation("color");
         this->textureLocation = this->shader->getAttributeLocation("textureA");
         this->uvLocation = this->shader->getAttributeLocation("uv");
-        this->projectionMatrixLocation = this->shader->getUniformLocation("projection");
+        this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation("viewMatrix");
         this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);
     }

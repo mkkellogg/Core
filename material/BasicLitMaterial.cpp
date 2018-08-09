@@ -134,7 +134,7 @@ namespace Core {
         this->positionLocation = this->shader->getAttributeLocation(StandardAttribute::Position);
         this->normalLocation = this->shader->getAttributeLocation("normal");
         this->colorLocation = this->shader->getAttributeLocation("color");
-        this->projectionMatrixLocation = this->shader->getUniformLocation("projection");
+        this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation("viewMatrix");
         this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);
         this->modelInverseTransposeMatrixLocation = this->shader->getUniformLocation("modelInverseTransposeMatrix");
