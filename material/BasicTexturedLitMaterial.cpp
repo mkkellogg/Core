@@ -150,10 +150,10 @@ namespace Core {
     void BasicTexturedLitMaterial::bindShaderVarLocations() {
         this->positionLocation = this->shader->getAttributeLocation(StandardAttribute::Position);
         this->normalLocation = this->shader->getAttributeLocation(StandardAttribute::Normal);
-        this->faceNormalLocation = this->shader->getAttributeLocation("faceNormal");
+        this->faceNormalLocation = this->shader->getAttributeLocation(StandardAttribute::FaceNormal);
         this->colorLocation = this->shader->getAttributeLocation(StandardAttribute::Color);
         this->textureLocation = this->shader->getAttributeLocation("textureA");
-        this->uvLocation = this->shader->getAttributeLocation("uv");
+        this->uvLocation = this->shader->getAttributeLocation(StandardAttribute::UV0);
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
         this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);

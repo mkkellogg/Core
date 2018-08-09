@@ -18,8 +18,10 @@ const std::string FACE_NORMAL_DEF = "in vec4 " +  FACE_NORMAL + ";\n";
 const std::string COLOR = _an(Core::StandardAttribute::Color);
 const std::string COLOR_DEF = "in vec4 " +  COLOR + ";\n";
 
-const std::string UV = _an(Core::StandardAttribute::UV0);
-const std::string UV_DEF = "in vec2 " +  UV + ";\n";
+const std::string UV0 = _an(Core::StandardAttribute::UV0);
+const std::string UV0_DEF = "in vec2 " +  UV0 + ";\n";
+
+const std::string TEXTURE0 = _un(Core::StandardUniform::Texture0);
 
 const std::string MODEL_MATRIX = _un(Core::StandardUniform::ModelMatrix);
 const std::string MODEL_MATRIX_DEF = "uniform mat4 " +  MODEL_MATRIX + ";\n";
@@ -341,8 +343,8 @@ namespace Core {
         this->BasicTextured_vertex =  
             "#version 330\n"
             + POSITION_DEF
-            + COLOR_DEF + 
-            "attribute vec2 uv;\n"
+            + COLOR_DEF 
+            + UV0_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
             + MODEL_MATRIX_DEF +
@@ -351,7 +353,7 @@ namespace Core {
             "varying vec2 vUV;\n"
             "void main() {\n"
             "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
-            "    vUV = uv;\n"
+            "    vUV = " + UV0 + ";\n"
             "    vColor = " + COLOR + ";\n"
             "}\n";
 
@@ -372,9 +374,9 @@ namespace Core {
             "#include \"Lighting\" \n"
             + POSITION_DEF
             + COLOR_DEF
-            + NORMAL_DEF +
-            "in vec4 faceNormal;\n"
-            "in vec2 uv;\n"
+            + NORMAL_DEF
+            + FACE_NORMAL_DEF
+            + UV0_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
             + MODEL_MATRIX_DEF +
@@ -389,11 +391,11 @@ namespace Core {
             "    vPos = " +  MODEL_MATRIX + " * " + POSITION + ";\n"
             "    vec4 viewSpacePos = " + VIEW_MATRIX + " * vPos;\n"
             "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * vPos;\n"
-            "    vUV = uv;\n"
+            "    vUV = " + UV0 + ";\n"
             "    vColor = " + COLOR + ";\n"
             "    vec4 eNormal = " + NORMAL + ";\n"
             "    vNormal = vec3(modelInverseTransposeMatrix * eNormal);\n"
-            "    vFaceNormal = vec3(modelInverseTransposeMatrix * faceNormal);\n"
+            "    vFaceNormal = vec3(modelInverseTransposeMatrix * " + FACE_NORMAL + ");\n"
             "    TRANSFER_LIGHTING(" + POSITION + ", gl_Position, viewSpacePos) \n"
             "}\n";
 
