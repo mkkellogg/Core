@@ -19,6 +19,7 @@ namespace Core {
         virtual void sendCustomUniformsToShader() override;
         virtual WeakPointer<Material> clone() override;
         void setTexture(WeakPointer<CubeTexture> texture);
+        virtual UInt32 textureCount() override;
 
     private:
         BasicCubeMaterial(WeakPointer<Graphics> graphics);
@@ -26,9 +27,9 @@ namespace Core {
         
         Int32 positionLocation;
         Int32 colorLocation;
-        Int32 textureLocation;
         Int32 projectionMatrixLocation;
         Int32 viewMatrixLocation;
+        Int32 cubeTextureLocation;
         PersistentWeakPointer<CubeTexture> texture;
     };
 }

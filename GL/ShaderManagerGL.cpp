@@ -12,6 +12,7 @@ const std::string FACE_NORMAL = _an(Core::StandardAttribute::FaceNormal);
 const std::string COLOR = _an(Core::StandardAttribute::Color);
 const std::string UV0 = _an(Core::StandardAttribute::UV0);
 const std::string TEXTURE2D0 = _un(Core::StandardUniform::Texture2D0);
+const std::string CUBETEXTURE0 = _un(Core::StandardUniform::CubeTexture0);
 const std::string MODEL_MATRIX = _un(Core::StandardUniform::ModelMatrix);
 const std::string MODEL_INVERSE_TRANSPOSE_MATRIX = _un(Core::StandardUniform::ModelInverseTransposeMatrix);
 const std::string VIEW_MATRIX = _un(Core::StandardUniform::ViewMatrix);
@@ -45,6 +46,7 @@ const std::string FACE_NORMAL_DEF = "in vec4 " +  FACE_NORMAL + ";\n";
 const std::string COLOR_DEF = "in vec4 " +  COLOR + ";\n";
 const std::string UV0_DEF = "in vec2 " +  UV0 + ";\n";
 const std::string TEXTURE2D0_DEF = "uniform sampler2D " +  TEXTURE2D0 + ";\n";
+const std::string CUBETEXTURE0_DEF = "uniform samplerCube " +  CUBETEXTURE0 + ";\n";
 const std::string MODEL_MATRIX_DEF = "uniform mat4 " +  MODEL_MATRIX + ";\n";
 const std::string MODEL_INVERSE_TRANSPOSE_MATRIX_DEF = "uniform mat4 " +  MODEL_INVERSE_TRANSPOSE_MATRIX + ";\n";
 const std::string VIEW_MATRIX_DEF = "uniform mat4 " +  VIEW_MATRIX + ";\n";
@@ -371,9 +373,10 @@ namespace Core {
             "in vec4 vPos;\n"
             "out vec4 out_color;\n"
             "void main() {\n"
+            // instead of passing [vColor] directly to the litColor function, we copy it into a new
+            // vector. passing it directly causes a weird bug on some platforms/GPUs/versions of Linux
+            // where shadows are not rendered
             "   out_color = litColor(vec4(vColor.r, vColor.g, vColor.b, 1.0), vPos, normalize(vNormal));\n"
-            //"   out_color = litColor(vColor, vPos, normalize(vNormal));\n"
-           // "   out_color = litColor(vec4(1.0, 0.0, 0.0, 1.0), vPos, normalize(vNormal));\n"
             "}\n";
 
         this->BasicTextured_vertex =  
@@ -471,11 +474,11 @@ namespace Core {
         this->BasicCube_fragment =  
             "#version 330\n"
             "precision mediump float;\n"
-            "uniform samplerCube skybox;\n"
+            + CUBETEXTURE0_DEF +
             "in vec4 vColor;\n"
             "in vec3 vUV;\n"
             "void main() {\n"
-            "    vec4 textureColor = texture(skybox, vUV);\n"
+            "    vec4 textureColor = texture(" + CUBETEXTURE0 + ", vUV);\n"
             "    gl_FragColor = textureColor;\n"
             "}\n";
     }

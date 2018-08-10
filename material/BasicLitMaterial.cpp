@@ -50,7 +50,7 @@ namespace Core {
                 return this->viewMatrixLocation;
             case StandardUniform::ModelMatrix:
                 return this->modelMatrixLocation;
-             case StandardUniform::ModelInverseTransposeMatrix:
+            case StandardUniform::ModelInverseTransposeMatrix:
                 return this->modelInverseTransposeMatrixLocation;
             case StandardUniform::LightPosition:
                 return this->lightPositionLocation;
