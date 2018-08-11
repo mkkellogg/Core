@@ -4,6 +4,9 @@
 
 namespace Core {
 
+    const Real PointLight::NearPlane = 0.1f;
+    const Real PointLight::FarPlane = 100.0f;
+
     PointLight::PointLight(WeakPointer<Object3D> owner, Bool shadowsEnabled, 
                            UInt32 shadowMapSize, Real constantShadowBias, Real angularShadowBias): 
         ShadowLight(owner, LightType::Point, shadowsEnabled, shadowMapSize, constantShadowBias, angularShadowBias) {

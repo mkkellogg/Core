@@ -94,6 +94,8 @@ namespace Core {
                 return this->lightShadowMapSizeLocation;
             case StandardUniform::LightShadowSoftness:
                 return this->lightShadowSoftnessLocation;
+            case StandardUniform::LightNearPlane:
+                return this->lightNearPlaneLocation;
             default:
                 return -1;
         }
@@ -144,6 +146,7 @@ namespace Core {
         newMaterial->lightConstantShadowBiasLocation = this->lightConstantShadowBiasLocation;
         newMaterial->lightShadowMapSizeLocation = this->lightShadowMapSizeLocation;
         newMaterial->lightShadowSoftnessLocation = this->lightShadowSoftnessLocation;
+        newMaterial->lightNearPlaneLocation = this->lightNearPlaneLocation;
         return newMaterial;
     }
 
@@ -178,6 +181,7 @@ namespace Core {
         this->lightConstantShadowBiasLocation = this->shader->getUniformLocation(StandardUniform::LightConstantShadowBias);
         this->lightShadowMapSizeLocation = this->shader->getUniformLocation(StandardUniform::LightShadowMapSize);
         this->lightShadowSoftnessLocation = this->shader->getUniformLocation(StandardUniform::LightShadowSoftness);
+        this->lightNearPlaneLocation = this->shader->getUniformLocation(StandardUniform::LightNearPlane);
     }
 
     UInt32 BasicTexturedLitMaterial::textureCount() {

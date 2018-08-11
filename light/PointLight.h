@@ -14,6 +14,9 @@ namespace Core {
         friend class Engine;
 
     public:
+        static const Real NearPlane;
+        static const Real FarPlane;
+
         ~PointLight();
 
         void init() override;

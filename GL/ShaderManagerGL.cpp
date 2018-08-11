@@ -39,6 +39,7 @@ const std::string LIGHT_CONSTANT_SHADOW_BIAS = _un(Core::StandardUniform::LightC
 const std::string LIGHT_ANGULAR_SHADOW_BIAS = _un(Core::StandardUniform::LightAngularShadowBias);
 const std::string LIGHT_SHADOW_MAP_SIZE = _un(Core::StandardUniform::LightShadowMapSize);
 const std::string LIGHT_SHADOW_SOFTNESS = _un(Core::StandardUniform::LightShadowSoftness);
+const std::string LIGHT_NEAR_PLANE = _un(Core::StandardUniform::LightNearPlane);
 
 const std::string POSITION_DEF = "in vec4 " +  POSITION + ";\n";
 const std::string NORMAL_DEF = "in vec4 " +  NORMAL + ";\n";
@@ -73,6 +74,7 @@ const std::string LIGHT_CONSTANT_SHADOW_BIAS_DEF = "uniform float " + LIGHT_CONS
 const std::string LIGHT_ANGULAR_SHADOW_BIAS_DEF ="uniform float " + LIGHT_ANGULAR_SHADOW_BIAS + ";\n";
 const std::string LIGHT_SHADOW_MAP_SIZE_DEF = "uniform float " + LIGHT_SHADOW_MAP_SIZE + ";\n";
 const std::string LIGHT_SHADOW_SOFTNESS_DEF = "uniform int " + LIGHT_SHADOW_SOFTNESS + ";\n";
+const std::string LIGHT_NEAR_PLANE_DEF = "uniform float " + LIGHT_NEAR_PLANE + ";\n";
 
 namespace Core {
 
@@ -140,7 +142,8 @@ namespace Core {
             + LIGHT_ENABLED_DEF
             + LIGHT_SHADOW_SOFTNESS_DEF
             + LIGHT_COLOR_DEF
-            + LIGHT_SHADOW_MAP_SIZE_DEF +
+            + LIGHT_SHADOW_MAP_SIZE_DEF
+            + LIGHT_NEAR_PLANE_DEF +
             "in float _core_viewSpacePosZ;\n"
             "in vec4 _core_lightSpacePos[MAX_CASCADES];\n"
 
@@ -203,33 +206,33 @@ namespace Core {
             "} \n"
 
             "vec4 getPointLightColor(vec4 baseColor, vec3 lightLocalFragPos, float bias, float atten) { \n"
-            "   vec3 sVec = normalize(lightLocalFragPos); \n"
-            "   float pxToWorld = 1.0 / " + LIGHT_SHADOW_MAP_SIZE + " * 0.2; \n"
-            "   float shadowFactor = 0.0; \n"
-            "   vec3 forward = vec3(0.0, 0.0, 0.0); \n "
-            "   vec3 up = vec3(0.0, 1.0, 0.0); \n "
-            "   vec3 right = vec3(0.0, 0.0, 0.0); \n "
-            "   float scale = 1.0; \n"
-            "   float near = 0.1; \n"
-            "   float absX = abs(lightLocalFragPos.x); \n"
-            "   float absY = abs(lightLocalFragPos.y); \n"
-            "   float absZ = abs(lightLocalFragPos.z); \n"
-            "   if (absZ > absX && absZ > absY) {"
-            "      forward = vec3(0.0, 0.0, sign(lightLocalFragPos.z)); \n"
-            "      scale = absZ / near; \n"
-            "   }"
-            "   else if (absX > absZ && absX > absY) {"
-            "      forward = vec3(sign(lightLocalFragPos.x), 0.0, 0.0); \n"
-            "      scale = absX / near; \n"
-            "   }"
-            "   else {"
-            "      forward = vec3(0.0, sign(lightLocalFragPos.y), 0.0); \n"
-            "      up = vec3(0.0, 0.0, forward.y); \n"
-            "      scale = absY / near; \n"
-            "   }"
-            "   right = cross(forward, up); \n"
-            "   right = right * pxToWorld * scale; \n"
-            "   up = up * pxToWorld * scale; \n"
+            "    vec3 sVec = normalize(lightLocalFragPos); \n"
+            "    float pxToWorld = 1.0 / " + LIGHT_SHADOW_MAP_SIZE + " * 0.2; \n"
+            "    float shadowFactor = 0.0; \n"
+            "    vec3 forward = vec3(0.0, 0.0, 0.0); \n "
+            "    vec3 up = vec3(0.0, 1.0, 0.0); \n "
+            "    vec3 right = vec3(0.0, 0.0, 0.0); \n "
+            "    float scale = 1.0; \n"
+            "    float near = " + LIGHT_NEAR_PLANE + "; \n"
+            "    float absX = abs(lightLocalFragPos.x); \n"
+            "    float absY = abs(lightLocalFragPos.y); \n"
+            "    float absZ = abs(lightLocalFragPos.z); \n"
+            "    if (absZ > absX && absZ > absY) {"
+            "        forward = vec3(0.0, 0.0, sign(lightLocalFragPos.z)); \n"
+            "        scale = absZ / near; \n"
+            "    }"
+            "    else if (absX > absZ && absX > absY) {"
+            "        forward = vec3(sign(lightLocalFragPos.x), 0.0, 0.0); \n"
+            "        scale = absX / near; \n"
+            "    }"
+            "    else {"
+            "        forward = vec3(0.0, sign(lightLocalFragPos.y), 0.0); \n"
+            "        up = vec3(0.0, 0.0, forward.y); \n"
+            "        scale = absY / near; \n"
+            "    }"
+            "    right = cross(forward, up); \n"
+            "    right = right * pxToWorld * scale; \n"
+            "    up = up * pxToWorld * scale; \n"
 
             "    if (" + LIGHT_SHADOW_SOFTNESS + " == 2 || " + LIGHT_SHADOW_SOFTNESS + " == 1) { \n"
             "        shadowFactor += getPointLightShadowFactor(lightLocalFragPos, bias); \n"
@@ -238,12 +241,10 @@ namespace Core {
             "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos + up * i, bias); \n"
             "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos - right * i, bias); \n"
             "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos - up * i, bias); \n"
-
             "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos + right * i + up * i, bias); \n"
             "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos + right * i - up * i, bias); \n"
             "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos - right * i + up * i, bias); \n"
             "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos - right * i - up * i, bias); \n"
-
             "        } \n "
             "        if (" + LIGHT_SHADOW_SOFTNESS + " == 2) shadowFactor /= 17.0; \n"
             "        else shadowFactor /= 9.0; \n"
@@ -253,7 +254,7 @@ namespace Core {
             "    } \n"       
            
             "   return vec4(" + LIGHT_COLOR + ".rgb * baseColor.rgb * atten * shadowFactor, baseColor.a);\n"
-            "} \n"
+            "}\n"
 
             "vec4 litColor(in vec4 baseColor, in vec4 fragPos, in vec3 fragNormal) {\n"
             "    if (" + LIGHT_ENABLED + " != 0) {\n"
@@ -261,7 +262,6 @@ namespace Core {
             "            return vec4(baseColor.rgb * " + LIGHT_COLOR + ".rgb, baseColor.a);\n"
             "        }\n"
             "        else if (" + LIGHT_TYPE + " == 1) {\n"
-            "            int shadowCount = 0; \n"
             "            vec3 toLight = vec3(-" + LIGHT_DIRECTION + ");\n"
             "            float baseDot = max(cos(acos(dot(toLight, fragNormal)) * 1.1), 0.0); \n"  
             "            float bias = (1.0 - baseDot) * " + LIGHT_ANGULAR_SHADOW_BIAS + ";"
@@ -272,10 +272,7 @@ namespace Core {
             "            vec3 toLight = normalize(vec3(" + LIGHT_POSITION + " - fragPos));\n"
             "            float baseDot = max(cos(acos(dot(toLight, fragNormal)) * 1.025), 0.0); \n"
             "            float bias = (1.0 - baseDot) * " + LIGHT_ANGULAR_SHADOW_BIAS + " + " + LIGHT_CONSTANT_SHADOW_BIAS + ";\n"
-            "            vec4 color = vec4(0.0, 0.0, 0.0, 0.0); \n"
-            "            vec3 lfp = lightLocalFragPos; \n"
-            "            color += getPointLightColor(baseColor, lfp, bias, baseDot); \n"
-            "            return color; \n"
+            "            return getPointLightColor(baseColor, lightLocalFragPos, bias, baseDot); \n"
             "        }\n"
             "    }\n"
             "    return baseColor;\n"

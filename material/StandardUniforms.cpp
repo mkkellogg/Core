@@ -36,6 +36,7 @@ namespace Core {
         "LIGHT_VIEW_PROJECTION",
         "LIGHT_CASCADE_END",
         "LIGHT_CASCADE_COUNT",
+        "LIGHT_NEAR_PLANE"
     };
 
     std::unordered_map<std::string, StandardUniform> StandardUniforms::nameToUniform
@@ -68,7 +69,8 @@ namespace Core {
         {uniformNames[(UInt16)StandardUniform::LightShadowSoftness],StandardUniform::LightShadowSoftness},
         {uniformNames[(UInt16)StandardUniform::LightViewProjection],StandardUniform::LightViewProjection},
         {uniformNames[(UInt16)StandardUniform::LightCascadeEnd],StandardUniform::LightCascadeEnd},
-        {uniformNames[(UInt16)StandardUniform::LightCascadeCount],StandardUniform::LightCascadeCount}
+        {uniformNames[(UInt16)StandardUniform::LightCascadeCount],StandardUniform::LightCascadeCount},
+        {uniformNames[(UInt16)StandardUniform::LightNearPlane],StandardUniform::LightNearPlane}
     };
 
     const std::string& StandardUniforms::getUniformName(StandardUniform uniform) {

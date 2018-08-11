@@ -82,6 +82,7 @@ namespace Core {
         Int32 lightConstantShadowBiasLoc = material->getShaderLocation(StandardUniform::LightConstantShadowBias);
         Int32 lightShadowMapSizeLoc = material->getShaderLocation(StandardUniform::LightShadowMapSize);
         Int32 lightShadowSoftnessLoc = material->getShaderLocation(StandardUniform::LightShadowSoftness);
+        Int32 lightNearPlaneLoc = material->getShaderLocation(StandardUniform::LightNearPlane);
 
         UInt32 currentTextureSlot = material->textureCount();
 
@@ -142,6 +143,10 @@ namespace Core {
                     
                     if (lightRangeLoc >= 0) {
                         shader->setUniform1f(lightRangeLoc, pointLight->getRadius());
+                    }
+
+                    if (lightNearPlaneLoc >= 0) {
+                        shader->setUniform1f(lightNearPlaneLoc, PointLight::NearPlane);
                     }
 
                     Int32 lightPositionLoc = material->getShaderLocation(StandardUniform::LightPosition);

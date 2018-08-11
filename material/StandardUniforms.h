@@ -35,8 +35,9 @@ namespace Core {
         LightViewProjection = 26,
         LightCascadeEnd = 27,
         LightCascadeCount = 28,
-        _Count = 29,  // Must always be last in the list (before _None)
-        _None = 30,
+        LightNearPlane = 29,
+        _Count = 30,  // Must always be last in the list (before _None)
+        _None = 31,
     };
 
     class StandardUniforms {

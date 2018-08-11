@@ -171,9 +171,9 @@ namespace Core {
         static PersistentWeakPointer<Object3D> orthoShadowMapCameraObject;
         if (!perspectiveShadowMapCamera.isValid()) {
             perspectiveShadowMapCameraObject = Engine::instance()->createObject3D();
-            perspectiveShadowMapCamera = Engine::instance()->createPerspectiveCamera(perspectiveShadowMapCameraObject, Math::PI / 2.0f, 1.0f, 0.1f, 100);
+            perspectiveShadowMapCamera = Engine::instance()->createPerspectiveCamera(perspectiveShadowMapCameraObject, Math::PI / 2.0f, 1.0f, PointLight::NearPlane, PointLight::FarPlane);
             orthoShadowMapCameraObject = Engine::instance()->createObject3D();
-            orthoShadowMapCamera = Engine::instance()->createOrthographicCamera(orthoShadowMapCameraObject, 1.0f, -1.0f, -1.0f, 1.0f, 0.1f, 100.0f);
+            orthoShadowMapCamera = Engine::instance()->createOrthographicCamera(orthoShadowMapCameraObject, 1.0f, -1.0f, -1.0f, 1.0f, PointLight::NearPlane, PointLight::FarPlane);
         }
 
         std::vector<WeakPointer<Light>> dummyLights;
