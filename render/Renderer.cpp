@@ -1,4 +1,5 @@
 #include <vector>
+#include <algorithm>
 
 #include "../Engine.h"
 #include "../math/Matrix4x4.h"
@@ -19,6 +20,7 @@
 #include "../math/Matrix4x4.h"
 #include "../math/Quaternion.h"
 #include "../light/PointLight.h"
+
 
 namespace Core {
 
@@ -45,7 +47,10 @@ namespace Core {
         std::vector<WeakPointer<Camera>> cameraList;
         std::vector<WeakPointer<Light>> lightList;
 
+        std::sort(lightList.begin(), lightList.end(), Renderer::compareLights);
+
         this->processScene(scene, objectList, cameraList, lightList);
+
         this->renderShadowMaps(lightList, LightType::Point, objectList);
         for (auto camera : cameraList) {
             this->renderShadowMaps(lightList, LightType::Directional, objectList, camera);
@@ -289,4 +294,9 @@ namespace Core {
         }
         return true;
     }
+
+    Bool Renderer::compareLights (WeakPointer<Light> a, WeakPointer<Light> b) { 
+        return ((UInt32)a->getType() < (UInt32)b->getType()); 
+    }
+
 }

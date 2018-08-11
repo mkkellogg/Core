@@ -40,7 +40,7 @@ namespace Core {
         UInt32 getCascadeCount();
         std::vector<OrthoProjection>& buildProjections(WeakPointer<Camera> targetCamera);
         OrthoProjection& getProjection(UInt32 cascadeIndex);
-        Matrix4x4& getProjectionMatrix(UInt32 cascadeIndex);
+        Matrix4x4& getViewProjectionMatrix(UInt32 cascadeIndex);
 
         Real getCascadeBoundary(UInt32 boundaryIndex);
 
@@ -50,9 +50,8 @@ namespace Core {
         void buildShadowMaps();
         
         std::vector<PersistentWeakPointer<RenderTarget2D>> shadowMaps;
-        // TODO: this should be renamed to something like viewProjections
         std::vector<OrthoProjection> projections;
-        std::vector<Matrix4x4> projectionMatrices;
+        std::vector<Matrix4x4> viewProjectionMatrices;
         std::vector<Real> cascadeBoundaries;
         UInt32 cascadeCount;
     };

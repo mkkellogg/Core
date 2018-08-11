@@ -46,7 +46,7 @@ namespace Core {
         void processSceneStep(WeakPointer<Object3D> object, const Matrix4x4& curTransform, std::vector<WeakPointer<Object3D>>& outObjects,
                               std::vector<WeakPointer<Camera>>& outCameras, std::vector<WeakPointer<Light>>& outLights);
         static Bool isShadowCastingCapableLight(WeakPointer<Light> light);
-
+        static Bool compareLights (WeakPointer<Light> a, WeakPointer<Light> b);
         WeakPointer<DepthOnlyMaterial> depthMaterial;
         WeakPointer<DistanceOnlyMaterial> distanceMaterial;
     };

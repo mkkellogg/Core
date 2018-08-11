@@ -201,7 +201,7 @@ namespace Core {
 
                         Int32 viewProjectionLoc = material->getShaderLocation(StandardUniform::LightViewProjection, l);
                         if (viewProjectionLoc >= 0) {
-                            shader->setUniformMatrix4(viewProjectionLoc, directionalLight->getProjectionMatrix(l));
+                            shader->setUniformMatrix4(viewProjectionLoc, directionalLight->getViewProjectionMatrix(l));
                         }
 
                         Int32 cascadeEndLoc = material->getShaderLocation(StandardUniform::LightCascadeEnd, l);

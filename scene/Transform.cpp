@@ -134,44 +134,14 @@ namespace Core {
     }
 
     void Transform::lookAt(const Point3r& target) {
-        Point3r cameraPos;
-        this->updateWorldMatrix();
-        this->transform(cameraPos);
 
-        Vector3r toTarget = target - cameraPos;
-        toTarget.normalize();
+        Point3r src;
+        this->updateWorldMatrix();
+        this->transform(src);
 
         Vector3r vUp(0, 1, 0);
-        Vector3r vRight;
-
-        Vector3r::cross(toTarget, vUp, vRight);
-        vRight.normalize();
-
-        Vector3r::cross(vRight, toTarget, vUp);
-        vUp.normalize();
-
-        Matrix4x4 full = this->getLocalMatrix();
-        auto fullMat = full.getData();
-
-        fullMat[0] = vRight.x;
-        fullMat[1] = vRight.y;
-        fullMat[2] = vRight.z;
-        fullMat[3] = 0.0f;
-
-        fullMat[4] = vUp.x;
-        fullMat[5] = vUp.y;
-        fullMat[6] = vUp.z;
-        fullMat[7] = 0.0f;
-
-        fullMat[8] = -toTarget.x;
-        fullMat[9] = -toTarget.y;
-        fullMat[10] = -toTarget.z;
-        fullMat[11] = 0.0f;
-
-        fullMat[12] = cameraPos.x;
-        fullMat[13] = cameraPos.y;
-        fullMat[14] = cameraPos.z;
-        fullMat[15] = 1.0f;
+        Matrix4x4 temp;
+        temp.lookAt(src, target, vUp);
 
         WeakPointer<Object3D> parent = const_cast<Object3D&>(this->target).getParent();
 
@@ -179,10 +149,10 @@ namespace Core {
             parent->getTransform().updateWorldMatrix();
             Matrix4x4 parentMat = parent->getTransform().getWorldMatrix();
             parentMat.invert();
-            full.preMultiply(parentMat);
+            temp.preMultiply(parentMat);
         }
 
-        this->getLocalMatrix().copy(fullMat);
+        this->getLocalMatrix().copy(temp);
     }
 
     void Transform::transformBy(const Matrix4x4& mat, TransformationSpace transformationSpace) {

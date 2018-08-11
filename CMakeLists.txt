@@ -41,6 +41,7 @@ set(INCLUDE_FILES
     scene/Scene.h
     scene/Object3DComponent.h
     scene/Transform.h
+    scene/TransformationSpace.h
     scene/Octree.h
     asset/AssetLoader.h
     asset/ModelLoader.h

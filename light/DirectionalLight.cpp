@@ -16,7 +16,7 @@ namespace Core {
         this->cascadeCount = Math::min(Constants::MaxDirectionalCascades, cascadeCount);
         for (UInt32 i = 0; i < this->cascadeCount; i++) {
             this->projections.push_back(DirectionalLight::OrthoProjection());
-            this->projectionMatrices.push_back(Matrix4x4());
+            this->viewProjectionMatrices.push_back(Matrix4x4());
             this->cascadeBoundaries.push_back(0.0f);
         }
         // [cascadeBoundaries] gets 1 extra
@@ -156,9 +156,9 @@ namespace Core {
               //  std::cerr << oProj.left << ", " << oProj.right << " , " << oProj.top << ", " << oProj.bottom  << std::endl;
              
                 Matrix4x4 viewTrans = lightTransformInverse;
-                Matrix4x4& projMat =  this->projectionMatrices[i - 1];
-                Camera::buildOrthographicProjectionMatrix(oProj.top, oProj.bottom, oProj.left, oProj.right, oProj.near, oProj.far, projMat);                
-                projMat.multiply(viewTrans);
+                Matrix4x4& viewProjMat =  this->viewProjectionMatrices[i - 1];
+                Camera::buildOrthographicProjectionMatrix(oProj.top, oProj.bottom, oProj.left, oProj.right, oProj.near, oProj.far, viewProjMat);                
+                viewProjMat.multiply(viewTrans);
             }
         }   
 
@@ -172,11 +172,11 @@ namespace Core {
         return this->projections[cascadeIndex];
     }
 
-    Matrix4x4& DirectionalLight::getProjectionMatrix(UInt32 cascadeIndex) {
+    Matrix4x4& DirectionalLight::getViewProjectionMatrix(UInt32 cascadeIndex) {
         if (cascadeIndex >= this->cascadeCount) {
-            throw OutOfRangeException("DirectionalLight::getProjectionMatrix() -> 'cascadeIndex' is out of range.");
+            throw OutOfRangeException("DirectionalLight::getViewProjectionMatrix() -> 'cascadeIndex' is out of range.");
         }
-        return this->projectionMatrices[cascadeIndex];
+        return this->viewProjectionMatrices[cascadeIndex];
     }
 
     Real DirectionalLight::getCascadeBoundary(UInt32 boundaryIndex) {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../math/Matrix4x4.h"
+#include "TransformationSpace.h"
 
 namespace Core {
 
@@ -9,11 +10,6 @@ namespace Core {
 
     class Transform {
     public:
-        enum class TransformationSpace {
-            Local = 0,
-            World = 1,
-            PreLocal = 2
-        };
 
         Transform(const Object3D& target);
         explicit Transform(const Object3D& target, const Matrix4x4& matrix);
