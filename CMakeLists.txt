@@ -37,12 +37,15 @@ set(INCLUDE_FILES
     geometry/AttributeArrayGPUStorage.h
     geometry/IndexBuffer.h
     geometry/GeometryUtils.h
+    geometry/Ray.h
+    geometry/Hit.h
     scene/Object3D.h
     scene/Scene.h
     scene/Object3DComponent.h
     scene/Transform.h
     scene/TransformationSpace.h
     scene/Octree.h
+    scene/RayCaster.h
     asset/AssetLoader.h
     asset/ModelLoader.h
     material/Material.h
@@ -146,11 +149,13 @@ set(SOURCE_FILES
     geometry/Mesh.cpp
     geometry/Box3.cpp
     geometry/GeometryUtils.cpp
+    geometry/Ray.cpp
     scene/Object3D.cpp
     scene/Object3DComponent.cpp
     scene/Scene.cpp
     scene/Transform.cpp
     scene/Octree.cpp
+    scene/RayCaster.cpp
     render/BaseObjectRenderer.cpp
     render/BaseRenderableContainer.cpp
     render/RenderableContainer.cpp

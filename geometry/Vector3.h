@@ -91,7 +91,7 @@ namespace Core {
             return Vector3Base::dot(*this, other);
         }
 
-        static Real dot(const Vector3Base& a, const Vector3Base& b) {
+        static Real dot(const Vector3Components<Real>& a, const Vector3Components<Real>& b) {
             return a.x * b.x + a.y * b.y + a.z * b.z;
         }
 

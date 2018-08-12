@@ -27,6 +27,10 @@ namespace Core {
             this->copy(other);
             return *this;
         }
+
+        static Real dot(const Vector4Components<T>& a, Vector4Components<T>& b) {
+            return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
+        }
     };
 
     typedef Vector4<Real, false> Vector4r;
