@@ -10,9 +10,9 @@ namespace Core {
     class Ray {
     public:
         Ray(const Vector3Components<Real>& origin, const Vector3Components<Real>& direction);
-        Bool intersectBox(const Box3& box, const Hit& hit) const;
+        Bool intersectBox(const Box3& box, Hit& hit) const;
         Bool intersectTriangle(const Vector3Components<Real>& p0, const Vector3Components<Real>& p1,
-                               const Vector3Components<Real>& p2, const Hit& hit, const Vector3Components<Real>* normal = nullptr) const;
+                               const Vector3Components<Real>& p2, Hit& hit, const Vector3Components<Real>* normal = nullptr) const;
 
     private:
         Vector3r direction;

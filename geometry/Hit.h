@@ -6,7 +6,7 @@ namespace Core {
 
     class Hit {
     public:
-        Vector3r Direction;
+        Vector3r Normal;
         Point3r Origin;
     };
 
