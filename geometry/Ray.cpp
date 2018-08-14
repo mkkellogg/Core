@@ -1,11 +1,23 @@
 #include "Ray.h"
+#include "Mesh.h"
+#include "AttributeArray.h"
 #include "Vector4.h"
+#include "Vector3.h"
 
 namespace Core {
 
     Ray::Ray(const Vector3Components<Real>& origin, const Vector3Components<Real>& direction) {
         this->Origin.copy(origin);
         this->Direction.copy(direction);
+    }
+
+    Bool Ray::intersectMesh(WeakPointer<Mesh> mesh, std::vector<Hit>& hits) const {
+        WeakPointer<AttributeArray<Point3rs>> vertexArray = mesh->getVertexPositions();
+        Point3rs * vertices = vertexArray->getAttributes();
+        for (UInt32 i = 0; i < vertexArray->getAttributeCount(); i++) {
+            
+        }
+        return false;
     }
 
     Bool Ray::intersectBox(const Box3& box, Hit& hit) const {

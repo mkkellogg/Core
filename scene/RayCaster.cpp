@@ -27,15 +27,17 @@ namespace Core {
     }
 
     Bool RayCaster::castRay(const Ray& ray, WeakPointer<Mesh> mesh, const Matrix4x4& transform, std::vector<Hit>& hits) {
-        Matrix4x4 inverseTransform = transform;
-        inverseTransform.invert();
+        Matrix4x4 inverse = transform;
+        inverse.invert();
+        Matrix4x4 inverseTranspose = inverse;
+        inverseTranspose.transpose();
         Ray localRay = ray;
-        transform.transform(localRay.Origin);
-        transform.transform(localRay.Direction);
+        inverse.transform(localRay.Origin);
+        inverseTranspose.transform(localRay.Direction);
         Hit bbHit;
         Bool bbIntersect = ray.intersectBox(mesh->getBoundingBox(), bbHit);
         if (bbIntersect) {
-
+            
         }
         return false;
     }
