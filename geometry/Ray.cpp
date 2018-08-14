@@ -1,6 +1,7 @@
 #include "Ray.h"
 #include "Mesh.h"
 #include "AttributeArray.h"
+#include "IndexBuffer.h"
 #include "Vector4.h"
 #include "Vector3.h"
 
@@ -14,9 +15,33 @@ namespace Core {
     Bool Ray::intersectMesh(WeakPointer<Mesh> mesh, std::vector<Hit>& hits) const {
         WeakPointer<AttributeArray<Point3rs>> vertexArray = mesh->getVertexPositions();
         Point3rs * vertices = vertexArray->getAttributes();
-        for (UInt32 i = 0; i < vertexArray->getAttributeCount(); i++) {
-            
+
+        UInt32 tCount = vertexArray->getAttributeCount();
+        WeakPointer<IndexBuffer> indices;
+        if (mesh->isIndexed()) {
+            indices = mesh->getIndexBuffer();
+            tCount = indices->getSize();
         }
+
+        Hit hit;
+        for (UInt32 i = 0; i < tCount; i+=3) {
+            Point3rs * v1 = nullptr;
+            Point3rs * v2 = nullptr;
+            Point3rs * v3 = nullptr;
+            if (mesh->isIndexed()) {
+                v1 = vertices + indices->getIndex(i);
+                v2 = vertices + indices->getIndex(i + 1);
+                v3 = vertices + indices->getIndex(i + 2);
+            }
+            else {
+                v1 = vertices + i;
+                v2 = vertices + (i + 1);
+                v3 = vertices + (i + 2);
+            }
+            Bool wasHit = this->intersectTriangle(*v1, *v2, *v3, hit);
+            if (wasHit)hits.push_back(hit);
+        }
+
         return false;
     }
 

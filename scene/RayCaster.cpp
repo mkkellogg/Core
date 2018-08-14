@@ -10,7 +10,7 @@ namespace Core {
 
     Bool RayCaster::castRay(const Ray& ray, std::vector<Hit>& hits) {
         if (this->objects.size() != this->meshes.size()) {
-            throw Exception("RayCaster::castRay() -> 'meshes' and 'objkects' have different sizes.");
+            throw Exception("RayCaster::castRay() -> 'meshes' and 'objects' have different sizes.");
         }
 
         Bool hitFound = false;
@@ -37,7 +37,8 @@ namespace Core {
         Hit bbHit;
         Bool bbIntersect = ray.intersectBox(mesh->getBoundingBox(), bbHit);
         if (bbIntersect) {
-            
+            std::vector<Hit> hits;
+            ray.intersectMesh(mesh, hits);
         }
         return false;
     }

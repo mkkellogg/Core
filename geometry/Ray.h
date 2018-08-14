@@ -11,6 +11,9 @@
 
 namespace Core {
 
+    // forward declarations
+    class Mesh;
+
     class Ray {
     public:
         Ray(const Vector3Components<Real>& origin, const Vector3Components<Real>& direction);
