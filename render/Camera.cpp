@@ -90,23 +90,12 @@ namespace Core {
         Core::Matrix4x4 projection = this->projectionMatrix;
         Real w = vec.getW();
         projection.transform(vec);
-        if (w != 0) {
-            vec.x /= w;
-            vec.y /= w;
-            vec.z /= w;
-        }
     }
 
     void Camera::unProject(Vector3Base<Real>& vec) const {
         Core::Matrix4x4 projection = this->projectionMatrix;
         projection.invert();
-        Real w = vec.getW();
         projection.transform(vec);
-        if (w != 0) {
-            vec.x /= w;
-            vec.y /= w;
-            vec.z /= w;
-        }
     }
 
     void Camera::setRenderTarget(WeakPointer<RenderTarget> renderTarget) {

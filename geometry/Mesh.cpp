@@ -2,6 +2,7 @@
 #include "../common/Exception.h"
 #include "../common/types.h"
 #include "../scene/Object3D.h"
+#include "Vector3.h"
 #include "IndexBuffer.h"
 #include "IndexBuffer.h"
 
@@ -63,18 +64,18 @@ namespace Core {
         WeakPointer<AttributeArray<Point3rs>> vertexPositions = this->vertexPositions;
 
         if (vertexPositions && this->isAttributeEnabled(StandardAttribute::Position)) {
-            UInt32 index = 0;
-            for (auto itr = vertexPositions->begin(); itr != vertexPositions->end(); ++itr) {
-                Point3rs& position = *itr;
+            UInt32 pointCount = vertexPositions->getAttributeCount();
+            Point3rs * pos = vertexPositions->getAttributes();
+            for (UInt32 i = 0; i < pointCount; i++) {
+                Point3rs& position = *pos;
+                if (i == 0 || position.x < min.x) min.x = position.x;
+                if (i == 0 || position.y < min.y) min.y = position.y;
+                if (i == 0 || position.z < min.z) min.z = position.z;
 
-                if (index == 0 || position.x < min.x) min.x = position.x;
-                if (index == 0 || position.y < min.y) min.y = position.y;
-                if (index == 0 || position.z < min.z) min.z = position.z;
-
-                if (index == 0 || position.x > max.x) max.x = position.x;
-                if (index == 0 || position.y > max.y) max.y = position.y;
-                if (index == 0 || position.z > max.z) max.z = position.z;
-                index++;
+                if (i == 0 || position.x > max.x) max.x = position.x;
+                if (i == 0 || position.y > max.y) max.y = position.y;
+                if (i == 0 || position.z > max.z) max.z = position.z;
+                pos++;
             }
         }
 

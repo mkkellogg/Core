@@ -50,11 +50,14 @@ namespace Core {
         const Vector3r& max = box.getMax();
         const Vector3r& min = box.getMin();
 
+        std::cerr << "]] testing origin: " << this->Origin.x << ", " << this->Origin.y << ", " << this->Origin.z << std::endl;
+         std::cerr << "]] testing dir: " << this->Direction.x << ", " << this->Direction.y << ", " << this->Direction.z << std::endl;
+
         for (UInt32 i = 0; i < 3; i++) {
-            Real dir = i == 0 ? this->Direction.x : i == 1 ? this->Direction.y : this->Direction.z;
             Real origin = i == 0 ? this->Origin.x : i == 1 ? this->Origin.y : this->Origin.z;
-            Real dirA = i == 0 ? this->Origin.y : i == 1 ? this->Origin.z : this->Origin.x;
-            Real dirB = i == 0 ? this->Origin.z : i == 1 ? this->Origin.x : this->Origin.y;
+            Real dir = i == 0 ? this->Direction.x : i == 1 ? this->Direction.y : this->Direction.z;
+            Real dirA = i == 0 ? this->Direction.y : i == 1 ? this->Direction.z : this->Direction.x;
+            Real dirB = i == 0 ? this->Direction.z : i == 1 ? this->Direction.x : this->Direction.y;
             Vector3r hitNormal = i == 0 ? Vector3r(1.0, 0.0, 0.0) : i == 1 ? Vector3r(0.0, 1.0, 0.0) : Vector3r(0.0, 0.0, 1.0);
 
             Real extreme = 0.0f, aAtExtreme = 0.0f, bAtExtreme = 0.0f;
@@ -71,18 +74,23 @@ namespace Core {
             }
             else if(dir < 0) {
                 extreme = i == 0 ? max.x : i == 1 ? max.y : max.z;
-                Real toMax = origin - extreme;
-                if (toMax > 0) {
+                Real toMax = extreme - origin;
+                if (toMax < 0) {
                     aAtExtreme = dirA / dir * toMax;
                     bAtExtreme = dirB / dir * toMax;
                     potentialIntersect = true;
+                    if ( i == 1)std::cerr << "dats: " << dirA << ", " << dirB << ", " << dir << ", " << toMax << std::endl;
                 }
             }
 
             if (potentialIntersect) {
-                Real x = i == 0 ? extreme : i == 1 ? bAtExtreme : aAtExtreme;
-                Real y = i == 0 ? aAtExtreme : i == 1 ? extreme : bAtExtreme;
-                Real z = i == 0 ? bAtExtreme : i == 1 ? aAtExtreme : extreme;
+                Real xo = this->Origin.x;
+                Real yo = this->Origin.y;
+                Real zo = this->Origin.z;
+                Real x = i == 0 ? extreme : i == 1 ? bAtExtreme + xo : aAtExtreme + xo;
+                Real y = i == 0 ? aAtExtreme + yo : i == 1 ? extreme : bAtExtreme + yo;
+                Real z = i == 0 ? bAtExtreme + zo : i == 1 ? aAtExtreme + zo : extreme;
+                if ( i == 1)std::cerr << "potential: " << x << ", " << y << ", " << z << std::endl;
                 Real epsilon = 0.0001f;
                 if (x >= min.x - epsilon && x <= max.x + epsilon &&
                     y >= min.y - epsilon && y <= max.y + epsilon &&

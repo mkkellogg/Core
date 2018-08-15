@@ -31,14 +31,19 @@ namespace Core {
         inverse.invert();
         Matrix4x4 inverseTranspose = inverse;
         inverseTranspose.transpose();
-        Ray localRay = ray;
+        Ray localRay(ray.Origin, ray.Direction);
         inverse.transform(localRay.Origin);
-        inverseTranspose.transform(localRay.Direction);
+        Point3r rayEnd = ray.Origin + ray.Direction;
+        inverse.transform(rayEnd);
+        localRay.Direction = rayEnd - localRay.Origin;
         Hit bbHit;
-        Bool bbIntersect = ray.intersectBox(mesh->getBoundingBox(), bbHit);
+        Bool bbIntersect = localRay.intersectBox(mesh->getBoundingBox(), bbHit);
         if (bbIntersect) {
             std::vector<Hit> hits;
-            ray.intersectMesh(mesh, hits);
+            localRay.intersectMesh(mesh, hits);
+        }
+        else {
+            std::cerr << "no BB!" << std::endl;
         }
         return false;
     }

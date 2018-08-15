@@ -407,7 +407,8 @@ namespace Core {
     }
 
     /*
-     * Transform [vector] by this matrix
+     * Transform [vector] by this matrix. If the resulting [w] is not 1.0 or 0.0, the vector
+     * will be scale by 1/[w] so that [w] = 1.0. This is ONLY done for a 3-component vector.
      *
      * Store the result in [out].
      */
@@ -418,6 +419,11 @@ namespace Core {
         out.x = temp.x;
         out.y = temp.y;
         out.z = temp.z;
+        if (temp.w != 1.0f && temp.w != 0.0f) {
+            out.x /= temp.w;
+            out.y /= temp.w;
+            out.z /= temp.w;
+        }
     }
 
     /*
