@@ -42,7 +42,7 @@ namespace Core {
             if (wasHit)hits.push_back(hit);
         }
 
-        return false;
+        return hits.size() > 0;
     }
 
     Bool Ray::intersectBox(const Box3& box, Hit& hit) const {
@@ -55,6 +55,8 @@ namespace Core {
 
         for (UInt32 i = 0; i < 3; i++) {
             Real origin = i == 0 ? this->Origin.x : i == 1 ? this->Origin.y : this->Origin.z;
+            Real originA = i == 0 ? this->Origin.y : i == 1 ? this->Origin.z : this->Origin.x;
+            Real originB = i == 0 ? this->Origin.z : i == 1 ? this->Origin.x : this->Origin.y;
             Real dir = i == 0 ? this->Direction.x : i == 1 ? this->Direction.y : this->Direction.z;
             Real dirA = i == 0 ? this->Direction.y : i == 1 ? this->Direction.z : this->Direction.x;
             Real dirB = i == 0 ? this->Direction.z : i == 1 ? this->Direction.x : this->Direction.y;
@@ -66,8 +68,8 @@ namespace Core {
                 extreme = i == 0 ? min.x : i == 1 ? min.y : min.z;
                 Real toMin = extreme - origin;
                 if (toMin > 0) {
-                    aAtExtreme = dirA / dir * toMin;
-                    bAtExtreme = dirB / dir * toMin;
+                    aAtExtreme = dirA / dir * toMin + originA;
+                    bAtExtreme = dirB / dir * toMin + originB;
                     potentialIntersect = true;
                     hitNormal = hitNormal * -1.0f;
                 }
@@ -76,20 +78,17 @@ namespace Core {
                 extreme = i == 0 ? max.x : i == 1 ? max.y : max.z;
                 Real toMax = extreme - origin;
                 if (toMax < 0) {
-                    aAtExtreme = dirA / dir * toMax;
-                    bAtExtreme = dirB / dir * toMax;
+                    aAtExtreme = dirA / dir * toMax + originA;
+                    bAtExtreme = dirB / dir * toMax + originB;
                     potentialIntersect = true;
                     if ( i == 1)std::cerr << "dats: " << dirA << ", " << dirB << ", " << dir << ", " << toMax << std::endl;
                 }
             }
 
             if (potentialIntersect) {
-                Real xo = this->Origin.x;
-                Real yo = this->Origin.y;
-                Real zo = this->Origin.z;
-                Real x = i == 0 ? extreme : i == 1 ? bAtExtreme + xo : aAtExtreme + xo;
-                Real y = i == 0 ? aAtExtreme + yo : i == 1 ? extreme : bAtExtreme + yo;
-                Real z = i == 0 ? bAtExtreme + zo : i == 1 ? aAtExtreme + zo : extreme;
+                Real x = i == 0 ? extreme : i == 1 ? bAtExtreme : aAtExtreme;
+                Real y = i == 0 ? aAtExtreme : i == 1 ? extreme : bAtExtreme;
+                Real z = i == 0 ? bAtExtreme : i == 1 ? aAtExtreme : extreme;
                 if ( i == 1)std::cerr << "potential: " << x << ", " << y << ", " << z << std::endl;
                 Real epsilon = 0.0001f;
                 if (x >= min.x - epsilon && x <= max.x + epsilon &&
@@ -123,6 +122,8 @@ namespace Core {
             Vector3r::cross(q1, q2, _normal);
             _normal.normalize();
         }
+
+        if (Vector3r::dot(_normal, this->Direction) >= 0) return false;
 
         Real d = Vector3r::dot(p0, _normal);
         Vector4r planeEq(_normal.x, _normal.y, _normal.z, d);

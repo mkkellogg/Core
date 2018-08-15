@@ -39,12 +39,11 @@ namespace Core {
         Hit bbHit;
         Bool bbIntersect = localRay.intersectBox(mesh->getBoundingBox(), bbHit);
         if (bbIntersect) {
-            std::vector<Hit> hits;
             localRay.intersectMesh(mesh, hits);
         }
         else {
             std::cerr << "no BB!" << std::endl;
         }
-        return false;
+        return hits.size() > 0;
     }
 }
