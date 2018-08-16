@@ -111,8 +111,8 @@ namespace Core {
         _p1.copy(p1); 
         _p2.copy(p2);
 
-        Vector3r q1 = _p1 - _p0;
-        Vector3r q2 = _p2 - _p0;
+        Vector3r q1 = _p2 - _p0;
+        Vector3r q2 = _p1 - _p0;
         Vector3r _normal;
 
         if (normal != nullptr) {
@@ -125,7 +125,7 @@ namespace Core {
 
         if (Vector3r::dot(_normal, this->Direction) >= 0) return false;
 
-        Real d = Vector3r::dot(p0, _normal);
+        Real d = -Vector3r::dot(p0, _normal);
         Vector4r planeEq(_normal.x, _normal.y, _normal.z, d);
         Vector4r rayOrigin(this->Origin.x, this->Origin.y, this->Origin.z, 1.0f);
         Vector4r rayDir(this->Direction.x, this->Direction.y, this->Direction.z, 0.0f);
@@ -140,11 +140,22 @@ namespace Core {
         Real q2Sq = Vector3r::dot(q2, q2);
         Real q1Dotq2 = Vector3r::dot(q1, q2);
 
-        Real qF = -(q2Sq / q1Dotq2);
-        Real w1 = (qF * rDotQ1 + rDotQ2) / (q1Sq * qF + q1Dotq2);
-        Real w2 = (rDotQ2 - (w1 * q1Dotq2)) / q2Sq;
+        //Real qF = -(q2Sq / q1Dotq2);
+        //Real w1 = (qF * rDotQ1 + rDotQ2) / (q1Sq * qF + q1Dotq2);
+        //Real w2 = (rDotQ2 - (w1 * q1Dotq2)) / q2Sq;
 
-        if (w1 < 0 || w2 < 0 || w1 > 1.0 || w2 > 1.0) return false;
+        Real qF = q1Dotq2 / q2Sq;
+        Real w1 = (qF * rDotQ2 + rDotQ1) / (qF * q1Dotq2 + q1Sq);
+        Real w2 = (rDotQ2 - (w1 * q1Dotq2)) / q2Sq;
+        Real w0 = 1.0 - w2 - w1;
+
+        if (w0 < 0 || w1 < 0 || w2 < 0 || w0 > 1.0 || w1 > 1.0 || w2 > 1.0) return false;
+
+        std::cerr << "hit: " << intersection.x << ", " << intersection.y << ", " << intersection.z << std::endl;
+        std::cerr << ">> w: " << w1 << ", " << w2 << std::endl;
+        std::cerr << ">> rDotQ1: " << rDotQ1 << ", rDotQ2: " << rDotQ2 << std::endl;
+         std::cerr << ">> q1Sq: " << q1Sq << ", q2Sq: " << q2Sq << std::endl;
+          std::cerr << ">> q1Dotq2: " << q1Dotq2 << ", qF: " << qF << std::endl;
 
         hit.Origin = intersection;
         hit.Normal = _normal;
