@@ -142,8 +142,6 @@ namespace Core {
 
                 }
 
-                //std::cerr << " [" << minX << ", " << maxX << "]   [" << minY << ", " << maxY << "]  [" << minZ << ", " << maxZ << "] " << std::endl;
-
                 OrthoProjection& oProj = this->projections[i - 1];
 
                 oProj.right = maxX;
@@ -153,8 +151,6 @@ namespace Core {
                 oProj.far = maxZ + 120;
                 oProj.near = minZ - 120;
 
-              //  std::cerr << oProj.left << ", " << oProj.right << " , " << oProj.top << ", " << oProj.bottom  << std::endl;
-             
                 Matrix4x4 viewTrans = lightTransformInverse;
                 Matrix4x4& viewProjMat =  this->viewProjectionMatrices[i - 1];
                 Camera::buildOrthographicProjectionMatrix(oProj.top, oProj.bottom, oProj.left, oProj.right, oProj.near, oProj.far, viewProjMat);                

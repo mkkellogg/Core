@@ -50,9 +50,6 @@ namespace Core {
         const Vector3r& max = box.getMax();
         const Vector3r& min = box.getMin();
 
-        std::cerr << "]] testing origin: " << this->Origin.x << ", " << this->Origin.y << ", " << this->Origin.z << std::endl;
-         std::cerr << "]] testing dir: " << this->Direction.x << ", " << this->Direction.y << ", " << this->Direction.z << std::endl;
-
         for (UInt32 i = 0; i < 3; i++) {
             Real origin = i == 0 ? this->Origin.x : i == 1 ? this->Origin.y : this->Origin.z;
             Real originA = i == 0 ? this->Origin.y : i == 1 ? this->Origin.z : this->Origin.x;
@@ -81,7 +78,6 @@ namespace Core {
                     aAtExtreme = dirA / dir * toMax + originA;
                     bAtExtreme = dirB / dir * toMax + originB;
                     potentialIntersect = true;
-                    if ( i == 1)std::cerr << "dats: " << dirA << ", " << dirB << ", " << dir << ", " << toMax << std::endl;
                 }
             }
 
@@ -89,7 +85,6 @@ namespace Core {
                 Real x = i == 0 ? extreme : i == 1 ? bAtExtreme : aAtExtreme;
                 Real y = i == 0 ? aAtExtreme : i == 1 ? extreme : bAtExtreme;
                 Real z = i == 0 ? bAtExtreme : i == 1 ? aAtExtreme : extreme;
-                if ( i == 1)std::cerr << "potential: " << x << ", " << y << ", " << z << std::endl;
                 Real epsilon = 0.0001f;
                 if (x >= min.x - epsilon && x <= max.x + epsilon &&
                     y >= min.y - epsilon && y <= max.y + epsilon &&
@@ -140,14 +135,6 @@ namespace Core {
         Real q2Sq = Vector3r::dot(q2, q2);
         Real q1Dotq2 = Vector3r::dot(q1, q2);
 
-        //Real qF = -(q2Sq / q1Dotq2);
-        //Real w1 = (qF * rDotQ1 + rDotQ2) / (q1Sq * qF + q1Dotq2);
-        //Real w2 = (rDotQ2 - (w1 * q1Dotq2)) / q2Sq;
-
-        //Real qF = q1Dotq2 / q2Sq;
-        //Real w1 = (qF * rDotQ2 + rDotQ1) / (qF * q1Dotq2 + q1Sq);
-        //Real w2 = (rDotQ2 - (w1 * q1Dotq2)) / q2Sq;
-
         Real qF = -q1Dotq2 / q2Sq;
         Real w1 = (qF * rDotQ2 + rDotQ1) / (qF * q1Dotq2 + q1Sq);
         Real w2 = (rDotQ2 - (w1 * q1Dotq2)) / q2Sq;
@@ -157,12 +144,6 @@ namespace Core {
         if (w0 < 0 || w1 < 0 || w2 < 0 || w0 > 1.0 || w1 > 1.0 || w2 > 1.0) {
             return false;
         }
-        std::cerr << "hit: " << intersection.x << ", " << intersection.y << ", " << intersection.z << std::endl;
-        std::cerr << ">> w: " << w1 << ", " << w2 << std::endl;
-        std::cerr << ">> rDotQ1: " << rDotQ1 << ", rDotQ2: " << rDotQ2 << std::endl;
-        std::cerr << ">> q1Sq: " << q1Sq << ", q2Sq: " << q2Sq << std::endl;
-        std::cerr << ">> q1Dotq2: " << q1Dotq2 << ", qF: " << qF << std::endl;
-
 
         hit.Origin = intersection;
         hit.Normal = _normal;
