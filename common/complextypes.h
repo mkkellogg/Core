@@ -6,5 +6,5 @@
 namespace Core {
 
     template <typename N>
-    using GameObjectIterator = ValueIterator<typename std::vector<PersistentWeakPointer<N>>::iterator, WeakPointer<N>>;
+    using SceneObjectIterator = ValueIterator<typename std::vector<PersistentWeakPointer<N>>::iterator, WeakPointer<N>>;
 }

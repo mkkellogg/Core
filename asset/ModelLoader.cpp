@@ -450,6 +450,7 @@ namespace Core {
         // if (invert) mesh3D->SetInvertNormals(true);
         coreMesh->setNormalsSmoothingThreshold(60.0f * Math::DegreesToRads);
         coreMesh->setCalculateNormals(true);
+        coreMesh->setCalculateBoundingBox(true);
         coreMesh->update();
 
         return coreMesh;

@@ -15,6 +15,7 @@ namespace Core {
         this->enabledAttributes = StandardAttributes::createAttributeSet();
         this->normalsSmoothingThreshold = Math::PI / 2.0;
         this->shoudCalculateNormals = false;
+        this->shouldCalculateBoundingBox = false;
         initAttributes();
     }
 
@@ -137,7 +138,7 @@ namespace Core {
     }
 
     void Mesh::update() {
-        //if (calculateBoundingBox)CalculateBoundingBox();
+        if (this->shouldCalculateBoundingBox) this->calculateBoundingBox();
         if (this->shoudCalculateNormals){
             this->calculateNormals((Real)this->normalsSmoothingThreshold);
         }
@@ -148,6 +149,10 @@ namespace Core {
 
     void Mesh::setCalculateNormals(Bool calculateNormals) {
         this->shoudCalculateNormals = calculateNormals;
+    }
+
+    void Mesh::setCalculateBoundingBox(Bool calculateBoundingBox) {
+        this->shouldCalculateBoundingBox = calculateBoundingBox;
     }
 
     void Mesh::setNormalsSmoothingThreshold(Real threshold) {

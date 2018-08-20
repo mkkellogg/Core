@@ -247,15 +247,15 @@ namespace Core {
                                 std::vector<WeakPointer<Camera>>& outCameras,
                                 std::vector<WeakPointer<Light>>& outLights) {
         Matrix4x4 rootTransform;
-        processSceneStep(scene->getRoot(), rootTransform, outObjects, outCameras, outLights);
+        processScene(scene->getRoot(), rootTransform, outObjects, outCameras, outLights);
     }
 
-    void Renderer::processSceneStep(WeakPointer<Object3D> object, 
-                                    const Matrix4x4& curTransform, 
-                                    std::vector<WeakPointer<Object3D>>& outObjects,
-                                    std::vector<WeakPointer<Camera>>& outCameras, 
-                                    std::vector<WeakPointer<Light>>& outLights) {
-        for (GameObjectIterator<Object3D> itr = object->beginIterateChildren(); itr != object->endIterateChildren(); ++itr) {
+    void Renderer::processScene(WeakPointer<Object3D> object, 
+                                const Matrix4x4& curTransform, 
+                                std::vector<WeakPointer<Object3D>>& outObjects,
+                                std::vector<WeakPointer<Camera>>& outCameras, 
+                                std::vector<WeakPointer<Light>>& outLights) {
+        for (SceneObjectIterator<Object3D> itr = object->beginIterateChildren(); itr != object->endIterateChildren(); ++itr) {
             WeakPointer<Object3D> obj = *itr;
 
             Matrix4x4 nextTransform = curTransform;
@@ -267,7 +267,7 @@ namespace Core {
             inverseWorld.invert();
             outObjects.push_back(obj);
 
-            for (GameObjectIterator<Object3DComponent> compItr = obj->beginIterateComponents(); compItr != obj->endIterateComponents(); ++compItr) {
+            for (SceneObjectIterator<Object3DComponent> compItr = obj->beginIterateComponents(); compItr != obj->endIterateComponents(); ++compItr) {
                 // check if this component is a camera
                 WeakPointer<Object3DComponent> comp = (*compItr);
                 WeakPointer<Camera> cameraPtr = WeakPointer<Object3DComponent>::dynamicPointerCast<Camera>(comp);
@@ -283,7 +283,7 @@ namespace Core {
                 }
             }
 
-            this->processSceneStep(obj, nextTransform, outObjects, outCameras, outLights);
+            this->processScene(obj, nextTransform, outObjects, outCameras, outLights);
         }
     }
 

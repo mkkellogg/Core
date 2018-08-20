@@ -20,20 +20,20 @@ namespace Core {
         return this->transform;
     }
 
-    GameObjectIterator<Object3D> Object3D::beginIterateChildren() {
-        return  GameObjectIterator<Object3D>(this->children.begin());
+    SceneObjectIterator<Object3D> Object3D::beginIterateChildren() {
+        return  SceneObjectIterator<Object3D>(this->children.begin());
     }
 
-    GameObjectIterator<Object3D> Object3D::endIterateChildren() {
-        return GameObjectIterator<Object3D>(this->children.end());
+    SceneObjectIterator<Object3D> Object3D::endIterateChildren() {
+        return SceneObjectIterator<Object3D>(this->children.end());
     }
 
-    GameObjectIterator<Object3DComponent> Object3D::beginIterateComponents() {
-        return GameObjectIterator<Object3DComponent>(this->components.begin());
+    SceneObjectIterator<Object3DComponent> Object3D::beginIterateComponents() {
+        return SceneObjectIterator<Object3DComponent>(this->components.begin());
     }
 
-    GameObjectIterator<Object3DComponent> Object3D::endIterateComponents() {
-        return GameObjectIterator<Object3DComponent>(this->components.end());
+    SceneObjectIterator<Object3DComponent> Object3D::endIterateComponents() {
+        return SceneObjectIterator<Object3DComponent>(this->components.end());
     }
 
     UInt32 Object3D::size() const {
@@ -55,7 +55,7 @@ namespace Core {
     void Object3D::removeChild(WeakPointer<Object3D> object) {
         auto end = this->endIterateChildren();
         auto result = end;
-        for (GameObjectIterator<Object3D> itr = this->beginIterateChildren(); itr != end; ++itr) {
+        for (SceneObjectIterator<Object3D> itr = this->beginIterateChildren(); itr != end; ++itr) {
             if (*itr == object) {
                 result = itr;
                 break;
@@ -74,9 +74,9 @@ namespace Core {
     }
 
     Bool Object3D::addComponent(WeakPointer<Object3DComponent> component) {
-        GameObjectIterator<Object3DComponent> end = this->endIterateComponents();
-        GameObjectIterator<Object3DComponent> result = end;
-        for(GameObjectIterator<Object3DComponent> itr = this->beginIterateComponents(); itr != end; ++itr) {
+        SceneObjectIterator<Object3DComponent> end = this->endIterateComponents();
+        SceneObjectIterator<Object3DComponent> result = end;
+        for(SceneObjectIterator<Object3DComponent> itr = this->beginIterateComponents(); itr != end; ++itr) {
             // don't add component if it already is present in list
             if (component == *itr) {
                 return false;

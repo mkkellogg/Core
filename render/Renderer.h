@@ -43,8 +43,8 @@ namespace Core {
         void getViewDescriptor(const Matrix4x4& worldMatrix, const Matrix4x4& projectionMatrix, ViewDescriptor& viewDescriptor);
         void processScene(WeakPointer<Scene> scene, std::vector<WeakPointer<Object3D>>& outObjects,
                           std::vector<WeakPointer<Camera>>& outCameras, std::vector<WeakPointer<Light>>& outLights);
-        void processSceneStep(WeakPointer<Object3D> object, const Matrix4x4& curTransform, std::vector<WeakPointer<Object3D>>& outObjects,
-                              std::vector<WeakPointer<Camera>>& outCameras, std::vector<WeakPointer<Light>>& outLights);
+        void processScene(WeakPointer<Object3D> object, const Matrix4x4& curTransform, std::vector<WeakPointer<Object3D>>& outObjects,
+                          std::vector<WeakPointer<Camera>>& outCameras, std::vector<WeakPointer<Light>>& outLights);
         static Bool isShadowCastingCapableLight(WeakPointer<Light> light);
         static Bool compareLights (WeakPointer<Light> a, WeakPointer<Light> b);
         WeakPointer<DepthOnlyMaterial> depthMaterial;

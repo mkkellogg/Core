@@ -41,6 +41,9 @@ namespace Core {
         if (bbIntersect) {
             localRay.intersectMesh(mesh, hits);
         }
+        else {
+            std::cerr << "no BB!" << std::endl;
+        }
         return hits.size() > 0;
     }
 }

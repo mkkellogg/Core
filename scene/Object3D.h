@@ -28,10 +28,10 @@ namespace Core {
 
         UInt32 getID();
         Transform& getTransform();
-        GameObjectIterator<Object3D> beginIterateChildren();
-        GameObjectIterator<Object3D> endIterateChildren();
-        GameObjectIterator<Object3DComponent> beginIterateComponents();
-        GameObjectIterator<Object3DComponent> endIterateComponents();
+        SceneObjectIterator<Object3D> beginIterateChildren();
+        SceneObjectIterator<Object3D> endIterateChildren();
+        SceneObjectIterator<Object3DComponent> beginIterateComponents();
+        SceneObjectIterator<Object3DComponent> endIterateComponents();
         UInt32 size() const;
         void addChild(WeakPointer<Object3D> object);
         void removeChild(WeakPointer<Object3D> object);

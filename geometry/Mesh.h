@@ -56,6 +56,7 @@ namespace Core {
 
         void setNormalsSmoothingThreshold(Real threshold);
         void setCalculateNormals(Bool calculateNormals);
+        void setCalculateBoundingBox(Bool calculateBoundingBox);
         void calculateNormals(Real smoothingThreshold);
 
         void update();
@@ -101,6 +102,7 @@ namespace Core {
         // maps vertices to other equal vertices
         std::vector<UInt32>** vertexCrossMap;
         Bool shoudCalculateNormals;
+        Bool shouldCalculateBoundingBox;
         Real normalsSmoothingThreshold;
 
     };
