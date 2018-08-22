@@ -188,33 +188,36 @@ namespace Core {
         if (node.mNumMeshes > 0) {
             // loop through each Assimp mesh attached to the current Assimp node and
             // create a Mesh instance for it
-            for (UInt32 n = 0; n < node.mNumMeshes; n++) {
-                // get the index of the sub-mesh in the master list of meshes
-                UInt32 sceneMeshIndex = node.mMeshes[n];
+            for (UInt32 n = 0; n <= node.mNumMeshes; n++) {
+                 WeakPointer<Material> material;
+                if (n < node.mNumMeshes) {
+                    // get the index of the sub-mesh in the master list of meshes
+                    UInt32 sceneMeshIndex = node.mMeshes[n];
 
-                // get a pointer to the Assimp mesh
-                const aiMesh* mesh = scene.mMeshes[sceneMeshIndex];
-                if (mesh == nullptr) {
-                    throw ModelLoaderException("ModelLoader::recursiveProcessModelScene -> Assimp node mesh is null.");
+                    // get a pointer to the Assimp mesh
+                    const aiMesh* mesh = scene.mMeshes[sceneMeshIndex];
+                    if (mesh == nullptr) {
+                        throw ModelLoaderException("ModelLoader::recursiveProcessModelScene -> Assimp node mesh is null.");
+                    }
+
+                    Int32 materialIndex = mesh->mMaterialIndex;
+                    MaterialImportDescriptor& materialImportDescriptor = materialImportDescriptors[materialIndex];
+                    material = materialImportDescriptor.meshSpecificProperties[sceneMeshIndex].material;
+                    if (!material.isValid()) {
+                        throw ModelLoaderException("ModelLoader::recursiveProcessModelScene -> nullptr Material object encountered.");
+                    }
+
+                    // if the transformation matrix for this node has an inverted scale, we need to process the mesh
+                    // differently or else it won't display correctly. we pass the [invert] flag to convertAssimpMesh()
+                    Bool invert = ModelLoader::hasOddReflections(mat);
+
+                    // convert Assimp mesh to a Mesh object
+                    WeakPointer<Mesh> subMesh = this->convertAssimpMesh(sceneMeshIndex, scene, materialImportDescriptor, invert);
+                    tempMeshes.push(subMesh);
                 }
-
-                Int32 materialIndex = mesh->mMaterialIndex;
-                MaterialImportDescriptor& materialImportDescriptor = materialImportDescriptors[materialIndex];
-                WeakPointer<Material> material = materialImportDescriptor.meshSpecificProperties[sceneMeshIndex].material;
-                if (!material.isValid()) {
-                    throw ModelLoaderException("ModelLoader::recursiveProcessModelScene -> nullptr Material object encountered.");
-                }
-
-                // if the transformation matrix for this node has an inverted scale, we need to process the mesh
-                // differently or else it won't display correctly. we pass the [invert] flag to convertAssimpMesh()
-                Bool invert = ModelLoader::hasOddReflections(mat);
-
-                // convert Assimp mesh to a Mesh object
-                WeakPointer<Mesh> subMesh = this->convertAssimpMesh(sceneMeshIndex, scene, materialImportDescriptor, invert);
-                tempMeshes.push(subMesh);
 
                 UInt32 newChildrenCount = 0;
-                if ((material != lastMaterial && n > 0) || n == node.mNumMeshes - 1) {
+                if (n == node.mNumMeshes || (n > 0 && material.get() != lastMaterial.get())) {
                     // create new scene object to hold the meshes object and its renderer
                     WeakPointer<RenderableContainer<Mesh>> meshContainer = Engine::instance()->createObject3D<RenderableContainer<Mesh>>();
                     if (!meshContainer.isValid()) {
@@ -223,14 +226,14 @@ namespace Core {
 
                     meshContainer->getTransform().setTo(mat);
 
-                    unsigned int targetRemainingCount = n == node.mNumMeshes - 1 ? 0 : 1;
+                    unsigned int targetRemainingCount = n == node.mNumMeshes ? 0 : 1;
                     while (tempMeshes.size() > targetRemainingCount) {
                         WeakPointer<Mesh> subMesh = tempMeshes.front();
                         tempMeshes.pop();
                         meshContainer->addRenderable(subMesh);
                     }
 
-                    WeakPointer<MeshRenderer> meshRenderer = Engine::instance()->createRenderer<MeshRenderer>(material, meshContainer);
+                    WeakPointer<MeshRenderer> meshRenderer = Engine::instance()->createRenderer<MeshRenderer>(lastMaterial, meshContainer);
                     parent->addChild(meshContainer);
 
                     createdSceneObjects.push_back(meshContainer);

@@ -223,4 +223,9 @@ namespace Core {
         this->getLocalTransformationFromWorldTransformation(worldTransformation, localTransformation);
         this->localMatrix.multiply(localTransformation);
     }
+
+    void Transform::scale(Real x, Real y, Real z) {
+
+        // TODO: implement!
+    }
 }

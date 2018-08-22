@@ -49,6 +49,8 @@ namespace Core {
         void rotateAround(const Vector3<Real>& axis, const Point3<Real>& pos, Real angle);
         void rotateAround(Real ax, Real ay, Real az, Real px, Real py, Real pz, Real angle);
 
+        void scale(Real x, Real y, Real z);
+
     private:
         Matrix4x4 localMatrix;
         Matrix4x4 worldMatrix;
