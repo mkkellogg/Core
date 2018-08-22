@@ -45,6 +45,7 @@ namespace Core {
         Transform transform;
         std::vector<PersistentWeakPointer<Object3D>> children;
         PersistentWeakPointer<Object3D> parent;
+        PersistentWeakPointer<Object3D> _self;
         std::vector<PersistentWeakPointer<Object3DComponent>> components;
         Bool active;
         UInt32 id;

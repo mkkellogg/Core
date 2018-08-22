@@ -41,15 +41,22 @@ namespace Core {
     }
 
     void Object3D::addChild(WeakPointer<Object3D> object) {
+
+        Matrix4x4 Ai;
+        
         if (object->parent.isValid()) {
             object->parent->removeChild(object);
-            Transform& parentTransform = object->parent->getTransform();
-            parentTransform.updateWorldMatrix();
-            Matrix4x4 inverse(parentTransform.getWorldMatrix());
-            inverse.invert();
-            object->getTransform().getLocalMatrix().preMultiply(inverse);
         }
+
+        Transform& AjTransform = this->getTransform();
+        AjTransform.updateWorldMatrix();
+        Matrix4x4 AjInverse = AjTransform.getWorldMatrix();
+        AjInverse.invert();
+
+        object->getTransform().getLocalMatrix().preMultiply(AjInverse);
+
         this->children.push_back(object);
+        object->parent = this->_self;
     }
 
     void Object3D::removeChild(WeakPointer<Object3D> object) {
@@ -66,6 +73,7 @@ namespace Core {
             transform.updateWorldMatrix();
             transform.getLocalMatrix().copy(transform.getWorldMatrix());
             this->children.erase(result.getSrc());
+            object->parent = PersistentWeakPointer<Object3D>::nullPtr();
         }
     }
 

@@ -99,6 +99,7 @@ namespace Core {
         if (scene) {
             // the model has been loaded from disk into Assimp data structures, now convert to engine-native structures
             WeakPointer<Object3D> result = processModelScene(fixedModelPath, *scene, importScale, castShadows, receiveShadows);
+            result->setActive(true);
             return result;
         } else {
             throw ModelLoaderException("ModelLoder::loadModel() -> Error occured while loading Assimp scene.");
@@ -140,7 +141,7 @@ namespace Core {
         // any time meshes or mesh renderers are created, the information in [materialImportDescriptors]
         // will be used to link their materials and textures as appropriate.
 
-        recursiveProcessModelScene(scene, *(scene.mRootNode), importScale, root, materialImportDescriptors, createdSceneObjects, castShadows, receiveShadows);
+        recursiveProcessModelScene(scene, *(scene.mRootNode), root, materialImportDescriptors, createdSceneObjects, castShadows, receiveShadows);
 
         // loop through each instance of SceneObject that was created in the call to RecursiveProcessModelScene()
         // and for each instance that contains a SkinnedMesh3DRenderer instance, clone the Skeleton instance
@@ -173,7 +174,7 @@ namespace Core {
         return root;
     }
 
-    void ModelLoader::recursiveProcessModelScene(const aiScene& scene, const aiNode& node, Real scale, WeakPointer<Object3D> parent,
+    void ModelLoader::recursiveProcessModelScene(const aiScene& scene, const aiNode& node, WeakPointer<Object3D> parent,
                                                  std::vector<MaterialImportDescriptor>& materialImportDescriptors,
                                                  std::vector<WeakPointer<Object3D>>& createdSceneObjects, Bool castShadows, Bool receiveShadows) const {
         Matrix4x4 mat;
@@ -265,7 +266,7 @@ namespace Core {
         for (UInt32 i = 0; i < node.mNumChildren; i++) {
             const aiNode* childNode = node.mChildren[i];
             if (childNode != nullptr) {
-                this->recursiveProcessModelScene(scene, *childNode, scale, nextParent, materialImportDescriptors, createdSceneObjects, castShadows,
+                this->recursiveProcessModelScene(scene, *childNode, nextParent, materialImportDescriptors, createdSceneObjects, castShadows,
                                                  receiveShadows);
             }
         }

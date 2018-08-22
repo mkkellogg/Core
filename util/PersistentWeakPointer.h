@@ -33,5 +33,9 @@ namespace Core {
             
         }
 
+        static PersistentWeakPointer nullPtr() {
+            return PersistentWeakPointer();
+        }
+
     };
 }

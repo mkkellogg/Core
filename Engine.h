@@ -90,6 +90,8 @@ namespace Core {
         template <typename T = Object3D>
         WeakPointer<typename std::enable_if<std::is_base_of<Object3D, T>::value, T>::type> createObject3D() {
             std::shared_ptr<T> objPtr = std::shared_ptr<T>(new T());
+            WeakPointer<T> _temp = objPtr;
+            objPtr->_self = _temp;
             this->sceneObjects.push_back(objPtr);
             return objPtr;
         }
