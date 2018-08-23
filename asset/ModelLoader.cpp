@@ -131,7 +131,6 @@ namespace Core {
         // deactivate the root scene object so that it is not immediately
         // active or visible in the scene after it has been loaded
         root->setActive(false);
-        root->getTransform().getLocalMatrix().scale(importScale, importScale, importScale);
 
         // container for all the SceneObject instances that get created during this process
         std::vector<WeakPointer<Object3D>> createdSceneObjects;
@@ -142,6 +141,7 @@ namespace Core {
         // will be used to link their materials and textures as appropriate.
 
         recursiveProcessModelScene(scene, *(scene.mRootNode), root, materialImportDescriptors, createdSceneObjects, castShadows, receiveShadows);
+        root->getTransform().getLocalMatrix().scale(importScale, importScale, importScale);
 
         // loop through each instance of SceneObject that was created in the call to RecursiveProcessModelScene()
         // and for each instance that contains a SkinnedMesh3DRenderer instance, clone the Skeleton instance
@@ -180,6 +180,7 @@ namespace Core {
         Matrix4x4 mat;
         aiMatrix4x4 matBaseTransformation = node.mTransformation;
         ModelLoader::convertAssimpMatrix(matBaseTransformation, mat);
+        parent->getTransform().getLocalMatrix().copy(mat);
 
         WeakPointer<Object3D> nextParent;
         std::queue<WeakPointer<Mesh>> tempMeshes;
@@ -224,8 +225,6 @@ namespace Core {
                         throw ModelLoaderException("ModelLoader::recursiveProcessModelScene -> Could not create mesh container.");
                     };
 
-                    meshContainer->getTransform().setTo(mat);
-
                     unsigned int targetRemainingCount = n == node.mNumMeshes ? 0 : 1;
                     while (tempMeshes.size() > targetRemainingCount) {
                         WeakPointer<Mesh> subMesh = tempMeshes.front();
@@ -262,7 +261,6 @@ namespace Core {
             if (!nextParent.isValid()) {
                 throw ModelLoaderException("ModelLoader::recursiveProcessModelScene -> Could not create default scene object.");
             };
-            nextParent->getTransform().setTo(mat);
             parent->addChild(nextParent);
         }
 
