@@ -40,7 +40,8 @@ namespace Core {
 
         ModelLoader();
         ~ModelLoader();
-        WeakPointer<Object3D> loadModel(const std::string& filePath, Real importScale, Bool castShadows, Bool receiveShadows, Bool preserveFBXPivots);
+        WeakPointer<Object3D> loadModel(const std::string& filePath, Real importScale, UInt32 smoothingThreshold, 
+                                        Bool castShadows, Bool receiveShadows, Bool preserveFBXPivots);
 
     private:
 
@@ -82,15 +83,17 @@ namespace Core {
         void initImporter();
         const aiScene* loadAIScene(const std::string& filePath, Bool preserveFBXPivots);
 
-        WeakPointer<Object3D> processModelScene(const std::string& modelPath, const aiScene& scene, Real importScale, Bool castShadows, Bool receiveShadows) const;
+        WeakPointer<Object3D> processModelScene(const std::string& modelPath, const aiScene& scene, Real importScale,  UInt32 smoothingThreshold,
+                                                Bool castShadows, Bool receiveShadows) const;
         Bool processMaterials(const std::string& modelPath, const aiScene& scene, std::vector<MaterialImportDescriptor>& materialImportDescriptors) const;
         WeakPointer<Texture> loadAITexture(aiMaterial& assimpMaterial, aiTextureType textureType, const std::string& modelPath) const;
         void getImportDetails(const aiMaterial* mtl, MaterialImportDescriptor& materialImportDesc, const aiScene& scene) const;
         Bool setupMeshSpecificMaterialWithTexture(const aiMaterial& assimpMaterial, TextureType textureType, WeakPointer<Texture> texture,
                                                   UInt32 meshIndex, MaterialImportDescriptor& materialImportDesc) const;
         void recursiveProcessModelScene(const aiScene& scene, const aiNode& node, WeakPointer<Object3D> parent, std::vector<MaterialImportDescriptor>& materialImportDescriptors,
-                                        std::vector<WeakPointer<Object3D>>& createdSceneObjects, Bool castShadows, Bool receiveShadows) const;
-        WeakPointer<Mesh> convertAssimpMesh(UInt32 meshIndex, const aiScene& scene, MaterialImportDescriptor& materialImportDescriptor, Bool invert) const;
+                                        std::vector<WeakPointer<Object3D>>& createdSceneObjects, 
+                                        UInt32 smoothingThreshold, Bool castShadows, Bool receiveShadows) const;
+        WeakPointer<Mesh> convertAssimpMesh(UInt32 meshIndex, const aiScene& scene, MaterialImportDescriptor& materialImportDescriptor, Bool invert, UInt32 smoothingThreshold) const;
         
         static ModelLoader::TextureType convertAITextureKeyToTextureType(Int32 aiTextureKey);
         static int convertTextureTypeToAITextureKey(TextureType textureType);

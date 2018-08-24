@@ -88,8 +88,8 @@ namespace Core {
      *
      * [importScale] - Allows for the adjustment of the model's scale
      */
-    WeakPointer<Object3D> ModelLoader::loadModel(const std::string& modelPath, Real importScale, Bool castShadows, Bool receiveShadows,
-                                                 Bool preserveFBXPivots) {
+    WeakPointer<Object3D> ModelLoader::loadModel(const std::string& modelPath, Real importScale, UInt32 smoothingThreshold, 
+                                                 Bool castShadows, Bool receiveShadows, Bool preserveFBXPivots) {
         std::shared_ptr<FileSystem> fileSystem = FileSystem::getInstance();
         std::string fixedModelPath = fileSystem->fixupPathForLocalFilesystem(modelPath);
 
@@ -98,7 +98,7 @@ namespace Core {
 
         if (scene) {
             // the model has been loaded from disk into Assimp data structures, now convert to engine-native structures
-            WeakPointer<Object3D> result = processModelScene(fixedModelPath, *scene, importScale, castShadows, receiveShadows);
+            WeakPointer<Object3D> result = processModelScene(fixedModelPath, *scene, importScale, smoothingThreshold, castShadows, receiveShadows);
             result->setActive(true);
             return result;
         } else {
@@ -106,8 +106,8 @@ namespace Core {
         }
     }
 
-    WeakPointer<Object3D> ModelLoader::processModelScene(const std::string& modelPath, const aiScene& scene, Real importScale, Bool castShadows,
-                                                         Bool receiveShadows) const {
+    WeakPointer<Object3D> ModelLoader::processModelScene(const std::string& modelPath, const aiScene& scene, Real importScale,
+                                                         UInt32 smoothingThreshold, Bool castShadows, Bool receiveShadows) const {
         // container for MaterialImportDescriptor instances that describe the engine-native
         // materials that get created during the call to ProcessMaterials()
         std::vector<MaterialImportDescriptor> materialImportDescriptors;
@@ -140,7 +140,8 @@ namespace Core {
         // any time meshes or mesh renderers are created, the information in [materialImportDescriptors]
         // will be used to link their materials and textures as appropriate.
 
-        recursiveProcessModelScene(scene, *(scene.mRootNode), root, materialImportDescriptors, createdSceneObjects, castShadows, receiveShadows);
+        recursiveProcessModelScene(scene, *(scene.mRootNode), root, materialImportDescriptors, createdSceneObjects,
+                                   smoothingThreshold, castShadows, receiveShadows);
         root->getTransform().getLocalMatrix().scale(importScale, importScale, importScale);
 
         // loop through each instance of SceneObject that was created in the call to RecursiveProcessModelScene()
@@ -176,7 +177,8 @@ namespace Core {
 
     void ModelLoader::recursiveProcessModelScene(const aiScene& scene, const aiNode& node, WeakPointer<Object3D> parent,
                                                  std::vector<MaterialImportDescriptor>& materialImportDescriptors,
-                                                 std::vector<WeakPointer<Object3D>>& createdSceneObjects, Bool castShadows, Bool receiveShadows) const {
+                                                 std::vector<WeakPointer<Object3D>>& createdSceneObjects, 
+                                                 UInt32 smoothingThreshold, Bool castShadows, Bool receiveShadows) const {
         Matrix4x4 mat;
         aiMatrix4x4 matBaseTransformation = node.mTransformation;
         ModelLoader::convertAssimpMatrix(matBaseTransformation, mat);
@@ -213,7 +215,7 @@ namespace Core {
                     Bool invert = ModelLoader::hasOddReflections(mat);
 
                     // convert Assimp mesh to a Mesh object
-                    WeakPointer<Mesh> subMesh = this->convertAssimpMesh(sceneMeshIndex, scene, materialImportDescriptor, invert);
+                    WeakPointer<Mesh> subMesh = this->convertAssimpMesh(sceneMeshIndex, scene, materialImportDescriptor, invert, smoothingThreshold);
                     tempMeshes.push(subMesh);
                 }
 
@@ -267,8 +269,8 @@ namespace Core {
         for (UInt32 i = 0; i < node.mNumChildren; i++) {
             const aiNode* childNode = node.mChildren[i];
             if (childNode != nullptr) {
-                this->recursiveProcessModelScene(scene, *childNode, nextParent, materialImportDescriptors, createdSceneObjects, castShadows,
-                                                 receiveShadows);
+                this->recursiveProcessModelScene(scene, *childNode, nextParent, materialImportDescriptors, createdSceneObjects, 
+                                                 smoothingThreshold, castShadows, receiveShadows);
             }
         }
     }
@@ -282,7 +284,7 @@ namespace Core {
      * [invert] - If true it means the mesh has an inverted scale transformation to deal with
      */
     WeakPointer<Mesh> ModelLoader::convertAssimpMesh(UInt32 meshIndex, const aiScene& scene, MaterialImportDescriptor& materialImportDescriptor,
-                                                     Bool invert) const {
+                                                     Bool invert, UInt32 smoothingThreshold) const {
         if (meshIndex >= scene.mNumMeshes) {
             throw ModelLoaderException("ModelLoader::convertAssimpMesh -> mesh index is out of range.");
         }
@@ -450,7 +452,7 @@ namespace Core {
         if (hasUVs) coreMesh->getVertexUVs0()->store(uvs.data());
 
         // if (invert) mesh3D->SetInvertNormals(true);
-        coreMesh->setNormalsSmoothingThreshold(60.0f * Math::DegreesToRads);
+        coreMesh->setNormalsSmoothingThreshold((Real)smoothingThreshold * Math::DegreesToRads);
         coreMesh->setCalculateNormals(true);
         coreMesh->setCalculateBoundingBox(true);
         coreMesh->update();
