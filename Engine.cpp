@@ -202,7 +202,7 @@ namespace Core {
         else this->persistentUpdateCallbacks.push_back(func);
     }
 
-     void Engine::onRender(LifecycleEventCallback func, Bool persistent) {
+    void Engine::onRender(LifecycleEventCallback func, Bool persistent) {
         if (!persistent) this->renderCallbacks.push_back(func);
         else this->persistentRenderCallbacks.push_back(func);
     }

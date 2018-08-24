@@ -50,6 +50,14 @@ namespace Core {
     }
 
     void GraphicsGL::preRender() {
+        glGetIntegerv(GL_FRONT_FACE, &this->_stateFrontFace);
+        glGetIntegerv(GL_CULL_FACE, &this->_stateCullFaceEnabled);
+        glGetIntegerv(GL_CULL_FACE_MODE, &this->_stateCullFaceMode);
+        glGetIntegerv(GL_DEPTH_TEST, &this->_stateDepthTestEnabled);
+        glGetIntegerv(GL_DEPTH_WRITEMASK, &this->_stateDepthMask);
+        glGetIntegerv(GL_DEPTH_FUNC, &this->_stateDepthFunc);
+        glGetIntegerv(GL_BLEND, &this->_stateBlendEnabled);
+
         // TODO: Move these state calls to a place where they are not called every frame
         glFrontFace(GL_CW);
         glCullFace(GL_BACK);
@@ -61,7 +69,16 @@ namespace Core {
     }
 
     void GraphicsGL::postRender() {
-
+        glFrontFace(this->_stateFrontFace);
+        glCullFace(this->_stateCullFaceMode);
+        if (this->_stateCullFaceEnabled) glEnable(GL_CULL_FACE);
+        else glDisable(GL_CULL_FACE);
+        if (this->_stateDepthTestEnabled) glEnable(GL_DEPTH_TEST);
+        else glDisable(GL_DEPTH_TEST);
+        glDepthMask(this->_stateDepthMask);
+        glDepthFunc(this->_stateDepthFunc);
+        if (this->_stateBlendEnabled) glEnable(GL_BLEND);
+        else glDisable(GL_BLEND);
     }
 
     void GraphicsGL::setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) {

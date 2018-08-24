@@ -98,5 +98,25 @@ namespace Core {
         PersistentWeakPointer<RenderTarget> currentRenderTarget;
         ShaderManagerGL shaderDirectory;
         Vector4u viewport;
+
+        /*
+
+                glFrontFace(GL_CW);
+        glCullFace(GL_BACK);
+        glEnable(GL_CULL_FACE);
+        glEnable(GL_DEPTH_TEST);
+        glDepthMask(GL_TRUE);
+        glDepthFunc(GL_LEQUAL);
+        glDisable(GL_BLEND);
+
+        */
+
+        GLint _stateFrontFace;
+        GLint _stateCullFaceMode;
+        GLint _stateCullFaceEnabled;
+        GLint _stateDepthTestEnabled;
+        GLint _stateDepthMask;
+        GLint _stateDepthFunc;
+        GLint _stateBlendEnabled;
     };
 }
