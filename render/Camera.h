@@ -5,6 +5,8 @@
 #include "../geometry/Vector3.h"
 #include "../math/Matrix4x4.h"
 #include "../scene/Object3DComponent.h"
+#include "../render/RenderBuffer.h"
+#include "../base/BitMask.h"
 
 namespace Core {
 
@@ -42,6 +44,8 @@ namespace Core {
         WeakPointer<RenderTarget> getRenderTarget();
         void setOrtho(Bool ortho);
         Bool isOrtho() const;
+        void setRenderBufferEnabled(RenderBufferType type, Bool enabled);
+        Bool isRenderBufferEnabled(RenderBufferType type);
 
         static void buildPerspectiveProjectionMatrix(Real fov, Real aspectRatio, Real near, Real far, Matrix4x4& out);
         static void buildOrthographicProjectionMatrix(Real top, Real bottom, Real left, Real right, Real near, Real far, Matrix4x4& matrix);
@@ -68,5 +72,6 @@ namespace Core {
 
         Matrix4x4 projectionMatrix;
         PersistentWeakPointer<RenderTarget> renderTarget;
+        IntMask enabledRenderBuffers;
     };
 }

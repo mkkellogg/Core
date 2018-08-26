@@ -3,6 +3,7 @@
 #include <new>
 
 #include "Engine.h"
+#include "common/Constants.h"
 #include "common/debug.h"
 #include "geometry/Vector3.h"
 #include "math/Math.h"
@@ -73,6 +74,8 @@ namespace Core {
         LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::CubeTextured);
         LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::VertexNormals);
         this->materialLibrary.addEntry(materialAttributes, basicCubeMaterial);
+
+        this->initializeTempRenderTarget();
     }
 
     void Engine::update() {
@@ -205,5 +208,21 @@ namespace Core {
     void Engine::onRender(LifecycleEventCallback func, Bool persistent) {
         if (!persistent) this->renderCallbacks.push_back(func);
         else this->persistentRenderCallbacks.push_back(func);
+    }
+
+    void Engine::initializeTempRenderTarget() {
+        TextureAttributes colorTextureAttributes;
+        colorTextureAttributes.Format = TextureFormat::RGBA8;
+        colorTextureAttributes.FilterMode = TextureFilter::BiLinear;
+        colorTextureAttributes.WrapMode = TextureWrap::Border;
+        colorTextureAttributes.BorderWrapColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
+        TextureAttributes depthTextureAttributes;
+        depthTextureAttributes.FilterMode = TextureFilter::Point;
+        depthTextureAttributes.WrapMode = TextureWrap::Border;
+        depthTextureAttributes.BorderWrapColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
+        Vector2u renderTargetSize(Constants::TempRenderTargetSize, Constants::TempRenderTargetSize);
+        this->tempRenderTarget = this->graphics->createRenderTarget2D(true, true, false, colorTextureAttributes,
+                                                                      depthTextureAttributes, renderTargetSize);
+
     }
 }

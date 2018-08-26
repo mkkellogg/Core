@@ -64,6 +64,14 @@ namespace Core {
         if (!nextRenderTarget.isValid()) {
             nextRenderTarget = graphics->getDefaultRenderTarget();
         }
+
+        graphics->setRenderingToBufferEnabled(RenderBufferType::Color,
+                                              camera->isRenderBufferEnabled(RenderBufferType::Color));
+        graphics->setRenderingToBufferEnabled(RenderBufferType::Depth,
+                                              camera->isRenderBufferEnabled(RenderBufferType::Depth));
+        graphics->setRenderingToBufferEnabled(RenderBufferType::Stencil,
+                                              camera->isRenderBufferEnabled(RenderBufferType::Stencil));
+
         RenderTargetCube * renderTargetCube = dynamic_cast<RenderTargetCube*>(nextRenderTarget.get());
         if (renderTargetCube != nullptr) {
             this->renderCube(camera, objects, lights, overrideMaterial);

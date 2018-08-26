@@ -18,6 +18,10 @@ namespace Core {
     const Real Camera::DEFAULT_FARP = 100.0;
 
     Camera::Camera(WeakPointer<Object3D> owner): Object3DComponent(owner) {
+        IntMaskUtil::clearMask(&this->enabledRenderBuffers);
+        // enable color buffer & depth buffer rendering by default
+        IntMaskUtil::setBitForMask(&this->enabledRenderBuffers, (UInt32)RenderBufferType::Color);
+        IntMaskUtil::setBitForMask(&this->enabledRenderBuffers, (UInt32)RenderBufferType::Depth);
     }
 
     void Camera::updateProjection() {
@@ -112,6 +116,19 @@ namespace Core {
 
     Bool Camera::isOrtho() const {
         return this->ortho;
+    }
+
+    void Camera::setRenderBufferEnabled(RenderBufferType type, Bool enabled) {
+        if (enabled) {
+            IntMaskUtil::setBitForMask(&this->enabledRenderBuffers, (UInt32)type);
+        }
+        else {
+            IntMaskUtil::clearBitForMask(&this->enabledRenderBuffers, (UInt32)type);
+        }
+    }
+
+    Bool Camera::isRenderBufferEnabled(RenderBufferType type) {
+        return IntMaskUtil::isBitSetForMask(this->enabledRenderBuffers, (UInt32)type);
     }
 
     void Camera::buildPerspectiveProjectionMatrix(Real fov, Real ratio, Real nearP, Real farP, Matrix4x4& out) {

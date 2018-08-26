@@ -74,6 +74,8 @@ namespace Core {
         void updateDefaultRenderTargetViewport(Vector4u viewport) override;
         Bool activateRenderTarget(WeakPointer<RenderTarget> target) override;
         Bool activateCubeRenderTargetSide(CubeTextureSide side) override;
+        void setRenderingToBufferEnabled(RenderBufferType type, Bool enabled) override;
+        void setRenderStyle(RenderStyle style) override;
 
         static GLenum getGLCubeTarget(CubeTextureSide side);
         static GLuint convertAttributeType(AttributeType type);
@@ -81,6 +83,7 @@ namespace Core {
         static GLint getGLTextureFormat(TextureFormat format);
         static GLenum getGLPixelFormat(TextureFormat format);
         static GLenum getGLPixelType(TextureFormat format);
+        static GLuint getGLRenderStyle(RenderStyle style);
 
     private:
         GraphicsGL(GLVersion version);
@@ -98,25 +101,14 @@ namespace Core {
         PersistentWeakPointer<RenderTarget> currentRenderTarget;
         ShaderManagerGL shaderDirectory;
         Vector4u viewport;
-
-        /*
-
-                glFrontFace(GL_CW);
-        glCullFace(GL_BACK);
-        glEnable(GL_CULL_FACE);
-        glEnable(GL_DEPTH_TEST);
-        glDepthMask(GL_TRUE);
-        glDepthFunc(GL_LEQUAL);
-        glDisable(GL_BLEND);
-
-        */
+        RenderStyle renderStyle;
 
         GLint _stateFrontFace;
         GLint _stateCullFaceMode;
-        GLint _stateCullFaceEnabled;
-        GLint _stateDepthTestEnabled;
+        GLboolean _stateCullFaceEnabled;
+        GLboolean _stateDepthTestEnabled;
         GLint _stateDepthMask;
         GLint _stateDepthFunc;
-        GLint _stateBlendEnabled;
+        GLboolean _stateBlendEnabled;
     };
 }

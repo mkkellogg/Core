@@ -11,12 +11,6 @@
 #include "RenderTarget2DGL.h"
 #include "RenderTargetCubeGL.h"
 
-#if !defined(DYNAMIC_ES3)
-static GLboolean gl3stubInit() {
-    return GL_TRUE;
-}
-#endif
-
 namespace Core {
 
     static void printGlString(const char* name, GLenum s) {
@@ -25,6 +19,7 @@ namespace Core {
     }
 
     GraphicsGL::GraphicsGL(GLVersion version) : glVersion(version) {
+        this->renderStyle = RenderStyle::Triangles;
     }
 
     GraphicsGL::~GraphicsGL() {
@@ -51,12 +46,12 @@ namespace Core {
 
     void GraphicsGL::preRender() {
         glGetIntegerv(GL_FRONT_FACE, &this->_stateFrontFace);
-        glGetIntegerv(GL_CULL_FACE, &this->_stateCullFaceEnabled);
+        glGetBooleanv(GL_CULL_FACE, &this->_stateCullFaceEnabled);
         glGetIntegerv(GL_CULL_FACE_MODE, &this->_stateCullFaceMode);
-        glGetIntegerv(GL_DEPTH_TEST, &this->_stateDepthTestEnabled);
+        glGetBooleanv(GL_DEPTH_TEST, &this->_stateDepthTestEnabled);
         glGetIntegerv(GL_DEPTH_WRITEMASK, &this->_stateDepthMask);
         glGetIntegerv(GL_DEPTH_FUNC, &this->_stateDepthFunc);
-        glGetIntegerv(GL_BLEND, &this->_stateBlendEnabled);
+        glGetBooleanv(GL_BLEND, &this->_stateBlendEnabled);
 
         // TODO: Move these state calls to a place where they are not called every frame
         glFrontFace(GL_CW);
@@ -165,12 +160,12 @@ namespace Core {
     }
 
     void GraphicsGL::drawBoundVertexBuffer(UInt32 vertexCount) {
-        glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+        glDrawArrays(getGLRenderStyle(this->renderStyle), 0, vertexCount);
     }
 
     void GraphicsGL::drawBoundVertexBuffer(UInt32 vertexCount, WeakPointer<IndexBuffer> indices) {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices->getBufferID());
-        glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, (void*)(0));
+        glDrawElements(getGLRenderStyle(this->renderStyle), vertexCount, GL_UNSIGNED_INT, (void*)(0));
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
@@ -288,6 +283,39 @@ namespace Core {
         }
 
         return false;
+    }
+
+    void GraphicsGL::setRenderingToBufferEnabled(RenderBufferType type, Bool enabled) {
+        switch(type) {
+            case RenderBufferType::Color:
+                if (enabled) {
+                    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+                }
+                else {
+                    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+                }
+            break;
+            case RenderBufferType::Depth:
+                if (enabled) {
+                    glDepthMask(GL_TRUE);
+                }
+                else {
+                    glDepthMask(GL_FALSE);
+                }
+            break;
+            case RenderBufferType::Stencil:
+                if (enabled) {
+                    glStencilMask(0xFFFFFFFF);
+                }
+                else {
+                    glStencilMask(0x00000000);
+                }
+            break;
+        }
+    }
+
+    void GraphicsGL::setRenderStyle(RenderStyle style) {
+        this->renderStyle = style;
     }
 
     void GraphicsGL::updateDefaultRenderTargetSize(Vector2u size) {
@@ -423,6 +451,17 @@ namespace Core {
         }
 
         return GL_UNSIGNED_BYTE;
+    }
+
+    GLuint GraphicsGL::getGLRenderStyle(RenderStyle style) {
+        switch(style) {
+            case RenderStyle::Triangles:
+                return GL_TRIANGLES;
+            case RenderStyle::LineLoops:
+                return GL_LINE_LOOP;
+            case RenderStyle::Lines:
+                return GL_LINES;
+        }
     }
 
     std::shared_ptr<RendererGL> GraphicsGL::createRenderer() {

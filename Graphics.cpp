@@ -19,6 +19,7 @@ namespace Core {
             this->postRender();
         }
     }
+    
     void Graphics::setRenderSize(UInt32 width, UInt32 height, Bool updateViewport) {
         this->updateDefaultRenderTargetSize(Vector2u(width, height));
         if (updateViewport) {

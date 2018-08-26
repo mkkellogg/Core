@@ -74,6 +74,7 @@ set(INCLUDE_FILES
     render/BaseRenderable.h
     render/MeshRenderer.h
     render/RenderState.h
+    render/RenderStyle.h
     render/RenderTarget.h
     render/RenderTarget2D.h
     render/RenderTargetCube.h
@@ -135,7 +136,6 @@ set(SOURCE_FILES
     asset/ModelLoader.cpp
     filesys/FileSystem.cpp
     filesys/FileSystemIX.cpp
-    gl3stub_wrapper.c
     image/ImageLoader.cpp
     image/RawImage.cpp
     image/Texture.cpp

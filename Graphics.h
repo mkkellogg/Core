@@ -7,6 +7,8 @@
 #include "image/TextureAttr.h"
 #include "geometry/AttributeType.h"
 #include "render/RenderState.h"
+#include "render/RenderBuffer.h"
+#include "render/RenderStyle.h"
 #include "geometry/Vector2.h"
 #include "geometry/Vector4.h"
 #include "color/Color.h"
@@ -76,6 +78,7 @@ namespace Core {
         virtual void updateDefaultRenderTargetViewport(Vector4u viewport) = 0;
         virtual Bool activateRenderTarget(WeakPointer<RenderTarget> target) = 0;
         virtual Bool activateCubeRenderTargetSide(CubeTextureSide side) = 0;
-
+        virtual void setRenderingToBufferEnabled(RenderBufferType type, Bool enabled) = 0;
+        virtual void setRenderStyle(RenderStyle style) = 0;
     };
 }
