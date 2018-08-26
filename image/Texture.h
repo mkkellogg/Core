@@ -2,12 +2,12 @@
 
 #include <memory>
 
-#include "Texture.h"
+#include "../base/CoreObject.h"
 #include "TextureAttr.h"
 
 namespace Core {
 
-    class Texture {
+    class Texture : CoreObject {
     public:
         virtual ~Texture();
         Int32 getTextureID() const;

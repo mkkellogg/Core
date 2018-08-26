@@ -7,6 +7,7 @@
 
 #include "../common/assert.h"
 #include "../common/complextypes.h"
+#include "../base/CoreObject.h"
 #include "../render/ObjectRenderer.h"
 #include "../util/PersistentWeakPointer.h"
 #include "../util/ValueIterator.h"
@@ -20,7 +21,8 @@ namespace Core {
     class Engine;
     class Object3DComponent;
 
-    class Object3D {
+    class Object3D: public CoreObject {
+
         friend class Engine;
 
     public:

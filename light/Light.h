@@ -1,9 +1,9 @@
 #pragma once
 
+#include "../base/BitMask.h"
 #include "../scene/Object3DComponent.h"
 #include "../color/Color.h"
 #include "../geometry/Vector3.h"
-#include "../base/BitMask.h"
 #include "LightType.h"
 #include "LightCullType.h"
 

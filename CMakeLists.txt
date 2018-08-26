@@ -22,6 +22,17 @@ set(INCLUDE_DIRS
     GL)
 
 set(INCLUDE_FILES
+    base/VectorStorage.h
+    base/BaseVector.h
+    base/BitMask.h
+    base/CoreObject.h
+    common/gl.h
+    common/assert.h
+    common/types.h
+    common/complextypes.h
+    common/debug.h
+    common/Exception.h
+    common/Constants.h
     filesys/FileSystem.h
     filesys/FileSystemIX.h
     geometry/Box3.h
@@ -107,16 +118,6 @@ set(INCLUDE_FILES
     math/Math.h
     math/Quaternion.h
     math/Matrix4x4.h
-    base/VectorStorage.h
-    base/BaseVector.h
-    base/BitMask.h
-    common/gl.h
-    common/assert.h
-    common/types.h
-    common/complextypes.h
-    common/debug.h
-    common/Exception.h
-    common/Constants.h
     GL/GraphicsGL.h
     GL/RendererGL.h
     GL/Texture2DGL.h
@@ -131,6 +132,7 @@ set(INCLUDE_FILES
     Engine.h)
 
 set(SOURCE_FILES
+    base/CoreObject.cpp
     common/Debug.cpp
     common/Constants.cpp
     asset/AssetLoader.cpp

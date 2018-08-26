@@ -3,13 +3,14 @@
 #include <memory>
 
 #include "../util/WeakPointer.h"
+#include "../base/CoreObject.h"
 
 namespace Core {
 
     // forward declaration
     class Object3D;
 
-    class Object3DComponent {
+    class Object3DComponent: public CoreObject{
     public:
         Object3DComponent(WeakPointer<Object3D> owner);
         virtual ~Object3DComponent();

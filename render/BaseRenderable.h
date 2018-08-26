@@ -1,8 +1,10 @@
 #pragma once
 
+#include "../base/CoreObject.h"
+
 namespace Core {
 
-    class BaseRenderable {
+    class BaseRenderable : public CoreObject{
     public:
     };
 }
