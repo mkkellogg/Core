@@ -81,6 +81,7 @@ set(INCLUDE_FILES
     render/ViewDescriptor.h
     render/RenderTargetException.h
     render/RenderBuffer.h
+    render/MeshOutlinePostProcessor.h
     light/Light.h
     light/ShadowLight.h
     light/PointLight.h
@@ -166,6 +167,7 @@ set(SOURCE_FILES
     render/RenderTarget.cpp
     render/RenderTarget2D.cpp
     render/RenderTargetCube.cpp
+    render/MeshOutlinePostProcessor.cpp
     light/Light.cpp
     light/ShadowLight.cpp
     light/PointLight.cpp
