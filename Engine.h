@@ -134,7 +134,6 @@ namespace Core {
         Engine();
         void init();
         void cleanup();
-        void initializeTempRenderTarget();
 
         static std::shared_ptr<Engine> _instance;
         
@@ -158,7 +157,6 @@ namespace Core {
 
         MaterialLibrary materialLibrary;
         ModelLoader modelLoader;
-        PersistentWeakPointer<RenderTarget2D> tempRenderTarget;
         
     };
 }
