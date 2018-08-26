@@ -39,6 +39,7 @@ namespace Core {
                 v3 = vertices + (i + 2);
             }
             Bool wasHit = this->intersectTriangle(*v1, *v2, *v3, hit);
+            hit.Object = mesh;
             if (wasHit)hits.push_back(hit);
         }
 
