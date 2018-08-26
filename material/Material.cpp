@@ -12,7 +12,8 @@ namespace Core {
         this->blendingEnabled = false;
         this->srcBlendingMethod = RenderState::BlendingMethod::One;
         this->destBlendingMethod = RenderState::BlendingMethod::Zero;
-        this->renderStyle = RenderStyle::Triangles;
+        this->renderStyle = RenderStyle::Fill;
+        this->depthTestEnabled = true;
     }
 
     Material::Material(WeakPointer<Graphics> graphics, WeakPointer<Shader> shader): Material(graphics) {
@@ -81,5 +82,13 @@ namespace Core {
 
     void Material::setTransparent(Bool transparent) {
         this->transparent = transparent;
+    }
+
+    Bool Material::getDepthTestEnabled() const {
+        return this->depthTestEnabled;
+    }
+
+    void Material::setDepthTestEnabled(Bool enabled) {
+        this->depthTestEnabled = enabled;
     }
 }

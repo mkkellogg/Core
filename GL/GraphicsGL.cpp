@@ -19,7 +19,7 @@ namespace Core {
     }
 
     GraphicsGL::GraphicsGL(GLVersion version) : glVersion(version) {
-        this->renderStyle = RenderStyle::Triangles;
+        this->renderStyle = RenderStyle::Fill;
     }
 
     GraphicsGL::~GraphicsGL() {
@@ -45,14 +45,6 @@ namespace Core {
     }
 
     void GraphicsGL::preRender() {
-        glGetIntegerv(GL_FRONT_FACE, &this->_stateFrontFace);
-        glGetBooleanv(GL_CULL_FACE, &this->_stateCullFaceEnabled);
-        glGetIntegerv(GL_CULL_FACE_MODE, &this->_stateCullFaceMode);
-        glGetBooleanv(GL_DEPTH_TEST, &this->_stateDepthTestEnabled);
-        glGetIntegerv(GL_DEPTH_WRITEMASK, &this->_stateDepthMask);
-        glGetIntegerv(GL_DEPTH_FUNC, &this->_stateDepthFunc);
-        glGetBooleanv(GL_BLEND, &this->_stateBlendEnabled);
-
         // TODO: Move these state calls to a place where they are not called every frame
         glFrontFace(GL_CW);
         glCullFace(GL_BACK);
@@ -61,19 +53,14 @@ namespace Core {
         glDepthMask(GL_TRUE);
         glDepthFunc(GL_LEQUAL);
         glDisable(GL_BLEND);
+
+        glLineWidth(1.5);
+        glEnable(GL_LINE_SMOOTH);
+        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
     }
 
     void GraphicsGL::postRender() {
-        glFrontFace(this->_stateFrontFace);
-        glCullFace(this->_stateCullFaceMode);
-        if (this->_stateCullFaceEnabled) glEnable(GL_CULL_FACE);
-        else glDisable(GL_CULL_FACE);
-        if (this->_stateDepthTestEnabled) glEnable(GL_DEPTH_TEST);
-        else glDisable(GL_DEPTH_TEST);
-        glDepthMask(this->_stateDepthMask);
-        glDepthFunc(this->_stateDepthFunc);
-        if (this->_stateBlendEnabled) glEnable(GL_BLEND);
-        else glDisable(GL_BLEND);
+
     }
 
     void GraphicsGL::setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) {
@@ -160,12 +147,14 @@ namespace Core {
     }
 
     void GraphicsGL::drawBoundVertexBuffer(UInt32 vertexCount) {
-        glDrawArrays(getGLRenderStyle(this->renderStyle), 0, vertexCount);
+        glPolygonMode(GL_FRONT_AND_BACK, getGLRenderStyle(this->renderStyle));
+        glDrawArrays(GL_TRIANGLES, 0, vertexCount);
     }
 
     void GraphicsGL::drawBoundVertexBuffer(UInt32 vertexCount, WeakPointer<IndexBuffer> indices) {
+        glPolygonMode(GL_FRONT_AND_BACK, getGLRenderStyle(this->renderStyle));
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices->getBufferID());
-        glDrawElements(getGLRenderStyle(this->renderStyle), vertexCount, GL_UNSIGNED_INT, (void*)(0));
+        glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, (void*)(0));
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
@@ -285,6 +274,14 @@ namespace Core {
         return false;
     }
 
+    void GraphicsGL::updateDefaultRenderTargetSize(Vector2u size) {
+        this->defaultRenderTarget->size = size;
+    }
+
+    void GraphicsGL::updateDefaultRenderTargetViewport(Vector4u viewport) {
+        this->defaultRenderTarget->viewport = viewport;
+    }
+
     void GraphicsGL::setRenderingToBufferEnabled(RenderBufferType type, Bool enabled) {
         switch(type) {
             case RenderBufferType::Color:
@@ -318,12 +315,41 @@ namespace Core {
         this->renderStyle = style;
     }
 
-    void GraphicsGL::updateDefaultRenderTargetSize(Vector2u size) {
-        this->defaultRenderTarget->size = size;
+    void GraphicsGL::setDepthTestEnabled(Bool enabled) {
+        if (enabled) glEnable(GL_DEPTH_TEST);
+        else glDisable (GL_DEPTH_TEST);
     }
 
-    void GraphicsGL::updateDefaultRenderTargetViewport(Vector4u viewport) {
-        this->defaultRenderTarget->viewport = viewport;
+
+    void GraphicsGL::saveState() {
+        glGetIntegerv(GL_FRONT_FACE, &this->_stateFrontFace);
+        glGetBooleanv(GL_CULL_FACE, &this->_stateCullFaceEnabled);
+        glGetIntegerv(GL_CULL_FACE_MODE, &this->_stateCullFaceMode);
+        glGetBooleanv(GL_DEPTH_TEST, &this->_stateDepthTestEnabled);
+        glGetIntegerv(GL_DEPTH_WRITEMASK, &this->_stateDepthMask);
+        glGetIntegerv(GL_DEPTH_FUNC, &this->_stateDepthFunc);
+        glGetBooleanv(GL_BLEND, &this->_stateBlendEnabled);
+        glGetBooleanv(GL_LINE_SMOOTH, &this->_stateLineSmoothEnabled);
+        glGetFloatv(GL_LINE_WIDTH, &this->_stateLineWidth);
+        glGetIntegerv(GL_POLYGON_MODE, this->_statePolygonMode);
+    }
+
+    void GraphicsGL::restoreState() {
+        glFrontFace(this->_stateFrontFace);
+        glCullFace(this->_stateCullFaceMode);
+        if (this->_stateCullFaceEnabled) glEnable(GL_CULL_FACE);
+        else glDisable(GL_CULL_FACE);
+        if (this->_stateDepthTestEnabled) glEnable(GL_DEPTH_TEST);
+        else glDisable(GL_DEPTH_TEST);
+        glDepthMask(this->_stateDepthMask);
+        glDepthFunc(this->_stateDepthFunc);
+        if (this->_stateBlendEnabled) glEnable(GL_BLEND);
+        else glDisable(GL_BLEND);
+        if (this->_stateLineSmoothEnabled) glEnable(GL_LINE_SMOOTH);
+        else glDisable(GL_LINE_SMOOTH);
+        glLineWidth(this->_stateLineWidth);
+        glPolygonMode(GL_FRONT, this->_statePolygonMode[0]);
+        glPolygonMode(GL_BACK, this->_statePolygonMode[1]);
     }
 
     /*
@@ -453,14 +479,14 @@ namespace Core {
         return GL_UNSIGNED_BYTE;
     }
 
-    GLuint GraphicsGL::getGLRenderStyle(RenderStyle style) {
+    GLenum GraphicsGL::getGLRenderStyle(RenderStyle style) {
         switch(style) {
-            case RenderStyle::Triangles:
-                return GL_TRIANGLES;
-            case RenderStyle::LineLoops:
-                return GL_LINE_LOOP;
-            case RenderStyle::Lines:
-                return GL_LINES;
+            case RenderStyle::Fill:
+                return GL_FILL;
+            case RenderStyle::Point:
+                return GL_POINT;
+            case RenderStyle::Line:
+                return GL_LINE;
         }
     }
 

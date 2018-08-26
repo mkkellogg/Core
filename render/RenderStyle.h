@@ -3,9 +3,9 @@
 namespace Core {
 
     enum class RenderStyle {
-        Triangles = 0,
-        Lines = 1,
-        LineLoops = 2
+        Fill = 0,
+        Point = 1,
+        Line = 2
     };
     
 }

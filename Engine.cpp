@@ -90,7 +90,13 @@ namespace Core {
 
     void Engine::render() {
         if (this->activeScene) {
-            this->graphics->render(this->activeScene);
+            this->graphics->saveState();
+            this->graphics->preRender();
+
+            if (this->graphics->getRenderer()) {
+                this->graphics->getRenderer()->render(this->activeScene);
+            }
+
             if (this->renderCallbacks.size() > 0) {
                 for (auto func : this->renderCallbacks) {
                     func();
@@ -100,6 +106,8 @@ namespace Core {
             for (auto func : this->persistentRenderCallbacks) {
                 func();
             }
+            this->graphics->postRender();
+            this->graphics->restoreState();
         }
     }
 

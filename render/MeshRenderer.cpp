@@ -39,6 +39,8 @@ namespace Core {
             graphics->setBlendingEnabled(false);
         }
 
+        graphics->setDepthTestEnabled(material->getDepthTestEnabled());
+
         // send custom uniforms first so that the renderer can override if necessary.
         material->sendCustomUniformsToShader();
 

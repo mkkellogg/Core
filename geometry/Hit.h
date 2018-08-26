@@ -12,6 +12,7 @@ namespace Core {
     public:
         Vector3r Normal;
         Point3r Origin;
+        Real Distance;
         PersistentWeakPointer<Mesh> Object;
     };
 

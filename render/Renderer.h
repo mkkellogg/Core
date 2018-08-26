@@ -7,6 +7,8 @@
 #include "../scene/Transform.h"
 #include "../util/WeakPointer.h"
 #include "../light/LightType.h"
+#include "../render/RenderBuffer.h"
+#include "../base/BitMask.h"
 
 namespace Core {
 
@@ -26,15 +28,18 @@ namespace Core {
         virtual ~Renderer();
 
         virtual Bool init();
-        void render(WeakPointer<Scene> scene);
-        void render(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
-                    std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial = WeakPointer<Material>::nullPtr());
+        void render(WeakPointer<Scene> scene, WeakPointer<Material> overrideMaterial = WeakPointer<Material>::nullPtr());
+        void render(WeakPointer<Object3D> rootObject, WeakPointer<Material> overrideMaterial = WeakPointer<Material>::nullPtr());
+        void renderBasic(WeakPointer<Object3D> rootObject, WeakPointer<Camera> camera, WeakPointer<Material> overrideMaterial = WeakPointer<Material>::nullPtr());
+        void setAutoClearRenderBuffer(RenderBufferType type, Bool clear);
     protected:
         Renderer();
         void renderStandard(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
                             std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial);
         void renderCube(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
                         std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial);
+        void render(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
+                    std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial);
         void render(const ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objectList, 
                     std::vector<WeakPointer<Light>>& lightList);
         void renderShadowMaps(std::vector<WeakPointer<Light>>& lights, LightType lightType, 
@@ -45,9 +50,13 @@ namespace Core {
                           std::vector<WeakPointer<Camera>>& outCameras, std::vector<WeakPointer<Light>>& outLights);
         void processScene(WeakPointer<Object3D> object, const Matrix4x4& curTransform, std::vector<WeakPointer<Object3D>>& outObjects,
                           std::vector<WeakPointer<Camera>>& outCameras, std::vector<WeakPointer<Light>>& outLights);
+        
         static Bool isShadowCastingCapableLight(WeakPointer<Light> light);
         static Bool compareLights (WeakPointer<Light> a, WeakPointer<Light> b);
+
         WeakPointer<DepthOnlyMaterial> depthMaterial;
         WeakPointer<DistanceOnlyMaterial> distanceMaterial;
+        IntMask autoClearRenderBuffers;
+
     };
 }

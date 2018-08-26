@@ -338,24 +338,29 @@ namespace Core {
 
         this->BasicColored_vertex =
             "#version 330\n"
+            "precision highp float;\n"
             + POSITION_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
             + MODEL_MATRIX_DEF +
             " uniform vec4 color;"
+            " uniform float zOffset;"
             "out vec4 vColor;\n"
             "void main() {\n"
-            "    gl_Position = " + PROJECTION_MATRIX + "  * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    vec4 outPos = " + PROJECTION_MATRIX + "  * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    outPos.z += zOffset; \n"
+            "    gl_Position = outPos; \n"
             "    vColor = color;\n"
             "}\n";
 
         this->BasicColored_fragment =   
             "#version 330\n"
-            "precision mediump float;\n"
+            "precision highp float;\n"
             "in vec4 vColor;\n"
             "void main() {\n"
             "    gl_FragColor = vColor;\n"
             "}\n";
+
 
         this->BasicLit_vertex =  
             "#version 330\n"

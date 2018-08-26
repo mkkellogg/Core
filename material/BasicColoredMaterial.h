@@ -20,17 +20,20 @@ namespace Core {
         virtual WeakPointer<Material> clone() override;
 
         void setColor(Color color);
+        void setZOffset(Real offset);
 
     private:
         BasicColoredMaterial(WeakPointer<Graphics> graphics);
         void bindShaderVarLocations();
 
         Color color;
+        Real zOffset;
+
         Int32 positionLocation;
         Int32 colorLocation;
-        Int32 uvLocation;
         Int32 projectionMatrixLocation;
         Int32 viewMatrixLocation;
         Int32 modelMatrixLocation;
+        Int32 zOffsetLocation;
     };
 }

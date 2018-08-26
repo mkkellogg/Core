@@ -9,6 +9,7 @@
 namespace Core {
 
     BasicColoredMaterial::BasicColoredMaterial(WeakPointer<Graphics> graphics) : Material(graphics) {
+        this->zOffset = 0.0f;
     }
 
     Bool BasicColoredMaterial::build() {
@@ -29,8 +30,6 @@ namespace Core {
         switch (attribute) {
             case StandardAttribute::Position:
                 return this->positionLocation;
-            case StandardAttribute::UV0:
-                return this->uvLocation;
             default:
                 return -1;
         }
@@ -50,7 +49,8 @@ namespace Core {
     }
 
     void BasicColoredMaterial::sendCustomUniformsToShader() {
-        this->shader->setUniform4f(this->colorLocation, this->color.r, this->color.a, this->color.b, this->color.a);
+        this->shader->setUniform4f(this->colorLocation, this->color.r, this->color.g, this->color.b, this->color.a);
+        this->shader->setUniform1f(this->zOffsetLocation, this->zOffset);
     }
 
     WeakPointer<Material> BasicColoredMaterial::clone() {
@@ -61,6 +61,7 @@ namespace Core {
         newMaterial->viewMatrixLocation = this->viewMatrixLocation;
         newMaterial->modelMatrixLocation = this->modelMatrixLocation;
         newMaterial->colorLocation = this->colorLocation;
+        newMaterial->zOffsetLocation = this->zOffsetLocation;
         return newMaterial;
     }
 
@@ -70,10 +71,15 @@ namespace Core {
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
         this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);
         this->colorLocation = this->shader->getUniformLocation("color");
+        this->zOffsetLocation = this->shader->getUniformLocation("zOffset");
         
     }
 
     void BasicColoredMaterial::setColor(Color color) {
         this->color = color;
+    }
+
+    void BasicColoredMaterial::setZOffset(Real offset) {
+        this->zOffset = offset;
     }
 }

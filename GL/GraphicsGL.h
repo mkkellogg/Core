@@ -76,6 +76,11 @@ namespace Core {
         Bool activateCubeRenderTargetSide(CubeTextureSide side) override;
         void setRenderingToBufferEnabled(RenderBufferType type, Bool enabled) override;
         void setRenderStyle(RenderStyle style) override;
+        void setDepthTestEnabled(Bool enabled) override;
+
+        void saveState() override;
+        void restoreState() override;
+
 
         static GLenum getGLCubeTarget(CubeTextureSide side);
         static GLuint convertAttributeType(AttributeType type);
@@ -83,7 +88,7 @@ namespace Core {
         static GLint getGLTextureFormat(TextureFormat format);
         static GLenum getGLPixelFormat(TextureFormat format);
         static GLenum getGLPixelType(TextureFormat format);
-        static GLuint getGLRenderStyle(RenderStyle style);
+        static GLenum getGLRenderStyle(RenderStyle style);
 
     private:
         GraphicsGL(GLVersion version);
@@ -110,5 +115,8 @@ namespace Core {
         GLint _stateDepthMask;
         GLint _stateDepthFunc;
         GLboolean _stateBlendEnabled;
+        GLfloat _stateLineWidth;
+        GLboolean _stateLineSmoothEnabled;
+        GLint _statePolygonMode[2];
     };
 }

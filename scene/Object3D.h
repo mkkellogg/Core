@@ -28,7 +28,6 @@ namespace Core {
     public:
         virtual ~Object3D();
 
-        UInt32 getID();
         Transform& getTransform();
         SceneObjectIterator<Object3D> beginIterateChildren();
         SceneObjectIterator<Object3D> endIterateChildren();

@@ -31,10 +31,17 @@ namespace Core {
     }
 
     Bool Renderer::init() {
+        this->setAutoClearRenderBuffer(RenderBufferType::Color, true);
+        this->setAutoClearRenderBuffer(RenderBufferType::Depth, true);
+        this->setAutoClearRenderBuffer(RenderBufferType::Stencil, true);
         return true;
     }
 
-    void Renderer::render(WeakPointer<Scene> scene) {
+    void Renderer::render(WeakPointer<Scene> scene, WeakPointer<Material> overrideMaterial) {
+        this->render(scene->getRoot(), overrideMaterial);
+    }
+
+    void Renderer::render(WeakPointer<Object3D> rootObject, WeakPointer<Material> overrideMaterial) {
         if (!this->depthMaterial.isValid()) {
             this->depthMaterial = Engine::instance()->createMaterial<DepthOnlyMaterial>();
         }
@@ -47,15 +54,29 @@ namespace Core {
         std::vector<WeakPointer<Camera>> cameraList;
         std::vector<WeakPointer<Light>> lightList;
 
+        Matrix4x4 curTransform;
+        this->processScene(rootObject, curTransform, objectList, cameraList, lightList);
         std::sort(lightList.begin(), lightList.end(), Renderer::compareLights);
-
-        this->processScene(scene, objectList, cameraList, lightList);
 
         this->renderShadowMaps(lightList, LightType::Point, objectList);
         for (auto camera : cameraList) {
             this->renderShadowMaps(lightList, LightType::Directional, objectList, camera);
-            this->render(camera, objectList, lightList);
+            this->render(camera, objectList, lightList, overrideMaterial);
         }
+    }
+
+    void Renderer::renderBasic(WeakPointer<Object3D> rootObject, WeakPointer<Camera> camera, WeakPointer<Material> overrideMaterial) {
+        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
+
+        std::vector<WeakPointer<Object3D>> objectList;
+        std::vector<WeakPointer<Camera>> cameraList;
+        std::vector<WeakPointer<Light>> lightList;
+
+        Matrix4x4 curTransform;
+        this->processScene(rootObject, curTransform, objectList, cameraList, lightList);
+        std::sort(lightList.begin(), lightList.end(), Renderer::compareLights);
+
+        this->render(camera, objectList, lightList, overrideMaterial);
     }
 
     void Renderer::render(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial) {
@@ -81,8 +102,17 @@ namespace Core {
         }
     }
 
+    void Renderer::setAutoClearRenderBuffer(RenderBufferType type, Bool clear) {
+        if (clear) {
+            IntMaskUtil::setBitForMask(&this->autoClearRenderBuffers, (UInt32)type);
+        }
+        else {
+            IntMaskUtil::clearBitForMask(&this->autoClearRenderBuffers, (UInt32)type);
+        }
+    }
+
     void Renderer::renderStandard(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects,
-                    std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial) {
+                                  std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial) {
         ViewDescriptor viewDescriptor;
         this->getViewDescriptorForCamera(camera, viewDescriptor);
         viewDescriptor.overrideMaterial = overrideMaterial;
@@ -153,7 +183,12 @@ namespace Core {
         Vector4u viewport = nextRenderTarget->getViewport();
         graphics->setViewport(viewport.x, viewport.y, viewport.z, viewport.w);
         graphics->setClearColor(Color(0.0, 0.0, 0.0, 1.0));
-        graphics->clearActiveRenderTarget(true, true, true); 
+
+        Bool clearColorBuffer = IntMaskUtil::isBitSetForMask(this->autoClearRenderBuffers, (UInt32)RenderBufferType::Color);
+        Bool clearDepthBuffer = IntMaskUtil::isBitSetForMask(this->autoClearRenderBuffers, (UInt32)RenderBufferType::Depth);
+        Bool clearStencilBuffer = IntMaskUtil::isBitSetForMask(this->autoClearRenderBuffers, (UInt32)RenderBufferType::Stencil);
+
+        graphics->clearActiveRenderTarget(clearColorBuffer, clearDepthBuffer, clearStencilBuffer); 
 
         for (auto object : objectList) {
             std::shared_ptr<Object3D> objectShared = object.lock();
@@ -263,34 +298,34 @@ namespace Core {
                                 std::vector<WeakPointer<Object3D>>& outObjects,
                                 std::vector<WeakPointer<Camera>>& outCameras, 
                                 std::vector<WeakPointer<Light>>& outLights) {
+
+        Matrix4x4 nextTransform = curTransform;
+        Transform& objTransform = object->getTransform();
+        nextTransform.multiply(objTransform.getLocalMatrix());
+        objTransform.getWorldMatrix().copy(nextTransform);
+        Matrix4x4& inverseWorld = objTransform.getInverseWorldMatrix();
+        inverseWorld.copy(nextTransform);
+        inverseWorld.invert();
+        outObjects.push_back(object);
+
+        for (SceneObjectIterator<Object3DComponent> compItr = object->beginIterateComponents(); compItr != object->endIterateComponents(); ++compItr) {
+            // check if this component is a camera
+            WeakPointer<Object3DComponent> comp = (*compItr);
+            WeakPointer<Camera> cameraPtr = WeakPointer<Object3DComponent>::dynamicPointerCast<Camera>(comp);
+            if (cameraPtr.isValid()) {
+                outCameras.push_back(cameraPtr);
+                continue;
+            }
+            
+            WeakPointer<Light> lightPtr = WeakPointer<Object3DComponent>::dynamicPointerCast<Light>(comp);
+            if (lightPtr.isValid()) {
+                outLights.push_back(lightPtr);
+                continue;
+            }
+        }
+
         for (SceneObjectIterator<Object3D> itr = object->beginIterateChildren(); itr != object->endIterateChildren(); ++itr) {
             WeakPointer<Object3D> obj = *itr;
-
-            Matrix4x4 nextTransform = curTransform;
-            Transform& objTransform = obj->getTransform();
-            nextTransform.multiply(objTransform.getLocalMatrix());
-            objTransform.getWorldMatrix().copy(nextTransform);
-            Matrix4x4& inverseWorld = objTransform.getInverseWorldMatrix();
-            inverseWorld.copy(nextTransform);
-            inverseWorld.invert();
-            outObjects.push_back(obj);
-
-            for (SceneObjectIterator<Object3DComponent> compItr = obj->beginIterateComponents(); compItr != obj->endIterateComponents(); ++compItr) {
-                // check if this component is a camera
-                WeakPointer<Object3DComponent> comp = (*compItr);
-                WeakPointer<Camera> cameraPtr = WeakPointer<Object3DComponent>::dynamicPointerCast<Camera>(comp);
-                if (cameraPtr.isValid()) {
-                    outCameras.push_back(cameraPtr);
-                    continue;
-                }
-               
-                WeakPointer<Light> lightPtr = WeakPointer<Object3DComponent>::dynamicPointerCast<Light>(comp);
-                if (lightPtr.isValid()) {
-                    outLights.push_back(lightPtr);
-                    continue;
-                }
-            }
-
             this->processScene(obj, nextTransform, outObjects, outCameras, outLights);
         }
     }

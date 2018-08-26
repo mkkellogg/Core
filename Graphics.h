@@ -37,7 +37,6 @@ namespace Core {
         virtual WeakPointer<Renderer> getRenderer() = 0;
         virtual void preRender() = 0;
         virtual void postRender() = 0;
-        void render(std::shared_ptr<Scene> scene);
         void setRenderSize(UInt32 width, UInt32 height, Bool updateViewport = true);
         void setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
         virtual void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) = 0;
@@ -80,5 +79,9 @@ namespace Core {
         virtual Bool activateCubeRenderTargetSide(CubeTextureSide side) = 0;
         virtual void setRenderingToBufferEnabled(RenderBufferType type, Bool enabled) = 0;
         virtual void setRenderStyle(RenderStyle style) = 0;
+        virtual void setDepthTestEnabled(Bool enabled) = 0;
+
+        virtual void saveState() = 0;
+        virtual void restoreState() = 0;
     };
 }
