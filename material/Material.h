@@ -6,6 +6,8 @@
 #include "../util/PersistentWeakPointer.h"
 #include "StandardAttributes.h"
 #include "StandardUniforms.h"
+#include "../render/RenderStyle.h"
+#include "../render/RenderState.h"
 
 namespace Core {
 
@@ -25,6 +27,17 @@ namespace Core {
         virtual WeakPointer<Material> clone() = 0;
         virtual UInt32 textureCount();
 
+        RenderState::BlendingMethod getSourceBlendingMethod() const;
+        void setSourceBlendingMethod(RenderState::BlendingMethod method);
+        RenderState::BlendingMethod getDestBlendingMethod() const;
+        void setDestBlendingMethod(RenderState::BlendingMethod method);
+        RenderStyle getRenderStyle() const;
+        void setRenderStyle(RenderStyle style);
+        Bool getBlendingEnabled() const;
+        void setBlendingEnabled(Bool enabled);
+        Bool isTransparent() const;
+        void setTransparent(Bool transparent);
+        
     protected:
         Bool buildFromSource(const std::string& vertexSource, const std::string& fragmentSource);
         void setShader(WeakPointer<Shader> shader);
@@ -32,5 +45,10 @@ namespace Core {
         PersistentWeakPointer<Graphics> graphics;
         PersistentWeakPointer<Shader> shader;
         Bool ready;
+        Bool transparent;
+        Bool blendingEnabled;
+        RenderState::BlendingMethod srcBlendingMethod;
+        RenderState::BlendingMethod destBlendingMethod;
+        RenderStyle renderStyle;
     };
 }

@@ -29,6 +29,16 @@ namespace Core {
         WeakPointer<Shader> shader = material->getShader();
         this->graphics->activateShader(shader);
 
+        this->graphics->setRenderStyle(material->getRenderStyle());
+        
+        if (material->getBlendingEnabled()) {
+            graphics->setBlendingEnabled(true);
+            graphics->setBlendingFunction(material->getSourceBlendingMethod(), material->getDestBlendingMethod());
+        }
+        else {
+            graphics->setBlendingEnabled(false);
+        }
+
         // send custom uniforms first so that the renderer can override if necessary.
         material->sendCustomUniformsToShader();
 

@@ -6,7 +6,13 @@
 
 namespace Core {
 
-    Material::Material(WeakPointer<Graphics> graphics): graphics(graphics), ready(false) {
+    Material::Material(WeakPointer<Graphics> graphics): graphics(graphics) {
+        this->ready = false;
+        this->transparent = false;
+        this->blendingEnabled = false;
+        this->srcBlendingMethod = RenderState::BlendingMethod::One;
+        this->destBlendingMethod = RenderState::BlendingMethod::Zero;
+        this->renderStyle = RenderStyle::Triangles;
     }
 
     Material::Material(WeakPointer<Graphics> graphics, WeakPointer<Shader> shader): Material(graphics) {
@@ -35,5 +41,45 @@ namespace Core {
 
     UInt32 Material::textureCount() {
         return 0;
+    }
+
+    RenderState::BlendingMethod Material::getSourceBlendingMethod() const {
+        return this->srcBlendingMethod;
+    }
+
+    void Material::setSourceBlendingMethod(RenderState::BlendingMethod method) {
+        this->srcBlendingMethod = method;
+    }
+
+    RenderState::BlendingMethod Material::getDestBlendingMethod() const {
+        return this->destBlendingMethod;
+    }
+
+    void Material::setDestBlendingMethod(RenderState::BlendingMethod method) {
+        this->destBlendingMethod = method;
+    }
+
+    RenderStyle Material::getRenderStyle() const {
+        return this->renderStyle;
+    }
+
+    void Material::setRenderStyle(RenderStyle style) {
+        this->renderStyle = style;
+    }
+
+    Bool Material::getBlendingEnabled() const {
+        return this->blendingEnabled;
+    }
+
+    void Material::setBlendingEnabled(Bool enabled) {
+        this->blendingEnabled = enabled;
+    }
+
+    Bool Material::isTransparent() const {
+        return this->transparent;
+    }
+
+    void Material::setTransparent(Bool transparent) {
+        this->transparent = transparent;
     }
 }
