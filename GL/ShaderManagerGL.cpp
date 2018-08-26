@@ -98,6 +98,9 @@ namespace Core {
         this->setShader(ShaderType::Vertex, "Basic", ShaderManagerGL::Basic_vertex);
         this->setShader(ShaderType::Fragment, "Basic", ShaderManagerGL::Basic_fragment);
 
+        this->setShader(ShaderType::Vertex, "BasicColored", ShaderManagerGL::BasicColored_vertex);
+        this->setShader(ShaderType::Fragment, "BasicColored", ShaderManagerGL::BasicColored_fragment);
+
         this->setShader(ShaderType::Vertex, "BasicLit", ShaderManagerGL::BasicLit_vertex);
         this->setShader(ShaderType::Fragment, "BasicLit", ShaderManagerGL::BasicLit_fragment);
 
@@ -326,6 +329,27 @@ namespace Core {
             "}\n";
 
         this->Basic_fragment =   
+            "#version 330\n"
+            "precision mediump float;\n"
+            "in vec4 vColor;\n"
+            "void main() {\n"
+            "    gl_FragColor = vColor;\n"
+            "}\n";
+
+        this->BasicColored_vertex =
+            "#version 330\n"
+            + POSITION_DEF
+            + PROJECTION_MATRIX_DEF
+            + VIEW_MATRIX_DEF
+            + MODEL_MATRIX_DEF +
+            " uniform vec4 color;"
+            "out vec4 vColor;\n"
+            "void main() {\n"
+            "    gl_Position = " + PROJECTION_MATRIX + "  * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    vColor = color;\n"
+            "}\n";
+
+        this->BasicColored_fragment =   
             "#version 330\n"
             "precision mediump float;\n"
             "in vec4 vColor;\n"

@@ -29,6 +29,9 @@ namespace Core {
         std::string Basic_vertex;
         std::string Basic_fragment;
 
+        std::string BasicColored_vertex;
+        std::string BasicColored_fragment;
+
         std::string BasicLit_vertex;
         std::string BasicLit_fragment;
 
