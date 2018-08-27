@@ -1,6 +1,3 @@
-#include <algorithm>
-#include <functional>
-
 #include "Ray.h"
 #include "Mesh.h"
 #include "AttributeArray.h"
@@ -45,10 +42,6 @@ namespace Core {
             hit.Object = mesh;
             if (wasHit)hits.push_back(hit);
         }
-
-        std::sort(hits.begin(), hits.end(), [](const Hit& a, const Hit& b){
-            return a.Distance > b.Distance;
-        });
 
         return hits.size() > 0;
     }
@@ -155,10 +148,6 @@ namespace Core {
 
         hit.Origin = intersection;
         hit.Normal = _normal;
-
-        Vector3r dir = this->Direction;
-        dir.scale(t);
-        hit.Distance = dir.magnitude();
 
         return true;
     }

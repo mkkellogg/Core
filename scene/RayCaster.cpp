@@ -1,3 +1,6 @@
+#include <algorithm>
+#include <functional>
+
 #include "RayCaster.h"
 #include "../geometry/Mesh.h"
 
@@ -23,24 +26,43 @@ namespace Core {
             hitFound = this->castRay(ray, mesh, transform, hits) || hitFound;
         }
 
+        std::sort(hits.begin(), hits.end(), [](const Hit& a, const Hit& b){
+            return a.Distance <= b.Distance;
+        });
+
         return hitFound;
     }
 
     Bool RayCaster::castRay(const Ray& ray, WeakPointer<Mesh> mesh, const Matrix4x4& transform, std::vector<Hit>& hits) {
         Matrix4x4 inverse = transform;
         inverse.invert();
+        
         Matrix4x4 inverseTranspose = inverse;
         inverseTranspose.transpose();
+
+        Matrix4x4 inverseInverseTranspose = inverseTranspose;
+        inverseInverseTranspose.invert();
+
         Ray localRay(ray.Origin, ray.Direction);
         inverse.transform(localRay.Origin);
-        Point3r rayEnd = ray.Origin + ray.Direction;
-        inverse.transform(rayEnd);
-        localRay.Direction = rayEnd - localRay.Origin;
+        inverse.transform(localRay.Direction);
+
         Hit bbHit;
         Bool bbIntersect = localRay.intersectBox(mesh->getBoundingBox(), bbHit);
+
+        UInt32 startIndex = hits.size();
         if (bbIntersect) {
             localRay.intersectMesh(mesh, hits);
         }
+
+        for(UInt32 i = startIndex; i< hits.size(); i++) {
+            Hit& hit = hits[i];
+            transform.transform(hit.Origin);
+            inverseTranspose.transform(hit.Normal);
+            Vector3r distanceVec = hit.Origin - ray.Origin;
+            hit.Distance = distanceVec.magnitude();
+        }
+
         return hits.size() > 0;
     }
 }
