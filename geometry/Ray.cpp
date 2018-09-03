@@ -25,22 +25,19 @@ namespace Core {
 
         Hit hit;
         for (UInt32 i = 0; i < tCount; i+=3) {
-            Point3rs * v1 = nullptr;
-            Point3rs * v2 = nullptr;
-            Point3rs * v3 = nullptr;
+            Bool wasHit = false;
             if (mesh->isIndexed()) {
-                v1 = vertices + indices->getIndex(i);
-                v2 = vertices + indices->getIndex(i + 1);
-                v3 = vertices + indices->getIndex(i + 2);
+                wasHit = this->intersectTriangle(vertices + indices->getIndex(i),
+                                                 vertices + indices->getIndex(i + 1),
+                                                 vertices + indices->getIndex(i + 2), hit);
             }
             else {
-                v1 = vertices + i;
-                v2 = vertices + (i + 1);
-                v3 = vertices + (i + 2);
+                wasHit = this->intersectTriangle(vertices + i, vertices + (i + 1), vertices + (i + 2), hit);
             }
-            Bool wasHit = this->intersectTriangle(*v1, *v2, *v3, hit);
-            hit.Object = mesh;
-            if (wasHit)hits.push_back(hit);
+            if (wasHit) {
+                hit.Object = mesh;
+                hits.push_back(hit);
+            }
         }
 
         return hits.size() > 0;
@@ -98,6 +95,11 @@ namespace Core {
         }
 
         return false;
+    }
+
+    Bool Ray::intersectTriangle(const Vector3Components<Real>* p0, const Vector3Components<Real>* p1,
+                                const Vector3Components<Real>* p2, Hit& hit, const Vector3Components<Real>* normal) const {
+        this->intersectTriangle(*p0, *p1, *p2, hit, normal);                             
     }
 
     Bool Ray::intersectTriangle(const Vector3Components<Real>& p0, const Vector3Components<Real>& p1,

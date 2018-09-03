@@ -22,7 +22,7 @@ namespace Core {
             WeakPointer<Mesh> mesh = this->meshes[i];
             Transform objTransform = object->getTransform();
             objTransform.updateWorldMatrix();
-            Matrix4x4 transform = objTransform.getWorldMatrix();
+            Matrix4x4& transform = objTransform.getWorldMatrix();
             hitFound = this->castRay(ray, mesh, transform, hits) || hitFound;
         }
 
@@ -36,12 +36,8 @@ namespace Core {
     Bool RayCaster::castRay(const Ray& ray, WeakPointer<Mesh> mesh, const Matrix4x4& transform, std::vector<Hit>& hits) {
         Matrix4x4 inverse = transform;
         inverse.invert();
-        
         Matrix4x4 inverseTranspose = inverse;
         inverseTranspose.transpose();
-
-        Matrix4x4 inverseInverseTranspose = inverseTranspose;
-        inverseInverseTranspose.invert();
 
         Ray localRay(ray.Origin, ray.Direction);
         inverse.transform(localRay.Origin);
@@ -49,13 +45,12 @@ namespace Core {
 
         Hit bbHit;
         Bool bbIntersect = localRay.intersectBox(mesh->getBoundingBox(), bbHit);
-
         UInt32 startIndex = hits.size();
         if (bbIntersect) {
             localRay.intersectMesh(mesh, hits);
         }
 
-        for(UInt32 i = startIndex; i< hits.size(); i++) {
+        for(UInt32 i = startIndex; i < hits.size(); i++) {
             Hit& hit = hits[i];
             transform.transform(hit.Origin);
             inverseTranspose.transform(hit.Normal);

@@ -21,6 +21,9 @@ namespace Core {
         Bool intersectBox(const Box3& box, Hit& hit) const;
         Bool intersectTriangle(const Vector3Components<Real>& p0, const Vector3Components<Real>& p1,
                                const Vector3Components<Real>& p2, Hit& hit, const Vector3Components<Real>* normal = nullptr) const;
+        Bool intersectTriangle(const Vector3Components<Real>* p0, const Vector3Components<Real>* p1,
+                               const Vector3Components<Real>* p2, Hit& hit, const Vector3Components<Real>* normal = nullptr) const;
+
         Vector3r Direction;
         Point3r Origin;
     };
