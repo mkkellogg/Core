@@ -94,7 +94,7 @@ namespace Core {
             this->graphics->preRender();
 
             if (this->graphics->getRenderer()) {
-                this->graphics->getRenderer()->render(this->activeScene);
+                this->graphics->getRenderer()->renderScene(this->activeScene);
             }
 
             if (this->renderCallbacks.size() > 0) {

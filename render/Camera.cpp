@@ -22,6 +22,10 @@ namespace Core {
         // enable color buffer & depth buffer rendering by default
         IntMaskUtil::setBitForMask(&this->enabledRenderBuffers, (UInt32)RenderBufferType::Color);
         IntMaskUtil::setBitForMask(&this->enabledRenderBuffers, (UInt32)RenderBufferType::Depth);
+
+        this->setAutoClearRenderBuffer(RenderBufferType::Color, true);
+        this->setAutoClearRenderBuffer(RenderBufferType::Depth, true);
+        this->setAutoClearRenderBuffer(RenderBufferType::Stencil, true);
     }
 
     void Camera::updateProjection() {
@@ -127,8 +131,25 @@ namespace Core {
         }
     }
 
-    Bool Camera::isRenderBufferEnabled(RenderBufferType type) {
+    Bool Camera::isRenderBufferEnabled(RenderBufferType type) const {
         return IntMaskUtil::isBitSetForMask(this->enabledRenderBuffers, (UInt32)type);
+    }
+
+    void Camera::setAutoClearRenderBuffer(RenderBufferType type, Bool clear) {
+        if (clear) {
+            IntMaskUtil::setBitForMask(&this->clearRenderBuffers, (UInt32)type);
+        }
+        else {
+            IntMaskUtil::clearBitForMask(&this->clearRenderBuffers, (UInt32)type);
+        }
+    }
+
+    Bool Camera::getAutoClearRenderBuffer(RenderBufferType type) const {
+        return IntMaskUtil::isBitSetForMask(this->clearRenderBuffers, (UInt32)type);
+    }
+
+    IntMask Camera::getAutoClearRenderBuffers() const {
+        return this->clearRenderBuffers;
     }
 
     void Camera::buildPerspectiveProjectionMatrix(Real fov, Real ratio, Real nearP, Real farP, Matrix4x4& out) {

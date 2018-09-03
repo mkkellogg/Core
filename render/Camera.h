@@ -45,7 +45,10 @@ namespace Core {
         void setOrtho(Bool ortho);
         Bool isOrtho() const;
         void setRenderBufferEnabled(RenderBufferType type, Bool enabled);
-        Bool isRenderBufferEnabled(RenderBufferType type);
+        Bool isRenderBufferEnabled(RenderBufferType type) const;
+        void setAutoClearRenderBuffer(RenderBufferType type, Bool clear);
+        Bool getAutoClearRenderBuffer(RenderBufferType type) const;
+        IntMask getAutoClearRenderBuffers() const;
 
         static void buildPerspectiveProjectionMatrix(Real fov, Real aspectRatio, Real near, Real far, Matrix4x4& out);
         static void buildOrthographicProjectionMatrix(Real top, Real bottom, Real left, Real right, Real near, Real far, Matrix4x4& matrix);
@@ -73,5 +76,6 @@ namespace Core {
         Matrix4x4 projectionMatrix;
         PersistentWeakPointer<RenderTarget> renderTarget;
         IntMask enabledRenderBuffers;
+        IntMask clearRenderBuffers;
     };
 }

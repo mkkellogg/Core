@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../util/PersistentWeakPointer.h"
+#include "../base/BitMask.h"
 #include "../math/Matrix4x4.h"
 
 namespace Core {
@@ -19,7 +20,7 @@ namespace Core {
         PersistentWeakPointer<Material> overrideMaterial;
         PersistentWeakPointer<RenderTarget> renderTarget;
         Int32 cubeFace = -1;
-
+        IntMask clearRenderBuffers;
     };
 
 }
