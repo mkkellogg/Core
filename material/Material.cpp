@@ -9,7 +9,7 @@ namespace Core {
     Material::Material(WeakPointer<Graphics> graphics): graphics(graphics) {
         this->ready = false;
         this->transparent = false;
-        this->blendingEnabled = false;
+        this->blendingMode = RenderState::BlendingMode::Additive;
         this->srcBlendingMethod = RenderState::BlendingMethod::One;
         this->destBlendingMethod = RenderState::BlendingMethod::Zero;
         this->renderStyle = RenderStyle::Fill;
@@ -68,12 +68,12 @@ namespace Core {
         this->renderStyle = style;
     }
 
-    Bool Material::getBlendingEnabled() const {
-        return this->blendingEnabled;
+    RenderState::BlendingMode Material::getBlendingMode() const {
+        return this->blendingMode;
     }
 
-    void Material::setBlendingEnabled(Bool enabled) {
-        this->blendingEnabled = enabled;
+    void Material::setBlendingMode(RenderState::BlendingMode mode) {
+        this->blendingMode = mode;
     }
 
     Bool Material::isTransparent() const {

@@ -31,7 +31,7 @@ namespace Core {
 
         this->graphics->setRenderStyle(material->getRenderStyle());
         
-        if (material->getBlendingEnabled()) {
+        if (material->getBlendingMode() == RenderState::BlendingMode::Custom) {
             graphics->setBlendingEnabled(true);
             graphics->setBlendingFunction(material->getSourceBlendingMethod(), material->getDestBlendingMethod());
         }
@@ -109,11 +109,13 @@ namespace Core {
                 WeakPointer<Light> light = lights[i];
                 LightType lightType = light->getType();
 
-                if (renderedCount == 0) {
-                    graphics->setBlendingEnabled(false);
-                } else {
-                    graphics->setBlendingEnabled(true);
-                    graphics->setBlendingFunction(RenderState::BlendingMethod::One, RenderState::BlendingMethod::One);
+                if (material->getBlendingMode() == RenderState::BlendingMode::Additive) {
+                    if (renderedCount == 0) {
+                        graphics->setBlendingEnabled(false);
+                    } else {
+                        graphics->setBlendingEnabled(true);
+                        graphics->setBlendingFunction(RenderState::BlendingMethod::One, RenderState::BlendingMethod::One);
+                    }
                 }
 
                 if (lightColorLoc >= 0) {
@@ -133,26 +135,30 @@ namespace Core {
                     shader->setUniformMatrix4(lightMatrixLoc, light->getOwner()->getTransform().getConstInverseWorldMatrix());
                 }
 
+                if (lightType == LightType::Point || lightType == LightType::Directional) {
+                    WeakPointer<ShadowLight> shadowLight = WeakPointer<Light>::dynamicPointerCast<ShadowLight>(light);
+
+                    if (lightAngularShadowBiasLoc >= 0) {
+                        shader->setUniform1f(lightAngularShadowBiasLoc, shadowLight->getAngularShadowBias());
+                    }
+
+                    if (lightShadowMapSizeLoc >= 0) {
+                        shader->setUniform1f(lightShadowMapSizeLoc, shadowLight->getShadowMapSize());
+                    }
+
+                    if (lightConstantShadowBiasLoc >= 0) {
+                        shader->setUniform1f(lightConstantShadowBiasLoc, shadowLight->getConstantShadowBias());
+                    }
+
+                    if (lightShadowSoftnessLoc >= 0) {
+                        shader->setUniform1i(lightShadowSoftnessLoc, (UInt32)shadowLight->getShadowSoftness());
+                    }
+                }
+
                 if (lightType == LightType::Point) {
 
                     WeakPointer<PointLight> pointLight = WeakPointer<Light>::dynamicPointerCast<PointLight>(light);
 
-                    if (lightAngularShadowBiasLoc >= 0) {
-                        shader->setUniform1f(lightAngularShadowBiasLoc, pointLight->getAngularShadowBias());
-                    }
-
-                    if (lightShadowMapSizeLoc >= 0) {
-                        shader->setUniform1f(lightShadowMapSizeLoc, pointLight->getShadowMapSize());
-                    }
-
-                    if (lightConstantShadowBiasLoc >= 0) {
-                        shader->setUniform1f(lightConstantShadowBiasLoc, pointLight->getConstantShadowBias());
-                    }
-
-                    if (lightShadowSoftnessLoc >= 0) {
-                        shader->setUniform1i(lightShadowSoftnessLoc, (UInt32)pointLight->getShadowSoftness());
-                    }
-                    
                     if (lightRangeLoc >= 0) {
                         shader->setUniform1f(lightRangeLoc, pointLight->getRadius());
                     }
@@ -177,22 +183,6 @@ namespace Core {
                 }
                 else if (lightType == LightType::Directional) {
                     WeakPointer<DirectionalLight> directionalLight = WeakPointer<Light>::dynamicPointerCast<DirectionalLight>(light);
-
-                    if (lightAngularShadowBiasLoc >= 0) {
-                        shader->setUniform1f(lightAngularShadowBiasLoc, directionalLight->getAngularShadowBias());
-                    }
-
-                    if (lightShadowMapSizeLoc >= 0) {
-                        shader->setUniform1f(lightShadowMapSizeLoc, directionalLight->getShadowMapSize());
-                    }
-
-                    if (lightConstantShadowBiasLoc >= 0) {
-                        shader->setUniform1f(lightConstantShadowBiasLoc, directionalLight->getConstantShadowBias());
-                    }
-
-                    if (lightShadowSoftnessLoc >= 0) {
-                        shader->setUniform1i(lightShadowSoftnessLoc, (UInt32)directionalLight->getShadowSoftness());
-                    }
 
                     Int32 lightDirectionLoc = material->getShaderLocation(StandardUniform::LightDirection);
                     if (lightDirectionLoc >= 0) {
