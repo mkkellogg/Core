@@ -2,6 +2,8 @@
 
 #include <unordered_map>
 #include <string>
+#include <memory>
+#include <vector>
 
 #include "../base/BitMask.h"
 
@@ -22,8 +24,6 @@ namespace Core {
     typedef IntMask StandardAttributeSet;
 
     class StandardAttributes {
-        static const std::string attributeNames[];
-        static std::unordered_map<std::string, StandardAttribute> nameToAttribute;
 
     public:
         static const std::string& getAttributeName(StandardAttribute attribute);
@@ -31,5 +31,16 @@ namespace Core {
         static void addAttribute(StandardAttributeSet* set, StandardAttribute attr);
         static void removeAttribute(StandardAttributeSet* set, StandardAttribute attr);
         static Bool hasAttribute(StandardAttributeSet set, StandardAttribute attr);
+
+    private:
+        StandardAttributes();
+        void init();
+        static std::shared_ptr<StandardAttributes> instance;
+        static void checkAndInitInstance();
+
+        const std::string& _getAttributeName(StandardAttribute attribute);
+        
+        std::vector<std::string> attributeNames;
+        std::unordered_map<std::string, StandardAttribute> nameToAttribute;
     };
 }

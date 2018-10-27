@@ -2,30 +2,39 @@
 
 namespace Core {
 
-    const std::string StandardAttributes::attributeNames[] =
-    {
-        "POSITION",
-        "COLOR",
-        "UV0",
-        "UV1",
-        "NORMAL",
-        "TANGENT",
-        "FACE_NORMAL",
-    };
+    std::shared_ptr<StandardAttributes> StandardAttributes::instance = nullptr;
 
-    std::unordered_map<std::string, StandardAttribute> StandardAttributes::nameToAttribute
-    {
-        {attributeNames[(UInt16)StandardAttribute::Position],StandardAttribute::Position},
-        {attributeNames[(UInt16)StandardAttribute::Color],StandardAttribute::Color},
-        {attributeNames[(UInt16)StandardAttribute::UV0],StandardAttribute::UV0},
-        {attributeNames[(UInt16)StandardAttribute::UV1],StandardAttribute::UV1},
-        {attributeNames[(UInt16)StandardAttribute::Normal],StandardAttribute::Normal},
-        {attributeNames[(UInt16)StandardAttribute::Tangent],StandardAttribute::Tangent},
-        {attributeNames[(UInt16)StandardAttribute::FaceNormal],StandardAttribute::FaceNormal}
-        
-    };
+    StandardAttributes::StandardAttributes() {
+        attributeNames =
+        {
+            "POSITION",
+            "COLOR",
+            "UV0",
+            "UV1",
+            "NORMAL",
+            "TANGENT",
+            "FACE_NORMAL",
+        };
+
+        nameToAttribute =
+        {
+            {attributeNames[(UInt16)StandardAttribute::Position],StandardAttribute::Position},
+            {attributeNames[(UInt16)StandardAttribute::Color],StandardAttribute::Color},
+            {attributeNames[(UInt16)StandardAttribute::UV0],StandardAttribute::UV0},
+            {attributeNames[(UInt16)StandardAttribute::UV1],StandardAttribute::UV1},
+            {attributeNames[(UInt16)StandardAttribute::Normal],StandardAttribute::Normal},
+            {attributeNames[(UInt16)StandardAttribute::Tangent],StandardAttribute::Tangent},
+            {attributeNames[(UInt16)StandardAttribute::FaceNormal],StandardAttribute::FaceNormal}
+            
+        };
+    }
 
     const std::string& StandardAttributes::getAttributeName(StandardAttribute attribute) {
+        checkAndInitInstance();
+        return instance->_getAttributeName(attribute);
+    }
+
+    const std::string& StandardAttributes::_getAttributeName(StandardAttribute attribute) {
         return attributeNames[(UInt16)attribute];
     }
 
@@ -43,5 +52,16 @@ namespace Core {
 
     Bool StandardAttributes::hasAttribute(StandardAttributeSet set, StandardAttribute attr) {
         return IntMaskUtil::isBitSet((IntMask)set, (IntMask)attr);
+    }
+
+    void StandardAttributes::checkAndInitInstance() {
+        if (!instance) {
+           instance = std::shared_ptr<StandardAttributes>(new StandardAttributes());
+           instance->init();
+        }
+    }
+
+    void StandardAttributes::init() {
+
     }
 }

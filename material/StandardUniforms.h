@@ -1,7 +1,10 @@
 #pragma once
 
-#include "../common/types.h"
 #include <unordered_map>
+#include <memory>
+#include <vector>
+
+#include "../common/types.h"
 
 namespace Core {
 
@@ -41,12 +44,20 @@ namespace Core {
     };
 
     class StandardUniforms {
-        static const std::string uniformNames[];
-        static std::unordered_map<std::string, StandardUniform> nameToUniform;
-
     public:
         static const std::string& getUniformName(StandardUniform uniform);
         static StandardUniform getUniformForName(const std::string& name);
+    
+    private:
+        StandardUniforms();
+        void init();
+        static std::shared_ptr<StandardUniforms> instance;
+        static void checkAndInitInstance();
 
+        const std::string& _getUniformName(StandardUniform uniform);
+        StandardUniform _getUniformForName(const std::string& name);
+        
+        std::vector<std::string> uniformNames;
+        std::unordered_map<std::string, StandardUniform> nameToUniform;
     };
 }
