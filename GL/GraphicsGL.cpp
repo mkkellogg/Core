@@ -46,7 +46,7 @@ namespace Core {
 
     void GraphicsGL::preRender() {
         // TODO: Move these state calls to a place where they are not called every frame
-        glFrontFace(GL_CW);
+       /* glFrontFace(GL_CW);
         glCullFace(GL_BACK);
         glEnable(GL_CULL_FACE);
         glEnable(GL_DEPTH_TEST);
@@ -56,7 +56,7 @@ namespace Core {
 
         glLineWidth(1.5);
         glEnable(GL_LINE_SMOOTH);
-        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);*/
     }
 
     void GraphicsGL::postRender() {
@@ -319,7 +319,6 @@ namespace Core {
         if (enabled) glEnable(GL_DEPTH_TEST);
         else glDisable (GL_DEPTH_TEST);
     }
-
 
     void GraphicsGL::saveState() {
         glGetIntegerv(GL_FRONT_FACE, &this->_stateFrontFace);

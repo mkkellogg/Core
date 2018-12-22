@@ -41,9 +41,11 @@ namespace Core {
     void Renderer::renderScene(WeakPointer<Object3D> rootObject, WeakPointer<Material> overrideMaterial) {
         if (!this->depthMaterial.isValid()) {
             this->depthMaterial = Engine::instance()->createMaterial<DepthOnlyMaterial>();
+            this->depthMaterial->setLit(false);
         }
         if (!this->distanceMaterial.isValid()) {
             this->distanceMaterial = Engine::instance()->createMaterial<DistanceOnlyMaterial>();
+            this->distanceMaterial->setLit(false);
         }
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
 
@@ -190,7 +192,7 @@ namespace Core {
         Vector2u renderTargetSize = nextRenderTarget->getSize();
         Vector4u viewport = nextRenderTarget->getViewport();
         graphics->setViewport(viewport.x, viewport.y, viewport.z, viewport.w);
-        graphics->setClearColor(Color(0.0, 0.0, 0.0, 1.0));
+        //graphics->setClearColor(Color(0.0, 0.0, 0.0, 1.0));
 
         Bool clearColorBuffer = IntMaskUtil::isBitSetForMask(viewDescriptor.clearRenderBuffers, (UInt32)RenderBufferType::Color);
         Bool clearDepthBuffer = IntMaskUtil::isBitSetForMask(viewDescriptor.clearRenderBuffers, (UInt32)RenderBufferType::Depth);

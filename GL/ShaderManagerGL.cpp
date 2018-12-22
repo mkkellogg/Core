@@ -290,8 +290,9 @@ namespace Core {
         this->Depth_fragment =   
             "#version 330\n"
             "precision highp float;\n"
+            "out vec4 out_color;\n"
             "void main() {\n"
-            "    gl_FragColor = vec4(gl_FragCoord.z, 0.0, 0.0, 0.0);\n"
+            "    out_color = vec4(gl_FragCoord.z, 0.0, 0.0, 0.0);\n"
             "}\n";
 
         this->Distance_vertex =
@@ -310,9 +311,10 @@ namespace Core {
             "#version 330\n"
             "precision highp float;\n"
             "in vec4 vPos;\n"
+            "out vec4 out_color;\n"
             "void main() {\n"
             "    float len = length(vPos.xyz);\n"
-            "    gl_FragColor = vec4(len, 0.0, 0.0, 0.0);\n"
+            "    out_color = vec4(len, 0.0, 0.0, 0.0);\n"
             "}\n";
 
         this->Basic_vertex =
@@ -332,8 +334,9 @@ namespace Core {
             "#version 330\n"
             "precision mediump float;\n"
             "in vec4 vColor;\n"
+            "out vec4 out_color;\n"
             "void main() {\n"
-            "    gl_FragColor = vColor;\n"
+            "    out_color = vColor;\n"
             "}\n";
 
         this->BasicColored_vertex =
@@ -357,8 +360,9 @@ namespace Core {
             "#version 330\n"
             "precision highp float;\n"
             "in vec4 vColor;\n"
+            "out vec4 out_color;\n"
             "void main() {\n"
-            "    gl_FragColor = vColor;\n"
+            "    out_color = vColor;\n"
             "}\n";
 
 
@@ -408,9 +412,9 @@ namespace Core {
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
             + MODEL_MATRIX_DEF +
-            "varying vec4 vColor;\n"
-            "varying vec3 vNormal;\n"
-            "varying vec2 vUV;\n"
+            "out vec4 vColor;\n"
+            "out vec3 vNormal;\n"
+            "out vec2 vUV;\n"
             "void main() {\n"
             "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
             "    vUV = " + UV0 + ";\n"
@@ -423,9 +427,10 @@ namespace Core {
             + TEXTURE2D0_DEF + 
             "in vec4 vColor;\n"
             "in vec2 vUV;\n"
+            "out vec4 out_color;\n"
             "void main() {\n"
             "    vec4 textureColor = texture2D(" + TEXTURE2D0 + ", vUV);\n"
-            "    gl_FragColor = textureColor;\n"
+            "    out_color = textureColor;\n"
             "}\n";
 
         this->BasicTexturedLit_vertex =  
@@ -498,9 +503,10 @@ namespace Core {
             + CUBETEXTURE0_DEF +
             "in vec4 vColor;\n"
             "in vec3 vUV;\n"
+            "out vec4 out_color;\n"
             "void main() {\n"
             "    vec4 textureColor = texture(" + CUBETEXTURE0 + ", vUV);\n"
-            "    gl_FragColor = textureColor;\n"
+            "    out_color = textureColor;\n"
             "}\n";
     }
 

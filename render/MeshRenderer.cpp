@@ -11,6 +11,7 @@
 #include "../render/Camera.h"
 #include "../render/RenderTarget.h"
 #include "RenderableContainer.h"
+#include "RenderException.h"
 
 namespace Core {
 
@@ -229,6 +230,10 @@ namespace Core {
             }
 
         } else {
+            if (material->isLit()) {
+                throw RenderException("MeshRenderer::render() -> Rendering lit material with no lights!");    
+            }
+
             if (lightEnabledLoc >= 0) {
                 shader->setUniform1i(lightEnabledLoc, 0);
             }

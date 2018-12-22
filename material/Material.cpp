@@ -9,6 +9,7 @@ namespace Core {
     Material::Material(WeakPointer<Graphics> graphics): graphics(graphics) {
         this->ready = false;
         this->transparent = false;
+        this->lit = false;
         this->blendingMode = RenderState::BlendingMode::Additive;
         this->srcBlendingMethod = RenderState::BlendingMethod::One;
         this->destBlendingMethod = RenderState::BlendingMethod::Zero;
@@ -82,6 +83,14 @@ namespace Core {
 
     void Material::setTransparent(Bool transparent) {
         this->transparent = transparent;
+    }
+
+    Bool Material::isLit() const {
+        return this->lit;
+    }
+
+    void Material::setLit(Bool lit) {
+        this->lit = lit;
     }
 
     Bool Material::getDepthTestEnabled() const {

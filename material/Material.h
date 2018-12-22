@@ -37,6 +37,8 @@ namespace Core {
         void setBlendingMode(RenderState::BlendingMode mode);
         Bool isTransparent() const;
         void setTransparent(Bool transparent);
+        Bool isLit() const;
+        void setLit(Bool lit);
         Bool getDepthTestEnabled() const;
         void setDepthTestEnabled(Bool transparent);
         
@@ -48,6 +50,7 @@ namespace Core {
         PersistentWeakPointer<Shader> shader;
         Bool ready;
         Bool transparent;
+        Bool lit;
         RenderState::BlendingMode blendingMode;
         RenderState::BlendingMethod srcBlendingMethod;
         RenderState::BlendingMethod destBlendingMethod;
