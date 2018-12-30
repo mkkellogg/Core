@@ -64,12 +64,11 @@ namespace Core {
     }
 
     void GraphicsGL::setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) {
-        glViewport(hOffset, vOffset, viewPortWidth, viewPortHeight);
-        this->viewport.set(hOffset, vOffset, viewPortWidth, viewPortHeight);
+        this->defaultRenderTarget->viewport.set(hOffset, vOffset, viewPortWidth, viewPortHeight);
     }
 
     Vector4u GraphicsGL::getViewport() {
-        return this->viewport;
+        return this->defaultRenderTarget->viewport;
     }
 
     WeakPointer<Texture2D> GraphicsGL::createTexture2D(const TextureAttributes& attributes) {

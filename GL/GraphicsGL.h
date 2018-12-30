@@ -105,7 +105,6 @@ namespace Core {
         std::vector<std::shared_ptr<RenderTargetCubeGL>> renderTargetCubes;
         PersistentWeakPointer<RenderTarget> currentRenderTarget;
         ShaderManagerGL shaderDirectory;
-        Vector4u viewport;
         RenderStyle renderStyle;
 
         GLint _stateFrontFace;
