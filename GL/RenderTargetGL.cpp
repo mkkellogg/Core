@@ -2,7 +2,7 @@
 
 namespace Core {
 
-    RenderTargetGL::RenderTargetGL(): fboID(0) {
+    RenderTargetGL::RenderTargetGL(Int32 initialFBOID): fboID(initialFBOID) {
 
     }
 

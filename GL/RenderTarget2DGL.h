@@ -34,6 +34,7 @@ namespace Core {
 
         RenderTarget2DGL(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
                          const TextureAttributes& colorTextureAttributes, 
-                         const TextureAttributes& depthTextureAttributes, Vector2u size);  
+                         const TextureAttributes& depthTextureAttributes, Vector2u size,
+                         Int32 initialFBOID = 0);
     };
 }
