@@ -18,6 +18,13 @@ namespace Core {
     }
 
     /*
+     * Set the OpenGL FBO ID.
+     */
+    void RenderTargetGL::setFBOID(GLuint id) {
+        this->fboID = id;
+    }
+
+    /*
      * Destroy the FBO associated with this render target and all attached textures and/or
      * render buffers.
      */

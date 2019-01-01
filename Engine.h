@@ -41,7 +41,7 @@ namespace Core {
 
         void setRenderSize(UInt32 width, UInt32 height, Bool updateViewport = true);
         void setRenderSize(UInt32 width, UInt32 height, UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
-        void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
+        void setDefaultViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight);
 
         MaterialLibrary& getMaterialLibrary();
         ModelLoader& getModelLoader();
@@ -126,6 +126,8 @@ namespace Core {
         WeakPointer<ImageLoader> getImageLoader();
         void setAssetLoader(WeakPointer<AssetLoader> assetLoader);
         WeakPointer<AssetLoader> getAssetLoader();
+
+        void updateDefaultRenderTarget();
 
         void onUpdate(LifecycleEventCallback func, Bool persistent = false);
         void onRender(LifecycleEventCallback func, Bool persistent = false);

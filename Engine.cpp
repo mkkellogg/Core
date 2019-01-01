@@ -119,8 +119,8 @@ namespace Core {
         this->graphics->setRenderSize(width, height, hOffset, vOffset, viewPortWidth, viewPortHeight);
     }
 
-    void Engine::setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) {
-        this->graphics->setViewport(hOffset, vOffset, viewPortWidth, viewPortHeight);
+    void Engine::setDefaultViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) {
+        this->graphics->setDefaultViewport(hOffset, vOffset, viewPortWidth, viewPortHeight);
     }
 
     MaterialLibrary& Engine::getMaterialLibrary() {
@@ -203,6 +203,10 @@ namespace Core {
 
     WeakPointer<AssetLoader> Engine::getAssetLoader() {
         return this->assetLoader;
+    }
+
+    void Engine::updateDefaultRenderTarget() {
+        this->graphics->updateDefaultRenderTarget();
     }
 
     void Engine::onUpdate(LifecycleEventCallback func, Bool persistent) {

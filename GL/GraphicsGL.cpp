@@ -208,6 +208,14 @@ namespace Core {
         glClear(mask);
     }
 
+    void GraphicsGL::updateDefaultRenderTarget() {
+        GLint initialDrawFBOID =  -1;
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &initialDrawFBOID);
+        GLint initialReadFBOID =  -1;
+        glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &initialReadFBOID);
+        this->defaultRenderTarget->setFBOID(initialDrawFBOID);
+    }
+
     WeakPointer<RenderTarget> GraphicsGL::getDefaultRenderTarget() {
         return this->defaultRenderTarget;
     }
@@ -504,7 +512,7 @@ namespace Core {
         TextureAttributes depthAttributes;
         Vector2u renderSize(1024, 1024);
         RenderTarget2DGL* defaultTargetPtr = new(std::nothrow) RenderTarget2DGL(false, false, false, colorAttributes,
-                                                                                depthAttributes, renderSize, 2);
+                                                                                depthAttributes, renderSize, 0);
         if (defaultTargetPtr == nullptr) {
             throw AllocationException("GraphicsGL::createDefaultRenderTarget -> Unable to allocate default render target.");
         }

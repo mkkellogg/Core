@@ -11,6 +11,7 @@ namespace Core {
         RenderTargetGL(Int32 initialFBOID = 0);
         ~RenderTargetGL();
         GLuint getFBOID() const;
+        void setFBOID(GLuint id);
 
     protected:
         void destroy();
