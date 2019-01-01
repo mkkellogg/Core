@@ -182,7 +182,7 @@ namespace Core {
     void Renderer::render(const ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objectList, std::vector<WeakPointer<Light>>& lightList) {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         WeakPointer<RenderTarget> currentRenderTarget = graphics->getCurrentRenderTarget();
-        Vector4u currentViewport = graphics->getViewport();
+        Vector4u currentViewport = currentRenderTarget->getViewport();
 
         WeakPointer<RenderTarget> nextRenderTarget = viewDescriptor.renderTarget; 
         graphics->activateRenderTarget(nextRenderTarget);

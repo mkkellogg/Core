@@ -46,7 +46,7 @@ namespace Core {
 
     void GraphicsGL::preRender() {
         // TODO: Move these state calls to a place where they are not called every frame
-       /* glFrontFace(GL_CW);
+        glFrontFace(GL_CW);
         glCullFace(GL_BACK);
         glEnable(GL_CULL_FACE);
         glEnable(GL_DEPTH_TEST);
@@ -56,19 +56,11 @@ namespace Core {
 
         glLineWidth(1.5);
         glEnable(GL_LINE_SMOOTH);
-        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);*/
+        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
     }
 
     void GraphicsGL::postRender() {
 
-    }
-
-    void GraphicsGL::setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) {
-        this->defaultRenderTarget->viewport.set(hOffset, vOffset, viewPortWidth, viewPortHeight);
-    }
-
-    Vector4u GraphicsGL::getViewport() {
-        return this->defaultRenderTarget->viewport;
     }
 
     WeakPointer<Texture2D> GraphicsGL::createTexture2D(const TextureAttributes& attributes) {
@@ -279,6 +271,15 @@ namespace Core {
 
     void GraphicsGL::updateDefaultRenderTargetViewport(Vector4u viewport) {
         this->defaultRenderTarget->viewport = viewport;
+    }
+
+    Vector4u GraphicsGL::getViewport() {
+        return this->_viewport;
+    }
+
+    void GraphicsGL::setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) {
+        glViewport(hOffset, vOffset, viewPortWidth, viewPortHeight);
+        this->_viewport.set(hOffset, vOffset, viewPortWidth, viewPortHeight);
     }
 
     void GraphicsGL::setRenderingToBufferEnabled(RenderBufferType type, Bool enabled) {
@@ -503,7 +504,7 @@ namespace Core {
         TextureAttributes depthAttributes;
         Vector2u renderSize(1024, 1024);
         RenderTarget2DGL* defaultTargetPtr = new(std::nothrow) RenderTarget2DGL(false, false, false, colorAttributes,
-                                                                                depthAttributes, renderSize);
+                                                                                depthAttributes, renderSize, 2);
         if (defaultTargetPtr == nullptr) {
             throw AllocationException("GraphicsGL::createDefaultRenderTarget -> Unable to allocate default render target.");
         }

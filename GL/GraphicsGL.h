@@ -107,6 +107,7 @@ namespace Core {
         ShaderManagerGL shaderDirectory;
         RenderStyle renderStyle;
 
+        Vector4u _viewport;
         GLint _stateFrontFace;
         GLint _stateCullFaceMode;
         GLboolean _stateCullFaceEnabled;
