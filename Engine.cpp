@@ -205,8 +205,8 @@ namespace Core {
         return this->assetLoader;
     }
 
-    void Engine::updateDefaultRenderTarget() {
-        this->graphics->updateDefaultRenderTarget();
+    void Engine::setDefaultRenderTargetToCurrent() {
+        this->graphics->setDefaultRenderTargetToCurrent();
     }
 
     void Engine::onUpdate(LifecycleEventCallback func, Bool persistent) {

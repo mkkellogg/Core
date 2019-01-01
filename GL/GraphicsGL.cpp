@@ -208,7 +208,7 @@ namespace Core {
         glClear(mask);
     }
 
-    void GraphicsGL::updateDefaultRenderTarget() {
+    void GraphicsGL::setDefaultRenderTargetToCurrent() {
         GLint initialDrawFBOID =  -1;
         glGetIntegerv(GL_FRAMEBUFFER_BINDING, &initialDrawFBOID);
         GLint initialReadFBOID =  -1;

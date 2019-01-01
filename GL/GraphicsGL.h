@@ -68,7 +68,7 @@ namespace Core {
 
         void setClearColor(Color color) override;
         void clearActiveRenderTarget(Bool colorBuffer, Bool depthBuffer, Bool stencilBuffer) override;
-        void updateDefaultRenderTarget() override;
+        void setDefaultRenderTargetToCurrent() override;
         WeakPointer<RenderTarget> getDefaultRenderTarget() override;
         WeakPointer<RenderTarget> getCurrentRenderTarget() override;
         void updateDefaultRenderTargetSize(Vector2u size) override;

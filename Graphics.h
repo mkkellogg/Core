@@ -72,7 +72,7 @@ namespace Core {
                                                                      
         virtual void setClearColor(Color color) = 0;
         virtual void clearActiveRenderTarget(Bool colorBuffer, Bool depthBuffer, Bool stencilBuffer) = 0;
-        virtual void updateDefaultRenderTarget() = 0;
+        virtual void setDefaultRenderTargetToCurrent() = 0;
         virtual WeakPointer<RenderTarget> getDefaultRenderTarget() = 0;
         virtual WeakPointer<RenderTarget> getCurrentRenderTarget() = 0;
         virtual void updateDefaultRenderTargetSize(Vector2u size) = 0;

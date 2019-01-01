@@ -670,8 +670,9 @@ namespace Core {
         std::string fullTextureFilePath = fileSystem->concatenatePaths(modelDirectory, texPath);
 
         TextureAttributes texAttributes;
-        texAttributes.FilterMode = TextureFilter::TriLinear;
+        texAttributes.FilterMode = TextureFilter::Linear;
         texAttributes.MipMapLevel = 4;
+        texAttributes.Format = TextureFormat::RGBA8;
 
         std::shared_ptr<RawImage> textureImage;
         // check if the file specified by the full path in the Assimp material exists

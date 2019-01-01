@@ -67,6 +67,7 @@ namespace Core {
             throw Shader::ShaderVariableException("ShaderGL::setTexture2D() value for [slot] is too high.");
         }
         glActiveTexture(slots[slot]);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
         glBindTexture(GL_TEXTURE_2D, textureID);
     }
 
@@ -78,6 +79,7 @@ namespace Core {
             throw Shader::ShaderVariableException("ShaderGL::setTextureCube() value for [slot] is too high.");
         }
         glActiveTexture(slots[slot]);
+        glBindTexture(GL_TEXTURE_2D, 0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
     }
 

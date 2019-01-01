@@ -127,7 +127,7 @@ namespace Core {
         void setAssetLoader(WeakPointer<AssetLoader> assetLoader);
         WeakPointer<AssetLoader> getAssetLoader();
 
-        void updateDefaultRenderTarget();
+        void setDefaultRenderTargetToCurrent();
 
         void onUpdate(LifecycleEventCallback func, Bool persistent = false);
         void onRender(LifecycleEventCallback func, Bool persistent = false);
