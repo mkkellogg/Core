@@ -80,13 +80,6 @@ namespace Core {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         }
 
-        // we only generate mip-maps if bi-linear or tri-linear filtering is used
-        if (this->attributes.FilterMode == TextureFilter::TriLinear || attributes.FilterMode == TextureFilter::BiLinear) {
-            glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, attributes.MipMapLevel);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, attributes.MipMapLevel);
-        }
-
         GLenum textureFormat = graphicsGL->getGLTextureFormat(attributes.Format);
         GLenum pixelFormat = graphicsGL->getGLPixelFormat(attributes.Format);
         GLenum pixelType = graphicsGL->getGLPixelType(attributes.Format);
@@ -99,6 +92,14 @@ namespace Core {
         }
         else {
             glTexImage2D(GL_TEXTURE_2D, 0, textureFormat, width, height, 0, pixelFormat, pixelType, data);
+        }
+
+        // we only generate mip-maps if bi-linear or tri-linear filtering is used
+        if (this->attributes.FilterMode == TextureFilter::TriLinear || attributes.FilterMode == TextureFilter::BiLinear) {
+            //glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, attributes.MipMapLevel);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, attributes.MipMapLevel);
+            glGenerateMipmap(GL_TEXTURE_2D);
         }
        
         glBindTexture(GL_TEXTURE_2D, 0);

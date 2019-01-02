@@ -670,7 +670,7 @@ namespace Core {
         std::string fullTextureFilePath = fileSystem->concatenatePaths(modelDirectory, texPath);
 
         TextureAttributes texAttributes;
-        texAttributes.FilterMode = TextureFilter::Linear;
+        texAttributes.FilterMode = TextureFilter::TriLinear;
         texAttributes.MipMapLevel = 4;
         texAttributes.Format = TextureFormat::RGBA8;
 
