@@ -4,6 +4,8 @@
 
 namespace Core {
 
+    UInt64 Object3D::_nextID = 0;
+
     Object3D::Object3D() : transform(*this), active(true) {
         this->id = Object3D::getNextID();
     }
