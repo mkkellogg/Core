@@ -5,9 +5,18 @@
 namespace Core {
 
     Object3D::Object3D() : transform(*this), active(true) {
+        this->id = Object3D::getNextID();
     }
 
     Object3D::~Object3D() {
+    }
+
+    UInt64 Object3D::getID() {
+        return this->id;
+    }
+
+    UInt64 Object3D::getNextID() {
+        return _nextID++;
     }
 
     Transform& Object3D::getTransform() {
@@ -69,7 +78,7 @@ namespace Core {
         }
     }
 
-    WeakPointer<Object3D> Object3D::getParent() {
+    WeakPointer<Object3D> Object3D::getParent() const {
         return this->parent;
     }
 
@@ -88,5 +97,13 @@ namespace Core {
 
     void Object3D::setActive(Bool active) {
         this->active = active;
+    }
+
+    void Object3D::setName(const std::string& name) {
+        this->name = name;
+    }
+    
+    const std::string& Object3D::getName() const {
+        return this->name;
     }
 }

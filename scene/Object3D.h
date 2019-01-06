@@ -28,6 +28,7 @@ namespace Core {
     public:
         virtual ~Object3D();
 
+        UInt64 getID();
         Transform& getTransform();
         SceneObjectIterator<Object3D> beginIterateChildren();
         SceneObjectIterator<Object3D> endIterateChildren();
@@ -36,9 +37,11 @@ namespace Core {
         UInt32 size() const;
         void addChild(WeakPointer<Object3D> object);
         void removeChild(WeakPointer<Object3D> object);
-        WeakPointer<Object3D> getParent();
+        WeakPointer<Object3D> getParent() const;
         Bool addComponent(WeakPointer<Object3DComponent> component);
         void setActive(Bool active);
+        void setName(const std::string& name);
+        const std::string& getName() const;
 
     protected:
         Object3D();
@@ -49,8 +52,12 @@ namespace Core {
         PersistentWeakPointer<Object3D> _self;
         std::vector<PersistentWeakPointer<Object3DComponent>> components;
         Bool active;
-        UInt32 id;
+        UInt64 id;
+        std::string name;
 
-        static UInt32 _nextID;
+    private:
+        static UInt64 getNextID();
+        static UInt64 _nextID;
+        
     };
 }
