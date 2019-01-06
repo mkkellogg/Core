@@ -56,16 +56,19 @@ namespace Core {
         LongMask materialAttributes;
         materialAttributes = LongMaskUtil::createMask();
         LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::VertexNormals);
+        LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::VertexColors);
         this->materialLibrary.addEntry(materialAttributes, basicMaterial);
 
         materialAttributes = LongMaskUtil::createMask();
         LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::DiffuseTextured);
         LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::VertexNormals);
+        LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::VertexColors);
         this->materialLibrary.addEntry(materialAttributes, basicTexturedMaterial);
 
         materialAttributes = LongMaskUtil::createMask();
         LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::DiffuseTextured);
         LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::VertexNormals);
+        LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::VertexColors);
         LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::Lit);
         this->materialLibrary.addEntry(materialAttributes, basicTexturedLitMaterial);
 
