@@ -215,10 +215,9 @@ add_library(${EXECUTABLE_NAME} ${SOURCE_FILES})
 
 target_link_libraries(${EXECUTABLE_NAME} ${OPENGL_LIBRARIES})
 
-#include_directories(../../libpng/code)
-#include_directories(../../libpng/build)
-#target_link_libraries(${EXECUTABLE_NAME} ../../libpng/build/libpng.a)
-target_link_libraries(${EXECUTABLE_NAME} png)
+include_directories(../../DevIL/DevIL/include)
+link_directories(../../DevIL/build/lib/x64/)
+target_link_libraries(${EXECUTABLE_NAME} IL)
 
 include_directories(../../assimp/build/include)
 include_directories(../../assimp/include)

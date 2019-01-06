@@ -1,10 +1,11 @@
 #pragma once
 
-#ifdef CORE_USE_PRIVATE_INCLUDES
-#include "PNGLoader.h"
-#endif
-
 #include <string>
+#include <memory>
+
+#ifdef CORE_USE_PRIVATE_INCLUDES
+#include <IL/il.h>
+#endif
 
 #include "../common/types.h"
 #include "../common/debug.h"
@@ -31,12 +32,14 @@ namespace Core {
 
         static std::shared_ptr<RawImage> loadImageU(const std::string& fullPath);
         static std::shared_ptr<RawImage> loadImageU(const std::string& fullPath, Bool reverseOrigin);
-
         static std::string getFileExtension(const std::string& filePath);
     
     private:
         static Bool initialized;
         static Bool initialize();
+#ifdef CORE_USE_PRIVATE_INCLUDES
+        static std::shared_ptr<RawImage> getRawImageFromILData(const ILubyte * data, UInt32 width, UInt32 height);
+#endif
     };
 
 }
