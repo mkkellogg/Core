@@ -98,6 +98,10 @@ namespace Core {
         static T createMask() {
             return (T)0;
         }
+
+        static bool covers(T a, T b) {
+            return (a & b) == b;
+        }
     };
 
     typedef BitMaskUtil<IntMask> IntMaskUtil;

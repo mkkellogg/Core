@@ -1,3 +1,5 @@
+#include <bitset>
+
 #include "MaterialLibrary.h"
 #include "Material.h"
 
@@ -17,12 +19,15 @@ namespace Core {
     }
 
     Bool MaterialLibrary::hasMaterial(LongMask shaderMaterialChacteristics) {
-        return this->entries.find(shaderMaterialChacteristics) != this->entries.end();
+        for (auto entry : this->entries) {
+            if (LongMaskUtil::covers(entry.first, shaderMaterialChacteristics)) return true;
+        }
+        return false;
     }
 
     WeakPointer<Material> MaterialLibrary::getMaterial(LongMask shaderMaterialChacteristics) {
-        if (this->hasMaterial(shaderMaterialChacteristics)) {
-            return this->entries[shaderMaterialChacteristics].material;
+        for (auto entry : this->entries) {
+            if (LongMaskUtil::covers(entry.first, shaderMaterialChacteristics)) return entry.second.material;
         }
         return WeakPointer<Material>();
     }
