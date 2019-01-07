@@ -90,9 +90,9 @@ namespace Core {
         void getImportDetails(const aiMaterial* mtl, MaterialImportDescriptor& materialImportDesc, const aiScene& scene) const;
         Bool setupMeshSpecificMaterialWithTexture(const aiMaterial& assimpMaterial, TextureType textureType, WeakPointer<Texture> texture,
                                                   UInt32 meshIndex, MaterialImportDescriptor& materialImportDesc) const;
-        void recursiveProcessModelScene(const aiScene& scene, const aiNode& node, WeakPointer<Object3D> parent, std::vector<MaterialImportDescriptor>& materialImportDescriptors,
-                                        std::vector<WeakPointer<Object3D>>& createdSceneObjects, 
-                                        UInt32 smoothingThreshold, Bool castShadows, Bool receiveShadows) const;
+        WeakPointer<Object3D> recursiveProcessModelScene(const aiScene& scene, const aiNode& node, std::vector<MaterialImportDescriptor>& materialImportDescriptors,
+                                                         std::vector<WeakPointer<Object3D>>& createdSceneObjects, 
+                                                         UInt32 smoothingThreshold, Bool castShadows, Bool receiveShadows) const;
         WeakPointer<Mesh> convertAssimpMesh(UInt32 meshIndex, const aiScene& scene, MaterialImportDescriptor& materialImportDescriptor, Bool invert, UInt32 smoothingThreshold) const;
         
         static ModelLoader::TextureType convertAITextureKeyToTextureType(Int32 aiTextureKey);

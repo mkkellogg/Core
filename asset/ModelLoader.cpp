@@ -114,9 +114,7 @@ namespace Core {
 
         // verify that we have a valid scene
         if (scene.mRootNode == nullptr) throw new ModelLoaderException("ModelLoader::processModelScene -> Assimp scene root is null.");
-        WeakPointer<Object3D> root = Engine::instance()->createObject3D();
-        if (WeakPointer<Object3D>::isInvalid(root)) throw ModelLoaderException("ModelLoader::processModelScene -> Could not create root object.");
-
+        
         std::shared_ptr<FileSystem> fileSystem = FileSystem::getInstance();
         std::string fixedModelPath = fileSystem->fixupPathForLocalFilesystem(modelPath);
 
@@ -128,10 +126,6 @@ namespace Core {
             throw ModelLoaderException("ModelLoader::processModelScene -> processMaterials() returned an error.");
         }
 
-        // deactivate the root scene object so that it is not immediately
-        // active or visible in the scene after it has been loaded
-        root->setActive(false);
-
         // container for all the SceneObject instances that get created during this process
         std::vector<WeakPointer<Object3D>> createdSceneObjects;
 
@@ -140,9 +134,13 @@ namespace Core {
         // any time meshes or mesh renderers are created, the information in [materialImportDescriptors]
         // will be used to link their materials and textures as appropriate.
 
-        recursiveProcessModelScene(scene, *(scene.mRootNode), root, materialImportDescriptors, createdSceneObjects,
-                                   smoothingThreshold, castShadows, receiveShadows);
+        WeakPointer <Object3D> root = recursiveProcessModelScene(scene, *(scene.mRootNode), materialImportDescriptors, createdSceneObjects,
+                                                                 smoothingThreshold, castShadows, receiveShadows);
         root->getTransform().getLocalMatrix().scale(importScale, importScale, importScale);
+
+        // deactivate the root scene object so that it is not immediately
+        // active or visible in the scene after it has been loaded
+        root->setActive(false);
 
         // loop through each instance of SceneObject that was created in the call to RecursiveProcessModelScene()
         // and for each instance that contains a SkinnedMesh3DRenderer instance, clone the Skeleton instance
@@ -175,17 +173,22 @@ namespace Core {
         return root;
     }
 
-    void ModelLoader::recursiveProcessModelScene(const aiScene& scene, const aiNode& node, WeakPointer<Object3D> parent,
-                                                 std::vector<MaterialImportDescriptor>& materialImportDescriptors,
-                                                 std::vector<WeakPointer<Object3D>>& createdSceneObjects, 
-                                                 UInt32 smoothingThreshold, Bool castShadows, Bool receiveShadows) const {
+    WeakPointer<Object3D> ModelLoader::recursiveProcessModelScene(const aiScene& scene, const aiNode& node,
+                                                                  std::vector<MaterialImportDescriptor>& materialImportDescriptors,
+                                                                  std::vector<WeakPointer<Object3D>>& createdSceneObjects, 
+                                                                  UInt32 smoothingThreshold, Bool castShadows, Bool receiveShadows) const {
+        WeakPointer<Object3D> nodeObject;
+        nodeObject = Engine::instance()->createObject3D();
+        if (WeakPointer<Object3D>::isInvalid(nodeObject)) throw ModelLoaderException("ModelLoader::recursiveProcessModelScene -> Could not create scene object.");
+        nodeObject->setName(node.mName.C_Str());
+
         Matrix4x4 mat;
         aiMatrix4x4 matBaseTransformation = node.mTransformation;
         ModelLoader::convertAssimpMatrix(matBaseTransformation, mat);
-        parent->getTransform().getLocalMatrix().copy(mat);
+        nodeObject->getTransform().getLocalMatrix().copy(mat);
 
-        WeakPointer<Object3D> nextParent;
         std::queue<WeakPointer<Mesh>> tempMeshes;
+        std::queue<std::string> tempMeshNames;
         WeakPointer<Material> lastMaterial;
         // are there any meshes in the model/scene?
         if (node.mNumMeshes > 0) {
@@ -217,6 +220,7 @@ namespace Core {
                     // convert Assimp mesh to a Mesh object
                     WeakPointer<Mesh> subMesh = this->convertAssimpMesh(sceneMeshIndex, scene, materialImportDescriptor, invert, smoothingThreshold);
                     tempMeshes.push(subMesh);
+                    tempMeshNames.push(mesh->mName.C_Str());
                 }
 
                 UInt32 newChildrenCount = 0;
@@ -226,19 +230,22 @@ namespace Core {
                     if (!meshContainer.isValid()) {
                         throw ModelLoaderException("ModelLoader::recursiveProcessModelScene -> Could not create mesh container.");
                     };
-
+                
+                    std::string objName;
                     unsigned int targetRemainingCount = n == node.mNumMeshes ? 0 : 1;
                     while (tempMeshes.size() > targetRemainingCount) {
                         WeakPointer<Mesh> subMesh = tempMeshes.front();
                         tempMeshes.pop();
+                        objName = tempMeshNames.front();
+                        tempMeshNames.pop();
                         meshContainer->addRenderable(subMesh);
                     }
+                    meshContainer->setName(objName);
 
                     WeakPointer<MeshRenderer> meshRenderer = Engine::instance()->createRenderer<MeshRenderer>(lastMaterial, meshContainer);
-                    parent->addChild(meshContainer);
+                    nodeObject->addChild(meshContainer);
 
                     createdSceneObjects.push_back(meshContainer);
-                    if (newChildrenCount == 0) nextParent = meshContainer;
 
                     newChildrenCount++;
                 }
@@ -258,21 +265,16 @@ namespace Core {
             sceneObject->SetRenderer(GTE::DynamicCastEngineObject<GTE::Mesh3DRenderer, GTE::Renderer>(meshRenderer));*/
         }
 
-        if (!nextParent.isValid()) {
-            nextParent = Engine::instance()->createObject3D();
-            if (!nextParent.isValid()) {
-                throw ModelLoaderException("ModelLoader::recursiveProcessModelScene -> Could not create default scene object.");
-            };
-            parent->addChild(nextParent);
-        }
-
         for (UInt32 i = 0; i < node.mNumChildren; i++) {
             const aiNode* childNode = node.mChildren[i];
             if (childNode != nullptr) {
-                this->recursiveProcessModelScene(scene, *childNode, nextParent, materialImportDescriptors, createdSceneObjects, 
-                                                 smoothingThreshold, castShadows, receiveShadows);
+                WeakPointer<Object3D> childObject = this->recursiveProcessModelScene(scene, *childNode, materialImportDescriptors, createdSceneObjects, 
+                                                                                     smoothingThreshold, castShadows, receiveShadows);
+                nodeObject->addChild(childObject);
             }
         }
+
+        return nodeObject;
     }
 
     /**
