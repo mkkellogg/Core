@@ -195,7 +195,7 @@ namespace Core {
             // loop through each Assimp mesh attached to the current Assimp node and
             // create a Mesh instance for it
             for (UInt32 n = 0; n <= node.mNumMeshes; n++) {
-                 WeakPointer<Material> material;
+                WeakPointer<Material> material;
                 if (n < node.mNumMeshes) {
                     // get the index of the sub-mesh in the master list of meshes
                     UInt32 sceneMeshIndex = node.mMeshes[n];
@@ -220,7 +220,11 @@ namespace Core {
                     // convert Assimp mesh to a Mesh object
                     WeakPointer<Mesh> subMesh = this->convertAssimpMesh(sceneMeshIndex, scene, materialImportDescriptor, invert, smoothingThreshold);
                     tempMeshes.push(subMesh);
-                    tempMeshNames.push(mesh->mName.C_Str());
+                    std::string meshName(mesh->mName.C_Str());
+                    if (meshName.size() == 0) {
+                        meshName = std::string("Mesh") + std::to_string(n);
+                    }
+                    tempMeshNames.push(meshName);
                 }
 
                 UInt32 newChildrenCount = 0;
