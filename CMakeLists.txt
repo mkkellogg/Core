@@ -219,9 +219,8 @@ include_directories(../../DevIL/DevIL/include)
 link_directories(../../DevIL/build/lib/x64/)
 target_link_libraries(${EXECUTABLE_NAME} IL)
 
-include_directories(../../assimp/build/include)
-include_directories(../../assimp/include)
-#target_link_libraries(${EXECUTABLE_NAME} ../../assimp/build/code/libassimp.a)
+include_directories(../../assimp_dynamic/build/include)
+include_directories(../../assimp_dynamic/include)
 link_directories(../../assimp_dynamic/lib/)
 target_link_libraries(${EXECUTABLE_NAME} assimp)
 
