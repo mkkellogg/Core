@@ -10,4 +10,4 @@ Dynamic versions of the above libraries are required.
 
 # Building
 
-Standard CMake build is currently supported. 
+Standard CMake build is currently supported. You will need to modify the locations of the Assimp and DevIL libraries in CMakeLists.txt. 
