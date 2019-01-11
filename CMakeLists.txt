@@ -215,13 +215,15 @@ add_library(${EXECUTABLE_NAME} ${SOURCE_FILES})
 
 target_link_libraries(${EXECUTABLE_NAME} ${OPENGL_LIBRARIES})
 
-include_directories(../../DevIL/DevIL/include)
-link_directories(../../DevIL/build/lib/x64/)
+set(DEVIL_DIR ../../DevIL/DevIL)
+include_directories(${DEVIL_DIR}/include)
+link_directories(${DEVIL_DIR}/build/lib/x64/)
 target_link_libraries(${EXECUTABLE_NAME} IL)
 
-include_directories(../../assimp_dynamic/build/include)
-include_directories(../../assimp_dynamic/include)
-link_directories(../../assimp_dynamic/lib/)
+set(ASSIMP_DIR ../../assimp_dynamic)
+include_directories(${ASSIMP_DIR}/build/include)
+include_directories(${ASSIMP_DIR}/include)
+link_directories(${ASSIMP_DIR}/lib/)
 target_link_libraries(${EXECUTABLE_NAME} assimp)
 
 add_custom_target(MakeIncludeDir ALL COMMAND ${CMAKE_COMMAND} -E make_directory "include")
