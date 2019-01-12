@@ -328,6 +328,19 @@ namespace Core {
         else glDisable (GL_DEPTH_TEST);
     }
 
+
+    void GraphicsGL::setStencilMask(UInt16 mask) {
+        glStencilMask((GLuint)mask);
+    }
+
+    void GraphicsGL::setStencilFunction(RenderState::StencilFunction function, Int16 value, UInt16 mask) {
+        glStencilFunc(getGLStencilFunction(function), (GLint)value, (GLuint)mask);
+    }
+
+    void GraphicsGL::setStencilOperation(RenderState::StencilAction sFail, RenderState::StencilAction dpFail, RenderState::StencilAction dpPass) {
+        glStencilOp(getGLStencilAction(sFail), getGLStencilAction(dpFail), getGLStencilAction(dpPass));
+    }
+
     void GraphicsGL::saveState() {
         glGetIntegerv(GL_FRONT_FACE, &this->_stateFrontFace);
         glGetBooleanv(GL_CULL_FACE, &this->_stateCullFaceEnabled);
@@ -494,6 +507,64 @@ namespace Core {
                 return GL_POINT;
             case RenderStyle::Line:
                 return GL_LINE;
+        }
+    }
+
+    GLenum GraphicsGL::getGLStencilFunction(RenderState::StencilFunction function) {
+        switch (function) {
+            case RenderState::StencilFunction::Never:
+                return GL_NEVER;
+            break;
+            case RenderState::StencilFunction::Less:
+                return GL_LESS;
+            break;
+            case RenderState::StencilFunction::LessThanOrEqual:
+                return GL_LEQUAL;
+            break;
+            case RenderState::StencilFunction::Greater:
+                return GL_GREATER;
+            break;
+            case RenderState::StencilFunction::GreaterThanOrEqual:
+                return GL_GEQUAL;
+            break;
+            case RenderState::StencilFunction::Equal:
+                return GL_EQUAL;
+            break;
+            case RenderState::StencilFunction::NotEqual:
+                return GL_NOTEQUAL;
+            break;
+            case RenderState::StencilFunction::Always:
+                return GL_ALWAYS;
+            break;
+        }
+    }
+
+    GLenum GraphicsGL::getGLStencilAction(RenderState::StencilAction action) {
+        switch (action) {
+            case RenderState::StencilAction::Keep:
+                return GL_KEEP;
+            break;
+            case RenderState::StencilAction::Zero:
+                return GL_ZERO;
+            break;
+            case RenderState::StencilAction::Replace:
+                return GL_REPLACE;
+            break;
+            case RenderState::StencilAction::Increment:
+                return GL_INCR;
+            break;
+            case RenderState::StencilAction::IncrementWrap:
+                return GL_INCR_WRAP;
+            break;
+            case RenderState::StencilAction::Decrement:
+                return GL_DECR;
+            break;
+            case RenderState::StencilAction::DecrementWrap:
+                return GL_DECR_WRAP;
+            break;
+            case RenderState::StencilAction::Invert:
+                return GL_INVERT;
+            break;
         }
     }
 

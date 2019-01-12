@@ -79,9 +79,12 @@ namespace Core {
         void setRenderStyle(RenderStyle style) override;
         void setDepthTestEnabled(Bool enabled) override;
 
+        void setStencilMask(UInt16 mask) override;
+        void setStencilFunction(RenderState::StencilFunction function, Int16 value, UInt16 mask) override;
+        void setStencilOperation(RenderState::StencilAction sFail, RenderState::StencilAction dpFail, RenderState::StencilAction dpPass) override;
+
         void saveState() override;
         void restoreState() override;
-
 
         static GLenum getGLCubeTarget(CubeTextureSide side);
         static GLuint convertAttributeType(AttributeType type);
@@ -90,6 +93,8 @@ namespace Core {
         static GLenum getGLPixelFormat(TextureFormat format);
         static GLenum getGLPixelType(TextureFormat format);
         static GLenum getGLRenderStyle(RenderStyle style);
+        static GLenum getGLStencilFunction(RenderState::StencilFunction function);
+        static GLenum getGLStencilAction(RenderState::StencilAction action);
 
     private:
         GraphicsGL(GLVersion version);
