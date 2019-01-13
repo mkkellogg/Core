@@ -9,7 +9,14 @@
 
 namespace Core {
 
+    Graphics::Graphics(): sharedRenderState(false) {
+    }
+
     Graphics::~Graphics() {
+    }
+
+    void Graphics::setSharedRenderState(Bool shared) {
+        this->sharedRenderState = shared;
     }
 
     void Graphics::setRenderSize(UInt32 width, UInt32 height, Bool updateViewport) {

@@ -31,8 +31,11 @@ namespace Core {
     
     class Graphics {
     public:
+        Graphics();
         virtual ~Graphics();
         virtual void init() = 0;
+
+        void setSharedRenderState(Bool shared);
 
         virtual WeakPointer<Renderer> getRenderer() = 0;
         virtual void preRender() = 0;
@@ -92,5 +95,8 @@ namespace Core {
 
         virtual void saveState() = 0;
         virtual void restoreState() = 0;
+
+    protected:
+        Bool sharedRenderState;
     };
 }

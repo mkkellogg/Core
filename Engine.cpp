@@ -93,7 +93,6 @@ namespace Core {
 
     void Engine::render() {
         if (this->activeScene) {
-            this->graphics->saveState();
             this->graphics->preRender();
 
             if (this->graphics->getRenderer()) {
@@ -110,7 +109,6 @@ namespace Core {
                 func();
             }
             this->graphics->postRender();
-            this->graphics->restoreState();
         }
     }
 

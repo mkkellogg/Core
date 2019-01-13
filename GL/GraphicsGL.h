@@ -103,6 +103,7 @@ namespace Core {
         GraphicsGL(GLVersion version);
         std::shared_ptr<RendererGL> createRenderer();
         std::shared_ptr<RenderTarget2DGL> createDefaultRenderTarget();
+        void setupRenderState();
 
         GLVersion glVersion;
         std::shared_ptr<RendererGL> renderer;

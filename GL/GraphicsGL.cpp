@@ -38,6 +38,10 @@ namespace Core {
         this->defaultRenderTarget = this->createDefaultRenderTarget();
         this->currentRenderTarget = this->defaultRenderTarget;
         this->shaderDirectory.init();
+
+        if (!this->sharedRenderState) {
+            this->setupRenderState();
+        }
     }
 
     WeakPointer<Renderer> GraphicsGL::getRenderer() {
@@ -45,22 +49,16 @@ namespace Core {
     }
 
     void GraphicsGL::preRender() {
-        // TODO: Move these state calls to a place where they are not called every frame
-        glFrontFace(GL_CW);
-        glCullFace(GL_BACK);
-        glEnable(GL_CULL_FACE);
-        glEnable(GL_DEPTH_TEST);
-        glDepthMask(GL_TRUE);
-        glDepthFunc(GL_LEQUAL);
-        glDisable(GL_BLEND);
-
-        glLineWidth(1.5);
-        glEnable(GL_LINE_SMOOTH);
-        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+        if (!this->sharedRenderState) {
+            this->saveState();
+            this->setupRenderState();
+        }
     }
 
     void GraphicsGL::postRender() {
-
+        if (!this->sharedRenderState) {
+            this->restoreState();
+        }
     }
 
     WeakPointer<Texture2D> GraphicsGL::createTexture2D(const TextureAttributes& attributes) {
@@ -602,5 +600,20 @@ namespace Core {
         std::shared_ptr<RenderTarget2DGL> defaultTarget(defaultTargetPtr);
         this->renderTarget2Ds.push_back(defaultTarget);
         return defaultTarget;
+    }
+
+    void GraphicsGL::setupRenderState() {
+        // TODO: Move these state calls to a place where they are not called every frame
+        glFrontFace(GL_CW);
+        glCullFace(GL_BACK);
+        glEnable(GL_CULL_FACE);
+        glEnable(GL_DEPTH_TEST);
+        glDepthMask(GL_TRUE);
+        glDepthFunc(GL_LEQUAL);
+        glDisable(GL_BLEND);
+
+        glLineWidth(1.5);
+        glEnable(GL_LINE_SMOOTH);
+        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
     }
 }
