@@ -83,6 +83,7 @@ namespace Core {
         virtual void setRenderStyle(RenderStyle style) = 0;
         virtual void setDepthTestEnabled(Bool enabled) = 0;
 
+        virtual void setStencilTestEnabled(Bool enabled) = 0;
         virtual void setStencilMask(UInt16 mask) = 0;
         virtual void setStencilFunction(RenderState::StencilFunction function, Int16 value, UInt16 mask) = 0;
         virtual void setStencilOperation(RenderState::StencilAction sFail, RenderState::StencilAction dpFail, RenderState::StencilAction dpPass) = 0;

@@ -328,6 +328,14 @@ namespace Core {
         else glDisable (GL_DEPTH_TEST);
     }
 
+    void GraphicsGL::setStencilTestEnabled(Bool enabled) {
+        if (enabled) {
+            glEnable(GL_STENCIL_TEST);
+        }
+        else {
+            glDisable(GL_STENCIL_TEST);
+        }
+    }
 
     void GraphicsGL::setStencilMask(UInt16 mask) {
         glStencilMask((GLuint)mask);

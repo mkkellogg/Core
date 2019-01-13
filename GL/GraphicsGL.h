@@ -79,6 +79,7 @@ namespace Core {
         void setRenderStyle(RenderStyle style) override;
         void setDepthTestEnabled(Bool enabled) override;
 
+        void setStencilTestEnabled(Bool enabled) override;
         void setStencilMask(UInt16 mask) override;
         void setStencilFunction(RenderState::StencilFunction function, Int16 value, UInt16 mask) override;
         void setStencilOperation(RenderState::StencilAction sFail, RenderState::StencilAction dpFail, RenderState::StencilAction dpPass) override;
