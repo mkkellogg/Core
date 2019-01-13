@@ -42,6 +42,7 @@ namespace Core {
         ShaderGL(const std::string& vertex, const std::string& fragment);
         ShaderGL(const char vertex[], const char fragment[]);
 
+        static std::string shaderTypeString(ShaderType shaderType);
         static Bool checkGlError(const char* funcName);
         GLenum convertShaderType(ShaderType shaderType);
         UInt32 createShader(ShaderType shaderType, const std::string& src) override;

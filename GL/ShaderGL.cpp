@@ -103,6 +103,18 @@ namespace Core {
         glUniformMatrix4fv(location, 1, GL_FALSE, matrix.getConstData());
     }
 
+    std::string ShaderGL::shaderTypeString(ShaderType shaderType) {
+        switch (shaderType) {
+            case ShaderType::Vertex:
+                return "vertex";
+            case ShaderType::Fragment:
+                return "fragment";
+            case ShaderType::Geometry:
+                return "geometry";
+        }
+        return "";
+    }
+
     Bool ShaderGL::checkGlError(const char *funcName) {
         GLint err = glGetError();
         if (err != GL_NO_ERROR) {
@@ -131,7 +143,7 @@ namespace Core {
         if (!compiled) {
             GLint infoLogLen = 0;
             std::string msg("Could not compile ");
-            msg += shaderType == ShaderType::Vertex ? "vertex" : "fragment";
+            msg += shaderTypeString(shaderType);
             msg += " shader\n\n";
             glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLen);
             if (infoLogLen > 0) {
@@ -186,6 +198,7 @@ namespace Core {
             goto exit;
         }
         glAttachShader(program, vtxShader);
+        if (geoShader) glAttachShader(program, geoShader);
         glAttachShader(program, fragShader);
 
         glLinkProgram(program);
