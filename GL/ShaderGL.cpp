@@ -153,15 +153,29 @@ namespace Core {
     }
 
     UInt32 ShaderGL::createProgram(const std::string &vertex, const std::string &fragment) {
+        return this->createProgramInternal(vertex, fragment, nullptr);
+    }
+
+    UInt32 ShaderGL::createProgram(const std::string &vertex, const std::string &geometry, const std::string &fragment) {
+        return this->createProgramInternal(vertex, fragment, &geometry);
+    }
+
+    UInt32 ShaderGL::createProgramInternal(const std::string &vertex, const std::string &fragment, const std::string* geometry) {
         static char errorString[128];
         this->ready = false;
         GLuint vtxShader = 0;
+        GLuint geoShader = 0;
         GLuint fragShader = 0;
         GLuint program = 0;
         GLint linked = GL_FALSE;
 
         vtxShader = createShader(ShaderType::Vertex, vertex);
         if (!vtxShader) goto exit;
+
+        if (geometry != nullptr) {
+            geoShader = createShader(ShaderType::Geometry, *geometry);
+            if (!geoShader) goto exit;
+        }
 
         fragShader = createShader(ShaderType::Fragment, fragment);
         if (!fragShader) goto exit;
@@ -199,6 +213,7 @@ namespace Core {
         this->glProgram = program;
     exit:
         if (vtxShader) glDeleteShader(vtxShader);
+        if (geoShader) glDeleteShader(geoShader);
         if (fragShader) glDeleteShader(fragShader);
         return program;
     }
@@ -209,6 +224,8 @@ namespace Core {
                 return GL_VERTEX_SHADER;
             case ShaderType::Fragment:
                 return GL_FRAGMENT_SHADER;
+            case ShaderType::Geometry:
+                return GL_GEOMETRY_SHADER;
         }
         return 0;
     }

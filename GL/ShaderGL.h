@@ -46,6 +46,8 @@ namespace Core {
         GLenum convertShaderType(ShaderType shaderType);
         UInt32 createShader(ShaderType shaderType, const std::string& src) override;
         UInt32 createProgram(const std::string& vertex, const std::string& fragment) override;
+        UInt32 createProgram(const std::string& vertex, const std::string& geometry, const std::string& fragment) override;
+        UInt32 createProgramInternal(const std::string& vertex, const std::string& fragment, const std::string* geometry = nullptr);
 
         GLuint glProgram;
     };

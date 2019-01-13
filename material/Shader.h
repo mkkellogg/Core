@@ -27,7 +27,9 @@ namespace Core {
 
         Shader();
         Shader(const std::string& vertex, const std::string& fragment);
+        Shader(const std::string& vertex, const std::string& geometry, const std::string& fragment);
         Shader(const char vertex[], const char fragment[]);
+        Shader(const char vertex[], const char geometry[], const char fragment[]);
         virtual ~Shader();
 
         Bool isReady() const;
@@ -53,10 +55,13 @@ namespace Core {
 
     protected:
         Bool ready;
+        Bool hasGeometryShader;
         std::string vertexSource;
         std::string fragmentSource;
+        std::string geometrySource;
 
         virtual UInt32 createShader(ShaderType shaderType, const std::string& src) = 0;
         virtual UInt32 createProgram(const std::string& vertex, const std::string& fragment) = 0;
+        virtual UInt32 createProgram(const std::string& vertex, const std::string& geometry, const std::string& fragment) = 0;
     };
 }
