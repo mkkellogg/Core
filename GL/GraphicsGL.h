@@ -84,6 +84,8 @@ namespace Core {
         void setStencilFunction(RenderState::StencilFunction function, Int16 value, UInt16 mask) override;
         void setStencilOperation(RenderState::StencilAction sFail, RenderState::StencilAction dpFail, RenderState::StencilAction dpPass) override;
 
+        void setRenderLineSize(Real size);
+
         void saveState() override;
         void restoreState() override;
 

@@ -88,6 +88,8 @@ namespace Core {
         virtual void setStencilFunction(RenderState::StencilFunction function, Int16 value, UInt16 mask) = 0;
         virtual void setStencilOperation(RenderState::StencilAction sFail, RenderState::StencilAction dpFail, RenderState::StencilAction dpPass) = 0;
 
+        virtual void setRenderLineSize(Real size) = 0;
+
         virtual void saveState() = 0;
         virtual void restoreState() = 0;
     };

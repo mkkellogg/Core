@@ -349,6 +349,10 @@ namespace Core {
         glStencilOp(getGLStencilAction(sFail), getGLStencilAction(dpFail), getGLStencilAction(dpPass));
     }
 
+    void GraphicsGL::setRenderLineSize(Real size) {
+        glLineWidth(size);
+    }
+
     void GraphicsGL::saveState() {
         glGetIntegerv(GL_FRONT_FACE, &this->_stateFrontFace);
         glGetBooleanv(GL_CULL_FACE, &this->_stateCullFaceEnabled);
