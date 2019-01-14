@@ -35,6 +35,7 @@ namespace Core {
 
         WeakPointer<AttributeArray<Point3rs>> getVertexPositions();
         WeakPointer<AttributeArray<Vector3rs>> getVertexNormals();
+        WeakPointer<AttributeArray<Vector3rs>> getVertexAveragedNormals();
         WeakPointer<AttributeArray<Vector3rs>> getVertexFaceNormals();
         WeakPointer<AttributeArray<ColorS>> getVertexColors();
         WeakPointer<AttributeArray<Vector2rs>> getVertexUVs0();
@@ -94,6 +95,7 @@ namespace Core {
 
         std::shared_ptr<AttributeArray<Point3rs>> vertexPositions;
         std::shared_ptr<AttributeArray<Vector3rs>> vertexNormals;
+        std::shared_ptr<AttributeArray<Vector3rs>> vertexAveragedNormals;
         std::shared_ptr<AttributeArray<Vector3rs>> vertexFaceNormals;
         std::shared_ptr<AttributeArray<ColorS>> vertexColors;
         std::shared_ptr<AttributeArray<Vector2rs>> vertexUVs0;

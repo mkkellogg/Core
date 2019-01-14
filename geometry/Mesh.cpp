@@ -44,10 +44,22 @@ namespace Core {
 
     void Mesh::enableAttribute(StandardAttribute attribute) {
         StandardAttributes::addAttribute(&this->enabledAttributes, attribute);
+        if (attribute == StandardAttribute::Normal) {
+            StandardAttributes::addAttribute(&this->enabledAttributes, StandardAttribute::AveragedNormal);
+        }
+        else if (attribute == StandardAttribute::AveragedNormal) {
+            StandardAttributes::addAttribute(&this->enabledAttributes, StandardAttribute::Normal);
+        }
     }
 
     void Mesh::disableAttribute(StandardAttribute attribute) {
         StandardAttributes::removeAttribute(&this->enabledAttributes, attribute);
+        if (attribute == StandardAttribute::Normal) {
+            StandardAttributes::removeAttribute(&this->enabledAttributes, StandardAttribute::AveragedNormal);
+        }
+        else if (attribute == StandardAttribute::AveragedNormal) {
+            StandardAttributes::removeAttribute(&this->enabledAttributes, StandardAttribute::Normal);
+        }
     }
 
     Bool Mesh::isAttributeEnabled(StandardAttribute attribute) {
@@ -96,6 +108,10 @@ namespace Core {
         return this->vertexNormals;
     }
 
+    WeakPointer<AttributeArray<Vector3rs>> Mesh::getVertexAveragedNormals() {
+        return this->vertexAveragedNormals;
+    }
+
     WeakPointer<AttributeArray<Vector3rs>> Mesh::getVertexFaceNormals() {
         return this->vertexFaceNormals;
     }
@@ -113,7 +129,10 @@ namespace Core {
     }
 
     Bool Mesh::initVertexNormals() {
-        return this->initVertexAttributes<Vector3rs>(&this->vertexNormals, this->vertexCount);
+        Bool result = true;
+        result = this->initVertexAttributes<Vector3rs>(&this->vertexNormals, this->vertexCount);
+        result = result && this->initVertexAttributes<Vector3rs>(&this->vertexAveragedNormals, this->vertexCount);
+        return result;
     }
 
     Bool Mesh::initVertexFaceNormals() {
@@ -181,6 +200,7 @@ namespace Core {
         }
 
         WeakPointer<AttributeArray<Vector3rs>> vertexNormals = this->vertexNormals;
+        WeakPointer<AttributeArray<Vector3rs>> vertexAveragedNormals = this->vertexAveragedNormals;
         WeakPointer<AttributeArray<Vector3rs>> vertexFaceNormals = this->vertexFaceNormals;
      
         // loop through each triangle in this mesh's vertices
@@ -202,13 +222,24 @@ namespace Core {
             vertexNormals->getAttribute(mappedIndex2).copy(normal);
             vertexNormals->getAttribute(mappedIndex3).copy(normal);
 
+            this->vertexAveragedNormals->getAttribute(mappedIndex1).copy(normal);
+            this->vertexAveragedNormals->getAttribute(mappedIndex2).copy(normal);
+            this->vertexAveragedNormals->getAttribute(mappedIndex3).copy(normal);
+
             vertexFaceNormals->getAttribute(mappedIndex1).copy(normal);
             vertexFaceNormals->getAttribute(mappedIndex2).copy(normal);
             vertexFaceNormals->getAttribute(mappedIndex3).copy(normal);
         }
 
         // This vector is used to store the calculated average normal for all equal vertices
+        // whose normals differ by an angle that is less than 'smoothingThreshhold'
         std::vector<Vector3r> averageNormals;
+
+        // This vector is used to store the calculated average normal for all equal vertices
+        std::vector<Vector3r> fullAverageNormals;
+
+        // compute the cosine of the smoothing threshhold angle
+        Real cosSmoothingThreshhold = (Math::cos(smoothingThreshhold));
 
         // loop through each vertex and lookup the associated list of
         // normals associated with that vertex, and then calculate the
@@ -233,11 +264,10 @@ namespace Core {
 
             Vector3r avg(0, 0, 0);
             Real divisor = 0;
+            Vector3r fullAvg(0, 0, 0);
+            Real fullDivisor = 0;
 
             std::vector<UInt32>& list = *listPtr;
-
-            // compute the cosine of the smoothing threshhold angle
-            Real cosSmoothingThreshhold = (Math::cos(smoothingThreshhold));
 
             for (UInt32 i = 0; i < list.size(); i++) {
                 UInt32 vIndex = list[i];
@@ -260,6 +290,10 @@ namespace Core {
                     avg.z += current.z;
                     divisor++;
                 }
+                fullAvg.x += current.x;
+                fullAvg.y += current.y;
+                fullAvg.z += current.z;
+                fullDivisor++;
             }
 
             // if divisor <= 1, then no valid normals were found to include in the average,
@@ -272,10 +306,22 @@ namespace Core {
             else {
                 Real scaleFactor = (Real)1.0 / divisor;
                 avg.scale(scaleFactor);
-                //avg.Normalize();
+            }
+            averageNormals.push_back(avg);
+
+            // if fullDivisor <= 1, then no valid normals were found to include in the average,
+            // so just use the existing one
+            if (fullDivisor <= 1) {
+                fullAvg.x = oNormal.x;
+                fullAvg.y = oNormal.y;
+                fullAvg.z = oNormal.z;
+            }
+            else {
+                Real scaleFactor = (Real)1.0 / fullDivisor;
+                fullAvg.scale(scaleFactor);
             }
 
-            averageNormals.push_back(avg);
+            fullAverageNormals.push_back(fullAvg);
         }
 
         // loop through each vertex and assign the average normal
@@ -283,6 +329,8 @@ namespace Core {
         for (UInt32 v = 0; v < realVertexCount; v++) {
             Vector3r avg = averageNormals[v];
             avg.normalize();
+            Vector3r fullAvg = fullAverageNormals[v];
+            fullAvg.normalize();
             
             UInt32 mappedIndex = v;
             if (this->indexed) {
@@ -291,11 +339,13 @@ namespace Core {
 
             // set the normal for this vertex to the averaged normal
             vertexNormals->getAttribute(mappedIndex).copy(avg);
+            vertexAveragedNormals->getAttribute(mappedIndex).copy(fullAvg);
         }
 
         //if (invertNormals)InvertNormals(); 
 
         vertexNormals->updateGPUStorageData();
+        vertexAveragedNormals->updateGPUStorageData();
         vertexFaceNormals->updateGPUStorageData();
     }
 

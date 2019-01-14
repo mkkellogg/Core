@@ -12,6 +12,7 @@ namespace Core {
             "UV0",
             "UV1",
             "NORMAL",
+            "AVERAGED_NORMAL",
             "TANGENT",
             "FACE_NORMAL",
         };
@@ -23,6 +24,7 @@ namespace Core {
             {attributeNames[(UInt16)StandardAttribute::UV0],StandardAttribute::UV0},
             {attributeNames[(UInt16)StandardAttribute::UV1],StandardAttribute::UV1},
             {attributeNames[(UInt16)StandardAttribute::Normal],StandardAttribute::Normal},
+            {attributeNames[(UInt16)StandardAttribute::AveragedNormal],StandardAttribute::AveragedNormal},
             {attributeNames[(UInt16)StandardAttribute::Tangent],StandardAttribute::Tangent},
             {attributeNames[(UInt16)StandardAttribute::FaceNormal],StandardAttribute::FaceNormal}
             

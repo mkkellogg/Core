@@ -15,10 +15,11 @@ namespace Core {
         UV0 = 2,
         UV1 = 3,
         Normal = 4,
-        Tangent = 5,
-        FaceNormal = 6,
-        _Count = 7,  // Must always be last in the list ( before _None);
-        _None = 8,
+        AveragedNormal = 5,
+        Tangent = 6,
+        FaceNormal = 7,
+        _Count = 8,  // Must always be last in the list ( before _None);
+        _None = 9,
     };
 
     typedef IntMask StandardAttributeSet;

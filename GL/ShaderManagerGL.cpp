@@ -8,6 +8,7 @@ auto _an = Core::StandardAttributes::getAttributeName;
 
 const std::string POSITION = _an(Core::StandardAttribute::Position);
 const std::string NORMAL = _an(Core::StandardAttribute::Normal);
+const std::string AVERAGED_NORMAL = _an(Core::StandardAttribute::AveragedNormal);
 const std::string FACE_NORMAL = _an(Core::StandardAttribute::FaceNormal);
 const std::string COLOR = _an(Core::StandardAttribute::Color);
 const std::string UV0 = _an(Core::StandardAttribute::UV0);
@@ -43,6 +44,7 @@ const std::string LIGHT_NEAR_PLANE = _un(Core::StandardUniform::LightNearPlane);
 
 const std::string POSITION_DEF = "in vec4 " +  POSITION + ";\n";
 const std::string NORMAL_DEF = "in vec4 " +  NORMAL + ";\n";
+const std::string AVERAGED_NORMAL_DEF = "in vec4 " +  AVERAGED_NORMAL + ";\n";
 const std::string FACE_NORMAL_DEF = "in vec4 " +  FACE_NORMAL + ";\n";
 const std::string COLOR_DEF = "in vec4 " +  COLOR + ";\n";
 const std::string UV0_DEF = "in vec2 " +  UV0 + ";\n";
@@ -97,6 +99,9 @@ namespace Core {
 
         this->setShader(ShaderType::Vertex, "Basic", ShaderManagerGL::Basic_vertex);
         this->setShader(ShaderType::Fragment, "Basic", ShaderManagerGL::Basic_fragment);
+
+        this->setShader(ShaderType::Vertex, "BasicExtrusion", ShaderManagerGL::BasicExtrusion_vertex);
+        this->setShader(ShaderType::Fragment, "BasicExtrusion", ShaderManagerGL::BasicExtrusion_fragment);
 
         this->setShader(ShaderType::Vertex, "BasicColored", ShaderManagerGL::BasicColored_vertex);
         this->setShader(ShaderType::Fragment, "BasicColored", ShaderManagerGL::BasicColored_fragment);
@@ -338,6 +343,38 @@ namespace Core {
             "void main() {\n"
             "    out_color = vColor;\n"
             "}\n";
+
+        this->BasicExtrusion_vertex =
+            "#version 330\n"
+            + POSITION_DEF
+            + AVERAGED_NORMAL_DEF
+            + NORMAL_DEF
+            + PROJECTION_MATRIX_DEF
+            + MODEL_INVERSE_TRANSPOSE_MATRIX_DEF
+            + VIEW_MATRIX_DEF
+            + MODEL_MATRIX_DEF +
+            " uniform float extrusionFactor;"
+            " uniform vec4 color;"
+            " uniform float zOffset;"
+            "out vec4 vColor;\n"
+            "void main() {\n"
+            "    vec3 offsetNormal = normalize(vec3(" +  MODEL_INVERSE_TRANSPOSE_MATRIX + " * " + AVERAGED_NORMAL + ")) * extrusionFactor;\n"
+            "    vec4 worldPos =  vec4(offsetNormal, 0.0) + " + MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    vec4 outPos = " + PROJECTION_MATRIX + "  * " + VIEW_MATRIX + " * worldPos;\n"
+            "    outPos.z += zOffset; \n"
+            "    gl_Position = outPos; \n"
+            "    vColor = color;\n"
+            "}\n";
+
+        this->BasicExtrusion_fragment =   
+            "#version 330\n"
+            "precision mediump float;\n"
+            "in vec4 vColor;\n"
+            "out vec4 out_color;\n"
+            "void main() {\n"
+            "    out_color = vColor;\n"
+            "}\n";
+
 
         this->BasicColored_vertex =
             "#version 330\n"
