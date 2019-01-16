@@ -5,13 +5,13 @@
 
 namespace Core {
 
-    Shader::Shader(): hasGeometryShader(false) {
+    Shader::Shader(): ready(false), hasGeometryShader(false) {
     }
 
     Shader::~Shader() {
     }
 
-    Shader::Shader(const std::string& vertex, const std::string& fragment) : ready(false) {
+    Shader::Shader(const std::string& vertex, const std::string& fragment) : ready(false), hasGeometryShader(false) {
         this->vertexSource = vertex;
         this->fragmentSource = fragment;
     }
@@ -23,7 +23,7 @@ namespace Core {
         this->hasGeometryShader = true;
     }
 
-    Shader::Shader(const char vertex[], const char fragment[]) : ready(false) {
+    Shader::Shader(const char vertex[], const char fragment[]) : ready(false), hasGeometryShader(false) {
         this->vertexSource = vertex;
         this->fragmentSource = fragment;
     }

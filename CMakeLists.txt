@@ -69,6 +69,7 @@ set(INCLUDE_FILES
     material/BasicTexturedMaterial.h
     material/BasicTexturedLitMaterial.h
     material/BasicCubeMaterial.h
+    material/OutlineMaterial.h
     material/StandardUniforms.h
     material/StandardAttributes.h
     material/Shader.h
@@ -187,6 +188,7 @@ set(SOURCE_FILES
     material/BasicTexturedMaterial.cpp
     material/BasicTexturedLitMaterial.cpp
     material/BasicCubeMaterial.cpp
+    material/OutlineMaterial.cpp
     material/Shader.cpp
     material/MaterialLibrary.cpp
     material/StandardUniforms.cpp

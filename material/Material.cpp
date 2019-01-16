@@ -41,6 +41,17 @@ namespace Core {
         return true;
     }
 
+    Bool Material::buildFromSource(const std::string& vertexSource, const std::string& geometrySource, const std::string& fragmentSource) {
+        WeakPointer<Shader> shader = this->graphics->createShader(vertexSource, geometrySource, fragmentSource);
+        Bool success = shader->build();
+        if (!success) {
+            this->ready = false;
+            return false;
+        }
+        this->setShader(shader);
+        return true;
+    }
+
     UInt32 Material::textureCount() {
         return 0;
     }

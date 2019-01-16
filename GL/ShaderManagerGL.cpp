@@ -88,6 +88,10 @@ namespace Core {
 
     void ShaderManagerGL::init() {
 
+        this->setShader(ShaderType::Vertex, "Outline", ShaderManagerGL::Outline_vertex);
+        this->setShader(ShaderType::Geometry, "Outline", ShaderManagerGL::Outline_geometry);
+        this->setShader(ShaderType::Fragment, "Outline", ShaderManagerGL::Outline_fragment);
+
         this->setShader(ShaderType::Vertex, "Lighting", ShaderManagerGL::Lighting_vertex);
         this->setShader(ShaderType::Fragment, "Lighting", ShaderManagerGL::Lighting_fragment);
 
@@ -120,6 +124,235 @@ namespace Core {
     }
 
     ShaderManagerGL::ShaderManagerGL() {
+
+        this->Outline_vertex =
+            "#version 330\n"
+            "precision highp float;\n"
+            " layout (location = 0 ) " + POSITION_DEF + 
+            " layout (location = 1 ) " + NORMAL_DEF
+            + PROJECTION_MATRIX_DEF
+            + VIEW_MATRIX_DEF
+            + MODEL_MATRIX_DEF
+            + MODEL_INVERSE_TRANSPOSE_MATRIX_DEF +
+            " uniform vec4 color;"
+            " uniform float zOffset;"
+            "out vec4 vColor;\n"
+            "out vec3 VNormal;\n"
+            "out vec3 VPosition;\n"
+            "void main()\n"
+            "{\n"
+            "    VNormal = normalize(vec3(inverse(transpose(" + VIEW_MATRIX + " * " + MODEL_MATRIX + ")) * " + NORMAL + "));\n"
+            "    VPosition = vec3(" + VIEW_MATRIX + " * " + MODEL_MATRIX + " * " + POSITION + ");\n"
+            "    vec4 outPos = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    outPos.z += zOffset; \n"
+            "    gl_Position = outPos;\n"
+            "    vColor = color;\n"
+            "}\n";
+            
+            /*#version 400
+            layout (location = 0 ) in vec3 VertexPosition;
+            layout (location = 1 ) in vec3 VertexNormal;
+            out vec3 VNormal;
+            out vec3 VPosition;
+            uniform mat4 ModelViewMatrix;
+            uniform mat3 NormalMatrix;
+            uniform mat4 ProjectionMatrix;
+            uniform mat4 MVP;
+            void main()
+            {
+            VNormal = normalize( NormalMatrix * VertexNormal);
+            VPosition = vec3(ModelViewMatrix *
+            vec4(VertexPosition,1.0));
+            gl_Position = MVP * vec4(VertexPosition,1.0);
+            }
+            */
+
+        this->Outline_geometry =
+            "#version 330\n"
+            "precision highp float;\n"
+            "layout( triangles ) in;\n"
+            "layout( triangle_strip, max_vertices = 18) out;\n"
+            "out vec3 GNormal;\n"
+            "out vec3 GPosition;\n"
+            "// Which output primitives are silhouette edges\n"
+            "flat out int GIsEdge;\n"
+            "in vec3 VNormal[]; // Normal in camera coords.\n"
+            "in vec3 VPosition[]; // Position in camera coords.\n"
+            //"uniform float EdgeWidth; // Width of sil. edge in clip cds.\n"
+            //"uniform float PctExtend; // Percentage to extend quad\n"
+            "const float EdgeWidth = .01; // Width of sil. edge in clip cds.\n"
+            "const float PctExtend = 0.0; // Percentage to extend quad\n"
+            "const float AbsExtend = 0.005; // Percentage to extend quad\n"
+            "bool isFrontFacing( vec3 a, vec3 b, vec3 c )\n"
+            "{\n"
+            "   return ((a.x * b.y - b.x * a.y) + (b.x * c.y - c.x * b.y) + (c.x * a.y - a.x * c.y)) > 0;\n"
+            "}\n"
+            "void emitEdgeQuad( vec3 e0, vec3 e1 )\n"
+            "{\n"
+            "vec2 v = normalize(e1.xy - e0.xy);\n"
+            "vec2 extPct = PctExtend * (e1.xy - e0.xy);\n"
+            "vec2 extAbs = AbsExtend * v;\n"
+            "vec2 ext = extPct + extAbs;\n"
+            "vec2 n = -vec2(-v.y, v.x) * EdgeWidth;\n"
+            "// Emit the quad\n"
+            "GIsEdge = 1; // This is part of the sil. edge\n"
+            
+            "gl_Position = vec4( e0.xy - ext, e0.z, 1.0 );\n"
+            "EmitVertex();\n"
+            "gl_Position = vec4( e0.xy - n - ext, e0.z, 1.0 );\n"
+            "EmitVertex();\n"
+            "gl_Position = vec4( e1.xy + ext, e1.z, 1.0 );\n"
+            "EmitVertex();\n"
+            "gl_Position = vec4( e1.xy - n + ext, e1.z, 1.0 );\n"
+            "EmitVertex();\n"
+            "EndPrimitive();\n"
+
+            /*"gl_Position = vec4(-1.0, -1.0, 0.0, 1.0 );\n"
+            "EmitVertex();\n"
+            "gl_Position = vec4(1.0, -1.0, 0.0, 1.0 );\n"
+            "EmitVertex();\n"
+            "gl_Position = vec4(1.0, 1.0, 0.0, 1.0 );\n"
+            "EmitVertex();\n"
+            "gl_Position = vec4(-1.0, 1.0, 0.0, 1.0 );\n"
+            "EmitVertex();\n"
+            "EndPrimitive();\n"*/
+
+            /*"gl_Position = vec4(-1.0, -1.0, 0.0, 1.0 );\n"
+            "EmitVertex();\n"
+            "gl_Position = vec4(-1.0, 1.0, 0.0, 1.0 );\n"
+            "EmitVertex();\n"
+            "gl_Position = vec4(1.0, -1.0, 0.0, 1.0 );\n"
+            "EmitVertex();\n"
+            "gl_Position = vec4(1.0, 1.0, 0.0, 1.0 );\n"
+            "EmitVertex();\n"
+            "EndPrimitive();\n"*/
+
+            "}\n"
+            "void main()\n"
+            "{\n"
+            "vec3 p0 = gl_in[0].gl_Position.xyz / gl_in[0].gl_Position.w;\n"
+            "vec3 p1 = gl_in[1].gl_Position.xyz / gl_in[1].gl_Position.w;\n"
+            "vec3 p2 = gl_in[2].gl_Position.xyz / gl_in[2].gl_Position.w;\n"
+            //"vec3 p3 = gl_in[3].gl_Position.xyz / gl_in[3].gl_Position.w;\n"
+            //"vec3 p4 = gl_in[4].gl_Position.xyz / gl_in[4].gl_Position.w;\n"
+            //"vec3 p5 = gl_in[5].gl_Position.xyz / gl_in[5].gl_Position.w;\n"
+            /*"if( isFrontFacing(p0, p2, p4) ) {\n"
+            "if( ! isFrontFacing(p0,p1,p2) ) emitEdgeQuad(p0,p2);\n"
+            "if( ! isFrontFacing(p2,p3,p4) ) emitEdgeQuad(p2,p4);\n"
+            "if( ! isFrontFacing(p4,p5,p0) ) emitEdgeQuad(p4,p0);\n"
+            "}\n"*/
+            //"emitEdgeQuad(p1,p0);\n"
+            //"emitEdgeQuad(p2,p1);\n"
+            //"emitEdgeQuad(p0,p2);\n"
+            "emitEdgeQuad(p0,p1);\n"
+            "emitEdgeQuad(p1,p2);\n"
+            "emitEdgeQuad(p2,p0);\n"
+            "// Output the original triangle\n"
+            /*"GIsEdge = 0; // This triangle is not part of an edge.\n"
+            "GNormal = VNormal[0];\n"
+            "GPosition = VPosition[0];\n"
+            "gl_Position = gl_in[0].gl_Position;\n"
+            "EmitVertex();\n"
+            "GNormal = VNormal[1];\n"
+            "GPosition = VPosition[1];\n"
+            "gl_Position = gl_in[1].gl_Position;\n"
+            "EmitVertex();\n"
+            "GNormal = VNormal[2];\n"
+            "GPosition = VPosition[2];\n"
+            "gl_Position = gl_in[2].gl_Position;\n"
+            "EmitVertex();\n"
+            "EndPrimitive();\n"*/
+            "}\n";
+
+
+            /*
+            #version 400
+            layout( triangles_adjacency ) in;
+            layout( triangle_strip, max_vertices = 15 ) out;
+            out vec3 GNormal;
+            out vec3 GPosition;
+            // Which output primitives are silhouette edges
+            flat out bool GIsEdge;
+            in vec3 VNormal[]; // Normal in camera coords.
+            in vec3 VPosition[]; // Position in camera coords.
+            uniform float EdgeWidth; // Width of sil. edge in clip cds.
+            uniform float PctExtend; // Percentage to extend quad
+            bool isFrontFacing( vec3 a, vec3 b, vec3 c )
+            {
+            return ((a.x * b.y - b.x * a.y) + (b.x * c.y - c.x * b.y)
+            + (c.x * a.y - a.x * c.y)) > 0;
+            }
+
+            void emitEdgeQuad( vec3 e0, vec3 e1 )
+            {
+            vec2 ext = PctExtend * (e1.xy - e0.xy);
+            vec2 v = normalize(e1.xy - e0.xy);
+            vec2 n = vec2(-v.y, v.x) * EdgeWidth;
+            // Emit the quad
+            GIsEdge = true; // This is part of the sil. edge
+            gl_Position = vec4( e0.xy - ext, e0.z, 1.0 );
+            EmitVertex();
+            gl_Position = vec4( e0.xy - n - ext, e0.z, 1.0 );
+            EmitVertex();
+            gl_Position = vec4( e1.xy + ext, e1.z, 1.0 );
+            EmitVertex();
+            gl_Position = vec4( e1.xy - n + ext, e1.z, 1.0 );
+            EmitVertex();
+            EndPrimitive();
+            }
+            void main()
+            {
+            vec3 p0 = gl_in[0].gl_Position.xyz /
+            gl_in[0].gl_Position.w;
+            vec3 p1 = gl_in[1].gl_Position.xyz /
+            gl_in[1].gl_Position.w;
+            vec3 p2 = gl_in[2].gl_Position.xyz /
+            gl_in[2].gl_Position.w;
+            vec3 p3 = gl_in[3].gl_Position.xyz /
+            gl_in[3].gl_Position.w;
+            vec3 p4 = gl_in[4].gl_Position.xyz /
+            gl_in[4].gl_Position.w;
+            vec3 p5 = gl_in[5].gl_Position.xyz /
+            gl_in[5].gl_Position.w;
+            if( isFrontFacing(p0, p2, p4) ) {
+            if( ! isFrontFacing(p0,p1,p2) ) emitEdgeQuad(p0,p2);
+            if( ! isFrontFacing(p2,p3,p4) ) emitEdgeQuad(p2,p4);
+            if( ! isFrontFacing(p4,p5,p0) ) emitEdgeQuad(p4,p0);
+            }
+            // Output the original triangle
+            GIsEdge = false; // This triangle is not part of an edge.
+            GNormal = VNormal[0];
+            GPosition = VPosition[0];
+            gl_Position = gl_in[0].gl_Position;
+            EmitVertex();
+            GNormal = VNormal[2];
+            GPosition = VPosition[2];
+            gl_Position = gl_in[2].gl_Position;
+            EmitVertex();
+            GNormal = VNormal[4];
+            GPosition = VPosition[4];
+            gl_Position = gl_in[4].gl_Position;
+            EmitVertex();
+            EndPrimitive();
+            }
+            */
+
+        this->Outline_fragment = 
+            "#version 330\n"
+            "precision highp float;\n"
+            "in vec4 vColor;\n"
+            "uniform vec4 color;"
+            "flat in int GIsEdge; // Whether or not we're drawing an edge \n"
+            "layout( location = 0 ) out vec4 out_color;\n"
+            "void main() {\n"
+           // "    out_color = vec4(1.0, 0.0, 0.0, 1.0);\n"
+           // otherwise, shade the poly.
+            "if( GIsEdge == 1) {\n"
+            "out_color = color;\n"
+            "} else {\n"
+            "out_color = vec4(0.0, 1.0, 0.0, 1.0);\n"
+            "}\n"
+            "}\n";
 
         this->Lighting_vertex =
             MAX_CASCADES_DEF

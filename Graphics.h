@@ -52,7 +52,9 @@ namespace Core {
         virtual void destroyCubeTexture(WeakPointer<CubeTexture> texture) = 0;
 
         virtual WeakPointer<Shader> createShader(const std::string& vertex, const std::string& fragment) = 0;
+        virtual WeakPointer<Shader> createShader(const std::string& vertex, const std::string& geometry, const std::string& fragment) = 0;
         virtual WeakPointer<Shader> createShader(const char vertex[], const char fragment[]) = 0;
+        virtual WeakPointer<Shader> createShader(const char vertex[], const char geometry[], const char fragment[]) = 0;
         virtual void activateShader(WeakPointer<Shader> shader) = 0;
     
         virtual std::shared_ptr<AttributeArrayGPUStorage> createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) const = 0;

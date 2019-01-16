@@ -40,7 +40,9 @@ namespace Core {
     protected:
         ShaderGL();
         ShaderGL(const std::string& vertex, const std::string& fragment);
+        ShaderGL(const std::string& vertex, const std::string& geometry, const std::string& fragment);
         ShaderGL(const char vertex[], const char fragment[]);
+        ShaderGL(const char vertex[], const char geometry[], const char fragment[]);
 
         static std::string shaderTypeString(ShaderType shaderType);
         static Bool checkGlError(const char* funcName);

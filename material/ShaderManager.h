@@ -25,6 +25,7 @@ namespace Core {
 
             std::string baseSource;
             std::string vertexSource;
+            std::string geometrySource;
             std::string fragmentSource;
         };
 

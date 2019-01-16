@@ -14,6 +14,12 @@ namespace Core {
     ShaderGL::ShaderGL(const char vertex[], const char fragment[]) : Shader(vertex, fragment) {
     }
 
+    ShaderGL::ShaderGL(const std::string &vertex, const std::string &geometry, const std::string &fragment) : Shader(vertex, geometry, fragment) {
+    }
+
+    ShaderGL::ShaderGL(const char vertex[], const char geometry[], const char fragment[]) : Shader(vertex, geometry, fragment) {
+    }
+
     ShaderGL::~ShaderGL() {
         if (this->glProgram) {
             glDeleteProgram(this->glProgram);
@@ -22,7 +28,13 @@ namespace Core {
     }
 
     Bool ShaderGL::build() {
-        GLuint program = this->createProgram(this->vertexSource, this->fragmentSource);
+        GLuint program;
+        if (this->hasGeometryShader) {
+            program = this->createProgram(this->vertexSource, this->geometrySource, this->fragmentSource);
+        }
+        else {
+            program = this->createProgram(this->vertexSource, this->fragmentSource);
+        }
         return program ? true : false;
     }
 
@@ -197,6 +209,13 @@ namespace Core {
             checkGlError("glCreateProgram");
             goto exit;
         }
+
+        /*if (geoShader) {
+            glProgramParameteriEXT(program, GL_GEOMETRY_INPUT_TYPE_EXT, GL_TRIANGLES);
+            glProgramParameteriEXT(program, GL_GEOMETRY_OUTPUT_TYPE_EXT, GL_TRIANGLE_STRIP);
+            glProgramParameteriEXT(program, GL_GEOMETRY_VERTICES_OUT_EXT, 6);
+        }*/
+
         glAttachShader(program, vtxShader);
         if (geoShader) glAttachShader(program, geoShader);
         glAttachShader(program, fragShader);

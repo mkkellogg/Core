@@ -17,6 +17,10 @@ namespace Core {
         std::string Test_vertex;
         std::string Test_fragment;
 
+        std::string Outline_vertex;
+        std::string Outline_geometry;
+        std::string Outline_fragment;
+
         std::string Lighting_vertex;
         std::string Lighting_fragment;
 

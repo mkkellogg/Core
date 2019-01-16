@@ -44,6 +44,7 @@ namespace Core {
         
     protected:
         Bool buildFromSource(const std::string& vertexSource, const std::string& fragmentSource);
+        Bool buildFromSource(const std::string& vertexSource, const std::string& geometrySource, const std::string& fragmentSource);
         void setShader(WeakPointer<Shader> shader);
 
         PersistentWeakPointer<Graphics> graphics;

@@ -18,6 +18,9 @@ namespace Core {
             case ShaderType::Vertex:
                 entry.vertexSource = shaderSrc;
                 break;
+            case ShaderType::Geometry:
+                entry.geometrySource = shaderSrc;
+                break;
             case ShaderType::Fragment:
                 entry.fragmentSource = shaderSrc;
                 break;
@@ -34,6 +37,9 @@ namespace Core {
                 case ShaderType::Vertex:
                     if (entry.vertexSource.size() > 0)
                         return processShaderSource(type, entry.vertexSource);
+                case ShaderType::Geometry:
+                    if (entry.geometrySource.size() > 0)
+                        return processShaderSource(type, entry.geometrySource);
                 case ShaderType::Fragment:
                     if (entry.fragmentSource.size() > 0)
                         return processShaderSource(type, entry.fragmentSource);          

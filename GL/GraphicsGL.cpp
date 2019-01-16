@@ -104,8 +104,22 @@ namespace Core {
         return shader;
     }
 
+    WeakPointer<Shader> GraphicsGL::createShader(const std::string& vertex, const std::string& geometry, const std::string& fragment) {
+        std::shared_ptr<ShaderGL> shaderGL(new ShaderGL(vertex, geometry, fragment));
+        shaders.push_back(shaderGL);
+        std::shared_ptr<Shader> shader = std::static_pointer_cast<Shader>(shaderGL);
+        return shader;
+    }
+
     WeakPointer<Shader> GraphicsGL::createShader(const char vertex[], const char fragment[]) {
         std::shared_ptr<ShaderGL> shaderGL(new ShaderGL(vertex, fragment));
+        shaders.push_back(shaderGL);
+        std::shared_ptr<Shader> shader = std::static_pointer_cast<Shader>(shaderGL);
+        return shader;
+    }
+
+    WeakPointer<Shader> GraphicsGL::createShader(const char vertex[], const char geometry[], const char fragment[]) {
+        std::shared_ptr<ShaderGL> shaderGL(new ShaderGL(vertex, geometry, fragment));
         shaders.push_back(shaderGL);
         std::shared_ptr<Shader> shader = std::static_pointer_cast<Shader>(shaderGL);
         return shader;
