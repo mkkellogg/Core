@@ -180,9 +180,9 @@ namespace Core {
             "in vec3 VPosition[]; // Position in camera coords.\n"
             //"uniform float EdgeWidth; // Width of sil. edge in clip cds.\n"
             //"uniform float PctExtend; // Percentage to extend quad\n"
-            "const float EdgeWidth = .01; // Width of sil. edge in clip cds.\n"
+            "const float EdgeWidth = .005; // Width of sil. edge in clip cds.\n"
             "const float PctExtend = 0.0; // Percentage to extend quad\n"
-            "const float AbsExtend = 0.005; // Percentage to extend quad\n"
+            "const float AbsExtend = 0.0025; // Percentage to extend quad\n"
             "bool isFrontFacing( vec3 a, vec3 b, vec3 c )\n"
             "{\n"
             "   return ((a.x * b.y - b.x * a.y) + (b.x * c.y - c.x * b.y) + (c.x * a.y - a.x * c.y)) > 0;\n"
@@ -196,14 +196,14 @@ namespace Core {
             "vec2 n = -vec2(-v.y, v.x) * EdgeWidth;\n"
             "// Emit the quad\n"
             "GIsEdge = 1; // This is part of the sil. edge\n"
-            
-            "gl_Position = vec4( e0.xy - ext, e0.z, 1.0 );\n"
+            "float epsilon = 0.0001;\n"
+            "gl_Position = vec4( e0.xy - ext, e0.z + epsilon, 1.0 );\n"
             "EmitVertex();\n"
-            "gl_Position = vec4( e0.xy - n - ext, e0.z, 1.0 );\n"
+            "gl_Position = vec4( e0.xy - n - ext, e0.z + epsilon, 1.0 );\n"
             "EmitVertex();\n"
-            "gl_Position = vec4( e1.xy + ext, e1.z, 1.0 );\n"
+            "gl_Position = vec4( e1.xy + ext, e1.z + epsilon, 1.0 );\n"
             "EmitVertex();\n"
-            "gl_Position = vec4( e1.xy - n + ext, e1.z, 1.0 );\n"
+            "gl_Position = vec4( e1.xy - n + ext, e1.z + epsilon, 1.0 );\n"
             "EmitVertex();\n"
             "EndPrimitive();\n"
 
@@ -248,7 +248,7 @@ namespace Core {
             "emitEdgeQuad(p1,p2);\n"
             "emitEdgeQuad(p2,p0);\n"
             "// Output the original triangle\n"
-            /*"GIsEdge = 0; // This triangle is not part of an edge.\n"
+            "GIsEdge = 0; // This triangle is not part of an edge.\n"
             "GNormal = VNormal[0];\n"
             "GPosition = VPosition[0];\n"
             "gl_Position = gl_in[0].gl_Position;\n"
@@ -261,7 +261,7 @@ namespace Core {
             "GPosition = VPosition[2];\n"
             "gl_Position = gl_in[2].gl_Position;\n"
             "EmitVertex();\n"
-            "EndPrimitive();\n"*/
+            "EndPrimitive();\n"
             "}\n";
 
 
@@ -350,7 +350,7 @@ namespace Core {
             "if( GIsEdge == 1) {\n"
             "out_color = color;\n"
             "} else {\n"
-            "out_color = vec4(0.0, 1.0, 0.0, 1.0);\n"
+            "out_color = color;\n"
             "}\n"
             "}\n";
 
