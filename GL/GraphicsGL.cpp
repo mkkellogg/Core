@@ -340,6 +340,10 @@ namespace Core {
         else glDisable (GL_DEPTH_TEST);
     }
 
+    void GraphicsGL::setDepthFunction(RenderState::DepthFunction function) {
+        glDepthFunc(getGLDepthFunction(function));
+    }
+
     void GraphicsGL::setStencilTestEnabled(Bool enabled) {
         if (enabled) {
             glEnable(GL_STENCIL_TEST);
@@ -394,6 +398,27 @@ namespace Core {
         glLineWidth(this->_stateLineWidth);
         glPolygonMode(GL_FRONT, this->_statePolygonMode[0]);
         glPolygonMode(GL_BACK, this->_statePolygonMode[1]);
+    }
+
+    /*
+     * Set the test that is used when performing depth-buffer occlusion.
+     */
+    GLint GraphicsGL::getGLDepthFunction(RenderState::DepthFunction function) {
+        switch (function) {
+            case RenderState::DepthFunction::Always:
+                return GL_ALWAYS;
+            case RenderState::DepthFunction::Greater:
+                return GL_GREATER;
+            case RenderState::DepthFunction::GreaterThanOrEqual:
+                return GL_GEQUAL;
+            case RenderState::DepthFunction::Less:
+                return GL_LESS;
+            case RenderState::DepthFunction::LessThanOrEqual:
+                return GL_LEQUAL;
+            case RenderState::DepthFunction::Equal:
+                return GL_EQUAL;
+        }
+        return -1;
     }
 
     /*

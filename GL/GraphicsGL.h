@@ -79,7 +79,9 @@ namespace Core {
         Bool activateCubeRenderTargetSide(CubeTextureSide side) override;
         void setRenderingToBufferEnabled(RenderBufferType type, Bool enabled) override;
         void setRenderStyle(RenderStyle style) override;
+
         void setDepthTestEnabled(Bool enabled) override;
+        void setDepthFunction(RenderState::DepthFunction function) override;
 
         void setStencilTestEnabled(Bool enabled) override;
         void setStencilMask(UInt16 mask) override;
@@ -91,6 +93,7 @@ namespace Core {
         void saveState() override;
         void restoreState() override;
 
+        static GLint getGLDepthFunction(RenderState::DepthFunction function);
         static GLenum getGLCubeTarget(CubeTextureSide side);
         static GLuint convertAttributeType(AttributeType type);
         static GLenum getGLBlendProperty(RenderState::BlendingMethod property);

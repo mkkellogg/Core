@@ -30,7 +30,7 @@ namespace Core {
             None = 2
         };
 
-        enum class DepthBufferFunction {
+        enum class DepthFunction {
             Always = 0,
             Less = 1,
             LessThanOrEqual = 2,
