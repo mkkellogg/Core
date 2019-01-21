@@ -51,7 +51,6 @@ namespace Core {
 
     void OutlineMaterial::sendCustomUniformsToShader() {
         this->shader->setUniform4f(this->colorLocation, this->color.r, this->color.g, this->color.b, this->color.a);
-        this->shader->setUniform1f(this->zOffsetLocation, this->zOffset);
     }
 
     WeakPointer<Material> OutlineMaterial::clone() {
@@ -61,8 +60,7 @@ namespace Core {
         newMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
         newMaterial->viewMatrixLocation = this->viewMatrixLocation;
         newMaterial->modelMatrixLocation = this->modelMatrixLocation;
-        newMaterial->colorLocation = this->colorLocation;
-        newMaterial->zOffsetLocation = this->zOffsetLocation;
+        newMaterial->colorLocation = this->colorLocation;;
         return newMaterial;
     }
 
@@ -71,16 +69,10 @@ namespace Core {
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
         this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);
-        this->colorLocation = this->shader->getUniformLocation("color");
-        this->zOffsetLocation = this->shader->getUniformLocation("zOffset");
-        
+        this->colorLocation = this->shader->getUniformLocation("color");       
     }
 
     void OutlineMaterial::setColor(Color color) {
         this->color = color;
-    }
-
-    void OutlineMaterial::setZOffset(Real offset) {
-        this->zOffset = offset;
     }
 }
