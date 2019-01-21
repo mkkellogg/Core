@@ -15,6 +15,7 @@ namespace Core {
         this->destBlendingMethod = RenderState::BlendingMethod::Zero;
         this->renderStyle = RenderStyle::Fill;
         this->depthTestEnabled = true;
+        this->customDepthTestEnabled = false;
     }
 
     Material::Material(WeakPointer<Graphics> graphics, WeakPointer<Shader> shader): Material(graphics) {
@@ -110,5 +111,13 @@ namespace Core {
 
     void Material::setDepthTestEnabled(Bool enabled) {
         this->depthTestEnabled = enabled;
+    }
+
+    Bool Material::hasCustomDepthTest() {
+        return this->customDepthTestEnabled;
+    }
+
+    void Material::setHasCustomDepthTest(Bool customDepthTestEnabled) {
+        this->customDepthTestEnabled = customDepthTestEnabled;
     }
 }

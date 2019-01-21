@@ -39,8 +39,11 @@ namespace Core {
         void setTransparent(Bool transparent);
         Bool isLit() const;
         void setLit(Bool lit);
+        
         Bool getDepthTestEnabled() const;
         void setDepthTestEnabled(Bool transparent);
+        Bool hasCustomDepthTest();
+        void setHasCustomDepthTest(Bool hasCustomDepth);
         
     protected:
         Bool buildFromSource(const std::string& vertexSource, const std::string& fragmentSource);
@@ -57,5 +60,7 @@ namespace Core {
         RenderState::BlendingMethod destBlendingMethod;
         RenderStyle renderStyle;
         Bool depthTestEnabled;
+
+        Bool customDepthTestEnabled;
     };
 }
