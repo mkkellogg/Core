@@ -353,7 +353,7 @@ namespace Core {
         }
     }
 
-    void GraphicsGL::setStencilMask(UInt16 mask) {
+    void GraphicsGL::setStencilMask(UInt32 mask) {
         glStencilMask((GLuint)mask);
     }
 
@@ -363,6 +363,22 @@ namespace Core {
 
     void GraphicsGL::setStencilOperation(RenderState::StencilAction sFail, RenderState::StencilAction dpFail, RenderState::StencilAction dpPass) {
         glStencilOp(getGLStencilAction(sFail), getGLStencilAction(dpFail), getGLStencilAction(dpPass));
+    }
+
+    void GraphicsGL::setFaceCulling(RenderState::CullFace face) {
+        switch(face) {
+            case RenderState::CullFace::None:
+                glDisable(GL_CULL_FACE);
+            break;
+            case RenderState::CullFace::Front:
+                glEnable(GL_CULL_FACE);
+                glCullFace(GL_FRONT);
+            break;
+            case RenderState::CullFace::Back:
+                glEnable(GL_CULL_FACE);
+                glCullFace(GL_BACK);
+            break;
+        }
     }
 
     void GraphicsGL::setRenderLineSize(Real size) {

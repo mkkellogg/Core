@@ -24,7 +24,7 @@ namespace Core {
             OneMinusSrcColor
         };
 
-        enum class FaceCulling {
+        enum class CullFace {
             Back = 0,
             Front = 1,
             None = 2

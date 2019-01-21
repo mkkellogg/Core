@@ -91,9 +91,11 @@ namespace Core {
         virtual void setDepthFunction(RenderState::DepthFunction function) = 0;
 
         virtual void setStencilTestEnabled(Bool enabled) = 0;
-        virtual void setStencilMask(UInt16 mask) = 0;
+        virtual void setStencilMask(UInt32 mask) = 0;
         virtual void setStencilFunction(RenderState::StencilFunction function, Int16 value, UInt16 mask) = 0;
         virtual void setStencilOperation(RenderState::StencilAction sFail, RenderState::StencilAction dpFail, RenderState::StencilAction dpPass) = 0;
+
+        virtual void setFaceCulling(RenderState::CullFace face) = 0;
 
         virtual void setRenderLineSize(Real size) = 0;
 
