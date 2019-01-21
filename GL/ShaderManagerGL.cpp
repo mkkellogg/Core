@@ -128,13 +128,13 @@ namespace Core {
         this->Outline_vertex =
             "#version 330\n"
             "precision highp float;\n"
-            " layout (location = 0 ) " + POSITION_DEF + 
-            " layout (location = 1 ) " + NORMAL_DEF
+            "layout (location = 0 ) " + POSITION_DEF + 
+            "layout (location = 1 ) " + NORMAL_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
             + MODEL_MATRIX_DEF
             + MODEL_INVERSE_TRANSPOSE_MATRIX_DEF +
-            " uniform vec4 color;"
+            "uniform vec4 color;"
             "out vec4 vColor;\n"
             "out vec3 VNormal;\n"
             "out vec3 VPosition;\n"
@@ -146,214 +146,84 @@ namespace Core {
             "    gl_Position = outPos;\n"
             "    vColor = color;\n"
             "}\n";
-            
-            /*#version 400
-            layout (location = 0 ) in vec3 VertexPosition;
-            layout (location = 1 ) in vec3 VertexNormal;
-            out vec3 VNormal;
-            out vec3 VPosition;
-            uniform mat4 ModelViewMatrix;
-            uniform mat3 NormalMatrix;
-            uniform mat4 ProjectionMatrix;
-            uniform mat4 MVP;
-            void main()
-            {
-            VNormal = normalize( NormalMatrix * VertexNormal);
-            VPosition = vec3(ModelViewMatrix *
-            vec4(VertexPosition,1.0));
-            gl_Position = MVP * vec4(VertexPosition,1.0);
-            }
-            */
 
         this->Outline_geometry =
             "#version 330\n"
             "precision highp float;\n"
             "layout( triangles ) in;\n"
+            + PROJECTION_MATRIX_DEF +
             "layout( triangle_strip, max_vertices = 18) out;\n"
-            "out vec3 GNormal;\n"
-            "out vec3 GPosition;\n"
-            "// Which output primitives are silhouette edges\n"
-            "flat out int GIsEdge;\n"
+            "uniform float edgeWidth = .005; // Width of sil. edge in clip cds.\n"
+            "uniform float pctExtend = 0.0; // Percentage to extend quad\n"
+            "uniform float absExtend = 0.0025; // Percentage to extend quad\n"
             "in vec3 VNormal[]; // Normal in camera coords.\n"
             "in vec3 VPosition[]; // Position in camera coords.\n"
-            //"uniform float EdgeWidth; // Width of sil. edge in clip cds.\n"
-            //"uniform float PctExtend; // Percentage to extend quad\n"
-            "const float EdgeWidth = .005; // Width of sil. edge in clip cds.\n"
-            "const float PctExtend = 0.0; // Percentage to extend quad\n"
-            "const float AbsExtend = 0.0025; // Percentage to extend quad\n"
+            "out vec3 GNormal;\n"
+            "out vec3 GPosition;\n"
+            "flat out int GIsEdge;\n"
+
             "bool isFrontFacing( vec3 a, vec3 b, vec3 c )\n"
             "{\n"
             "   return ((a.x * b.y - b.x * a.y) + (b.x * c.y - c.x * b.y) + (c.x * a.y - a.x * c.y)) > 0;\n"
             "}\n"
-            "void emitEdgeQuad( vec3 e0, vec3 e1, bool isFront, float w0, float w1)\n"
+
+            "void emitEdgeQuad( vec3 e0, vec3 e1, float outlineDir, float w0, float w1)\n"
             "{\n"
-            "vec2 v = normalize(e1.xy - e0.xy);\n"
-            "vec2 extPct = PctExtend * (e1.xy - e0.xy);\n"
-            "vec2 extAbs = AbsExtend * v;\n"
-            "vec2 ext = extPct + extAbs;\n"
-            "vec2 n = -vec2(-v.y, v.x) * EdgeWidth;\n"
-            "if (!isFront) { \n"
-            "// Emit the quad\n"
-            "GIsEdge = 1; // This is part of the sil. edge\n"
-            "float epsilon = 0.0001;\n"
-            "gl_Position = vec4( e0.xy - ext, e0.z + epsilon, 1.0 ) * w0;\n"
-            "EmitVertex();\n"
-            "gl_Position = vec4( e0.xy - n - ext, e0.z + epsilon, 1.0 ) * w0;\n"
-            "EmitVertex();\n"
-            "gl_Position = vec4( e1.xy + ext, e1.z + epsilon, 1.0 ) * w1;\n"
-            "EmitVertex();\n"
-            "gl_Position = vec4( e1.xy - n + ext, e1.z + epsilon, 1.0 ) * w1;\n"
-            "EmitVertex();\n"
-            "EndPrimitive();\n"
-            "}\n"
-            "else { \n"
-            "// Emit the quad\n"
-            "GIsEdge = 1; // This is part of the sil. edge\n"
-            "float epsilon = 0.0001;\n"
-            "gl_Position = vec4( e0.xy - ext, e0.z + epsilon, 1.0 ) * w0;\n"
-            "EmitVertex();\n"
-            "gl_Position = vec4( e0.xy + n - ext, e0.z + epsilon, 1.0 ) * w0;\n"
-            "EmitVertex();\n"
-            "gl_Position = vec4( e1.xy + ext, e1.z + epsilon, 1.0 ) * w1;\n"
-            "EmitVertex();\n"
-            "gl_Position = vec4( e1.xy + n + ext, e1.z + epsilon, 1.0 ) * w1;\n"
-            "EmitVertex();\n"
-            "EndPrimitive();\n"
+            "   vec2 v = normalize(e1.xy - e0.xy);\n"
+            "   vec2 extPct = pctExtend * (e1.xy - e0.xy);\n"
+            "   vec2 extAbs = absExtend * v;\n"
+            "   vec2 ext = extPct + extAbs;\n"
+            "   vec2 n = -vec2(-v.y, v.x) * edgeWidth;\n"
+
+            "   // Emit the quad\n"
+            "   GIsEdge = 1; // This is part of the sil. edge\n"
+            "   float epsilon = 0.0001;\n"
+            "   gl_Position = vec4( e0.xy - ext, e0.z + epsilon, 1.0 ) * w0;\n"
+            "   EmitVertex();\n"
+            "   gl_Position = vec4( e0.xy + n * outlineDir - ext, e0.z + epsilon, 1.0 ) * w0;\n"
+            "   EmitVertex();\n"
+            "   gl_Position = vec4( e1.xy + ext, e1.z + epsilon, 1.0 ) * w1;\n"
+            "   EmitVertex();\n"
+            "   gl_Position = vec4( e1.xy + n * outlineDir + ext, e1.z + epsilon, 1.0 ) * w1;\n"
+            "   EmitVertex();\n"
+            "   EndPrimitive();\n"
             "}\n"
 
-            /*"gl_Position = vec4(-1.0, -1.0, 0.0, 1.0 );\n"
-            "EmitVertex();\n"
-            "gl_Position = vec4(1.0, -1.0, 0.0, 1.0 );\n"
-            "EmitVertex();\n"
-            "gl_Position = vec4(1.0, 1.0, 0.0, 1.0 );\n"
-            "EmitVertex();\n"
-            "gl_Position = vec4(-1.0, 1.0, 0.0, 1.0 );\n"
-            "EmitVertex();\n"
-            "EndPrimitive();\n"*/
-
-            /*"gl_Position = vec4(-1.0, -1.0, 0.0, 1.0 );\n"
-            "EmitVertex();\n"
-            "gl_Position = vec4(-1.0, 1.0, 0.0, 1.0 );\n"
-            "EmitVertex();\n"
-            "gl_Position = vec4(1.0, -1.0, 0.0, 1.0 );\n"
-            "EmitVertex();\n"
-            "gl_Position = vec4(1.0, 1.0, 0.0, 1.0 );\n"
-            "EmitVertex();\n"
-            "EndPrimitive();\n"*/
-
-            "}\n"
             "void main()\n"
             "{\n"
-            "float w0 = gl_in[0].gl_Position.w;\n"
-            "float w1 = gl_in[1].gl_Position.w;\n"
-            "float w2 = gl_in[2].gl_Position.w;\n"
-            "vec3 p0 = gl_in[0].gl_Position.xyz / w0;\n"
-            "vec3 p1 = gl_in[1].gl_Position.xyz / w1;\n"
-            "vec3 p2 = gl_in[2].gl_Position.xyz / w2;\n"
-            //"vec3 p3 = gl_in[3].gl_Position.xyz / gl_in[3].gl_Position.w;\n"
-            //"vec3 p4 = gl_in[4].gl_Position.xyz / gl_in[4].gl_Position.w;\n"
-            //"vec3 p5 = gl_in[5].gl_Position.xyz / gl_in[5].gl_Position.w;\n"
-            /*"if( isFrontFacing(p0, p2, p4) ) {\n"
-            "if( ! isFrontFacing(p0,p1,p2) ) emitEdgeQuad(p0,p2);\n"
-            "if( ! isFrontFacing(p2,p3,p4) ) emitEdgeQuad(p2,p4);\n"
-            "if( ! isFrontFacing(p4,p5,p0) ) emitEdgeQuad(p4,p0);\n"
-            "}\n"*/
-            //"emitEdgeQuad(p1,p0);\n"
-            //"emitEdgeQuad(p2,p1);\n"
-            //"emitEdgeQuad(p0,p2);\n"
-            "bool isFront = isFrontFacing(p0, p1, p2);\n"
-            "emitEdgeQuad(p0, p1, isFront, w0, w1);\n"
-            "emitEdgeQuad(p1, p2, isFront, w1, w2);\n"
-            "emitEdgeQuad(p2, p0, isFront, w2, w0);\n"
-            "// Output the original triangle\n"
-            "GIsEdge = 0; // This triangle is not part of an edge.\n"
-            "GNormal = VNormal[0];\n"
-            "GPosition = VPosition[0];\n"
-            "gl_Position = gl_in[0].gl_Position;\n"
-            "EmitVertex();\n"
-            "GNormal = VNormal[1];\n"
-            "GPosition = VPosition[1];\n"
-            "gl_Position = gl_in[1].gl_Position;\n"
-            "EmitVertex();\n"
-            "GNormal = VNormal[2];\n"
-            "GPosition = VPosition[2];\n"
-            "gl_Position = gl_in[2].gl_Position;\n"
-            "EmitVertex();\n"
-            "EndPrimitive();\n"
+            "   float w0 = gl_in[0].gl_Position.w;\n"
+            "   float w1 = gl_in[1].gl_Position.w;\n"
+            "   float w2 = gl_in[2].gl_Position.w;\n"
+            "   vec3 p0 = gl_in[0].gl_Position.xyz / w0;\n"
+            "   vec3 p1 = gl_in[1].gl_Position.xyz / w1;\n"
+            "   vec3 p2 = gl_in[2].gl_Position.xyz / w2;\n"
+            "   bool isBack = !isFrontFacing(p0, p1, p2);\n"
+            "   mat4 proj = " + PROJECTION_MATRIX + ";\n"
+            "   float upperBound = -proj[2][2];\n"
+            "   bool isBehind = p0.z > upperBound || p1.z > upperBound || p2.z > upperBound;\n"
+            "   bool flip = isBack ^^ isBehind;\n"
+            "   float outlineDir = flip ? -1.0 : 1.0;"
+            
+            "   emitEdgeQuad(p0, p1, outlineDir, w0, w1);\n"
+            "   emitEdgeQuad(p1, p2, outlineDir, w1, w2);\n"
+            "   emitEdgeQuad(p2, p0, outlineDir, w2, w0);\n"
+            
+            "   // Output the original triangle\n"
+            "   GIsEdge = 0; // This triangle is not part of an edge.\n"
+            "   GNormal = VNormal[0];\n"
+            "   GPosition = VPosition[0];\n"
+            "   gl_Position = gl_in[0].gl_Position;\n"
+            "   EmitVertex();\n"
+            "   GNormal = VNormal[1];\n"
+            "   GPosition = VPosition[1];\n"
+            "   gl_Position = gl_in[1].gl_Position;\n"
+            "   EmitVertex();\n"
+            "   GNormal = VNormal[2];\n"
+            "   GPosition = VPosition[2];\n"
+            "   gl_Position = gl_in[2].gl_Position;\n"
+            "   EmitVertex();\n"
+            "   EndPrimitive();\n"
             "}\n";
-
-
-            /*
-            #version 400
-            layout( triangles_adjacency ) in;
-            layout( triangle_strip, max_vertices = 15 ) out;
-            out vec3 GNormal;
-            out vec3 GPosition;
-            // Which output primitives are silhouette edges
-            flat out bool GIsEdge;
-            in vec3 VNormal[]; // Normal in camera coords.
-            in vec3 VPosition[]; // Position in camera coords.
-            uniform float EdgeWidth; // Width of sil. edge in clip cds.
-            uniform float PctExtend; // Percentage to extend quad
-            bool isFrontFacing( vec3 a, vec3 b, vec3 c )
-            {
-            return ((a.x * b.y - b.x * a.y) + (b.x * c.y - c.x * b.y)
-            + (c.x * a.y - a.x * c.y)) > 0;
-            }
-
-            void emitEdgeQuad( vec3 e0, vec3 e1 )
-            {
-            vec2 ext = PctExtend * (e1.xy - e0.xy);
-            vec2 v = normalize(e1.xy - e0.xy);
-            vec2 n = vec2(-v.y, v.x) * EdgeWidth;
-            // Emit the quad
-            GIsEdge = true; // This is part of the sil. edge
-            gl_Position = vec4( e0.xy - ext, e0.z, 1.0 );
-            EmitVertex();
-            gl_Position = vec4( e0.xy - n - ext, e0.z, 1.0 );
-            EmitVertex();
-            gl_Position = vec4( e1.xy + ext, e1.z, 1.0 );
-            EmitVertex();
-            gl_Position = vec4( e1.xy - n + ext, e1.z, 1.0 );
-            EmitVertex();
-            EndPrimitive();
-            }
-            void main()
-            {
-            vec3 p0 = gl_in[0].gl_Position.xyz /
-            gl_in[0].gl_Position.w;
-            vec3 p1 = gl_in[1].gl_Position.xyz /
-            gl_in[1].gl_Position.w;
-            vec3 p2 = gl_in[2].gl_Position.xyz /
-            gl_in[2].gl_Position.w;
-            vec3 p3 = gl_in[3].gl_Position.xyz /
-            gl_in[3].gl_Position.w;
-            vec3 p4 = gl_in[4].gl_Position.xyz /
-            gl_in[4].gl_Position.w;
-            vec3 p5 = gl_in[5].gl_Position.xyz /
-            gl_in[5].gl_Position.w;
-            if( isFrontFacing(p0, p2, p4) ) {
-            if( ! isFrontFacing(p0,p1,p2) ) emitEdgeQuad(p0,p2);
-            if( ! isFrontFacing(p2,p3,p4) ) emitEdgeQuad(p2,p4);
-            if( ! isFrontFacing(p4,p5,p0) ) emitEdgeQuad(p4,p0);
-            }
-            // Output the original triangle
-            GIsEdge = false; // This triangle is not part of an edge.
-            GNormal = VNormal[0];
-            GPosition = VPosition[0];
-            gl_Position = gl_in[0].gl_Position;
-            EmitVertex();
-            GNormal = VNormal[2];
-            GPosition = VPosition[2];
-            gl_Position = gl_in[2].gl_Position;
-            EmitVertex();
-            GNormal = VNormal[4];
-            GPosition = VPosition[4];
-            gl_Position = gl_in[4].gl_Position;
-            EmitVertex();
-            EndPrimitive();
-            }
-            */
 
         this->Outline_fragment = 
             "#version 330\n"
@@ -363,13 +233,7 @@ namespace Core {
             "flat in int GIsEdge; // Whether or not we're drawing an edge \n"
             "layout( location = 0 ) out vec4 out_color;\n"
             "void main() {\n"
-           // "    out_color = vec4(1.0, 0.0, 0.0, 1.0);\n"
-           // otherwise, shade the poly.
-            "if( GIsEdge == 1) {\n"
-            "out_color = color;\n"
-            "} else {\n"
-            "out_color = color;\n"
-            "}\n"
+            "   out_color = color;\n"
             "}\n";
 
         this->Lighting_vertex =

@@ -9,7 +9,10 @@
 namespace Core {
 
     OutlineMaterial::OutlineMaterial(WeakPointer<Graphics> graphics) : Material(graphics) {
-        this->zOffset = 0.0f;
+        this->color.set(1.0, 0.0, 1.0, 1.0);
+        this->edgeWidth = 0.005;
+        this->pctExtend = 0.0;
+        this->absExtend = 0.0025;
     }
 
     Bool OutlineMaterial::build() {
@@ -51,6 +54,10 @@ namespace Core {
 
     void OutlineMaterial::sendCustomUniformsToShader() {
         this->shader->setUniform4f(this->colorLocation, this->color.r, this->color.g, this->color.b, this->color.a);
+        this->shader->setUniform1f(this->edgeWidthLocation, this->edgeWidth);
+        this->shader->setUniform1f(this->pctExtendLocation, this->pctExtend);
+        this->shader->setUniform1f(this->absExtendLocation, this->absExtend);
+        
     }
 
     WeakPointer<Material> OutlineMaterial::clone() {
@@ -60,7 +67,10 @@ namespace Core {
         newMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
         newMaterial->viewMatrixLocation = this->viewMatrixLocation;
         newMaterial->modelMatrixLocation = this->modelMatrixLocation;
-        newMaterial->colorLocation = this->colorLocation;;
+        newMaterial->colorLocation = this->colorLocation;
+        newMaterial->edgeWidthLocation = this->edgeWidthLocation;
+        newMaterial->pctExtendLocation = this->pctExtendLocation;
+        newMaterial->absExtendLocation = this->absExtendLocation;   
         return newMaterial;
     }
 
@@ -69,10 +79,25 @@ namespace Core {
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
         this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);
-        this->colorLocation = this->shader->getUniformLocation("color");       
+        this->colorLocation = this->shader->getUniformLocation("color");
+        this->edgeWidthLocation = this->shader->getUniformLocation("edgeWidth");
+        this->pctExtendLocation = this->shader->getUniformLocation("pctExtend");
+        this->absExtendLocation = this->shader->getUniformLocation("absExtend");       
     }
 
     void OutlineMaterial::setColor(Color color) {
         this->color = color;
+    }
+
+    void OutlineMaterial::setEdgeWidth(Real width) {
+        this->edgeWidth = width;
+    }
+
+    void OutlineMaterial::setPctExtend(Real extend) {
+        this->pctExtend = extend;
+    }
+
+    void OutlineMaterial::setAbsExtend(Real extend) {
+        this->absExtend = extend;
     }
 }

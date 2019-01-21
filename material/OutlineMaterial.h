@@ -20,19 +20,26 @@ namespace Core {
         virtual WeakPointer<Material> clone() override;
 
         void setColor(Color color);
-        void setZOffset(Real offset);
+        void setEdgeWidth(Real width);
+        void setPctExtend(Real extend);
+        void setAbsExtend(Real extend);
 
     private:
         OutlineMaterial(WeakPointer<Graphics> graphics);
         void bindShaderVarLocations();
 
         Color color;
-        Real zOffset;
+        Real edgeWidth;
+        Real pctExtend;
+        Real absExtend;
 
         Int32 positionLocation;
-        Int32 colorLocation;
         Int32 projectionMatrixLocation;
         Int32 viewMatrixLocation;
         Int32 modelMatrixLocation;
+        Int32 colorLocation;
+        Int32 edgeWidthLocation;
+        Int32 pctExtendLocation;
+        Int32 absExtendLocation;
     };
 }
