@@ -27,6 +27,8 @@ namespace Core {
         virtual WeakPointer<Material> clone() = 0;
         virtual UInt32 textureCount();
 
+        Bool getColorWriteEnabled() const;
+        void setColorWriteEnabled(Bool enabled);
         RenderState::BlendingMethod getSourceBlendingMethod() const;
         void setSourceBlendingMethod(RenderState::BlendingMethod method);
         RenderState::BlendingMethod getDestBlendingMethod() const;
@@ -54,13 +56,15 @@ namespace Core {
 
         PersistentWeakPointer<Graphics> graphics;
         PersistentWeakPointer<Shader> shader;
-        Bool ready;
-        Bool transparent;
-        Bool lit;
+
+        Bool colorWriteEnabled;
         RenderState::BlendingMode blendingMode;
         RenderState::BlendingMethod srcBlendingMethod;
         RenderState::BlendingMethod destBlendingMethod;
         RenderStyle renderStyle;
+        Bool ready;
+        Bool transparent;
+        Bool lit;
 
         Bool stencilTestEnabled;
         RenderState::StencilAction stencilAction;

@@ -30,8 +30,8 @@ namespace Core {
         WeakPointer<Shader> shader = material->getShader();
         this->graphics->activateShader(shader);
 
+        this->graphics->setColorWriteEnabled(material->getColorWriteEnabled());
         this->graphics->setRenderStyle(material->getRenderStyle());
-        
         if (material->getBlendingMode() == RenderState::BlendingMode::Custom) {
             graphics->setBlendingEnabled(true);
             graphics->setBlendingFunction(material->getSourceBlendingMethod(), material->getDestBlendingMethod());

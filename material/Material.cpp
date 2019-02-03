@@ -8,12 +8,13 @@ namespace Core {
 
     Material::Material(WeakPointer<Graphics> graphics): graphics(graphics) {
         this->ready = false;
-        this->transparent = false;
-        this->lit = false;
+        this->colorWriteEnabled = true;
         this->blendingMode = RenderState::BlendingMode::Additive;
         this->srcBlendingMethod = RenderState::BlendingMethod::One;
         this->destBlendingMethod = RenderState::BlendingMethod::Zero;
         this->renderStyle = RenderStyle::Fill;
+        this->transparent = false;
+        this->lit = false;
         
         this->depthWriteEnabled = true;
         this->depthTestEnabled = true;
@@ -57,6 +58,14 @@ namespace Core {
 
     UInt32 Material::textureCount() {
         return 0;
+    }
+
+    Bool Material::getColorWriteEnabled() const {
+        return this->colorWriteEnabled;
+    }
+
+    void Material::setColorWriteEnabled(Bool enabled) {
+        this->colorWriteEnabled = enabled;
     }
 
     RenderState::BlendingMethod Material::getSourceBlendingMethod() const {
