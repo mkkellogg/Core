@@ -26,8 +26,7 @@ namespace Core {
 
         enum class CullFace {
             Back = 0,
-            Front = 1,
-            None = 2
+            Front = 1
         };
 
         enum class DepthFunction {

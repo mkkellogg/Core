@@ -91,7 +91,8 @@ namespace Core {
         void setStencilFunction(RenderState::StencilFunction function, Int16 value, UInt16 mask) override;
         void setStencilOperation(RenderState::StencilAction sFail, RenderState::StencilAction dpFail, RenderState::StencilAction dpPass) override;
 
-        void setFaceCulling(RenderState::CullFace face) override;
+        void setFaceCullingEnabled(Bool enabled) override;
+        void setCullFace(RenderState::CullFace face) override;
 
         void setRenderLineSize(Real size);
 

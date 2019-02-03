@@ -44,6 +44,9 @@ namespace Core {
         graphics->setDepthTestEnabled(material->getDepthTestEnabled());
         if (material->getDepthTestEnabled()) graphics->setDepthFunction(material->getDepthFunction());
 
+        graphics->setFaceCullingEnabled(material->getFaceCullingEnabled());
+        graphics->setCullFace(material->getCullFace());
+
         // send custom uniforms first so that the renderer can override if necessary.
         material->sendCustomUniformsToShader();
 

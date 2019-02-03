@@ -19,41 +19,17 @@ namespace Core {
         this->depthWriteEnabled = true;
         this->depthTestEnabled = true;
         this->depthFunction = RenderState::DepthFunction::LessThanOrEqual;
+
+        this->faceCullingEnabled = true;
+        this->cullFace = RenderState::CullFace::Back;
     }
 
     Material::Material(WeakPointer<Graphics> graphics, WeakPointer<Shader> shader): Material(graphics) {
         this->setShader(shader);
     }
 
-    void Material::setShader(WeakPointer<Shader> shader) {
-        this->shader = shader;
-        this->ready = this->shader && this->shader->isReady();
-    }
-
     WeakPointer<Shader> Material::getShader() {
         return this->shader;
-    }
-
-    Bool Material::buildFromSource(const std::string& vertexSource, const std::string& fragmentSource) {
-        WeakPointer<Shader> shader = this->graphics->createShader(vertexSource, fragmentSource);
-        Bool success = shader->build();
-        if (!success) {
-            this->ready = false;
-            return false;
-        }
-        this->setShader(shader);
-        return true;
-    }
-
-    Bool Material::buildFromSource(const std::string& vertexSource, const std::string& geometrySource, const std::string& fragmentSource) {
-        WeakPointer<Shader> shader = this->graphics->createShader(vertexSource, geometrySource, fragmentSource);
-        Bool success = shader->build();
-        if (!success) {
-            this->ready = false;
-            return false;
-        }
-        this->setShader(shader);
-        return true;
     }
 
     UInt32 Material::textureCount() {
@@ -138,5 +114,48 @@ namespace Core {
 
     void Material::setDepthFunction(RenderState::DepthFunction depthFunction) {
         this->depthFunction = depthFunction;
+    }
+
+    Bool Material::getFaceCullingEnabled() const {
+        return this->faceCullingEnabled;
+    }
+
+    void Material::setFaceCullingEnabled(Bool enabled) {
+        this->faceCullingEnabled = enabled;
+    }
+
+    RenderState::CullFace Material::getCullFace() {
+        return this->cullFace;
+    }
+
+    void Material::setCullFace(RenderState::CullFace cullFace) {
+        this->cullFace = cullFace;
+    }
+
+    void Material::setShader(WeakPointer<Shader> shader) {
+        this->shader = shader;
+        this->ready = this->shader && this->shader->isReady();
+    }
+
+    Bool Material::buildFromSource(const std::string& vertexSource, const std::string& fragmentSource) {
+        WeakPointer<Shader> shader = this->graphics->createShader(vertexSource, fragmentSource);
+        Bool success = shader->build();
+        if (!success) {
+            this->ready = false;
+            return false;
+        }
+        this->setShader(shader);
+        return true;
+    }
+
+    Bool Material::buildFromSource(const std::string& vertexSource, const std::string& geometrySource, const std::string& fragmentSource) {
+        WeakPointer<Shader> shader = this->graphics->createShader(vertexSource, geometrySource, fragmentSource);
+        Bool success = shader->build();
+        if (!success) {
+            this->ready = false;
+            return false;
+        }
+        this->setShader(shader);
+        return true;
     }
 }

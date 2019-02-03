@@ -48,6 +48,11 @@ namespace Core {
         void setDepthTestEnabled(Bool enabled);
         RenderState::DepthFunction getDepthFunction();
         void setDepthFunction(RenderState::DepthFunction depthFunction);
+
+        Bool getFaceCullingEnabled() const;
+        void setFaceCullingEnabled(Bool enabled);
+        RenderState::CullFace getCullFace();
+        void setCullFace(RenderState::CullFace cullFace);
         
     protected:
         Bool buildFromSource(const std::string& vertexSource, const std::string& fragmentSource);

@@ -99,7 +99,8 @@ namespace Core {
         virtual void setStencilFunction(RenderState::StencilFunction function, Int16 value, UInt16 mask) = 0;
         virtual void setStencilOperation(RenderState::StencilAction sFail, RenderState::StencilAction dpFail, RenderState::StencilAction dpPass) = 0;
 
-        virtual void setFaceCulling(RenderState::CullFace face) = 0;
+        virtual void setFaceCullingEnabled(Bool enabled) = 0;
+        virtual void setCullFace(RenderState::CullFace face) = 0;
 
         virtual void setRenderLineSize(Real size) = 0;
 

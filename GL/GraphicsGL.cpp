@@ -392,17 +392,21 @@ namespace Core {
         glStencilOp(getGLStencilAction(sFail), getGLStencilAction(dpFail), getGLStencilAction(dpPass));
     }
 
-    void GraphicsGL::setFaceCulling(RenderState::CullFace face) {
+    void GraphicsGL::setFaceCullingEnabled(Bool enabled) {
+        if (enabled) {
+            glEnable(GL_CULL_FACE);
+        }
+        else {
+            glDisable(GL_CULL_FACE);
+        }
+    }
+
+    void GraphicsGL::setCullFace(RenderState::CullFace face) {
         switch(face) {
-            case RenderState::CullFace::None:
-                glDisable(GL_CULL_FACE);
-            break;
             case RenderState::CullFace::Front:
-                glEnable(GL_CULL_FACE);
                 glCullFace(GL_FRONT);
             break;
             case RenderState::CullFace::Back:
-                glEnable(GL_CULL_FACE);
                 glCullFace(GL_BACK);
             break;
         }
