@@ -18,11 +18,6 @@ namespace Core {
     const Real Camera::DEFAULT_FARP = 100.0;
 
     Camera::Camera(WeakPointer<Object3D> owner): Object3DComponent(owner) {
-        IntMaskUtil::clearMask(&this->enabledRenderBuffers);
-        // enable color buffer & depth buffer rendering by default
-        IntMaskUtil::setBitForMask(&this->enabledRenderBuffers, (UInt32)RenderBufferType::Color);
-        IntMaskUtil::setBitForMask(&this->enabledRenderBuffers, (UInt32)RenderBufferType::Depth);
-
         this->setAutoClearRenderBuffer(RenderBufferType::Color, true);
         this->setAutoClearRenderBuffer(RenderBufferType::Depth, true);
         this->setAutoClearRenderBuffer(RenderBufferType::Stencil, true);
@@ -120,19 +115,6 @@ namespace Core {
 
     Bool Camera::isOrtho() const {
         return this->ortho;
-    }
-
-    void Camera::setRenderBufferEnabled(RenderBufferType type, Bool enabled) {
-        if (enabled) {
-            IntMaskUtil::setBitForMask(&this->enabledRenderBuffers, (UInt32)type);
-        }
-        else {
-            IntMaskUtil::clearBitForMask(&this->enabledRenderBuffers, (UInt32)type);
-        }
-    }
-
-    Bool Camera::isRenderBufferEnabled(RenderBufferType type) const {
-        return IntMaskUtil::isBitSetForMask(this->enabledRenderBuffers, (UInt32)type);
     }
 
     void Camera::setAutoClearRenderBuffer(RenderBufferType type, Bool clear) {

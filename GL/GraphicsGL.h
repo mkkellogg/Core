@@ -78,16 +78,14 @@ namespace Core {
         void updateDefaultRenderTargetViewport(Vector4u viewport) override;
         Bool activateRenderTarget(WeakPointer<RenderTarget> target) override;
         Bool activateCubeRenderTargetSide(CubeTextureSide side) override;
-        void setRenderingToBufferEnabled(RenderBufferType type, Bool enabled) override;
         void setRenderStyle(RenderStyle style) override;
 
         void setDepthWriteEnabled(Bool enabled) override;
         void setDepthTestEnabled(Bool enabled) override;
         void setDepthFunction(RenderState::DepthFunction function) override;
 
-        void setStencilWriteEnabled(Bool enabled) override;
         void setStencilTestEnabled(Bool enabled) override;
-        void setStencilMask(UInt32 mask) override;
+        void setStencilWriteMask(UInt32 mask) override;
         void setStencilFunction(RenderState::StencilFunction function, Int16 value, UInt16 mask) override;
         void setStencilOperation(RenderState::StencilAction sFail, RenderState::StencilAction dpFail, RenderState::StencilAction dpPass) override;
 

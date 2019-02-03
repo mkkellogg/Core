@@ -311,35 +311,6 @@ namespace Core {
         this->_viewport.set(hOffset, vOffset, viewPortWidth, viewPortHeight);
     }
 
-    void GraphicsGL::setRenderingToBufferEnabled(RenderBufferType type, Bool enabled) {
-        switch(type) {
-            case RenderBufferType::Color:
-                if (enabled) {
-                    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-                }
-                else {
-                    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-                }
-            break;
-            case RenderBufferType::Depth:
-                if (enabled) {
-                    glDepthMask(GL_TRUE);
-                }
-                else {
-                    glDepthMask(GL_FALSE);
-                }
-            break;
-            case RenderBufferType::Stencil:
-                if (enabled) {
-                    glStencilMask(0xFFFFFFFF);
-                }
-                else {
-                    glStencilMask(0x00000000);
-                }
-            break;
-        }
-    }
-
     void GraphicsGL::setRenderStyle(RenderStyle style) {
         this->renderStyle = style;
     }
@@ -362,15 +333,6 @@ namespace Core {
         glDepthFunc(getGLDepthFunction(function));
     }
 
-    void GraphicsGL::setStencilWriteEnabled(Bool enabled) {
-        if (enabled) {
-            glStencilMask(0xFFFFFFFF);
-        }
-        else {
-            glStencilMask(0x00000000);
-        }
-    }
-
     void GraphicsGL::setStencilTestEnabled(Bool enabled) {
         if (enabled) {
             glEnable(GL_STENCIL_TEST);
@@ -380,7 +342,7 @@ namespace Core {
         }
     }
 
-    void GraphicsGL::setStencilMask(UInt32 mask) {
+    void GraphicsGL::setStencilWriteMask(UInt32 mask) {
         glStencilMask((GLuint)mask);
     }
 

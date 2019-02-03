@@ -47,6 +47,13 @@ namespace Core {
         graphics->setFaceCullingEnabled(material->getFaceCullingEnabled());
         graphics->setCullFace(material->getCullFace());
 
+        graphics->setStencilTestEnabled(material->getStencilTestEnabled());
+        graphics->setStencilWriteMask(material->getStencilWriteMask());
+        if (material->getStencilTestEnabled()) {
+            graphics->setStencilFunction(material->getStencilComparisonFunction(), material->getStencilRef(), material->getStencilReadMask());
+            graphics->setStencilOperation(material->getStencilFailActionStencil(), material->getStencilFailActionDepth(), material->getStencilAllPassAction());
+        }
+
         // send custom uniforms first so that the renderer can override if necessary.
         material->sendCustomUniformsToShader();
 

@@ -22,6 +22,10 @@ namespace Core {
 
         this->faceCullingEnabled = true;
         this->cullFace = RenderState::CullFace::Back;
+
+        this->stencilTestEnabled = false;
+        this->stencilReadMask = 0xFF;
+        this->stencilWriteMask = 0xFF;
     }
 
     Material::Material(WeakPointer<Graphics> graphics, WeakPointer<Shader> shader): Material(graphics) {
@@ -131,6 +135,71 @@ namespace Core {
     void Material::setCullFace(RenderState::CullFace cullFace) {
         this->cullFace = cullFace;
     }
+
+    Bool Material::getStencilTestEnabled() const {
+        return this->stencilTestEnabled;
+    }
+
+    void Material::setStencilTestEnabled(Bool enabled) {
+        this->stencilTestEnabled = enabled;
+    }
+    
+    Byte Material::getStencilRef() const {
+        return this->stencilRef;
+    }
+    
+    void Material::setStencilRef(Byte ref) {
+        this->stencilRef = ref;
+    }
+    
+    Byte Material::getStencilReadMask() const {
+        return this->stencilReadMask;
+    }
+    
+    void Material::setStencilReadMask(Byte mask) {
+        this->stencilReadMask = mask;
+    }
+    
+    Byte Material::getStencilWriteMask() const {
+        return this->stencilWriteMask;
+    }
+    
+    void Material::setStencilWriteMask(Byte mask) {
+        this->stencilWriteMask = mask;
+    }
+    
+    RenderState::StencilFunction Material::getStencilComparisonFunction() const {
+        return this->stencilComparisonFunction;
+    }
+    
+    void Material::setStencilComparisonFunction(RenderState::StencilFunction function) {
+        this->stencilComparisonFunction = function;
+    }
+    
+    RenderState::StencilAction Material::getStencilAllPassAction() const {
+        return this->stencilAllPassAction;
+    }
+    
+    void Material::setStencilAllPassAction(RenderState::StencilAction action) {
+        this->stencilAllPassAction = action;
+    }
+    
+    RenderState::StencilAction Material::getStencilFailActionStencil() const {
+        return this->stencilFailActionStencil;
+    }
+    
+    void Material::setStencilFailActionStencil(RenderState::StencilAction action) {
+        this->stencilFailActionStencil = action;
+    }
+    
+    RenderState::StencilAction Material::getStencilFailActionDepth() const {
+        return this->stencilFailActionDepth;
+    }
+    
+    void Material::setStencilFailActionDepth(RenderState::StencilAction action) {
+        this->stencilFailActionDepth = action;
+    }
+    
 
     void Material::setShader(WeakPointer<Shader> shader) {
         this->shader = shader;

@@ -53,6 +53,23 @@ namespace Core {
         void setFaceCullingEnabled(Bool enabled);
         RenderState::CullFace getCullFace();
         void setCullFace(RenderState::CullFace cullFace);
+
+        Bool getStencilTestEnabled() const;
+        void setStencilTestEnabled(Bool enabled);
+        Byte getStencilRef() const;
+        void setStencilRef(Byte ref);
+        Byte getStencilReadMask() const;
+        void setStencilReadMask(Byte mask);
+        Byte getStencilWriteMask() const;
+        void setStencilWriteMask(Byte mask);
+        RenderState::StencilFunction getStencilComparisonFunction() const;
+        void setStencilComparisonFunction(RenderState::StencilFunction function);
+        RenderState::StencilAction getStencilAllPassAction() const;
+        void setStencilAllPassAction(RenderState::StencilAction action);
+        RenderState::StencilAction getStencilFailActionStencil() const;
+        void setStencilFailActionStencil(RenderState::StencilAction action);
+        RenderState::StencilAction getStencilFailActionDepth() const;
+        void setStencilFailActionDepth(RenderState::StencilAction action);
         
     protected:
         Bool buildFromSource(const std::string& vertexSource, const std::string& fragmentSource);
@@ -72,8 +89,13 @@ namespace Core {
         Bool lit;
 
         Bool stencilTestEnabled;
-        RenderState::StencilAction stencilAction;
-        RenderState::StencilFunction stencilFunction;
+        Byte stencilRef;
+        Byte stencilReadMask;
+        Byte stencilWriteMask;
+        RenderState::StencilFunction stencilComparisonFunction;
+        RenderState::StencilAction stencilAllPassAction;
+        RenderState::StencilAction stencilFailActionStencil;
+        RenderState::StencilAction stencilFailActionDepth;
 
         Bool depthWriteEnabled;
         Bool depthTestEnabled;

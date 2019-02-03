@@ -87,15 +87,12 @@ namespace Core {
         virtual Bool activateCubeRenderTargetSide(CubeTextureSide side) = 0;
         virtual void setRenderStyle(RenderStyle style) = 0;
 
-        virtual void setRenderingToBufferEnabled(RenderBufferType type, Bool enabled) = 0;
-
         virtual void setDepthWriteEnabled(Bool enabled) = 0;
         virtual void setDepthTestEnabled(Bool enabled) = 0;
         virtual void setDepthFunction(RenderState::DepthFunction function) = 0;
 
-        virtual void setStencilWriteEnabled(Bool enabled) = 0;
         virtual void setStencilTestEnabled(Bool enabled) = 0;
-        virtual void setStencilMask(UInt32 mask) = 0;
+        virtual void setStencilWriteMask(UInt32 mask) = 0;
         virtual void setStencilFunction(RenderState::StencilFunction function, Int16 value, UInt16 mask) = 0;
         virtual void setStencilOperation(RenderState::StencilAction sFail, RenderState::StencilAction dpFail, RenderState::StencilAction dpPass) = 0;
 
