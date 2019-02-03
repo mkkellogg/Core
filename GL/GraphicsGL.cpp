@@ -208,6 +208,15 @@ namespace Core {
         return weakPtr;
     }
 
+    void GraphicsGL::setColorWriteEnabled(Bool enabled) {
+        if (enabled) {
+            glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+        }
+        else {
+            glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+        }
+    }
+
     void GraphicsGL::setClearColor(Color color) {
         glClearColor(color.r, color.g, color.b, color.a);
     }
@@ -335,6 +344,15 @@ namespace Core {
         this->renderStyle = style;
     }
 
+    void GraphicsGL::setDepthWriteEnabled(Bool enabled) {
+        if (enabled) {
+            glDepthMask(GL_TRUE);
+        }
+        else {
+            glDepthMask(GL_FALSE);
+        }
+    }
+
     void GraphicsGL::setDepthTestEnabled(Bool enabled) {
         if (enabled) glEnable(GL_DEPTH_TEST);
         else glDisable (GL_DEPTH_TEST);
@@ -342,6 +360,15 @@ namespace Core {
 
     void GraphicsGL::setDepthFunction(RenderState::DepthFunction function) {
         glDepthFunc(getGLDepthFunction(function));
+    }
+
+    void GraphicsGL::setStencilWriteEnabled(Bool enabled) {
+        if (enabled) {
+            glStencilMask(0xFFFFFFFF);
+        }
+        else {
+            glStencilMask(0x00000000);
+        }
     }
 
     void GraphicsGL::setStencilTestEnabled(Bool enabled) {

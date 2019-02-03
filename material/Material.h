@@ -40,8 +40,10 @@ namespace Core {
         Bool isLit() const;
         void setLit(Bool lit);
         
+        Bool getDepthWriteEnabled() const;
+        void setDepthWriteEnabled(Bool enabled);
         Bool getDepthTestEnabled() const;
-        void setDepthTestEnabled(Bool transparent);
+        void setDepthTestEnabled(Bool enabled);
         RenderState::DepthFunction getDepthFunction();
         void setDepthFunction(RenderState::DepthFunction depthFunction);
         
@@ -64,6 +66,7 @@ namespace Core {
         RenderState::StencilAction stencilAction;
         RenderState::StencilFunction stencilFunction;
 
+        Bool depthWriteEnabled;
         Bool depthTestEnabled;
         RenderState::DepthFunction depthFunction;
 

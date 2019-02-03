@@ -74,7 +74,8 @@ namespace Core {
         virtual WeakPointer<RenderTargetCube> createRenderTargetCube(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
                                                                      const TextureAttributes& colorTextureAttributes,
                                                                      const TextureAttributes& depthTextureAttributes, Vector2u size) = 0;
-                                                                     
+
+        virtual void setColorWriteEnabled(Bool enabled) = 0;                                                               
         virtual void setClearColor(Color color) = 0;
         virtual void clearActiveRenderTarget(Bool colorBuffer, Bool depthBuffer, Bool stencilBuffer) = 0;
         virtual void setDefaultRenderTargetToCurrent() = 0;
@@ -84,12 +85,15 @@ namespace Core {
         virtual void updateDefaultRenderTargetViewport(Vector4u viewport) = 0;
         virtual Bool activateRenderTarget(WeakPointer<RenderTarget> target) = 0;
         virtual Bool activateCubeRenderTargetSide(CubeTextureSide side) = 0;
-        virtual void setRenderingToBufferEnabled(RenderBufferType type, Bool enabled) = 0;
         virtual void setRenderStyle(RenderStyle style) = 0;
 
+        virtual void setRenderingToBufferEnabled(RenderBufferType type, Bool enabled) = 0;
+
+        virtual void setDepthWriteEnabled(Bool enabled) = 0;
         virtual void setDepthTestEnabled(Bool enabled) = 0;
         virtual void setDepthFunction(RenderState::DepthFunction function) = 0;
 
+        virtual void setStencilWriteEnabled(Bool enabled) = 0;
         virtual void setStencilTestEnabled(Bool enabled) = 0;
         virtual void setStencilMask(UInt32 mask) = 0;
         virtual void setStencilFunction(RenderState::StencilFunction function, Int16 value, UInt16 mask) = 0;

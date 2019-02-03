@@ -68,6 +68,7 @@ namespace Core {
                                                      const TextureAttributes& colorTextureAttributes,
                                                      const TextureAttributes& depthTextureAttributes, Vector2u size) override;
 
+        void setColorWriteEnabled(Bool enabled) override;
         void setClearColor(Color color) override;
         void clearActiveRenderTarget(Bool colorBuffer, Bool depthBuffer, Bool stencilBuffer) override;
         void setDefaultRenderTargetToCurrent() override;
@@ -80,9 +81,11 @@ namespace Core {
         void setRenderingToBufferEnabled(RenderBufferType type, Bool enabled) override;
         void setRenderStyle(RenderStyle style) override;
 
+        void setDepthWriteEnabled(Bool enabled) override;
         void setDepthTestEnabled(Bool enabled) override;
         void setDepthFunction(RenderState::DepthFunction function) override;
 
+        void setStencilWriteEnabled(Bool enabled) override;
         void setStencilTestEnabled(Bool enabled) override;
         void setStencilMask(UInt32 mask) override;
         void setStencilFunction(RenderState::StencilFunction function, Int16 value, UInt16 mask) override;

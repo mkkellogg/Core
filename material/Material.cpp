@@ -14,6 +14,8 @@ namespace Core {
         this->srcBlendingMethod = RenderState::BlendingMethod::One;
         this->destBlendingMethod = RenderState::BlendingMethod::Zero;
         this->renderStyle = RenderStyle::Fill;
+        
+        this->depthWriteEnabled = true;
         this->depthTestEnabled = true;
         this->depthFunction = RenderState::DepthFunction::LessThanOrEqual;
     }
@@ -103,6 +105,14 @@ namespace Core {
 
     void Material::setLit(Bool lit) {
         this->lit = lit;
+    }
+
+    Bool Material::getDepthWriteEnabled() const {
+        return this->depthWriteEnabled;
+    }
+
+    void Material::setDepthWriteEnabled(Bool enabled) {
+        this->depthWriteEnabled = enabled;
     }
 
     Bool Material::getDepthTestEnabled() const {
