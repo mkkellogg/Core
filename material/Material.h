@@ -42,8 +42,8 @@ namespace Core {
         
         Bool getDepthTestEnabled() const;
         void setDepthTestEnabled(Bool transparent);
-        Bool hasCustomDepthTest();
-        void setHasCustomDepthTest(Bool hasCustomDepth);
+        RenderState::DepthFunction getDepthFunction();
+        void setDepthFunction(RenderState::DepthFunction depthFunction);
         
     protected:
         Bool buildFromSource(const std::string& vertexSource, const std::string& fragmentSource);
@@ -59,8 +59,16 @@ namespace Core {
         RenderState::BlendingMethod srcBlendingMethod;
         RenderState::BlendingMethod destBlendingMethod;
         RenderStyle renderStyle;
-        Bool depthTestEnabled;
 
-        Bool customDepthTestEnabled;
+        Bool stencilTestEnabled;
+        RenderState::StencilAction stencilAction;
+        RenderState::StencilFunction stencilFunction;
+
+        Bool depthTestEnabled;
+        RenderState::DepthFunction depthFunction;
+
+        Bool faceCullingEnabled;
+        RenderState::CullFace cullFace;
+
     };
 }
