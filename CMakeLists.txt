@@ -92,6 +92,8 @@ set(INCLUDE_FILES
     render/RenderTarget.h
     render/RenderTarget2D.h
     render/RenderTargetCube.h
+    render/RenderQueue.h
+    render/MaterialGroupedRenderQueue.h
     render/ViewDescriptor.h
     render/RenderTargetException.h
     render/RenderBuffer.h
@@ -173,6 +175,8 @@ set(SOURCE_FILES
     render/RenderTarget.cpp
     render/RenderTarget2D.cpp
     render/RenderTargetCube.cpp
+    render/RenderQueue.cpp
+    render/MaterialGroupedRenderQueue.cpp
     render/MeshOutlinePostProcessor.cpp
     light/Light.cpp
     light/ShadowLight.cpp

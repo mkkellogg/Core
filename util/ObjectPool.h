@@ -24,7 +24,7 @@ namespace Core {
         T& acquireObject() {
             if (this->size >= capacity()) increaseCapacity();
             UInt32 nextFreeLocation = this->nextFreeLocations.back();
-            nextFreeLocation.pop_back();
+            this->nextFreeLocations.pop_back();
             T& targetObj = this->objects[nextFreeLocation];
             this->occupied[nextFreeLocation] = true;
             this->size++;
@@ -34,11 +34,19 @@ namespace Core {
         void returnObject(const T& object) {
             if (this->objectLocations.find(&object) != this->objectLocations.end()) {
                 UInt32 returnLocation = this->objectLocations[&object];
-                this->occupied[returnLocation] = true;
+                this->occupied[returnLocation] = false;
                 this->nextFreeLocations.push_back(returnLocation);
                 this->size--;
             }
         }   
+
+        void returnAll() {
+            this->occupied.clear();
+            this->objectLocations.clear();
+            this->size = 0;
+            this->nextFreeLocations.clear();
+            this->setupNextFreeLocations(0, this->capacity());
+        }
 
     private:
         
