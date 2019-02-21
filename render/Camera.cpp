@@ -134,6 +134,27 @@ namespace Core {
         return this->clearRenderBuffers;
     }
 
+    Ray Camera::getRay(const Vector4u& viewport, Core::UInt32 x, Core::UInt32 y) {
+        Core::Point3r pos((Core::Real)x, (Core::Real)y, (Core::Real)-1.0f);
+
+        Core::Real ndcX = (Core::Real)pos.x / (Core::Real)viewport.z * 2.0f - 1.0f;
+        Core::Real ndcY = -((Core::Real)pos.y / (Core::Real)viewport.w * 2.0f - 1.0f);
+        Core::Point3r ndcPos(ndcX, ndcY, -1.0);
+        this->unProject(ndcPos);
+        Core::Transform& camTransform = this->getOwner()->getTransform();
+        Core::Matrix4x4 camMat;
+        camTransform.getWorldTransformation(camMat);
+
+        Core::Point3r worldPos = ndcPos;
+        camMat.transform(worldPos);
+        Core::Point3r origin;
+        camMat.transform(origin);
+        Core::Vector3r rayDir = worldPos - origin;
+        rayDir.normalize();
+        Core::Ray ray(origin, rayDir);
+        return ray;
+    }
+
     void Camera::buildPerspectiveProjectionMatrix(Real fov, Real ratio, Real nearP, Real farP, Matrix4x4& out) {
         // convert fov to radians
         Real f = 1.0f / Math::tan(fov * .5f);

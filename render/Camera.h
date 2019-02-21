@@ -7,6 +7,7 @@
 #include "../scene/Object3DComponent.h"
 #include "../render/RenderBuffer.h"
 #include "../base/BitMask.h"
+#include "../geometry/Ray.h"
 
 namespace Core {
 
@@ -47,6 +48,7 @@ namespace Core {
         void setAutoClearRenderBuffer(RenderBufferType type, Bool clear);
         Bool getAutoClearRenderBuffer(RenderBufferType type) const;
         IntMask getAutoClearRenderBuffers() const;
+        Ray getRay(const Vector4u& viewport, Core::UInt32 x, Core::UInt32 y);
 
         static void buildPerspectiveProjectionMatrix(Real fov, Real aspectRatio, Real near, Real far, Matrix4x4& out);
         static void buildOrthographicProjectionMatrix(Real top, Real bottom, Real left, Real right, Real near, Real far, Matrix4x4& matrix);
