@@ -118,6 +118,7 @@ set(INCLUDE_FILES
     util/WeakPointer.h
     util/PersistentWeakPointer.h
     util/ValueIterator.h
+    util/ObjectPool.h
     math/Math.h
     math/Quaternion.h
     math/Matrix4x4.h
