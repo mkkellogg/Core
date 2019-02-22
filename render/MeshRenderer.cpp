@@ -120,6 +120,8 @@ namespace Core {
             UInt32 renderedCount = 0;
             for (UInt32 i = 0; i < lights.size(); i++) {
 
+                if (!material->isLit() && i > 0) break;
+
                 WeakPointer<Light> light = lights[i];
                 LightType lightType = light->getType();
 
