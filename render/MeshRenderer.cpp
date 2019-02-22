@@ -42,7 +42,7 @@ namespace Core {
         
         graphics->setDepthWriteEnabled(material->getDepthWriteEnabled());
         graphics->setDepthTestEnabled(material->getDepthTestEnabled());
-        if (material->getDepthTestEnabled()) graphics->setDepthFunction(material->getDepthFunction());
+        graphics->setDepthFunction(material->getDepthFunction());
 
         graphics->setFaceCullingEnabled(material->getFaceCullingEnabled());
         graphics->setCullFace(material->getCullFace());

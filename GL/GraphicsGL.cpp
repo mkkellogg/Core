@@ -226,6 +226,11 @@ namespace Core {
         if (colorBuffer) mask |= GL_COLOR_BUFFER_BIT;
         if (depthBuffer) mask |= GL_DEPTH_BUFFER_BIT;
         if (stencilBuffer) mask |= GL_STENCIL_BUFFER_BIT;
+
+        if (colorBuffer) glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+        if (depthBuffer) glDepthMask(GL_TRUE);
+        if (stencilBuffer) glStencilMask(0xFF);
+
         glClear(mask);
     }
 
