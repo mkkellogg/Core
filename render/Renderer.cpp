@@ -185,7 +185,6 @@ namespace Core {
         Vector2u renderTargetSize = nextRenderTarget->getSize();
         Vector4u viewport = nextRenderTarget->getViewport();
         graphics->setViewport(viewport.x, viewport.y, viewport.z, viewport.w);
-        //graphics->setClearColor(Color(0.0, 0.0, 0.0, 1.0));
 
         Bool clearColorBuffer = IntMaskUtil::isBitSetForMask(viewDescriptor.clearRenderBuffers, (UInt32)RenderBufferType::Color);
         Bool clearDepthBuffer = IntMaskUtil::isBitSetForMask(viewDescriptor.clearRenderBuffers, (UInt32)RenderBufferType::Depth);
