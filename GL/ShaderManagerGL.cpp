@@ -3,8 +3,8 @@
 #include "ShaderManagerGL.h"
 #include "../common/Constants.h"
 
-auto _un = Core::StandardUniforms::getUniformName;
-auto _an = Core::StandardAttributes::getAttributeName;
+static auto _un = Core::StandardUniforms::getUniformName;
+static auto _an = Core::StandardAttributes::getAttributeName;
 
 const std::string POSITION = _an(Core::StandardAttribute::Position);
 const std::string NORMAL = _an(Core::StandardAttribute::Normal);
