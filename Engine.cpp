@@ -94,21 +94,24 @@ namespace Core {
     void Engine::render() {
         if (this->activeScene) {
             this->graphics->preRender();
-
+            this->resolveRenderCallbacks(this->preRenderCallbacks, this->persistentPreRenderCallbacks);
             if (this->graphics->getRenderer()) {
                this->graphics->getRenderer()->renderScene(this->activeScene);
             }
+            this->resolveRenderCallbacks(this->postRenderCallbacks, this->persistentPostRenderCallbacks);
+            this->graphics->postRender();
+        }
+    }
 
-            if (this->renderCallbacks.size() > 0) {
-                for (auto func : this->renderCallbacks) {
-                    func();
-                }
-                this->renderCallbacks.clear();
-            }
-            for (auto func : this->persistentRenderCallbacks) {
+    void Engine::resolveRenderCallbacks(std::vector<LifecycleEventCallback>& oneTime, const std::vector<LifecycleEventCallback>& persistent) {
+        if (oneTime.size() > 0) {
+            for (auto func : oneTime) {
                 func();
             }
-            this->graphics->postRender();
+            oneTime.clear();
+        }
+        for (auto func : persistent) {
+            func();
         }
     }
 
@@ -215,8 +218,13 @@ namespace Core {
         else this->persistentUpdateCallbacks.push_back(func);
     }
 
-    void Engine::onRender(LifecycleEventCallback func, Bool persistent) {
-        if (!persistent) this->renderCallbacks.push_back(func);
-        else this->persistentRenderCallbacks.push_back(func);
+    void Engine::onPreRender(LifecycleEventCallback func, Bool persistent) {
+        if (!persistent) this->preRenderCallbacks.push_back(func);
+        else this->persistentPreRenderCallbacks.push_back(func);
+    }
+
+    void Engine::onPostRender(LifecycleEventCallback func, Bool persistent) {
+        if (!persistent) this->postRenderCallbacks.push_back(func);
+        else this->persistentPostRenderCallbacks.push_back(func);
     }
 }

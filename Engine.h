@@ -130,12 +130,14 @@ namespace Core {
         void setDefaultRenderTargetToCurrent();
 
         void onUpdate(LifecycleEventCallback func, Bool persistent = false);
-        void onRender(LifecycleEventCallback func, Bool persistent = false);
+        void onPreRender(LifecycleEventCallback func, Bool persistent = false);
+        void onPostRender(LifecycleEventCallback func, Bool persistent = false);
 
     private:
         Engine();
         void init();
         void cleanup();
+        void resolveRenderCallbacks(std::vector<LifecycleEventCallback>& oneTime, const std::vector<LifecycleEventCallback>& persistent);
 
         static std::shared_ptr<Engine> _instance;
         
@@ -153,9 +155,11 @@ namespace Core {
         PersistentWeakPointer<ImageLoader> imageLoader;
         PersistentWeakPointer<AssetLoader> assetLoader;
         std::vector<LifecycleEventCallback> updateCallbacks;
-        std::vector<LifecycleEventCallback> renderCallbacks;
+        std::vector<LifecycleEventCallback> preRenderCallbacks;
+        std::vector<LifecycleEventCallback> postRenderCallbacks;
         std::vector<LifecycleEventCallback> persistentUpdateCallbacks;
-        std::vector<LifecycleEventCallback> persistentRenderCallbacks;
+        std::vector<LifecycleEventCallback> persistentPreRenderCallbacks;
+        std::vector<LifecycleEventCallback> persistentPostRenderCallbacks;
 
         MaterialLibrary materialLibrary;
         ModelLoader modelLoader;
