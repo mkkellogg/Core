@@ -68,7 +68,7 @@ namespace Core {
 
     WeakPointer<Material> BasicTexturedMaterial::clone() {
         WeakPointer<BasicTexturedMaterial> newMaterial = Engine::instance()->createMaterial<BasicTexturedMaterial>(false);
-        newMaterial->setShader(this->getShader());
+        this->copyTo(newMaterial);
         newMaterial->texture = this->texture;
         newMaterial->positionLocation = this->positionLocation;
         newMaterial->normalLocation = this->normalLocation;

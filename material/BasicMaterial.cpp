@@ -56,7 +56,7 @@ namespace Core {
 
     WeakPointer<Material> BasicMaterial::clone() {
         WeakPointer<BasicMaterial> newMaterial = Engine::instance()->createMaterial<BasicMaterial>(false);
-        newMaterial->setShader(this->getShader());
+        this->copyTo(newMaterial);
         newMaterial->positionLocation = this->positionLocation;
         newMaterial->colorLocation = this->colorLocation;
         newMaterial->projectionMatrixLocation = this->projectionMatrixLocation;

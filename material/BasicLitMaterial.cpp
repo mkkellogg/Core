@@ -102,7 +102,7 @@ namespace Core {
 
     WeakPointer<Material> BasicLitMaterial::clone() {
         WeakPointer<BasicLitMaterial> newMaterial = Engine::instance()->createMaterial<BasicLitMaterial>(false);
-        newMaterial->setShader(this->getShader());
+        this->copyTo(newMaterial);
         newMaterial->positionLocation = this->positionLocation;
         newMaterial->normalLocation = this->normalLocation;
         newMaterial->colorLocation = this->colorLocation;

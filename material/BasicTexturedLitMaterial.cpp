@@ -115,7 +115,7 @@ namespace Core {
 
     WeakPointer<Material> BasicTexturedLitMaterial::clone() {
         WeakPointer<BasicTexturedLitMaterial> newMaterial = Engine::instance()->createMaterial<BasicTexturedLitMaterial>(false);
-        newMaterial->setShader(this->getShader());
+        this->copyTo(newMaterial);
         newMaterial->texture = this->texture;
         newMaterial->positionLocation = this->positionLocation;
         newMaterial->normalLocation = this->normalLocation;

@@ -52,7 +52,7 @@ namespace Core {
 
     WeakPointer<Material> DepthOnlyMaterial::clone() {
         WeakPointer<DepthOnlyMaterial> newMaterial = Engine::instance()->createMaterial<DepthOnlyMaterial>(false);
-        newMaterial->setShader(this->getShader());
+        this->copyTo(newMaterial);
         newMaterial->positionLocation = this->positionLocation;
         newMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
         newMaterial->viewMatrixLocation = this->viewMatrixLocation;

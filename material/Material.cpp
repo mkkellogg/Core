@@ -206,6 +206,36 @@ namespace Core {
         this->ready = this->shader && this->shader->isReady();
     }
 
+    void Material::copyTo(WeakPointer<Material> target) {
+        target->ready = this->ready;
+        target->shader = this->shader;
+
+        target->colorWriteEnabled = this->colorWriteEnabled;
+        target->blendingMode = this->blendingMode;
+        target->srcBlendingMethod = this->srcBlendingMethod;
+        target->destBlendingMethod = this->destBlendingMethod;
+        target->renderStyle = this->renderStyle;
+        target->transparent = this->transparent;
+        target->lit = this->lit;
+
+        target->stencilTestEnabled = this->stencilTestEnabled;
+        target->stencilRef = this->stencilRef;
+        target->stencilReadMask = this->stencilReadMask;
+        target->stencilWriteMask = this->stencilWriteMask;
+        target->stencilComparisonFunction = this->stencilComparisonFunction;
+        target->stencilAllPassAction = this->stencilAllPassAction;
+        target->stencilFailActionStencil = this->stencilFailActionStencil;
+        target->stencilFailActionDepth = this->stencilFailActionDepth;
+
+        target->depthWriteEnabled = this->depthWriteEnabled;
+        target->depthTestEnabled = this->depthTestEnabled;
+        target->depthFunction = this->depthFunction;
+
+        target->faceCullingEnabled = this->faceCullingEnabled;
+        target->cullFace = this->cullFace;
+    }
+
+
     Bool Material::buildFromSource(const std::string& vertexSource, const std::string& fragmentSource) {
         WeakPointer<Shader> shader = this->graphics->createShader(vertexSource, fragmentSource);
         Bool success = shader->build();

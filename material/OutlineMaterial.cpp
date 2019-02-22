@@ -62,7 +62,7 @@ namespace Core {
 
     WeakPointer<Material> OutlineMaterial::clone() {
         WeakPointer<OutlineMaterial> newMaterial = Engine::instance()->createMaterial<OutlineMaterial>(false);
-        newMaterial->setShader(this->getShader());
+        this->copyTo(newMaterial);
         newMaterial->positionLocation = this->positionLocation;
         newMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
         newMaterial->viewMatrixLocation = this->viewMatrixLocation;

@@ -61,7 +61,7 @@ namespace Core {
 
     WeakPointer<Material> BasicExtrusionMaterial::clone() {
         WeakPointer<BasicExtrusionMaterial> newMaterial = Engine::instance()->createMaterial<BasicExtrusionMaterial>(false);
-        newMaterial->setShader(this->getShader());
+        this->copyTo(newMaterial);
         newMaterial->positionLocation = this->positionLocation;
         newMaterial->normalLocation = this->normalLocation;
         newMaterial->averagedNormalLocation = this->averagedNormalLocation;

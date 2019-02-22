@@ -60,7 +60,7 @@ namespace Core {
 
     WeakPointer<Material> BasicCubeMaterial::clone() {
         WeakPointer<BasicCubeMaterial> newMaterial = Engine::instance()->createMaterial<BasicCubeMaterial>(false);
-        newMaterial->setShader(this->getShader());
+        this->copyTo(newMaterial);
         newMaterial->positionLocation = this->positionLocation;
         newMaterial->colorLocation = this->colorLocation;
         newMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
