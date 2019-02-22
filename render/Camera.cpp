@@ -155,6 +155,24 @@ namespace Core {
         return ray;
     }
 
+    void Camera::copyFrom(WeakPointer<Camera> other) {
+       this->ortho = other->ortho;
+       this->fov = other->fov;
+       this->aspectRatio = other->aspectRatio;
+       this->near = other->near;
+       this->far = other->far;
+       this->top = other->top;
+       this->bottom = other->bottom;
+       this->left = other->left;
+       this->right = other->right;
+
+       this->projectionMatrix.copy(other->projectionMatrix);
+
+       // TODO: Do we need a deep copy here?
+       this->renderTarget = other->renderTarget;
+       this->clearRenderBuffers = other->clearRenderBuffers;
+    }
+
     void Camera::buildPerspectiveProjectionMatrix(Real fov, Real ratio, Real nearP, Real farP, Matrix4x4& out) {
         // convert fov to radians
         Real f = 1.0f / Math::tan(fov * .5f);

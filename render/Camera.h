@@ -49,6 +49,7 @@ namespace Core {
         Bool getAutoClearRenderBuffer(RenderBufferType type) const;
         IntMask getAutoClearRenderBuffers() const;
         Ray getRay(const Vector4u& viewport, Core::UInt32 x, Core::UInt32 y);
+        void copyFrom(WeakPointer<Camera> other);
 
         static void buildPerspectiveProjectionMatrix(Real fov, Real aspectRatio, Real near, Real far, Matrix4x4& out);
         static void buildOrthographicProjectionMatrix(Real top, Real bottom, Real left, Real right, Real near, Real far, Matrix4x4& matrix);
