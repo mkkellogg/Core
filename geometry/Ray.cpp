@@ -125,12 +125,12 @@ namespace Core {
 
         Real d = -Vector3r::dot(p0, _normal);
         Vector4r planeEq(_normal.x, _normal.y, _normal.z, d);
-        Vector4r rayOrigin(this->Origin.x, this->Origin.y, this->Origin.z, 1.0f);
-        Vector4r rayDir(this->Direction.x, this->Direction.y, this->Direction.z, 0.0f);
-        Real t = -(Vector4r::dot(planeEq, rayOrigin) / Vector4r::dot(planeEq, rayDir));
-        Point3r intersection = this->Origin + this->Direction * t;
+        
+        Hit planeHit;
+        Bool intersectsPlane = this->intersectPlane(planeEq, planeHit);
+        if (!intersectsPlane) return false;
 
-        Vector3r r = intersection - _p0;
+        Vector3r r = planeHit.Origin - _p0;
         Real rDotQ1 = Vector3r::dot(r, q1);
         Real rDotQ2 = Vector3r::dot(r, q2);
 
@@ -148,9 +148,22 @@ namespace Core {
             return false;
         }
 
-        hit.Origin = intersection;
+        hit.Origin = planeHit.Origin;
         hit.Normal = _normal;
 
+        return true;
+    }
+
+    Bool Ray::intersectPlane(Vector4Components<Real>& plane, Hit& hit) const {
+        Vector4r rayOrigin(this->Origin.x, this->Origin.y, this->Origin.z, 1.0f);
+        Vector4r rayDir(this->Direction.x, this->Direction.y, this->Direction.z, 0.0f);
+        Real planeRayDot = Vector4r::dot(plane, rayDir);
+        if (planeRayDot == 0.0f) return false;
+        Real t = -(Vector4r::dot(plane, rayOrigin) / planeRayDot);
+        Point3r intersection = this->Origin + this->Direction * t;
+
+        hit.Origin = intersection;
+        hit.Normal.set(plane.x, plane.y, plane.z);
         return true;
     }
 

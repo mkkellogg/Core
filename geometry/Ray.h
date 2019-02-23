@@ -23,6 +23,7 @@ namespace Core {
                                const Vector3Components<Real>& p2, Hit& hit, const Vector3Components<Real>* normal = nullptr) const;
         Bool intersectTriangle(const Vector3Components<Real>* p0, const Vector3Components<Real>* p1,
                                const Vector3Components<Real>* p2, Hit& hit, const Vector3Components<Real>* normal = nullptr) const;
+        Bool intersectPlane(Vector4Components<Real>& plane, Hit& hit) const;
 
         Vector3r Direction;
         Point3r Origin;
