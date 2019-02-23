@@ -14,6 +14,7 @@ namespace Core {
         Point3r Origin;
         Real Distance;
         PersistentWeakPointer<Mesh> Object;
+        Int32 ID;
     };
 
 }

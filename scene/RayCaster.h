@@ -12,9 +12,9 @@ namespace Core {
 
     class RayCaster {
     public:
-        void addObject(WeakPointer<Object3D> sceneObject, WeakPointer<Mesh> mesh);
+        UInt32 addObject(WeakPointer<Object3D> sceneObject, WeakPointer<Mesh> mesh);
         Bool castRay(const Ray& ray, std::vector<Hit>& hits);
-        Bool castRay(const Ray& ray, WeakPointer<Mesh> mesh, const Matrix4x4& transform, std::vector<Hit>& hits);
+        Bool castRay(const Ray& ray, WeakPointer<Mesh> mesh, const Matrix4x4& transform, std::vector<Hit>& hits, Int32 hitID = -1);
 
     private:
         std::vector<PersistentWeakPointer<Object3D>> objects;

@@ -6,9 +6,11 @@
 
 namespace Core {
 
-    void RayCaster::addObject(WeakPointer<Object3D> sceneObject, WeakPointer<Mesh> mesh) {
+    UInt32 RayCaster::addObject(WeakPointer<Object3D> sceneObject, WeakPointer<Mesh> mesh) {
+        UInt32 id = this->objects.size();
         this->objects.push_back(sceneObject);
         this->meshes.push_back(mesh);
+        return id;
     }
 
     Bool RayCaster::castRay(const Ray& ray, std::vector<Hit>& hits) {
@@ -23,7 +25,7 @@ namespace Core {
             Transform objTransform = object->getTransform();
             objTransform.updateWorldMatrix();
             Matrix4x4& transform = objTransform.getWorldMatrix();
-            hitFound = this->castRay(ray, mesh, transform, hits) || hitFound;
+            hitFound = this->castRay(ray, mesh, transform, hits, i) || hitFound;
         }
 
         std::sort(hits.begin(), hits.end(), [](const Hit& a, const Hit& b){
@@ -33,7 +35,7 @@ namespace Core {
         return hitFound;
     }
 
-    Bool RayCaster::castRay(const Ray& ray, WeakPointer<Mesh> mesh, const Matrix4x4& transform, std::vector<Hit>& hits) {
+    Bool RayCaster::castRay(const Ray& ray, WeakPointer<Mesh> mesh, const Matrix4x4& transform, std::vector<Hit>& hits, Int32 hitID) {
         Matrix4x4 inverse = transform;
         inverse.invert();
         Matrix4x4 inverseTranspose = inverse;
@@ -56,6 +58,7 @@ namespace Core {
             inverseTranspose.transform(hit.Normal);
             Vector3r distanceVec = hit.Origin - ray.Origin;
             hit.Distance = distanceVec.magnitude();
+            hit.ID = hitID;
         }
 
         return hits.size() > 0;
