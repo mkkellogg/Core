@@ -134,7 +134,7 @@ namespace Core {
         return this->clearRenderBuffers;
     }
 
-    Ray Camera::getRay(const Vector4u& viewport, Core::UInt32 x, Core::UInt32 y) {
+    Ray Camera::getRay(const Vector4u& viewport, Core::Int32 x, Core::Int32 y) {
         Core::Point3r pos((Core::Real)x, (Core::Real)y, (Core::Real)-1.0f);
 
         Core::Real ndcX = (Core::Real)pos.x / (Core::Real)viewport.z * 2.0f - 1.0f;
