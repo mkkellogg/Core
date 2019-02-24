@@ -24,7 +24,6 @@ namespace Core {
         void setCastShadows(Bool castShadows);
 
     private:
-
-        Bool castShadows;;
+        Bool castShadows;
     };
 }
