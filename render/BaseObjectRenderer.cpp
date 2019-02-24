@@ -9,4 +9,12 @@ namespace Core {
     Bool BaseObjectRenderer::supportsRenderPath(RenderPath renderPath) {
         return false;
     }
+
+    Bool BaseObjectRenderer::castsShadows() {
+        return this->castShadows;
+    }
+
+    void BaseObjectRenderer::setCastShadows(Bool castShadows) {
+        this->castShadows = castShadows;
+    }
 }

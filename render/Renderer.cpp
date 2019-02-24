@@ -219,11 +219,25 @@ namespace Core {
         static PersistentWeakPointer<Object3D> perspectiveShadowMapCameraObject;
         static PersistentWeakPointer<Camera> orthoShadowMapCamera;
         static PersistentWeakPointer<Object3D> orthoShadowMapCameraObject;
+        static std::vector<WeakPointer<Object3D>> toRender;
         if (!perspectiveShadowMapCamera.isValid()) {
             perspectiveShadowMapCameraObject = Engine::instance()->createObject3D();
             perspectiveShadowMapCamera = Engine::instance()->createPerspectiveCamera(perspectiveShadowMapCameraObject, Math::PI / 2.0f, 1.0f, PointLight::NearPlane, PointLight::FarPlane);
             orthoShadowMapCameraObject = Engine::instance()->createObject3D();
             orthoShadowMapCamera = Engine::instance()->createOrthographicCamera(orthoShadowMapCameraObject, 1.0f, -1.0f, -1.0f, 1.0f, PointLight::NearPlane, PointLight::FarPlane);
+        }
+
+        toRender.resize(0);
+        for (UInt32 i = 0; i < objects.size(); i++) {
+            WeakPointer<Object3D> object = objects[i];
+            std::shared_ptr<Object3D> objectShared = object.lock();
+            std::shared_ptr<BaseRenderableContainer> containerPtr = std::dynamic_pointer_cast<BaseRenderableContainer>(objectShared);
+            if (containerPtr) {
+                WeakPointer<BaseObjectRenderer> objectRenderer = containerPtr->getBaseRenderer();
+                if (objectRenderer && objectRenderer->castsShadows()) {
+                    toRender.push_back(object);
+                }
+            }
         }
 
         std::vector<WeakPointer<Light>> dummyLights;
@@ -242,7 +256,7 @@ namespace Core {
                             Vector4u renderTargetDimensions = shadowMapRenderTarget->getViewport();
                             perspectiveShadowMapCamera->setRenderTarget(shadowMapRenderTarget);  
                             perspectiveShadowMapCamera->setAspectRatioFromDimensions(renderTargetDimensions.z, renderTargetDimensions.w);                     
-                            this->render(perspectiveShadowMapCamera, objects, dummyLights, this->distanceMaterial);
+                            this->render(perspectiveShadowMapCamera, toRender, dummyLights, this->distanceMaterial);
                         }
                     }
                     break;
@@ -263,7 +277,7 @@ namespace Core {
                                                         orthoShadowMapCamera->getAutoClearRenderBuffers(), viewDesc);
                                 viewDesc.overrideMaterial = this->depthMaterial;
                                 viewDesc.renderTarget = directionalLight->getShadowMap(i);
-                                this->render(viewDesc, objects, dummyLights);
+                                this->render(viewDesc, toRender, dummyLights);
                             }
                         }
                     }
