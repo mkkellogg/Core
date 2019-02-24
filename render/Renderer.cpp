@@ -39,6 +39,13 @@ namespace Core {
     }
 
     void Renderer::renderScene(WeakPointer<Object3D> rootObject, WeakPointer<Material> overrideMaterial) {
+        static std::vector<WeakPointer<Object3D>> objectList;
+        static std::vector<WeakPointer<Camera>> cameraList;
+        static std::vector<WeakPointer<Light>> lightList;
+        objectList.resize(0);
+        cameraList.resize(0);
+        lightList.resize(0);
+
         if (!this->depthMaterial.isValid()) {
             this->depthMaterial = Engine::instance()->createMaterial<DepthOnlyMaterial>();
             this->depthMaterial->setLit(false);
@@ -48,10 +55,6 @@ namespace Core {
             this->distanceMaterial->setLit(false);
         }
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-
-        std::vector<WeakPointer<Object3D>> objectList;
-        std::vector<WeakPointer<Camera>> cameraList;
-        std::vector<WeakPointer<Light>> lightList;
 
         Matrix4x4 curTransform;
         this->processScene(rootObject, curTransform, objectList);
@@ -82,8 +85,10 @@ namespace Core {
     }
 
     void Renderer::renderObjectBasic(WeakPointer<Object3D> rootObject, WeakPointer<Camera> camera, WeakPointer<Material> overrideMaterial) {
+        static std::vector<WeakPointer<Object3D>> objectList;
+        objectList.resize(0);
+
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-        std::vector<WeakPointer<Object3D>> objectList;
         Matrix4x4 baseTransformation;
         Transform& rootTransform = rootObject->getTransform();
         rootTransform.getAncestorWorldTransformation(baseTransformation);
