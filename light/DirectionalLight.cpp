@@ -74,12 +74,11 @@ namespace Core {
             throw Exception("DirectionalLight::buildProjections() -> Light not attached to scene object.");
         }
 
-        targetCameraOwner->getTransform().updateWorldMatrix();
-        Matrix4x4 targetCameraTransform = targetCameraOwner->getTransform().getWorldMatrix();
+        Transform& targetCameraTransform = targetCameraOwner->getTransform();
+        targetCameraTransform.updateWorldMatrix();
 
         lightOwner->getTransform().updateWorldMatrix();
-        Matrix4x4 lightTransform = lightOwner->getTransform().getWorldMatrix();
-        Matrix4x4 lightTransformInverse = lightTransform;
+        Matrix4x4 lightTransformInverse = lightOwner->getTransform().getWorldMatrix();
         lightTransformInverse.invert();
 
         Real aspectRatio = targetCamera->getAspectRatio();
@@ -129,7 +128,7 @@ namespace Core {
 
                     // Transform the frustum coordinate from view to world space
                     Point3r corner = frustumCorners[j];                               
-                    targetCameraTransform.transform(corner);
+                    targetCameraTransform.transform(corner, false);
                     // Transform the frustum coordinate from world to light space
                     lightTransformInverse.transform(corner);
 

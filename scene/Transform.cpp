@@ -42,29 +42,31 @@ namespace Core {
     /*
      * Copy this Transform object's local matrix into [dest].
      */
-    void Transform::toLocalMatrix(Matrix4x4& dest) const {
+    void Transform::copyLocalMatrix(Matrix4x4& dest) const {
         dest.copy(this->localMatrix);
     }
 
     /*
      * Copy this Transform object's world matrix into [dest].
      */
-    void Transform::toWorldMatrix(Matrix4x4& dest) const {
+    void Transform::copyWorldMatrix(Matrix4x4& dest) const {
         dest.copy(this->worldMatrix);
     }
 
-    void Transform::setTo(const Matrix4x4& mat, Bool updateWorld) {
+    void Transform::setLocalMatrix(const Matrix4x4& mat, Bool updateWorld) {
         this->localMatrix.copy(mat);
         if (updateWorld) {
             this->updateWorldMatrix();
         }
     }
 
-    void Transform::transform(Vector4<Real>& vector) const {
+    void Transform::transform(Vector4<Real>& vector, Bool updateWorldMatrix) {
+        if (updateWorldMatrix) this->updateWorldMatrix();
         this->worldMatrix.transform(vector);
     }
 
-    void Transform::transform(Vector3Base<Real>& vector) const {
+    void Transform::transform(Vector3Base<Real>& vector, Bool updateWorldMatrix) {
+        if (updateWorldMatrix) this->updateWorldMatrix();
         this->worldMatrix.transform(vector);
     }
 
@@ -137,7 +139,7 @@ namespace Core {
 
         Point3r src;
         this->updateWorldMatrix();
-        this->transform(src);
+        this->transform(src, false);
 
         Vector3r vUp(0, 1, 0);
         Matrix4x4 temp;

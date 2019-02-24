@@ -142,13 +142,12 @@ namespace Core {
         Core::Point3r ndcPos(ndcX, ndcY, -1.0);
         this->unProject(ndcPos);
         Core::Transform& camTransform = this->getOwner()->getTransform();
-        Core::Matrix4x4 camMat;
-        camTransform.getWorldTransformation(camMat);
+        camTransform.updateWorldMatrix();
 
         Core::Point3r worldPos = ndcPos;
-        camMat.transform(worldPos);
+        camTransform.transform(worldPos, false);
         Core::Point3r origin;
-        camMat.transform(origin);
+        camTransform.transform(origin, false);
         Core::Vector3r rayDir = worldPos - origin;
         rayDir.normalize();
         Core::Ray ray(origin, rayDir);

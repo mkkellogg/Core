@@ -186,7 +186,7 @@ namespace Core {
                     Int32 lightPositionLoc = material->getShaderLocation(StandardUniform::LightPosition);
                     if (lightPositionLoc >= 0) {
                         Point3r pos;
-                        pointLight->getOwner()->getTransform().getWorldMatrix().transform(pos);
+                        pointLight->getOwner()->getTransform().transform(pos);
                         shader->setUniform4f(lightPositionLoc, pos.x, pos.y, pos.z, 1.0f);
                     }
 
@@ -203,7 +203,7 @@ namespace Core {
                     Int32 lightDirectionLoc = material->getShaderLocation(StandardUniform::LightDirection);
                     if (lightDirectionLoc >= 0) {
                         Vector3r dir = Vector3r::Forward;
-                        directionalLight->getOwner()->getTransform().getWorldMatrix().transform(dir);
+                        directionalLight->getOwner()->getTransform().transform(dir);
                         shader->setUniform4f(lightDirectionLoc, dir.x, dir.y, dir.z, 0.0f);
                     }
 

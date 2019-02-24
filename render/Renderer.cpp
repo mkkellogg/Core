@@ -90,8 +90,7 @@ namespace Core {
 
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         Matrix4x4 baseTransformation;
-        Transform& rootTransform = rootObject->getTransform();
-        rootTransform.getAncestorWorldTransformation(baseTransformation);
+        rootObject->getTransform().getAncestorWorldTransformation(baseTransformation);
         this->processScene(rootObject, baseTransformation, objectList);
         this->render(camera, objectList, overrideMaterial);
     }
