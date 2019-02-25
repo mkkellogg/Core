@@ -128,7 +128,7 @@ namespace Core {
 
                     // Transform the frustum coordinate from view to world space
                     Point3r corner = frustumCorners[j];                               
-                    targetCameraTransform.transform(corner, false);
+                    targetCameraTransform.getWorldMatrix().transform(corner);
                     // Transform the frustum coordinate from world to light space
                     lightTransformInverse.transform(corner);
 

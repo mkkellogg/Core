@@ -24,10 +24,10 @@ namespace Core {
 
         void copyLocalMatrix(Matrix4x4& dest) const;
         void copyWorldMatrix(Matrix4x4& dest) const;
-        void setLocalMatrix(const Matrix4x4& mat, Bool updateWorld = false);
+        void setLocalMatrix(const Matrix4x4& mat);
 
-        void transform(Vector4<Real>& vector, Bool updateWorldMatrix = true);
-        void transform(Vector3Base<Real>& vector, Bool updateWorldMatrix = true);
+        void applyTransformationTo(Vector4<Real>& vector);
+        void applyTransformationTo(Vector3Base<Real>& vector);
 
         void lookAt(const Point3r& target);
 
@@ -43,7 +43,10 @@ namespace Core {
 
         void scale(Real x, Real y, Real z);
 
-        void getLocalTransformationFromWorldTransformation(const Matrix4x4& worldTransformation, Matrix4x4& localTransformation);
+        void setWorldPosition(const Vector3Base<Real>& position);
+        void setWorldPosition(const Vector3<Real>& position);
+        void setWorldPosition(Real x, Real y, Real z);
+
         void getAncestorWorldTransformation(Matrix4x4& result);
         void getWorldTransformation(Matrix4x4& result);
         void updateWorldMatrix();
@@ -51,6 +54,8 @@ namespace Core {
         static void getWorldTransformation(WeakPointer<Object3D> target, Matrix4x4& result);
 
     private:
+
+        void getLocalTransformationFromWorldTransformation(const Matrix4x4& worldTransformation, Matrix4x4& localTransformation);
 
         Matrix4x4 localMatrix;
         Matrix4x4 worldMatrix;

@@ -145,9 +145,9 @@ namespace Core {
         camTransform.updateWorldMatrix();
 
         Core::Point3r worldPos = ndcPos;
-        camTransform.transform(worldPos, false);
+        camTransform.getWorldMatrix().transform(worldPos);
         Core::Point3r origin;
-        camTransform.transform(origin, false);
+        camTransform.getWorldMatrix().transform(origin);
         Core::Vector3r rayDir = worldPos - origin;
         rayDir.normalize();
         Core::Ray ray(origin, rayDir);

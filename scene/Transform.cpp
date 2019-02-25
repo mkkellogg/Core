@@ -53,20 +53,17 @@ namespace Core {
         dest.copy(this->worldMatrix);
     }
 
-    void Transform::setLocalMatrix(const Matrix4x4& mat, Bool updateWorld) {
+    void Transform::setLocalMatrix(const Matrix4x4& mat) {
         this->localMatrix.copy(mat);
-        if (updateWorld) {
-            this->updateWorldMatrix();
-        }
     }
 
-    void Transform::transform(Vector4<Real>& vector, Bool updateWorldMatrix) {
-        if (updateWorldMatrix) this->updateWorldMatrix();
+    void Transform::applyTransformationTo(Vector4<Real>& vector) {
+        this->updateWorldMatrix();
         this->worldMatrix.transform(vector);
     }
 
-    void Transform::transform(Vector3Base<Real>& vector, Bool updateWorldMatrix) {
-        if (updateWorldMatrix) this->updateWorldMatrix();
+    void Transform::applyTransformationTo(Vector3Base<Real>& vector) {
+        this->updateWorldMatrix();
         this->worldMatrix.transform(vector);
     }
 
@@ -81,13 +78,13 @@ namespace Core {
         }
     }
 
-    void Transform::getAncestorWorldTransformation(Matrix4x4& result) {
-        Transform::getWorldTransformation(const_cast<Object3D&>(this->target).getParent(), result);
-    }
-
     void Transform::getWorldTransformation(Matrix4x4& result) {
         Transform::getWorldTransformation(const_cast<Object3D&>(this->target).getParent(), result);
         result.multiply(this->localMatrix);
+    }
+
+    void Transform::getAncestorWorldTransformation(Matrix4x4& result) {
+        Transform::getWorldTransformation(const_cast<Object3D&>(this->target).getParent(), result);
     }
 
     void Transform::updateWorldMatrix() {
@@ -128,7 +125,7 @@ namespace Core {
      */
     void Transform::getLocalTransformationFromWorldTransformation(const Matrix4x4& worldTransformation, Matrix4x4& localTransformation) {
         Matrix4x4 fullInverse;
-        Transform::getWorldTransformation(localTransformation);
+        this->getWorldTransformation(localTransformation);
         fullInverse.copy(localTransformation);
         fullInverse.invert();
         localTransformation.preMultiply(worldTransformation);
@@ -139,7 +136,7 @@ namespace Core {
 
         Point3r src;
         this->updateWorldMatrix();
-        this->transform(src, false);
+        this->worldMatrix.transform(src);
 
         Vector3r vUp(0, 1, 0);
         Matrix4x4 temp;
@@ -229,5 +226,17 @@ namespace Core {
     void Transform::scale(Real x, Real y, Real z) {
 
         // TODO: implement!
+    }
+
+    void Transform::setWorldPosition(const Vector3Base<Real>& position) {
+
+    }
+
+    void Transform::setWorldPosition(const Vector3<Real>& position) {
+
+    }
+
+    void Transform::setWorldPosition(Real x, Real y, Real z) {
+
     }
 }
