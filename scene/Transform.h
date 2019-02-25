@@ -46,16 +46,16 @@ namespace Core {
         void setWorldPosition(const Vector3Base<Real>& position);
         void setWorldPosition(const Vector3<Real>& position);
         void setWorldPosition(Real x, Real y, Real z);
+        Point3r getWorldPosition();
 
-        void getAncestorWorldTransformation(Matrix4x4& result);
-        void getWorldTransformation(Matrix4x4& result);
         void updateWorldMatrix();
-
-        static void getWorldTransformation(WeakPointer<Object3D> target, Matrix4x4& result);
 
     private:
 
+        void getAncestorWorldTransformation(Matrix4x4& result);
+        void getWorldTransformation(Matrix4x4& result);
         void getLocalTransformationFromWorldTransformation(const Matrix4x4& worldTransformation, Matrix4x4& localTransformation);
+        static void getWorldTransformation(WeakPointer<Object3D> target, Matrix4x4& result);
 
         Matrix4x4 localMatrix;
         Matrix4x4 worldMatrix;

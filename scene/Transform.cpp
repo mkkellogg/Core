@@ -79,7 +79,7 @@ namespace Core {
     }
 
     void Transform::getWorldTransformation(Matrix4x4& result) {
-        Transform::getWorldTransformation(const_cast<Object3D&>(this->target).getParent(), result);
+        this->getAncestorWorldTransformation(result);
         result.multiply(this->localMatrix);
     }
 
@@ -229,14 +229,30 @@ namespace Core {
     }
 
     void Transform::setWorldPosition(const Vector3Base<Real>& position) {
-
+        this->setWorldPosition(position.x, position.y, position.z);
     }
 
     void Transform::setWorldPosition(const Vector3<Real>& position) {
-
+        this->setWorldPosition(position.x, position.y, position.z);
     }
 
     void Transform::setWorldPosition(Real x, Real y, Real z) {
+        Matrix4x4 ancestorMatrix;
+        this->getAncestorWorldTransformation(ancestorMatrix);
+        Matrix4x4 worldTransformation = ancestorMatrix;
+        worldTransformation.multiply(this->localMatrix);
+        Point3r oldPosition;
+        worldTransformation.transform(oldPosition);
+        Vector3r toNewPosition(x - oldPosition.x, y - oldPosition.y, z - oldPosition.z);
+        this->localMatrix.preTranslate(toNewPosition);
+        this->worldMatrix = ancestorMatrix;
+        this->worldMatrix.multiply(this->localMatrix);
+    }
 
+    Point3r Transform::getWorldPosition() {
+        Point3r position;
+        this->updateWorldMatrix();
+        this->worldMatrix.transform(position);
+        return position;
     }
 }
