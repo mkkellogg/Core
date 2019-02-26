@@ -244,15 +244,20 @@ namespace Core {
 
     void Transform::setWorldPosition(Real x, Real y, Real z) {
         Point3r oldPosition;
-        this->updateWorldMatrix();
-        this->worldMatrix.transform(oldPosition);
+        Matrix4x4 ancestorMatrix;
+        Matrix4x4 fullMatrix;
+        this->getAncestorWorldTransformation(ancestorMatrix);
+        fullMatrix = ancestorMatrix;
+        fullMatrix.multiply(this->localMatrix);
+        fullMatrix.transform(oldPosition);
         Vector3r toNewPosition(x - oldPosition.x, y - oldPosition.y, z - oldPosition.z);
         Matrix4x4 worldTranslateMatrix;
         worldTranslateMatrix.preTranslate(toNewPosition);
         Matrix4x4 localTranslateMatrix;
-        this->getLocalTransformationFromWorldTransformation(worldTranslateMatrix, this->worldMatrix, localTranslateMatrix);
+        this->getLocalTransformationFromWorldTransformation(worldTranslateMatrix, fullMatrix, localTranslateMatrix);
         this->localMatrix.multiply(localTranslateMatrix);
-        this->updateWorldMatrix();
+        this->worldMatrix = ancestorMatrix;
+        this->worldMatrix.multiply(this->localMatrix);
     }
 
     Point3r Transform::getWorldPosition() {
