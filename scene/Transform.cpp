@@ -123,12 +123,18 @@ namespace Core {
      *  Therefore the equivalent transformation in the local space of S is: FI * nWorld * F. This method takes in nWorld [worldTransformation]
      *  and produces (FI * nWorld * F) in [localTransformation].
      */
-    void Transform::getLocalTransformationFromWorldTransformation(const Matrix4x4& worldTransformation, Matrix4x4& localTransformation) {
+    void Transform::getLocalTransformationFromWorldTransformation(const Matrix4x4& newWorldTransformation, Matrix4x4& localTransformation) {
+        Matrix4x4 currentFullTransformation;
+        this->getWorldTransformation(currentFullTransformation);
+        this->getLocalTransformationFromWorldTransformation(newWorldTransformation, currentFullTransformation, localTransformation);
+    }
+
+    void Transform::getLocalTransformationFromWorldTransformation(const Matrix4x4& newWorldTransformation, const Matrix4x4& currentFullTransformation, Matrix4x4& localTransformation) {
         Matrix4x4 fullInverse;
-        this->getWorldTransformation(localTransformation);
-        fullInverse.copy(localTransformation);
+        localTransformation = currentFullTransformation;
+        fullInverse.copy(currentFullTransformation);
         fullInverse.invert();
-        localTransformation.preMultiply(worldTransformation);
+        localTransformation.preMultiply(newWorldTransformation);
         localTransformation.preMultiply(fullInverse);
     }
 
@@ -237,16 +243,16 @@ namespace Core {
     }
 
     void Transform::setWorldPosition(Real x, Real y, Real z) {
-        Matrix4x4 ancestorMatrix;
-        this->getAncestorWorldTransformation(ancestorMatrix);
-        Matrix4x4 worldTransformation = ancestorMatrix;
-        worldTransformation.multiply(this->localMatrix);
         Point3r oldPosition;
-        worldTransformation.transform(oldPosition);
+        this->updateWorldMatrix();
+        this->worldMatrix.transform(oldPosition);
         Vector3r toNewPosition(x - oldPosition.x, y - oldPosition.y, z - oldPosition.z);
-        this->localMatrix.preTranslate(toNewPosition);
-        this->worldMatrix = ancestorMatrix;
-        this->worldMatrix.multiply(this->localMatrix);
+        Matrix4x4 worldTranslateMatrix;
+        worldTranslateMatrix.preTranslate(toNewPosition);
+        Matrix4x4 localTranslateMatrix;
+        this->getLocalTransformationFromWorldTransformation(worldTranslateMatrix, this->worldMatrix, localTranslateMatrix);
+        this->localMatrix.multiply(localTranslateMatrix);
+        this->updateWorldMatrix();
     }
 
     Point3r Transform::getWorldPosition() {
