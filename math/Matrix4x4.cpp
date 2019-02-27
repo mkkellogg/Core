@@ -587,6 +587,12 @@ namespace Core {
         Matrix4x4::preTranslate(this->data, this->data, x, y, z);
     }
 
+    void Matrix4x4::setTranslation(Real x, Real y, Real z) {
+        this->data[12] = x;
+        this->data[13] = y;
+        this->data[14] = z;
+    }
+
     /*
      * Translate the 4x4 matrix pointed to by [src] by [vector], and store in [out]
      *
@@ -650,7 +656,7 @@ namespace Core {
     void Matrix4x4::rotate(const Vector3Components<Real> &vector, Real a) {
         Real temp[SIZE_MATRIX_4X4];
         Real r[SIZE_MATRIX_4X4];
-        Matrix4x4::setRotate(r, vector.x, vector.y, vector.z, a);
+        Matrix4x4::makeRotation(r, vector.x, vector.y, vector.z, a);
         Matrix4x4::multiplyMM(this->data, r, temp);
         memcpy(this->data, temp, sizeof(Real) * SIZE_MATRIX_4X4);
     }
@@ -664,7 +670,7 @@ namespace Core {
     void Matrix4x4::rotate(Real x, Real y, Real z, Real a) {
         Real temp[SIZE_MATRIX_4X4];
         Real r[SIZE_MATRIX_4X4];
-        Matrix4x4::setRotate(r, x, y, z, a);
+        Matrix4x4::makeRotation(r, x, y, z, a);
         Matrix4x4::multiplyMM(data, r, temp);
         memcpy(data, temp, sizeof(Real) * SIZE_MATRIX_4X4);
     }
@@ -678,7 +684,7 @@ namespace Core {
     void Matrix4x4::preRotate(const Vector3Components<Real> &vector, Real a) {
         Real temp[SIZE_MATRIX_4X4];
         Real r[SIZE_MATRIX_4X4];
-        Matrix4x4::setRotate(r, vector.x, vector.y, vector.z, a);
+        Matrix4x4::makeRotation(r, vector.x, vector.y, vector.z, a);
         Matrix4x4::multiplyMM(r, data, temp);
         memcpy(data, temp, sizeof(Real) * SIZE_MATRIX_4X4);
     }
@@ -692,7 +698,7 @@ namespace Core {
     void Matrix4x4::preRotate(Real x, Real y, Real z, Real a) {
         Real temp[SIZE_MATRIX_4X4];
         Real r[SIZE_MATRIX_4X4];
-        Matrix4x4::setRotate(r, x, y, z, a);
+        Matrix4x4::makeRotation(r, x, y, z, a);
         Matrix4x4::multiplyMM(r, data, temp);
         memcpy(data, temp, sizeof(Real) * SIZE_MATRIX_4X4);
     }
@@ -700,22 +706,22 @@ namespace Core {
     /*
      * Set this matrix to be a rotation matrix, with Euler angles [x], [y], [z]
      */
-    void Matrix4x4::setRotateEuler(Real x, Real y, Real z) {
-        Matrix4x4::setRotateEuler(data, x, y, z);
+    void Matrix4x4::makeRotationFromEuler(Real x, Real y, Real z) {
+        Matrix4x4::makeRotationFromEuler(data, x, y, z);
     }
 
     /*
      * Set the 4x4 matrix [m] to be a rotation matrix, around axis [x], [y], [z] by [a] radians.
      */
-    void Matrix4x4::setRotate(Matrix4x4 &m, Real x, Real y, Real z, Real a) {
-        Matrix4x4::setRotate(m.data, x, y, z, a);
+    void Matrix4x4::makeRotation(Matrix4x4 &m, Real x, Real y, Real z, Real a) {
+        Matrix4x4::makeRotation(m.data, x, y, z, a);
     }
 
     /*
      * Set the 4x4 matrix [rm] to be a rotation matrix, around axis [x], [y], [z] by [a] radians.
      */
-    void Matrix4x4::setRotate(Real *rm, Real x, Real y, Real z, Real a) {
-        if (rm == nullptr) throw NullPointerException("Matrix4x4::setRotate -> 'rm' is null.");
+    void Matrix4x4::makeRotation(Real *rm, Real x, Real y, Real z, Real a) {
+        if (rm == nullptr) throw NullPointerException("Matrix4x4::makeRotation -> 'rm' is null.");
 
         rm[3] = 0;
         rm[7] = 0;
@@ -786,8 +792,8 @@ namespace Core {
     /*
      * Set the matrix [rm] to be a rotation matrix, with Euler angles [x], [y], [z]
      */
-    void Matrix4x4::setRotateEuler(Real *rm, Real x, Real y, Real z) {
-        if (rm == nullptr) throw NullPointerException("Matrix4x4::setRotateEuler -> 'rm' is null.");
+    void Matrix4x4::makeRotationFromEuler(Real *rm, Real x, Real y, Real z) {
+        if (rm == nullptr) throw NullPointerException("Matrix4x4::makeRotationFromEuler -> 'rm' is null.");
 
         Real cx = (Real)Math::cos(x);
         Real sx = (Real)Math::sin(x);

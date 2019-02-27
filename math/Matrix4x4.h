@@ -79,6 +79,7 @@ namespace Core {
         void translate(Real x, Real y, Real z);
         void preTranslate(const Vector3Components<Real>& vector);
         void preTranslate(Real x, Real y, Real z);
+        void setTranslation(Real x, Real y, Real z);
         static void translate(const Matrix4x4& src, Matrix4x4& out, const Vector3Components<Real>& vector);
         static void translate(const Matrix4x4& src, Matrix4x4& out, Real x, Real y, Real z);
         static void translate(const Real* source, Real* dest, Real x, Real y, Real z);
@@ -88,10 +89,10 @@ namespace Core {
         void rotate(Real x, Real y, Real z, Real a);
         void preRotate(const Vector3Components<Real>& vector, Real a);
         void preRotate(Real x, Real y, Real z, Real a);
-        void setRotateEuler(Real x, Real y, Real z);
-        static void setRotate(Real* rm, Real x, Real y, Real z, Real a);
-        static void setRotate(Matrix4x4& m, Real x, Real y, Real z, Real a);
-        static void setRotateEuler(Real* rm, Real x, Real y, Real z);
+        void makeRotationFromEuler(Real x, Real y, Real z);
+        static void makeRotation(Real* rm, Real x, Real y, Real z, Real a);
+        static void makeRotation(Matrix4x4& m, Real x, Real y, Real z, Real a);
+        static void makeRotationFromEuler(Real* rm, Real x, Real y, Real z);
 
         void scale(const Vector3Components<Real>& scale);
         void scale(Real x, Real y, Real z);
