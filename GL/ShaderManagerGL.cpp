@@ -88,6 +88,9 @@ namespace Core {
 
     void ShaderManagerGL::init() {
 
+        this->setShader(ShaderType::Vertex, "Skybox", ShaderManagerGL::Skybox_vertex);
+        this->setShader(ShaderType::Fragment, "Skybox", ShaderManagerGL::Skybox_fragment);
+
         this->setShader(ShaderType::Vertex, "Outline", ShaderManagerGL::Outline_vertex);
         this->setShader(ShaderType::Geometry, "Outline", ShaderManagerGL::Outline_geometry);
         this->setShader(ShaderType::Fragment, "Outline", ShaderManagerGL::Outline_fragment);
@@ -148,7 +151,7 @@ namespace Core {
             "out vec4 out_color;\n"
             "void main()\n"
             "{\n"
-            "    out_color = texture(SKYBOX_TEXTURE, TexCoord0.xyz);\n"
+            "    out_color = texture(" + CUBETEXTURE0 + ", TexCoord0.xyz);\n"
             "}\n";
 
         this->Outline_vertex =
