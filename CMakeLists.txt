@@ -57,6 +57,7 @@ set(INCLUDE_FILES
     scene/TransformationSpace.h
     scene/Octree.h
     scene/RayCaster.h
+    scene/Skybox.h
     asset/AssetLoader.h
     asset/ModelLoader.h
     material/Material.h
@@ -166,6 +167,7 @@ set(SOURCE_FILES
     scene/Transform.cpp
     scene/Octree.cpp
     scene/RayCaster.cpp
+    scene/Skybox.cpp
     render/BaseObjectRenderer.cpp
     render/BaseRenderableContainer.cpp
     render/RenderableContainer.cpp
