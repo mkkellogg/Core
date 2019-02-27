@@ -70,6 +70,7 @@ set(INCLUDE_FILES
     material/BasicTexturedLitMaterial.h
     material/BasicCubeMaterial.h
     material/OutlineMaterial.h
+    material/SkyboxMaterial.h
     material/StandardUniforms.h
     material/StandardAttributes.h
     material/Shader.h
@@ -194,6 +195,7 @@ set(SOURCE_FILES
     material/BasicTexturedLitMaterial.cpp
     material/BasicCubeMaterial.cpp
     material/OutlineMaterial.cpp
+    material/SkyboxMaterial.cpp
     material/Shader.cpp
     material/MaterialLibrary.cpp
     material/StandardUniforms.cpp

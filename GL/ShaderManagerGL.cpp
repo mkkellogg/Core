@@ -125,6 +125,32 @@ namespace Core {
 
     ShaderManagerGL::ShaderManagerGL() {
 
+         this->Skybox_vertex =
+            "#version 330\n"
+            "precision highp float;\n"
+            "layout (location = 0 ) " + POSITION_DEF
+            + PROJECTION_MATRIX_DEF
+            + VIEW_MATRIX_DEF
+            + MODEL_MATRIX_DEF +
+            "out vec4 TexCoord0;\n"
+            "void main()\n"
+            "{\n"
+            "    TexCoord0 = POSITION;\n"
+            "    vec3 vWorldPos = mat3( " + VIEW_MATRIX + " * " + MODEL_MATRIX + ") * " + POSITION + ".xyz;\n"
+            "    gl_Position = (" + PROJECTION_MATRIX + " * vec4(vWorldPos, 1.0)).xyww;\n"
+            "}\n";
+
+        this->Skybox_fragment =   
+            "#version 330\n"
+            "precision highp float;\n"
+            + CUBETEXTURE0_DEF +
+            "in vec4 TexCoord0;\n"
+            "out vec4 out_color;\n"
+            "void main()\n"
+            "{\n"
+            "    out_color = texture(SKYBOX_TEXTURE, TexCoord0.xyz);\n"
+            "}\n";
+
         this->Outline_vertex =
             "#version 330\n"
             "precision highp float;\n"
