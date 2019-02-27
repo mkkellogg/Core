@@ -29,6 +29,7 @@ namespace Core {
         Int32 colorLocation;
         Int32 projectionMatrixLocation;
         Int32 viewMatrixLocation;
+        Int32 modelMatrixLocation;
         Int32 cubeTextureLocation;
         PersistentWeakPointer<CubeTexture> texture;
     };
