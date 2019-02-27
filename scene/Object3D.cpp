@@ -13,7 +13,7 @@ namespace Core {
     Object3D::~Object3D() {
     }
 
-    UInt64 Object3D::getID() {
+    UInt64 Object3D::getID() const {
         return this->id;
     }
 

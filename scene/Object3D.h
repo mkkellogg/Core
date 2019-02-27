@@ -28,7 +28,7 @@ namespace Core {
     public:
         virtual ~Object3D();
 
-        UInt64 getID();
+        UInt64 getID() const;
         Transform& getTransform();
         SceneObjectIterator<Object3D> beginIterateChildren();
         SceneObjectIterator<Object3D> endIterateChildren();
