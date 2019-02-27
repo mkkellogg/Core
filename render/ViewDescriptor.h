@@ -9,6 +9,7 @@ namespace Core {
     // forward declarations
     class Material;
     class RenderTarget;
+    class Skybox;
 
     class ViewDescriptor {
     public:
@@ -21,6 +22,8 @@ namespace Core {
         PersistentWeakPointer<RenderTarget> renderTarget;
         Int32 cubeFace = -1;
         IntMask clearRenderBuffers;
+        Skybox* skybox = nullptr;
+
     };
 
 }

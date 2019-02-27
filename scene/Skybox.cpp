@@ -1,6 +1,7 @@
 #include "Skybox.h"
 #include "../material/StandardAttributes.h"
 #include "../material/SkyboxMaterial.h"
+#include "../material/BasicMaterial.h"
 #include "../geometry/Mesh.h"
 #include "../render/MeshRenderer.h"
 
@@ -11,7 +12,7 @@ namespace Core {
     }
 
     void Skybox::build(WeakPointer<CubeTexture> skyboxTexture) {
-        WeakPointer<Core::Mesh> skyboxMesh(Engine::instance()->createMesh(36, false));
+        WeakPointer<Mesh> skyboxMesh(Engine::instance()->createMesh(36, false));
         skyboxMesh->init();
 
         Core::Real vertexPositions[] = {
@@ -26,7 +27,7 @@ namespace Core {
             1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
             // top
             -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0,
-            -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+            1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0,
             // bottom
             -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0,
             -1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0,
@@ -36,18 +37,23 @@ namespace Core {
         };
 
         skyboxMesh->enableAttribute(Core::StandardAttribute::Position);
-        Core::Bool positionInited = skyboxMesh->initVertexPositions();
+        Bool positionInited = skyboxMesh->initVertexPositions();
         ASSERT(positionInited, "Unable to initialize skybox mesh vertex positions.");
         skyboxMesh->getVertexPositions()->store(vertexPositions);
 
         WeakPointer<SkyboxMaterial> skyboxMaterial = Engine::instance()->createMaterial<SkyboxMaterial>();
+       // WeakPointer<BasicMaterial> skyboxMaterial = Engine::instance()->createMaterial<BasicMaterial>();
         skyboxMaterial->build();
         skyboxMaterial->setTexture(skyboxTexture);
+        skyboxMaterial->setCullFace(RenderState::CullFace::Front);
 
-        WeakPointer<Core::RenderableContainer<Mesh>> skyboxObj = Engine::instance()->createObject3D<RenderableContainer<Mesh>>();
+        this->skyboxObj = Engine::instance()->createObject3D<RenderableContainer<Mesh>>();
 
-        WeakPointer<Core::MeshRenderer> skyboxRenderer = Engine::instance()->createRenderer<Core::MeshRenderer>(skyboxMaterial, skyboxObj);
-        skyboxObj->addRenderable(skyboxMesh);
+        WeakPointer<MeshRenderer> skyboxRenderer = Engine::instance()->createRenderer<MeshRenderer>(skyboxMaterial, skyboxObj);
+        this->skyboxObj->addRenderable(skyboxMesh);
     }
 
+     WeakPointer<Core::RenderableContainer<Mesh>> Skybox::getSkyboxObject() {
+         return this->skyboxObj;
+     }
 }

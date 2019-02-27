@@ -138,9 +138,9 @@ namespace Core {
             "out vec4 TexCoord0;\n"
             "void main()\n"
             "{\n"
-            "    TexCoord0 = POSITION;\n"
-            "    vec3 vWorldPos = mat3( " + VIEW_MATRIX + " * " + MODEL_MATRIX + ") * " + POSITION + ".xyz;\n"
-            "    gl_Position = (" + PROJECTION_MATRIX + " * vec4(vWorldPos, 1.0)).xyww;\n"
+            "    TexCoord0 = " + POSITION + ";\n"
+            "    vec4 vWorldPos = " + VIEW_MATRIX + " * " + MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    gl_Position = (" + PROJECTION_MATRIX + " * vWorldPos).xyww;\n"
             "}\n";
 
         this->Skybox_fragment =   

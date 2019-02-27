@@ -200,6 +200,20 @@ namespace Core {
 
         graphics->clearActiveRenderTarget(clearColorBuffer, clearDepthBuffer, clearStencilBuffer); 
 
+        if (viewDescriptor.skybox != nullptr) {
+            WeakPointer<BaseObjectRenderer> objectRenderer = viewDescriptor.skybox->getSkyboxObject()->getBaseRenderer();
+            if (objectRenderer) {
+                ViewDescriptor skyboxView = viewDescriptor;
+                std::vector<WeakPointer<Light>> dummyLights;
+                skyboxView.viewMatrix.setTranslation(0.0f, 0.0f, 0.0f);
+                skyboxView.viewInverseMatrix.copy(skyboxView.viewMatrix);
+                skyboxView.viewInverseMatrix.invert();
+                skyboxView.viewInverseTransposeMatrix.copy(skyboxView.viewInverseMatrix);
+                skyboxView.viewInverseTransposeMatrix.transpose();
+                objectRenderer->forwardRender(skyboxView, dummyLights);
+            }
+        }
+
         for (auto object : objectList) {
             std::shared_ptr<Object3D> objectShared = object.lock();
             std::shared_ptr<BaseRenderableContainer> containerPtr = std::dynamic_pointer_cast<BaseRenderableContainer>(objectShared);
@@ -298,6 +312,9 @@ namespace Core {
         this->getViewDescriptor(camera->getOwner()->getTransform().getWorldMatrix(),
                                 camera->getProjectionMatrix(), camera->getAutoClearRenderBuffers(), viewDescriptor);
         viewDescriptor.renderTarget = cameraRenderTarget;
+        if (camera->isSkyboxEnabled()) {
+            viewDescriptor.skybox = &camera->getSkybox();
+        }
     }
 
     void Renderer::getViewDescriptor(const Matrix4x4& worldMatrix, const Matrix4x4& projectionMatrix,
@@ -309,6 +326,7 @@ namespace Core {
         viewDescriptor.viewInverseTransposeMatrix.copy(viewDescriptor.viewInverseMatrix);
         viewDescriptor.viewInverseTransposeMatrix.transpose();
         viewDescriptor.clearRenderBuffers = clearBuffers;
+        viewDescriptor.skybox = nullptr;
     }
 
     void Renderer::processScene(WeakPointer<Scene> scene, 
