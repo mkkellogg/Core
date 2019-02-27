@@ -1,7 +1,4 @@
 #include "Skybox.h"
-#include "../Engine.h"
-#include "../common/types.h"
-#include "../util/WeakPointer.h"
 #include "../material/StandardAttributes.h"
 #include "../material/SkyboxMaterial.h"
 #include "../geometry/Mesh.h"
@@ -13,7 +10,7 @@ namespace Core {
 
     }
 
-    void Skybox::build() {
+    void Skybox::build(WeakPointer<CubeTexture> skyboxTexture) {
         WeakPointer<Core::Mesh> skyboxMesh(Engine::instance()->createMesh(36, false));
         skyboxMesh->init();
 
@@ -45,6 +42,7 @@ namespace Core {
 
         WeakPointer<SkyboxMaterial> skyboxMaterial = Engine::instance()->createMaterial<SkyboxMaterial>();
         skyboxMaterial->build();
+        skyboxMaterial->setTexture(skyboxTexture);
 
         WeakPointer<Core::RenderableContainer<Mesh>> skyboxObj = Engine::instance()->createObject3D<RenderableContainer<Mesh>>();
 
