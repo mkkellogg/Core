@@ -164,7 +164,8 @@ namespace Core {
        this->bottom = other->bottom;
        this->left = other->left;
        this->right = other->right;
-
+       this->skybox = other->skybox;
+       this->skyboxEnabled = other->skyboxEnabled;
        this->projectionMatrix.copy(other->projectionMatrix);
 
        // TODO: Do we need a deep copy here?
@@ -174,6 +175,10 @@ namespace Core {
 
     void Camera::buildSkybox(WeakPointer<CubeTexture> texture) {
         this->skybox.build(texture);
+    }
+
+    Skybox& Camera::getSkybox() {
+        return this->skybox;
     }
 
     void Camera::setSkyboxEnabled(Bool enabled) {
