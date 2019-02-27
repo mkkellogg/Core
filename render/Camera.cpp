@@ -17,7 +17,7 @@ namespace Core {
     const Real Camera::DEFAULT_NEARP = 0.1;
     const Real Camera::DEFAULT_FARP = 100.0;
 
-    Camera::Camera(WeakPointer<Object3D> owner): Object3DComponent(owner) {
+    Camera::Camera(WeakPointer<Object3D> owner): Object3DComponent(owner), skyboxEnabled(false) {
         this->setAutoClearRenderBuffer(RenderBufferType::Color, true);
         this->setAutoClearRenderBuffer(RenderBufferType::Depth, true);
         this->setAutoClearRenderBuffer(RenderBufferType::Stencil, true);
@@ -170,6 +170,18 @@ namespace Core {
        // TODO: Do we need a deep copy here?
        this->renderTarget = other->renderTarget;
        this->clearRenderBuffers = other->clearRenderBuffers;
+    }
+
+    void Camera::buildSkybox(WeakPointer<CubeTexture> texture) {
+        this->skybox.build(texture);
+    }
+
+    void Camera::setSkyboxEnabled(Bool enabled) {
+        this->skyboxEnabled = enabled;
+    }
+
+    Bool Camera::isSkyboxEnabled() {
+        return this->skyboxEnabled;
     }
 
     void Camera::buildPerspectiveProjectionMatrix(Real fov, Real ratio, Real nearP, Real farP, Matrix4x4& out) {
