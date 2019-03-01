@@ -1,7 +1,10 @@
 #include "ShaderGL.h"
+
 #include <stdlib.h>
 #include <string.h>
+
 #include "../common/debug.h"
+#include "../util/String.h"
 
 namespace Core {
 
@@ -168,7 +171,7 @@ namespace Core {
                 }
             }
             glDeleteShader(shader);
-            msg += src;
+            msg += String::addLineNumbers(src);
             msg += "\n\n";            
             throw ShaderCompilationException(msg);
             return 0;
