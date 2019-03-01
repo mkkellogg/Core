@@ -97,23 +97,12 @@ namespace Core {
             shader->setUniformMatrix4(viewInverseTransposeMatrixLoc, viewInverseTransposeMatrix);
         }
 
-        Int32 lightRangeLoc = material->getShaderLocation(StandardUniform::LightRange);
-        Int32 lightTypeLoc = material->getShaderLocation(StandardUniform::LightType);
-        Int32 lightIntensityLoc = material->getShaderLocation(StandardUniform::LightIntensity);
-        Int32 lightColorLoc = material->getShaderLocation(StandardUniform::LightColor);
-        Int32 lightEnabledLoc = material->getShaderLocation(StandardUniform::LightEnabled);
-
-        Int32 lightMatrixLoc = material->getShaderLocation(StandardUniform::LightMatrix);
-        Int32 lightAngularShadowBiasLoc = material->getShaderLocation(StandardUniform::LightAngularShadowBias);
-        Int32 lightConstantShadowBiasLoc = material->getShaderLocation(StandardUniform::LightConstantShadowBias);
-        Int32 lightShadowMapSizeLoc = material->getShaderLocation(StandardUniform::LightShadowMapSize);
-        Int32 lightShadowSoftnessLoc = material->getShaderLocation(StandardUniform::LightShadowSoftness);
-        Int32 lightNearPlaneLoc = material->getShaderLocation(StandardUniform::LightNearPlane);
-        Int32 lightCountLoc = material->getShaderLocation(StandardUniform::LightCount);
-
         UInt32 currentTextureSlot = material->textureCount();
 
+        Int32 lightEnabledLoc = material->getShaderLocation(StandardUniform::LightEnabled);
+
         if (lights.size() > 0) {
+
             if (lightEnabledLoc >= 0) {
                 shader->setUniform1i(lightEnabledLoc, 1);
             }
@@ -134,6 +123,19 @@ namespace Core {
                         graphics->setBlendingFunction(RenderState::BlendingMethod::One, RenderState::BlendingMethod::One);
                     }
                 }
+
+                Int32 lightRangeLoc = material->getShaderLocation(StandardUniform::LightRange, 0);
+                Int32 lightTypeLoc = material->getShaderLocation(StandardUniform::LightType, 0);
+                Int32 lightIntensityLoc = material->getShaderLocation(StandardUniform::LightIntensity, 0);
+                Int32 lightColorLoc = material->getShaderLocation(StandardUniform::LightColor, 0);
+            
+                Int32 lightMatrixLoc = material->getShaderLocation(StandardUniform::LightMatrix, 0);
+                Int32 lightAngularShadowBiasLoc = material->getShaderLocation(StandardUniform::LightAngularShadowBias, 0);
+                Int32 lightConstantShadowBiasLoc = material->getShaderLocation(StandardUniform::LightConstantShadowBias, 0);
+                Int32 lightShadowMapSizeLoc = material->getShaderLocation(StandardUniform::LightShadowMapSize, 0);
+                Int32 lightShadowSoftnessLoc = material->getShaderLocation(StandardUniform::LightShadowSoftness, 0);
+                Int32 lightNearPlaneLoc = material->getShaderLocation(StandardUniform::LightNearPlane, 0);
+                Int32 lightCountLoc = material->getShaderLocation(StandardUniform::LightCount, 0);
 
                 if (lightCountLoc >= 0) {
                     shader->setUniform1i(lightCountLoc, 1);

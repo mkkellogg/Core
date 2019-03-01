@@ -21,6 +21,7 @@ const std::string PROJECTION_MATRIX = _un(Core::StandardUniform::ProjectionMatri
 
 const std::string MAX_CASCADES = std::to_string(Core::Constants::MaxDirectionalCascades);
 const std::string MAX_LIGHTS = std::to_string(Core::Constants::MaxShaderLights);
+const std::string MAX_CASCADES_LIGHTS = std::to_string(Core::Constants::MaxShaderLights * Core::Constants::MaxDirectionalCascades);
 const std::string LIGHT_COUNT = _un(Core::StandardUniform::LightCount);
 const std::string LIGHT_POSITION = _un(Core::StandardUniform::LightPosition);
 const std::string LIGHT_DIRECTION = _un(Core::StandardUniform::LightDirection);
@@ -57,30 +58,56 @@ const std::string MODEL_INVERSE_TRANSPOSE_MATRIX_DEF = "uniform mat4 " +  MODEL_
 const std::string VIEW_MATRIX_DEF = "uniform mat4 " +  VIEW_MATRIX + ";\n";
 const std::string PROJECTION_MATRIX_DEF = "uniform mat4 " +  PROJECTION_MATRIX + ";\n";
 
+
+const std::string MAX_CASCADES_SINGLE_DEF = "const int MAX_CASCADES =" + MAX_CASCADES + ";\n";
+const std::string MAX_LIGHTS_SINGLE_DEF = "const int MAX_LIGHTS = 1;\n";
+const std::string LIGHT_COUNT_SINGLE_DEF = "uniform int " + LIGHT_COUNT + ";\n";
+const std::string LIGHT_POSITION_SINGLE_DEF = "uniform vec4 " + LIGHT_POSITION + "[1];\n";
+const std::string LIGHT_DIRECTION_SINGLE_DEF = "uniform vec4 " + LIGHT_DIRECTION + "[1];\n";
+const std::string LIGHT_COLOR_SINGLE_DEF = "uniform vec4 " + LIGHT_COLOR + "[1];\n";
+const std::string LIGHT_INTENSITY_SINGLE_DEF = "uniform float " + LIGHT_INTENSITY + "[1];\n";
+const std::string LIGHT_ATTENUATION_SINGLE_DEF = "uniform float " + LIGHT_ATTENUATION + "[1];\n";
+const std::string LIGHT_TYPE_SINGLE_DEF = "uniform int " + LIGHT_TYPE + "[1];\n";
+const std::string LIGHT_RANGE_SINGLE_DEF = "uniform float " + LIGHT_RANGE + "[1];\n";
+const std::string LIGHT_ENABLED_SINGLE_DEF = "uniform int " + LIGHT_ENABLED + "[1];\n";
+const std::string LIGHT_MATRIX_SINGLE_DEF = "uniform mat4 " + LIGHT_MATRIX + "[1];\n";
+const std::string LIGHT_VIEW_PROJECTION_SINGLE_DEF = "uniform mat4 " + LIGHT_VIEW_PROJECTION + "[" + MAX_CASCADES + "];\n";
+
+const std::string LIGHT_CASCADE_COUNT_SINGLE_DEF = "uniform int " + LIGHT_CASCADE_COUNT + "[" + MAX_CASCADES + "];\n";
+const std::string LIGHT_SHADOW_MAP_SINGLE_DEF = "uniform sampler2DShadow " + LIGHT_SHADOW_MAP + "[" + MAX_CASCADES + "];\n";
+const std::string LIGHT_CASCADE_END_SINGLE_DEF = "uniform float " + LIGHT_CASCADE_END + "[" + MAX_CASCADES + "];\n";
+const std::string LIGHT_SHADOW_MAP_ASPECT_SINGLE_DEF = "uniform float " + LIGHT_SHADOW_MAP_ASPECT + "[" + MAX_CASCADES + "];\n";
+const std::string LIGHT_SHADOW_CUBE_MAP_SINGLE_DEF = "uniform samplerCube " + LIGHT_SHADOW_CUBE_MAP + "[1];\n";
+const std::string LIGHT_CONSTANT_SHADOW_BIAS_SINGLE_DEF = "uniform float " + LIGHT_CONSTANT_SHADOW_BIAS + "[1];\n";
+const std::string LIGHT_ANGULAR_SHADOW_BIAS_SINGLE_DEF ="uniform float " + LIGHT_ANGULAR_SHADOW_BIAS + "[1];\n";
+const std::string LIGHT_SHADOW_MAP_SIZE_SINGLE_DEF = "uniform float " + LIGHT_SHADOW_MAP_SIZE + "[1];\n";
+const std::string LIGHT_SHADOW_SOFTNESS_SINGLE_DEF = "uniform int " + LIGHT_SHADOW_SOFTNESS + "[1];\n";
+const std::string LIGHT_NEAR_PLANE_SINGLE_DEF = "uniform float " + LIGHT_NEAR_PLANE + "[1];\n";
+
 const std::string MAX_CASCADES_DEF = "const int MAX_CASCADES =" + MAX_CASCADES + ";\n";
 const std::string MAX_LIGHTS_DEF = "const int MAX_LIGHTS =" + MAX_LIGHTS + ";\n";
-const std::string LIGHT_COUNT_DEF = "uniform vec4 " + LIGHT_COUNT + ";\n";
-const std::string LIGHT_POSITION_DEF = "uniform vec4 " + LIGHT_POSITION + ";\n";
-const std::string LIGHT_DIRECTION_DEF = "uniform vec4 " + LIGHT_DIRECTION + ";\n";
-const std::string LIGHT_COLOR_DEF = "uniform vec4 " + LIGHT_COLOR + ";\n";
-const std::string LIGHT_INTENSITY_DEF = "uniform float " + LIGHT_INTENSITY + ";\n";
-const std::string LIGHT_ATTENUATION_DEF = "uniform float " + LIGHT_ATTENUATION + ";\n";;
-const std::string LIGHT_TYPE_DEF = "uniform int " + LIGHT_TYPE + ";\n";
-const std::string LIGHT_RANGE_DEF = "uniform float " + LIGHT_RANGE + ";\n";
-const std::string LIGHT_ENABLED_DEF = "uniform int " + LIGHT_ENABLED + ";\n";
-const std::string LIGHT_MATRIX_DEF = "uniform mat4 " + LIGHT_MATRIX + ";\n";
-const std::string LIGHT_VIEW_PROJECTION_DEF = "uniform mat4 " + LIGHT_VIEW_PROJECTION + "[" + MAX_CASCADES + "];\n";
+const std::string LIGHT_COUNT_DEF = "uniform int " + LIGHT_COUNT + ";\n";
+const std::string LIGHT_POSITION_DEF = "uniform vec4 " + LIGHT_POSITION + "[" + MAX_LIGHTS + "];\n";
+const std::string LIGHT_DIRECTION_DEF = "uniform vec4 " + LIGHT_DIRECTION + "[" + MAX_LIGHTS + "];\n";
+const std::string LIGHT_COLOR_DEF = "uniform vec4 " + LIGHT_COLOR + "[" + MAX_LIGHTS + "];\n";
+const std::string LIGHT_INTENSITY_DEF = "uniform float " + LIGHT_INTENSITY + "[" + MAX_LIGHTS + "];\n";
+const std::string LIGHT_ATTENUATION_DEF = "uniform float " + LIGHT_ATTENUATION + "[" + MAX_LIGHTS + "];\n";;
+const std::string LIGHT_TYPE_DEF = "uniform int " + LIGHT_TYPE + "[" + MAX_LIGHTS + "];\n";
+const std::string LIGHT_RANGE_DEF = "uniform float " + LIGHT_RANGE + "[" + MAX_LIGHTS + "];\n";
+const std::string LIGHT_ENABLED_DEF = "uniform int " + LIGHT_ENABLED + "[" + MAX_LIGHTS + "];\n";
+const std::string LIGHT_MATRIX_DEF = "uniform mat4 " + LIGHT_MATRIX + "[" + MAX_LIGHTS + "];\n";
+const std::string LIGHT_VIEW_PROJECTION_DEF = "uniform mat4 " + LIGHT_VIEW_PROJECTION + "[" + MAX_CASCADES_LIGHTS + "];\n";
 
-const std::string LIGHT_CASCADE_COUNT_DEF = "uniform int " + LIGHT_CASCADE_COUNT + ";\n";
-const std::string LIGHT_SHADOW_MAP_DEF = "uniform sampler2DShadow " + LIGHT_SHADOW_MAP + "[" + MAX_CASCADES + "];\n";
-const std::string LIGHT_CASCADE_END_DEF = "uniform float " + LIGHT_CASCADE_END + "[" + MAX_CASCADES + "];\n";
-const std::string LIGHT_SHADOW_MAP_ASPECT_DEF = "uniform float " + LIGHT_SHADOW_MAP_ASPECT + "[" + MAX_CASCADES + "];\n";
-const std::string LIGHT_SHADOW_CUBE_MAP_DEF = "uniform samplerCube " + LIGHT_SHADOW_CUBE_MAP + ";\n";
-const std::string LIGHT_CONSTANT_SHADOW_BIAS_DEF = "uniform float " + LIGHT_CONSTANT_SHADOW_BIAS + ";\n";
-const std::string LIGHT_ANGULAR_SHADOW_BIAS_DEF ="uniform float " + LIGHT_ANGULAR_SHADOW_BIAS + ";\n";
-const std::string LIGHT_SHADOW_MAP_SIZE_DEF = "uniform float " + LIGHT_SHADOW_MAP_SIZE + ";\n";
-const std::string LIGHT_SHADOW_SOFTNESS_DEF = "uniform int " + LIGHT_SHADOW_SOFTNESS + ";\n";
-const std::string LIGHT_NEAR_PLANE_DEF = "uniform float " + LIGHT_NEAR_PLANE + ";\n";
+const std::string LIGHT_CASCADE_COUNT_DEF = "uniform int " + LIGHT_CASCADE_COUNT + "[" + MAX_CASCADES_LIGHTS + "];\n";
+const std::string LIGHT_SHADOW_MAP_DEF = "uniform sampler2DShadow " + LIGHT_SHADOW_MAP + "[" + MAX_CASCADES_LIGHTS + "];\n";
+const std::string LIGHT_CASCADE_END_DEF = "uniform float " + LIGHT_CASCADE_END + "[" + MAX_CASCADES_LIGHTS + "];\n";
+const std::string LIGHT_SHADOW_MAP_ASPECT_DEF = "uniform float " + LIGHT_SHADOW_MAP_ASPECT + "[" + MAX_CASCADES_LIGHTS + "];\n";
+const std::string LIGHT_SHADOW_CUBE_MAP_DEF = "uniform samplerCube " + LIGHT_SHADOW_CUBE_MAP + "[" + MAX_LIGHTS + "];\n";
+const std::string LIGHT_CONSTANT_SHADOW_BIAS_DEF = "uniform float " + LIGHT_CONSTANT_SHADOW_BIAS + "[" + MAX_LIGHTS + "];\n";
+const std::string LIGHT_ANGULAR_SHADOW_BIAS_DEF ="uniform float " + LIGHT_ANGULAR_SHADOW_BIAS + "[" + MAX_LIGHTS + "];\n";
+const std::string LIGHT_SHADOW_MAP_SIZE_DEF = "uniform float " + LIGHT_SHADOW_MAP_SIZE + "[" + MAX_LIGHTS + "];\n";
+const std::string LIGHT_SHADOW_SOFTNESS_DEF = "uniform int " + LIGHT_SHADOW_SOFTNESS + "[" + MAX_LIGHTS + "];\n";
+const std::string LIGHT_NEAR_PLANE_DEF = "uniform float " + LIGHT_NEAR_PLANE + "[" + MAX_LIGHTS + "];\n";
 
 namespace Core {
 
@@ -98,6 +125,18 @@ namespace Core {
         this->setShader(ShaderType::Vertex, "Outline", ShaderManagerGL::Outline_vertex);
         this->setShader(ShaderType::Geometry, "Outline", ShaderManagerGL::Outline_geometry);
         this->setShader(ShaderType::Fragment, "Outline", ShaderManagerGL::Outline_fragment);
+
+        this->setShader(ShaderType::Vertex, "LightingHeaderSingle", ShaderManagerGL::Lighting_Header_Single_vertex);
+        this->setShader(ShaderType::Fragment, "LightingHeaderSingle", ShaderManagerGL::Lighting_Header_Single_fragment);
+
+        this->setShader(ShaderType::Vertex, "LightingHeaderMulti", ShaderManagerGL::Lighting_Header_Multi_vertex);
+        this->setShader(ShaderType::Fragment, "LightingHeaderMulti", ShaderManagerGL::Lighting_Header_Multi_fragment);
+
+        this->setShader(ShaderType::Vertex, "LightingSingle", ShaderManagerGL::Lighting_Single_vertex);
+        this->setShader(ShaderType::Fragment, "LightingSingle", ShaderManagerGL::Lighting_Single_fragment);
+
+        this->setShader(ShaderType::Vertex, "LightingMulti", ShaderManagerGL::Lighting_Multi_vertex);
+        this->setShader(ShaderType::Fragment, "LightingMulti", ShaderManagerGL::Lighting_Multi_fragment);
 
         this->setShader(ShaderType::Vertex, "Lighting", ShaderManagerGL::Lighting_vertex);
         this->setShader(ShaderType::Fragment, "Lighting", ShaderManagerGL::Lighting_fragment);
@@ -269,21 +308,42 @@ namespace Core {
             "   out_color = color;\n"
             "}\n";
 
-        this->Lighting_vertex =
+        this->Lighting_Header_Multi_vertex =
             MAX_CASCADES_DEF
             + MAX_LIGHTS_DEF
             + LIGHT_COUNT_DEF
             + LIGHT_CASCADE_COUNT_DEF
             + LIGHT_VIEW_PROJECTION_DEF +
-            "out vec4 _core_lightSpacePos[MAX_CASCADES];\n"
-            "out float _core_viewSpacePosZ;\n"
-            "#define TRANSFER_LIGHTING(localPos, clipSpacePos, viewSpacePos) "
-            "for (int i = 0 ; i < " + LIGHT_CASCADE_COUNT + "; i++) { "
-            "    _core_lightSpacePos[i] = " + LIGHT_VIEW_PROJECTION + "[i] * " + MODEL_MATRIX + " * (localPos); "
-            "} "
-            "_core_viewSpacePosZ = (viewSpacePos).z;\n";
+            "out vec4 _core_lightSpacePos[" + MAX_CASCADES_LIGHTS + "];\n"
+            "out float _core_viewSpacePosZ[" + MAX_LIGHTS + "];\n";
 
-        this->Lighting_fragment =
+        this->Lighting_Header_Single_vertex =
+            MAX_CASCADES_SINGLE_DEF
+            + MAX_LIGHTS_SINGLE_DEF
+            + LIGHT_COUNT_SINGLE_DEF
+            + LIGHT_CASCADE_COUNT_SINGLE_DEF
+            + LIGHT_VIEW_PROJECTION_SINGLE_DEF +
+            "out vec4 _core_lightSpacePos[" + MAX_CASCADES + "];\n"
+            "out float _core_viewSpacePosZ[1];\n";
+
+         this->Lighting_Single_vertex =
+            "#include \"LightingHeaderSingle\" \n"
+            "#include \"Lighting\" \n";
+
+         this->Lighting_Multi_vertex =
+            "#include \"LightingHeaderMulti\" \n"
+            "#include \"Lighting\" \n";
+
+        this->Lighting_vertex = 
+            "#define TRANSFER_LIGHTING(localPos, clipSpacePos, viewSpacePos) "
+            "for (int l = 0 ; l < " + MAX_CASCADES + " * " + LIGHT_COUNT + "; l++) { "
+            "    _core_lightSpacePos[l] = " + LIGHT_VIEW_PROJECTION + "[l] * " + MODEL_MATRIX + " * (localPos); "
+            "}"
+            "for (int i = 0 ; i < " + LIGHT_COUNT + "; i++) { "
+            "_core_viewSpacePosZ[i] = (viewSpacePos).z;"
+            "}";
+
+        this->Lighting_Header_Multi_fragment =
             MAX_CASCADES_DEF
             + MAX_LIGHTS_DEF
             + LIGHT_COUNT_DEF
@@ -304,21 +364,54 @@ namespace Core {
             + LIGHT_COLOR_DEF
             + LIGHT_SHADOW_MAP_SIZE_DEF
             + LIGHT_NEAR_PLANE_DEF +
-            "in float _core_viewSpacePosZ;\n"
-            "in vec4 _core_lightSpacePos[MAX_CASCADES];\n"
+            "in float _core_viewSpacePosZ[" + MAX_LIGHTS + "];\n"
+            "in vec4 _core_lightSpacePos[" + MAX_CASCADES_LIGHTS + "];\n";
 
-            "float calDirShadowFactorSingleIndex(int index, vec2 uv, float fragDepth, float angularBias) { \n"
-            "    vec3 coords = vec3(uv.xy, fragDepth - angularBias - " + LIGHT_CONSTANT_SHADOW_BIAS + "); \n"
+        this->Lighting_Header_Single_fragment =
+            MAX_CASCADES_SINGLE_DEF
+            + MAX_LIGHTS_SINGLE_DEF
+            + LIGHT_COUNT_SINGLE_DEF
+            + LIGHT_CASCADE_COUNT_SINGLE_DEF
+            + LIGHT_SHADOW_MAP_SINGLE_DEF
+            + LIGHT_CASCADE_END_SINGLE_DEF
+            + LIGHT_SHADOW_MAP_ASPECT_SINGLE_DEF
+            + LIGHT_SHADOW_CUBE_MAP_SINGLE_DEF
+            + LIGHT_CONSTANT_SHADOW_BIAS_SINGLE_DEF
+            + LIGHT_ANGULAR_SHADOW_BIAS_SINGLE_DEF
+            + LIGHT_MATRIX_SINGLE_DEF
+            + LIGHT_POSITION_SINGLE_DEF
+            + LIGHT_DIRECTION_SINGLE_DEF
+            + LIGHT_RANGE_SINGLE_DEF
+            + LIGHT_TYPE_SINGLE_DEF
+            + LIGHT_ENABLED_SINGLE_DEF
+            + LIGHT_SHADOW_SOFTNESS_SINGLE_DEF
+            + LIGHT_COLOR_SINGLE_DEF
+            + LIGHT_SHADOW_MAP_SIZE_SINGLE_DEF
+            + LIGHT_NEAR_PLANE_SINGLE_DEF +
+            "in float _core_viewSpacePosZ[1];\n"
+            "in vec4 _core_lightSpacePos[" + MAX_CASCADES + "];\n";
+
+        this->Lighting_Single_fragment =
+            "#include \"LightingHeaderSingle\" \n"
+            "#include \"Lighting\" \n";
+
+        this->Lighting_Multi_fragment =
+            "#include \"LightingHeaderMulti\" \n"
+            "#include \"Lighting\" \n";
+
+        this->Lighting_fragment =
+            "float calDirShadowFactorSingleIndex(int index, vec2 uv, float fragDepth, float angularBias, int lightIndex) { \n"
+            "    vec3 coords = vec3(uv.xy, fragDepth - angularBias - " + LIGHT_CONSTANT_SHADOW_BIAS + "[lightIndex]); \n"
             "    float shadowDepth = clamp(texture(" + LIGHT_SHADOW_MAP + "[index], coords), 0.0, 1.0); \n"
             "    return (1.0-shadowDepth); \n"
             "} \n"
 
-            "float calcDirShadowFactor(int cascadeIndex, vec4 lSpacePos, float angularBias, vec4 fragPos)\n"
+            "float calcDirShadowFactor(int cascadeIndex, vec4 lSpacePos, float angularBias, vec4 fragPos, int lightIndex)\n"
             "{ \n"
             "    vec3 projCoords = lSpacePos.xyz / lSpacePos.w; \n"
             "    vec3 uvCoords = (projCoords * 0.5) + vec3(0.5, 0.5, 0.5); \n"
-            "    float px = 1.0 / " + LIGHT_SHADOW_MAP_SIZE + "; \n"
-            "    float py =  " + LIGHT_SHADOW_MAP_ASPECT + "[cascadeIndex] / " + LIGHT_SHADOW_MAP_SIZE + "; \n"
+            "    float px = 1.0 / " + LIGHT_SHADOW_MAP_SIZE + "[lightIndex]; \n"
+            "    float py =  " + LIGHT_SHADOW_MAP_ASPECT + "[cascadeIndex] / " + LIGHT_SHADOW_MAP_SIZE + "[lightIndex]; \n"
 
             "    float shadowFactor = 0.0; \n"
             "    vec2 uv = uvCoords.xy; \n"
@@ -327,35 +420,36 @@ namespace Core {
             "    if (uvCoords.x < 0 || uvCoords.x > 1.0) return 0.0; \n"
             "    if (uvCoords.y < 0 || uvCoords.y > 1.0) return 0.0; \n"
 
-            "    if (" + LIGHT_SHADOW_SOFTNESS + " == 2 || " + LIGHT_SHADOW_SOFTNESS + " == 1) { \n"
-            "        for (int y = -" + LIGHT_SHADOW_SOFTNESS + " ; y <= " + LIGHT_SHADOW_SOFTNESS + " ; y++) { \n"
-            "            for (int x = -" + LIGHT_SHADOW_SOFTNESS + " ; x <= " + LIGHT_SHADOW_SOFTNESS + " ; x++) { \n"
-            "                shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x + x * px, uv.y + y * py), z, angularBias); \n"
+            "    if (" + LIGHT_SHADOW_SOFTNESS + "[lightIndex] == 2 || " + LIGHT_SHADOW_SOFTNESS + "[lightIndex] == 1) { \n"
+            "        for (int y = -" + LIGHT_SHADOW_SOFTNESS + "[lightIndex]; y <= " + LIGHT_SHADOW_SOFTNESS + "[lightIndex] ; y++) { \n"
+            "            for (int x = -" + LIGHT_SHADOW_SOFTNESS + "[lightIndex]; x <= " + LIGHT_SHADOW_SOFTNESS + "[lightIndex] ; x++) { \n"
+            "                shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, vec2(uv.x + x * px, uv.y + y * py), z, angularBias, lightIndex); \n"
             "            } \n"
             "        } \n "
-            "        if (" + LIGHT_SHADOW_SOFTNESS + " == 2) shadowFactor /= 25.0; \n"
+            "        if (" + LIGHT_SHADOW_SOFTNESS + "[lightIndex] == 2) shadowFactor /= 25.0; \n"
             "        else shadowFactor /= 9.0; \n"
             "    } \n"
             "    else { \n"
-            "        shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, uv, z, angularBias); \n"
+            "        shadowFactor += calDirShadowFactorSingleIndex(cascadeIndex, uv, z, angularBias, lightIndex); \n"
             "    } \n"
 
             "    return shadowFactor; \n"
             "} \n"
 
-            "vec4 getDirLightColor(vec4 fragPos, float bias) { \n"
+            "vec4 getDirLightColor(vec4 fragPos, float bias, int lightIndex) { \n"
             "    float shadowFactor = 0.0;\n"
-            "    for (int i = 0 ; i < " + LIGHT_CASCADE_COUNT + " ; i++) { \n"
-            "        if (_core_viewSpacePosZ <= " + LIGHT_CASCADE_END + "[i]) { \n"
-            "            shadowFactor = calcDirShadowFactor(i, _core_lightSpacePos[i], bias, fragPos); \n"
+            "    for (int i = 0 ; i < " + LIGHT_CASCADE_COUNT + "[lightIndex]; i++) { \n"
+            "        int offset = lightIndex * " + MAX_CASCADES + " + i;\n"
+            "        if (_core_viewSpacePosZ[lightIndex] <= " + LIGHT_CASCADE_END + "[offset]) { \n"
+            "            shadowFactor = calcDirShadowFactor(i, _core_lightSpacePos[offset], bias, fragPos, lightIndex); \n"
             "            break; \n"
             "        } \n"
             "    } \n"
-            "    return vec4((1.0 - shadowFactor) * " + LIGHT_COLOR + ".rgb, 1.0);\n"      
+            "    return vec4((1.0 - shadowFactor) * " + LIGHT_COLOR + "[lightIndex].rgb, 1.0);\n"      
             "} \n"
 
-            "float getPointLightShadowFactor(vec3 lightLocalFragPos, float bias) { \n"
-            "   vec4 shadowDepthVec = texture(" + LIGHT_SHADOW_CUBE_MAP + ", lightLocalFragPos);\n"
+            "float getPointLightShadowFactor(vec3 lightLocalFragPos, float bias, int lightIndex) { \n"
+            "   vec4 shadowDepthVec = texture(" + LIGHT_SHADOW_CUBE_MAP + "[lightIndex], lightLocalFragPos);\n"
             "   float shadowDepth = shadowDepthVec.r;\n"
             "   float shadowFactor = 0.0; \n"
             "   if (shadowDepth + bias > length(lightLocalFragPos) || shadowDepth < .001) {\n"
@@ -364,9 +458,9 @@ namespace Core {
             "   return shadowFactor;\n"
             "} \n"
 
-            "vec4 getPointLightColor(vec3 lightLocalFragPos, float bias) { \n"
-            "    float pxToWorld = 1.0 / " + LIGHT_SHADOW_MAP_SIZE + " * 0.2; \n"
-            "    float near = " + LIGHT_NEAR_PLANE + "; \n"
+            "vec4 getPointLightColor(vec3 lightLocalFragPos, float bias, int lightIndex) { \n"
+            "    float pxToWorld = 1.0 / " + LIGHT_SHADOW_MAP_SIZE + "[lightIndex] * 0.2; \n"
+            "    float near = " + LIGHT_NEAR_PLANE + "[lightIndex]; \n"
 
             "    vec3 absVec = abs(lightLocalFragPos); \n"
             "    float maxComponent = max(max(absVec.x, absVec.y), absVec.z); \n"
@@ -388,46 +482,46 @@ namespace Core {
             "    up = up * pxToWorld * scale; \n"
             
             "    float shadowFactor = 0.0; \n"
-            "    if (" + LIGHT_SHADOW_SOFTNESS + " == 2 || " + LIGHT_SHADOW_SOFTNESS + " == 1) { \n"
-            "        shadowFactor += getPointLightShadowFactor(lightLocalFragPos, bias); \n"
-            "        for (int i = 1; i <= " + LIGHT_SHADOW_SOFTNESS + "; i++) { \n"
-            "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos + right * i, bias); \n"
-            "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos + up * i, bias); \n"
-            "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos - right * i, bias); \n"
-            "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos - up * i, bias); \n"
-            "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos + right * i + up * i, bias); \n"
-            "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos + right * i - up * i, bias); \n"
-            "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos - right * i + up * i, bias); \n"
-            "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos - right * i - up * i, bias); \n"
+            "    if (" + LIGHT_SHADOW_SOFTNESS + "[lightIndex] == 2 || " + LIGHT_SHADOW_SOFTNESS + "[lightIndex] == 1) { \n"
+            "        shadowFactor += getPointLightShadowFactor(lightLocalFragPos, bias, lightIndex); \n"
+            "        for (int i = 1; i <= " + LIGHT_SHADOW_SOFTNESS + "[lightIndex]; i++) { \n"
+            "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos + right * i, bias, lightIndex); \n"
+            "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos + up * i, bias, lightIndex); \n"
+            "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos - right * i, bias, lightIndex); \n"
+            "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos - up * i, bias, lightIndex); \n"
+            "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos + right * i + up * i, bias, lightIndex); \n"
+            "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos + right * i - up * i, bias, lightIndex); \n"
+            "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos - right * i + up * i, bias, lightIndex); \n"
+            "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos - right * i - up * i, bias, lightIndex); \n"
             "        } \n "
-            "        if (" + LIGHT_SHADOW_SOFTNESS + " == 2) shadowFactor /= 17.0; \n"
+            "        if (" + LIGHT_SHADOW_SOFTNESS + "[lightIndex] == 2) shadowFactor /= 17.0; \n"
             "        else shadowFactor /= 9.0; \n"
             "    } \n"
             "    else { \n"
-            "        shadowFactor += getPointLightShadowFactor(lightLocalFragPos, bias); \n"
+            "        shadowFactor += getPointLightShadowFactor(lightLocalFragPos, bias, lightIndex); \n"
             "    } \n"       
            
-            "   return vec4(" + LIGHT_COLOR + ".rgb * shadowFactor, 1.0);\n"
+            "   return vec4(" + LIGHT_COLOR + "[lightIndex].rgb * shadowFactor, 1.0);\n"
             "}\n"
 
-            "vec4 litColor(in vec4 baseColor, in vec4 fragPos, in vec3 fragNormal) {\n"
-            "    if (" + LIGHT_ENABLED + " != 0) {\n"
-            "        if (" + LIGHT_TYPE + " == 0) {\n"
-            "            return vec4(baseColor.rgb * " + LIGHT_COLOR + ".rgb, baseColor.a);\n"
+            "vec4 litColor(in vec4 baseColor, in vec4 fragPos, in vec3 fragNormal, in int lightIndex) {\n"
+            "    if (" + LIGHT_ENABLED + "[lightIndex] != 0) {\n"
+            "        if (" + LIGHT_TYPE + "[lightIndex] == 0) {\n"
+            "            return vec4(baseColor.rgb * " + LIGHT_COLOR + "[lightIndex].rgb, baseColor.a);\n"
             "        }\n"
-            "        else if (" + LIGHT_TYPE + " == 1) {\n"
-            "            vec3 toLight = vec3(-" + LIGHT_DIRECTION + ");\n"
+            "        else if (" + LIGHT_TYPE + "[lightIndex] == 1) {\n"
+            "            vec3 toLight = vec3(-" + LIGHT_DIRECTION + "[lightIndex]);\n"
             "            float baseDot = max(cos(acos(dot(toLight, fragNormal)) * 1.1), 0.0); \n"  
-            "            float bias = (1.0 - baseDot) * " + LIGHT_ANGULAR_SHADOW_BIAS + ";"
-            "            vec4 lightColor = getDirLightColor(fragPos, bias); \n"
+            "            float bias = (1.0 - baseDot) * " + LIGHT_ANGULAR_SHADOW_BIAS + "[lightIndex];"
+            "            vec4 lightColor = getDirLightColor(fragPos, bias, lightIndex); \n"
             "            return vec4(lightColor.rgb * baseColor.rgb * baseDot, baseColor.a);\n"
             "        }\n"
-            "        else if (" + LIGHT_TYPE + " == 2) {\n"
-            "            vec3 lightLocalFragPos = vec3(" + LIGHT_MATRIX + " * fragPos);\n"
-            "            vec3 toLight = normalize(vec3(" + LIGHT_POSITION + " - fragPos));\n"
+            "        else if (" + LIGHT_TYPE + "[lightIndex] == 2) {\n"
+            "            vec3 lightLocalFragPos = vec3(" + LIGHT_MATRIX + "[lightIndex] * fragPos);\n"
+            "            vec3 toLight = normalize(vec3(" + LIGHT_POSITION + "[lightIndex] - fragPos));\n"
             "            float baseDot = max(cos(acos(dot(toLight, fragNormal)) * 1.025), 0.0); \n"
-            "            float bias = (1.0 - baseDot) * " + LIGHT_ANGULAR_SHADOW_BIAS + " + " + LIGHT_CONSTANT_SHADOW_BIAS + ";\n"
-            "            vec4 lightColor = getPointLightColor(lightLocalFragPos, bias);\n"
+            "            float bias = (1.0 - baseDot) * " + LIGHT_ANGULAR_SHADOW_BIAS + "[lightIndex] + " + LIGHT_CONSTANT_SHADOW_BIAS + "[lightIndex];\n"
+            "            vec4 lightColor = getPointLightColor(lightLocalFragPos, bias, lightIndex);\n"
             "            return vec4(lightColor.rgb * baseColor.rgb * baseDot, baseColor.a);\n"
             "        }\n"
             "    }\n"
@@ -559,7 +653,7 @@ namespace Core {
         this->BasicLit_vertex =  
             "#version 330\n"
             "precision highp float;\n"
-            "#include \"Lighting\" \n"
+            "#include \"LightingSingle\" \n"
             + POSITION_DEF
             + COLOR_DEF
             + NORMAL_DEF
@@ -582,7 +676,7 @@ namespace Core {
         this->BasicLit_fragment =   
             "#version 330\n"
             "precision highp float;\n"
-            "#include \"Lighting\"\n"
+            "#include \"LightingSingle\"\n"
             "in vec4 vColor;\n"
             "in vec3 vNormal;\n"
             "in vec4 vPos;\n"
@@ -591,7 +685,7 @@ namespace Core {
             // instead of passing [vColor] directly to the litColor function, we copy it into a new
             // vector. passing it directly causes a weird bug on some platforms/GPUs/versions of Linux
             // where shadows are not rendered
-            "   out_color = litColor(vec4(vColor.r, vColor.g, vColor.b, 1.0), vPos, normalize(vNormal));\n"
+            "   out_color = litColor(vec4(vColor.r, vColor.g, vColor.b, 1.0), vPos, normalize(vNormal), 0);\n"
             "}\n";
 
         this->BasicTextured_vertex =  
@@ -626,7 +720,7 @@ namespace Core {
         this->BasicTexturedLit_vertex =  
             "#version 330\n"
             "precision highp float;\n"
-            "#include \"Lighting\" \n"
+            "#include \"LightingSingle\" \n"
             + POSITION_DEF
             + COLOR_DEF
             + NORMAL_DEF
@@ -657,7 +751,7 @@ namespace Core {
         this->BasicTexturedLit_fragment =   
             "#version 330\n"
             "precision highp float;\n"
-            "#include \"Lighting\"\n"
+            "#include \"LightingSingle\"\n"
             + TEXTURE2D0_DEF +
             "in vec4 vColor;\n"
             "in vec3 vNormal;\n"
@@ -666,7 +760,7 @@ namespace Core {
             "in vec4 vPos;\n"
             "out vec4 out_color;\n"
             "void main() {\n"
-            "   out_color = litColor(texture(" + TEXTURE2D0 + ", vUV), vPos, normalize(vNormal));\n"
+            "   out_color = litColor(texture(" + TEXTURE2D0 + ", vUV), vPos, normalize(vNormal), 0);\n"
             "}\n";
 
         this->BasicCube_vertex =  

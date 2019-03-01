@@ -24,6 +24,18 @@ namespace Core {
         std::string Outline_geometry;
         std::string Outline_fragment;
 
+        std::string Lighting_Header_Single_vertex;
+        std::string Lighting_Header_Single_fragment;
+
+        std::string Lighting_Header_Multi_vertex;
+        std::string Lighting_Header_Multi_fragment;
+
+        std::string Lighting_Single_vertex;
+        std::string Lighting_Single_fragment;
+
+        std::string Lighting_Multi_vertex;
+        std::string Lighting_Multi_fragment;
+
         std::string Lighting_vertex;
         std::string Lighting_fragment;
 
