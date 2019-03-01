@@ -39,7 +39,8 @@ namespace Core {
             "LIGHT_VIEW_PROJECTION",
             "LIGHT_CASCADE_END",
             "LIGHT_CASCADE_COUNT",
-            "LIGHT_NEAR_PLANE"
+            "LIGHT_NEAR_PLANE",
+            "LIGHT_COUNT"
         };
 
         nameToUniform =
@@ -73,7 +74,8 @@ namespace Core {
             {uniformNames[(UInt16)StandardUniform::LightViewProjection],StandardUniform::LightViewProjection},
             {uniformNames[(UInt16)StandardUniform::LightCascadeEnd],StandardUniform::LightCascadeEnd},
             {uniformNames[(UInt16)StandardUniform::LightCascadeCount],StandardUniform::LightCascadeCount},
-            {uniformNames[(UInt16)StandardUniform::LightNearPlane],StandardUniform::LightNearPlane}
+            {uniformNames[(UInt16)StandardUniform::LightNearPlane],StandardUniform::LightNearPlane},
+            {uniformNames[(UInt16)StandardUniform::LightCount],StandardUniform::LightCount}
         };
 
     }

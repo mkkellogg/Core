@@ -20,6 +20,8 @@ const std::string VIEW_MATRIX = _un(Core::StandardUniform::ViewMatrix);
 const std::string PROJECTION_MATRIX = _un(Core::StandardUniform::ProjectionMatrix);
 
 const std::string MAX_CASCADES = std::to_string(Core::Constants::MaxDirectionalCascades);
+const std::string MAX_LIGHTS = std::to_string(Core::Constants::MaxShaderLights);
+const std::string LIGHT_COUNT = _un(Core::StandardUniform::LightCount);
 const std::string LIGHT_POSITION = _un(Core::StandardUniform::LightPosition);
 const std::string LIGHT_DIRECTION = _un(Core::StandardUniform::LightDirection);
 const std::string LIGHT_COLOR = _un(Core::StandardUniform::LightColor);
@@ -56,6 +58,8 @@ const std::string VIEW_MATRIX_DEF = "uniform mat4 " +  VIEW_MATRIX + ";\n";
 const std::string PROJECTION_MATRIX_DEF = "uniform mat4 " +  PROJECTION_MATRIX + ";\n";
 
 const std::string MAX_CASCADES_DEF = "const int MAX_CASCADES =" + MAX_CASCADES + ";\n";
+const std::string MAX_LIGHTS_DEF = "const int MAX_LIGHTS =" + MAX_LIGHTS + ";\n";
+const std::string LIGHT_COUNT_DEF = "uniform vec4 " + LIGHT_COUNT + ";\n";
 const std::string LIGHT_POSITION_DEF = "uniform vec4 " + LIGHT_POSITION + ";\n";
 const std::string LIGHT_DIRECTION_DEF = "uniform vec4 " + LIGHT_DIRECTION + ";\n";
 const std::string LIGHT_COLOR_DEF = "uniform vec4 " + LIGHT_COLOR + ";\n";
@@ -267,6 +271,8 @@ namespace Core {
 
         this->Lighting_vertex =
             MAX_CASCADES_DEF
+            + MAX_LIGHTS_DEF
+            + LIGHT_COUNT_DEF
             + LIGHT_CASCADE_COUNT_DEF
             + LIGHT_VIEW_PROJECTION_DEF +
             "out vec4 _core_lightSpacePos[MAX_CASCADES];\n"
@@ -279,6 +285,8 @@ namespace Core {
 
         this->Lighting_fragment =
             MAX_CASCADES_DEF
+            + MAX_LIGHTS_DEF
+            + LIGHT_COUNT_DEF
             + LIGHT_CASCADE_COUNT_DEF
             + LIGHT_SHADOW_MAP_DEF
             + LIGHT_CASCADE_END_DEF

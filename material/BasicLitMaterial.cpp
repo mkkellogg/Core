@@ -91,6 +91,8 @@ namespace Core {
                 return this->lightShadowSoftnessLocation;
             case StandardUniform::LightNearPlane:
                 return this->lightNearPlaneLocation;
+            case StandardUniform::LightCount:
+                return this->lightCountLocation;
             default:
                 return -1;
         }
@@ -131,6 +133,7 @@ namespace Core {
         newMaterial->lightShadowMapSizeLocation = this->lightShadowMapSizeLocation;
         newMaterial->lightShadowSoftnessLocation = this->lightShadowSoftnessLocation;
         newMaterial->lightNearPlaneLocation = this->lightNearPlaneLocation;
+        newMaterial->lightCountLocation = this->lightCountLocation;
         return newMaterial;
     }
 
@@ -163,5 +166,6 @@ namespace Core {
         this->lightShadowMapSizeLocation = this->shader->getUniformLocation(StandardUniform::LightShadowMapSize);
         this->lightShadowSoftnessLocation = this->shader->getUniformLocation(StandardUniform::LightShadowSoftness);
         this->lightNearPlaneLocation = this->shader->getUniformLocation(StandardUniform::LightNearPlane);
+        this->lightCountLocation = this->shader->getUniformLocation(StandardUniform::LightCount);
     }
 }

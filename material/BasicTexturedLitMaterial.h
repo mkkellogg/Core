@@ -57,5 +57,6 @@ namespace Core {
         Int32 lightShadowMapSizeLocation;
         Int32 lightShadowSoftnessLocation;
         Int32 lightNearPlaneLocation;
+        Int32 lightCountLocation;
     };
 }

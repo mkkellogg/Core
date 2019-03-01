@@ -109,6 +109,7 @@ namespace Core {
         Int32 lightShadowMapSizeLoc = material->getShaderLocation(StandardUniform::LightShadowMapSize);
         Int32 lightShadowSoftnessLoc = material->getShaderLocation(StandardUniform::LightShadowSoftness);
         Int32 lightNearPlaneLoc = material->getShaderLocation(StandardUniform::LightNearPlane);
+        Int32 lightCountLoc = material->getShaderLocation(StandardUniform::LightCount);
 
         UInt32 currentTextureSlot = material->textureCount();
 
@@ -132,6 +133,10 @@ namespace Core {
                         graphics->setBlendingEnabled(true);
                         graphics->setBlendingFunction(RenderState::BlendingMethod::One, RenderState::BlendingMethod::One);
                     }
+                }
+
+                if (lightCountLoc >= 0) {
+                    shader->setUniform1i(lightCountLoc, 1);
                 }
 
                 if (lightColorLoc >= 0) {
