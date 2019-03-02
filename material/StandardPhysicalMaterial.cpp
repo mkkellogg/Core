@@ -11,7 +11,8 @@ namespace Core {
 
     StandardPhysicalMaterial::StandardPhysicalMaterial(WeakPointer<Graphics> graphics): Material(graphics) {
         this->metallic = 0.5f;
-        this->roughness = 0.5f;
+        this->roughness = 0.1f;
+        this->ambientOcclusion = 0.0f;
     }
 
     Bool StandardPhysicalMaterial::build() {
@@ -59,8 +60,6 @@ namespace Core {
                 return this->modelMatrixLocation;
             case StandardUniform::ModelInverseTransposeMatrix:
                 return this->modelInverseTransposeMatrixLocation;
-            case StandardUniform::Texture2D0:
-                return this->textureLocation;
             case StandardUniform::LightPosition:
                 return this->lightPositionLocation;
             case StandardUniform::LightDirection:
@@ -116,23 +115,28 @@ namespace Core {
         this->roughness = roughness;
     }
 
-    void StandardPhysicalMaterial::setTexture(WeakPointer<Texture> texture) {
-        this->texture = texture;
+    void StandardPhysicalMaterial::setAmbientOcclusion(Real ambientOcclusion) {
+        this->ambientOcclusion = ambientOcclusion;
+    }
+
+    void StandardPhysicalMaterial::setAlbedoMap(WeakPointer<Texture> albedoMap) {
+        this->albedoMap = albedoMap;
     }
 
     void StandardPhysicalMaterial::sendCustomUniformsToShader() {
-        if (this->texture) {
-            this->shader->setTexture2D(0, this->texture->getTextureID());
-            this->shader->setUniform1i(this->textureLocation, 0);
+        if (this->albedoMap) {
+            this->shader->setTexture2D(0, this->albedoMap->getTextureID());
+            this->shader->setUniform1i(this->albedoMapLocation, 0);
         }
         this->shader->setUniform1f(this->metallicLocation, this->metallic);
         this->shader->setUniform1f(this->roughnessLocation, this->roughness);
+        this->shader->setUniform1f(this->ambientOcclusion, this->ambientOcclusion);
     }
 
     WeakPointer<Material> StandardPhysicalMaterial::clone() {
         WeakPointer<StandardPhysicalMaterial> newMaterial = Engine::instance()->createMaterial<StandardPhysicalMaterial>(false);
         this->copyTo(newMaterial);
-        newMaterial->texture = this->texture;
+        newMaterial->albedoMap = this->albedoMap;
         newMaterial->positionLocation = this->positionLocation;
         newMaterial->normalLocation = this->normalLocation;
         newMaterial->faceNormalLocation = this->faceNormalLocation;
@@ -142,7 +146,7 @@ namespace Core {
         newMaterial->modelMatrixLocation = this->modelMatrixLocation;
         newMaterial->modelInverseTransposeMatrixLocation = this->modelInverseTransposeMatrixLocation;
         newMaterial->uvLocation = this->uvLocation;
-        newMaterial->textureLocation = this->textureLocation;
+        newMaterial->albedoMapLocation = this->albedoMapLocation;
         newMaterial->lightPositionLocation = this->lightPositionLocation;
         newMaterial->lightDirectionLocation = this->lightDirectionLocation;
         newMaterial->lightRangeLocation = this->lightRangeLocation;
@@ -168,6 +172,7 @@ namespace Core {
         newMaterial->cameraPositionLocation = this->cameraPositionLocation;
         newMaterial->metallicLocation = this->metallicLocation;
         newMaterial->roughnessLocation = this->roughnessLocation;
+        newMaterial->ambientOcclusionLocation = this->ambientOcclusionLocation;
         return newMaterial;
     }
 
@@ -176,7 +181,7 @@ namespace Core {
         this->normalLocation = this->shader->getAttributeLocation(StandardAttribute::Normal);
         this->faceNormalLocation = this->shader->getAttributeLocation(StandardAttribute::FaceNormal);
         this->colorLocation = this->shader->getAttributeLocation(StandardAttribute::Color);
-        this->textureLocation = this->shader->getUniformLocation(StandardUniform::Texture2D0);
+        this->albedoMapLocation = this->shader->getUniformLocation("albedoMap");
         this->uvLocation = this->shader->getAttributeLocation(StandardAttribute::UV0);
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
@@ -208,6 +213,7 @@ namespace Core {
         this->cameraPositionLocation = this->shader->getUniformLocation(StandardUniform::CameraPosition);
         this->metallicLocation = this->shader->getUniformLocation("metallic");
         this->roughnessLocation = this->shader->getUniformLocation("roughness");
+        this->ambientOcclusionLocation = this->shader->getUniformLocation("ambientOcclusion");
     }
 
     UInt32 StandardPhysicalMaterial::textureCount() {

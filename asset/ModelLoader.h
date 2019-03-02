@@ -97,9 +97,7 @@ namespace Core {
         
         static ModelLoader::TextureType convertAITextureKeyToTextureType(Int32 aiTextureKey);
         static int convertTextureTypeToAITextureKey(TextureType textureType);
-        static Bool hasOddReflections(Matrix4x4& mat);                           
-        static const std::string* getBuiltinVariableNameForTextureType(TextureType textureType);
-        static StandardUniform mapTextureTypeToUniform(TextureType textureType);  
+        static Bool hasOddReflections(Matrix4x4& mat);                            
         static StandardAttribute mapTextureTypeToAttribute(TextureType textureType);
         static void convertAssimpMatrix(const aiMatrix4x4& source, Matrix4x4& dest);                  
 #endif

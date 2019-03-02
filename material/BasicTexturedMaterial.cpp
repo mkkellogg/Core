@@ -29,7 +29,7 @@ namespace Core {
         switch (attribute) {
             case StandardAttribute::Position:
                 return this->positionLocation;
-             case StandardAttribute::Normal:
+            case StandardAttribute::Normal:
                 return this->normalLocation;
             case StandardAttribute::Color:
                 return this->colorLocation;
@@ -48,8 +48,6 @@ namespace Core {
                 return this->viewMatrixLocation;
             case StandardUniform::ModelMatrix:
                 return this->modelMatrixLocation;
-            case StandardUniform::Texture2D0:
-                return this->textureLocation;
             default:
                 return -1;
         }
@@ -86,7 +84,7 @@ namespace Core {
         this->normalLocation = this->shader->getAttributeLocation(StandardAttribute::Normal);
         this->colorLocation = this->shader->getAttributeLocation(StandardAttribute::Color);
         this->uvLocation = this->shader->getAttributeLocation(StandardAttribute::UV0);
-        this->textureLocation = this->shader->getUniformLocation(StandardUniform::Texture2D0);
+        this->textureLocation = this->shader->getUniformLocation("twoDtexture");
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
         this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);

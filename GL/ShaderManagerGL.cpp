@@ -12,8 +12,6 @@ const std::string AVERAGED_NORMAL = _an(Core::StandardAttribute::AveragedNormal)
 const std::string FACE_NORMAL = _an(Core::StandardAttribute::FaceNormal);
 const std::string COLOR = _an(Core::StandardAttribute::Color);
 const std::string UV0 = _an(Core::StandardAttribute::UV0);
-const std::string TEXTURE2D0 = _un(Core::StandardUniform::Texture2D0);
-const std::string CUBETEXTURE0 = _un(Core::StandardUniform::CubeTexture0);
 const std::string MODEL_MATRIX = _un(Core::StandardUniform::ModelMatrix);
 const std::string MODEL_INVERSE_TRANSPOSE_MATRIX = _un(Core::StandardUniform::ModelInverseTransposeMatrix);
 const std::string VIEW_MATRIX = _un(Core::StandardUniform::ViewMatrix);
@@ -52,8 +50,6 @@ const std::string AVERAGED_NORMAL_DEF = "in vec4 " +  AVERAGED_NORMAL + ";\n";
 const std::string FACE_NORMAL_DEF = "in vec4 " +  FACE_NORMAL + ";\n";
 const std::string COLOR_DEF = "in vec4 " +  COLOR + ";\n";
 const std::string UV0_DEF = "in vec2 " +  UV0 + ";\n";
-const std::string TEXTURE2D0_DEF = "uniform sampler2D " +  TEXTURE2D0 + ";\n";
-const std::string CUBETEXTURE0_DEF = "uniform samplerCube " +  CUBETEXTURE0 + ";\n";
 const std::string MODEL_MATRIX_DEF = "uniform mat4 " +  MODEL_MATRIX + ";\n";
 const std::string MODEL_INVERSE_TRANSPOSE_MATRIX_DEF = "uniform mat4 " +  MODEL_INVERSE_TRANSPOSE_MATRIX + ";\n";
 const std::string VIEW_MATRIX_DEF = "uniform mat4 " +  VIEW_MATRIX + ";\n";
@@ -202,12 +198,12 @@ namespace Core {
         this->Skybox_fragment =   
             "#version 330\n"
             "precision highp float;\n"
-            + CUBETEXTURE0_DEF +
+            "uniform samplerCube cubeTexture; \n"
             "in vec4 TexCoord0;\n"
             "out vec4 out_color;\n"
             "void main()\n"
             "{\n"
-            "    out_color = texture(" + CUBETEXTURE0 + ", TexCoord0.xyz);\n"
+            "    out_color = texture(cubeTexture, TexCoord0.xyz);\n"
             "}\n";
 
         this->Outline_vertex =
@@ -703,10 +699,11 @@ namespace Core {
             "#version 330\n"
             "precision highp float;\n"
             "#include \"PhysicalLightingSingle\"\n"
-            + TEXTURE2D0_DEF
             + CAMERA_POSITION_DEF +
+            "uniform sampler2D twoDtexture; \n"
             "uniform float metallic; \n"
             "uniform float roughness; \n"
+            "uniform float ambientOcclusion; \n"
             "in vec4 vColor;\n"
             "in vec3 vNormal;\n"
             "in vec3 vFaceNormal;\n"
@@ -714,7 +711,7 @@ namespace Core {
             "in vec4 vWorldPos;\n"
             "out vec4 out_color;\n"
             "void main() {\n"
-            "   out_color = litColorPhysical(0, texture(" + TEXTURE2D0 + ", vUV), vWorldPos, normalize(vNormal), " + CAMERA_POSITION + ", metallic, roughness, 0.0);\n"
+            "   out_color = litColorPhysical(0, texture(twoDtexture, vUV), vWorldPos, normalize(vNormal), " + CAMERA_POSITION + ", metallic, roughness, ambientOcclusion);\n"
             "}\n";
 
         this->Depth_vertex =
@@ -898,12 +895,12 @@ namespace Core {
         this->BasicTextured_fragment =   
             "#version 330\n"
             "precision mediump float;\n"
-            + TEXTURE2D0_DEF + 
+            "uniform sampler2D twoDtexture; \n"
             "in vec4 vColor;\n"
             "in vec2 vUV;\n"
             "out vec4 out_color;\n"
             "void main() {\n"
-            "    vec4 textureColor = texture2D(" + TEXTURE2D0 + ", vUV);\n"
+            "    vec4 textureColor = texture2D(twoDtexture, vUV);\n"
             "    out_color = textureColor;\n"
             "}\n";
 
@@ -942,8 +939,8 @@ namespace Core {
             "#version 330\n"
             "precision highp float;\n"
             "#include \"LightingSingle\"\n"
-            + CAMERA_POSITION_DEF
-            + TEXTURE2D0_DEF +
+            + CAMERA_POSITION_DEF + 
+            "uniform sampler2D twoDtexture; \n"
             "in vec4 vColor;\n"
             "in vec3 vNormal;\n"
             "in vec3 vFaceNormal;\n"
@@ -951,7 +948,7 @@ namespace Core {
             "in vec4 vPos;\n"
             "out vec4 out_color;\n"
             "void main() {\n"
-            "   out_color = litColorBlinnPhong(0, texture(" + TEXTURE2D0 + ", vUV), vPos, normalize(vNormal), " + CAMERA_POSITION + ");\n"
+            "   out_color = litColorBlinnPhong(0, texture(twoDtexture, vUV), vPos, normalize(vNormal), " + CAMERA_POSITION + ");\n"
             "}\n";
 
         this->BasicCube_vertex =  
@@ -975,12 +972,12 @@ namespace Core {
         this->BasicCube_fragment =  
             "#version 330\n"
             "precision mediump float;\n"
-            + CUBETEXTURE0_DEF +
+            "uniform samplerCube cubeTexture; \n"
             "in vec4 vColor;\n"
             "in vec3 vUV;\n"
             "out vec4 out_color;\n"
             "void main() {\n"
-            "    vec4 textureColor = texture(" + CUBETEXTURE0 + ", vUV);\n"
+            "    vec4 textureColor = texture(cubeTexture, vUV);\n"
             "    out_color = textureColor;\n"
             "}\n";
     }

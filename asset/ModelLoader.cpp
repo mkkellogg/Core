@@ -728,21 +728,13 @@ namespace Core {
         // get the Assimp material key for textures of type [textureType]
         UInt32 aiTextureKey = this->convertTextureTypeToAITextureKey(textureType);
 
-        // get the name of the shader uniform that handles textures of [textureType]
-        StandardUniform textureUniform = ModelLoader::mapTextureTypeToUniform(textureType);
-
-        // if we can't find a shader variable for the diffuse texture, then the load of this material has failed
-        if (textureUniform == StandardUniform::_None) {
-            throw ModelLoaderException("ModelLoader::setupMeshSpecificMaterialWithTexture -> Could not locate shader variable for texture.");
-        }
-
         // set the diffuse texture in the material for the mesh specified by [meshIndex]
         WeakPointer<Material> material = materialImportDesc.meshSpecificProperties[meshIndex].material;
 
         // TODO: Need to not have this material hard coded in here....
         WeakPointer<StandardPhysicalMaterial> texturedMaterial = WeakPointer<Material>::dynamicPointerCast<StandardPhysicalMaterial>(material);
 
-        texturedMaterial->setTexture(texture);
+        texturedMaterial->setAlbedoMap(texture);
 
         Int32 mappedIndex;
 
@@ -754,29 +746,6 @@ namespace Core {
             materialImportDesc.meshSpecificProperties[meshIndex].uvMapping[textureType] = 0;
 
         return true;
-    }
-
-    const std::string* ModelLoader::getBuiltinVariableNameForTextureType(TextureType textureType) {
-        StandardUniform uniform = mapTextureTypeToUniform(textureType);
-
-        if (uniform != StandardUniform::_None) {
-            return &StandardUniforms::getUniformName(uniform);
-        }
-
-        return nullptr;
-    }
-
-    StandardUniform ModelLoader::mapTextureTypeToUniform(TextureType textureType) {
-        switch (textureType) {
-            case TextureType::Diffuse:
-                return StandardUniform::Texture2D0;
-                break;
-            default:
-                return StandardUniform::_None;
-                break;
-        }
-
-        return StandardUniform::_None;
     }
 
     ModelLoader::TextureType ModelLoader::convertAITextureKeyToTextureType(Int32 aiTextureKey) {

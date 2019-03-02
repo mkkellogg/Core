@@ -45,7 +45,7 @@ namespace Core {
 
     Int32 BasicTexturedLitMaterial::getShaderLocation(StandardUniform uniform, UInt32 offset) {
         if (offset >= Constants::MaxDirectionalCascades) {
-            throw InvalidArgumentException("BasicLitMaterial::getShaderLocation() -> invalid offset.");
+            throw InvalidArgumentException("BasicTexturedLitMaterial::getShaderLocation() -> invalid offset.");
         }
 
         switch (uniform) {
@@ -57,8 +57,6 @@ namespace Core {
                 return this->modelMatrixLocation;
             case StandardUniform::ModelInverseTransposeMatrix:
                 return this->modelInverseTransposeMatrixLocation;
-            case StandardUniform::Texture2D0:
-                return this->textureLocation;
             case StandardUniform::LightPosition:
                 return this->lightPositionLocation;
             case StandardUniform::LightDirection:
@@ -159,7 +157,7 @@ namespace Core {
         this->normalLocation = this->shader->getAttributeLocation(StandardAttribute::Normal);
         this->faceNormalLocation = this->shader->getAttributeLocation(StandardAttribute::FaceNormal);
         this->colorLocation = this->shader->getAttributeLocation(StandardAttribute::Color);
-        this->textureLocation = this->shader->getUniformLocation(StandardUniform::Texture2D0);
+        this->textureLocation = this->shader->getUniformLocation("twoDtexture");
         this->uvLocation = this->shader->getAttributeLocation(StandardAttribute::UV0);
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);

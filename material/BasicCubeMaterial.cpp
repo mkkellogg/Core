@@ -42,8 +42,6 @@ namespace Core {
                 return this->projectionMatrixLocation;
             case StandardUniform::ViewMatrix:
                 return this->viewMatrixLocation;
-            case StandardUniform::CubeTexture0:
-                return this->cubeTextureLocation;
             default:
                 return -1;
         }
@@ -72,7 +70,7 @@ namespace Core {
     void BasicCubeMaterial::bindShaderVarLocations() {
         this->positionLocation = this->shader->getAttributeLocation(StandardAttribute::Position);
         this->colorLocation = this->shader->getAttributeLocation(StandardAttribute::Color);
-        this->cubeTextureLocation = this->shader->getUniformLocation(StandardUniform::CubeTexture0);
+        this->cubeTextureLocation = this->shader->getUniformLocation("cubeTexture");
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
     }

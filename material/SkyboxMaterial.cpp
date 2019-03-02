@@ -44,8 +44,6 @@ namespace Core {
                 return this->viewMatrixLocation;
             case StandardUniform::ModelMatrix:
                 return this->modelMatrixLocation;
-            case StandardUniform::CubeTexture0:
-                return this->cubeTextureLocation;
             default:
                 return -1;
         }
@@ -75,7 +73,7 @@ namespace Core {
     void SkyboxMaterial::bindShaderVarLocations() {
         this->positionLocation = this->shader->getAttributeLocation(StandardAttribute::Position);
         this->colorLocation = this->shader->getAttributeLocation(StandardAttribute::Color);
-        this->cubeTextureLocation = this->shader->getUniformLocation(StandardUniform::CubeTexture0);
+        this->cubeTextureLocation = this->shader->getUniformLocation("cubeTexture");
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
         this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);

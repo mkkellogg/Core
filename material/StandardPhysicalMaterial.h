@@ -21,7 +21,8 @@ namespace Core {
         virtual WeakPointer<Material> clone() override;
         void setMetallic(Real metallic);
         void setRoughness(Real roughness);
-        void setTexture(WeakPointer<Texture> texture);
+        void setAmbientOcclusion(Real ambientOcclusion);
+        void setAlbedoMap(WeakPointer<Texture> albedoMap);
         virtual UInt32 textureCount() override;
 
     protected:
@@ -30,13 +31,14 @@ namespace Core {
 
         Real metallic;
         Real roughness;
-        WeakPointer<Texture> texture;
+        Real ambientOcclusion;
+        WeakPointer<Texture> albedoMap;
 
         Int32 positionLocation;
         Int32 normalLocation;
         Int32 faceNormalLocation;
         Int32 colorLocation;
-        Int32 textureLocation;
+        Int32 albedoMapLocation;
         Int32 uvLocation;
         Int32 projectionMatrixLocation;
         Int32 viewMatrixLocation;
@@ -66,5 +68,6 @@ namespace Core {
         Int32 cameraPositionLocation;
         Int32 metallicLocation;
         Int32 roughnessLocation;
+        Int32 ambientOcclusionLocation;
     };
 }
