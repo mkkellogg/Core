@@ -64,11 +64,18 @@ namespace Core {
         this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::Color, mesh->getVertexColors());
         this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::UV0, mesh->getVertexUVs0());
 
+        Int32 cameraPositionLoc = material->getShaderLocation(StandardUniform::CameraPosition);
         Int32 projectionLoc = material->getShaderLocation(StandardUniform::ProjectionMatrix);
         Int32 viewMatrixLoc = material->getShaderLocation(StandardUniform::ViewMatrix);
         Int32 modelMatrixLoc = material->getShaderLocation(StandardUniform::ModelMatrix);
         Int32 modelInverseTransposeMatrixLoc = material->getShaderLocation(StandardUniform::ModelInverseTransposeMatrix);
         Int32 viewInverseTransposeMatrixLoc = material->getShaderLocation(StandardUniform::ViewInverseTransposeMatrix);
+
+        if (cameraPositionLoc >= 0) {
+            const Matrix4x4& projMatrix = viewDescriptor.projectionMatrix;
+            shader->setUniform4f(cameraPositionLoc, viewDescriptor.cameraPosition.x, viewDescriptor.cameraPosition.y,
+                                 viewDescriptor.cameraPosition.z, 1.0f);
+        }
 
         if (projectionLoc >= 0) {
             const Matrix4x4& projMatrix = viewDescriptor.projectionMatrix;

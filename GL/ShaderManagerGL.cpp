@@ -413,6 +413,7 @@ namespace Core {
             "}";
 
         this->Lighting_fragment =
+            "const float PI = 3.14159265359;"
             "float calDirShadowFactorSingleIndex(int index, vec2 uv, float fragDepth, float angularBias, int lightIndex) { \n"
             "    vec3 coords = vec3(uv.xy, fragDepth - angularBias - " + LIGHT_CONSTANT_SHADOW_BIAS + "[lightIndex]); \n"
             "    float shadowDepth = clamp(texture(" + LIGHT_SHADOW_MAP + "[index], coords), 0.0, 1.0); \n"
@@ -567,6 +568,7 @@ namespace Core {
 
         this->Physical_Lighting_Single_fragment =
             "#include \"LightingHeaderSingle\" \n"
+            "#include \"Lighting\" \n"
             "#include \"PhysicalLighting\" \n";
 
         this->Physical_Lighting_Multi_vertex =
@@ -575,6 +577,7 @@ namespace Core {
 
         this->Physical_Lighting_Multi_fragment =
             "#include \"LightingHeaderMulti\" \n"
+            "#include \"Lighting\" \n"
             "#include \"PhysicalLighting\" \n";
 
         this->Physical_Lighting_vertex =
@@ -617,17 +620,17 @@ namespace Core {
             "    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0); \n"
             "} \n"
 
-            "vec4 litColorPhysical(in int lightIndex, in vec4 albedo, in vec4 worldPos, in vec3 worldNormal, in vec4 cameraPos, in float metallic, in float roughness) {\n"
+            "vec4 litColorPhysical(in int lightIndex, in vec4 albedo, in vec4 worldPos, in vec3 worldNormal, in vec4 cameraPos, in float metallic, in float roughness, in float ao) {\n"
             "    if (" + LIGHT_ENABLED + "[lightIndex] != 0) {\n"
             "        if (" + LIGHT_TYPE + "[lightIndex] == 0) {\n"
             "            return vec4(albedo.rgb * " + LIGHT_COLOR + "[lightIndex].rgb, albedo.a);\n"
             "        }\n"
             "        else { \n"
             "            vec3 lightLocalPos, toLight, halfwayVec, radiance; \n"
-            "            float NdotL, bias, attenuation, H; \n"
-            "            vec3 V = normalize(camPos - WorldPos); \n "
+            "            float NdotL, bias, attenuation; \n"
+            "            vec3 V = normalize(vec3(cameraPos - worldPos)); \n "
             "            vec3 F0 = vec3(0.04); \n "
-            "            F0 = mix(F0, albedo, metallic); \n "   
+            "            F0 = mix(F0, albedo.rgb, metallic); \n "   
 
             "            if (" + LIGHT_TYPE + "[lightIndex] == 1) {\n"
             "                getDirLightParameters(lightIndex, worldNormal, V, toLight, halfwayVec, NdotL, bias); \n"
@@ -640,22 +643,21 @@ namespace Core {
             "                radiance = lightColor.rgb * attenuation; \n"
             "            }\n"
 
-            "            float NDF = gistributionGGX(N, H, roughness); \n "
-            "            float G   = geometrySmith(N, V, L, roughness); \n "
-            "            vec3 F    = fresnelSchlick(max(dot(H, V), 0.0), F0);     \n "  
+            "            float NDF = distributionGGX(worldNormal, halfwayVec, roughness); \n "
+            "            float G   = geometrySmith(worldNormal, V, toLight, roughness); \n "
+            "            vec3 F    = fresnelSchlick(max(dot(halfwayVec, V), 0.0), F0);     \n "  
                         
             "            vec3 kS = F; \n "
             "            vec3 kD = vec3(1.0) - kS; \n "
             "            kD *= 1.0 - metallic;	   \n "
                         
             "            vec3 numerator    = NDF * G * F; \n "
-            "            float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0); \n "
+            "            float denominator = 4.0 * max(dot(worldNormal, V), 0.0) * max(dot(worldNormal, toLight), 0.0); \n "
             "            vec3 specular     = numerator / max(denominator, 0.001);  \n "
                             
-            "            float NdotL = max(dot(N, L), 0.0);      \n "
-            "            vec3 Lo = (kD * albedo / PI + specular) * radiance * NdotL; \n "
+            "            vec3 Lo = (kD * albedo.rgb / PI + specular) * radiance * NdotL; \n "
 
-            "            vec3 ambient = vec3(0.03) * albedo * ao; \n"
+            "            vec3 ambient = vec3(0.03) * albedo.rgb * ao; \n"
             "            vec3 color = ambient + Lo;  \n"
                         
             "            color = color / (color + vec3(1.0));  \n"
@@ -686,9 +688,9 @@ namespace Core {
             "out vec2 vUV;\n"
             "out vec4 vWorldPos;\n"
             "void main() {\n"
-            "    vPos = " +  MODEL_MATRIX + " * " + POSITION + ";\n"
-            "    vec4 viewSpacePos = " + VIEW_MATRIX + " * vPos;\n"
-            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * vPos;\n"
+            "    vWorldPos = " +  MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    vec4 viewSpacePos = " + VIEW_MATRIX + " * vWorldPos;\n"
+            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * vWorldPos;\n"
             "    vUV = " + UV0 + ";\n"
             "    vColor = " + COLOR + ";\n"
             "    vec4 eNormal = " + NORMAL + ";\n"
@@ -703,6 +705,8 @@ namespace Core {
             "#include \"PhysicalLightingSingle\"\n"
             + TEXTURE2D0_DEF
             + CAMERA_POSITION_DEF +
+            "uniform float metallic; \n"
+            "uniform float roughness; \n"
             "in vec4 vColor;\n"
             "in vec3 vNormal;\n"
             "in vec3 vFaceNormal;\n"
@@ -710,7 +714,7 @@ namespace Core {
             "in vec4 vWorldPos;\n"
             "out vec4 out_color;\n"
             "void main() {\n"
-            "   out_color = litColorPhysical(0, texture(" + TEXTURE2D0 + ", vUV), vWorldPos, normalize(vNormal), " + CAMERA_POSITION + ");\n"
+            "   out_color = litColorPhysical(0, texture(" + TEXTURE2D0 + ", vUV), vWorldPos, normalize(vNormal), " + CAMERA_POSITION + ", metallic, roughness, 0.0);\n"
             "}\n";
 
         this->Depth_vertex =

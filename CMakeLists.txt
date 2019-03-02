@@ -72,6 +72,7 @@ set(INCLUDE_FILES
     material/BasicCubeMaterial.h
     material/OutlineMaterial.h
     material/SkyboxMaterial.h
+    material/StandardPhysicalMaterial.h
     material/StandardUniforms.h
     material/StandardAttributes.h
     material/Shader.h
@@ -198,6 +199,7 @@ set(SOURCE_FILES
     material/BasicCubeMaterial.cpp
     material/OutlineMaterial.cpp
     material/SkyboxMaterial.cpp
+    material/StandardPhysicalMaterial.cpp
     material/Shader.cpp
     material/MaterialLibrary.cpp
     material/StandardUniforms.cpp

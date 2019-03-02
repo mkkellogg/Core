@@ -41,12 +41,8 @@ namespace Core {
         LightNearPlane = 29,
         LightCount = 30,
         CameraPosition = 31,
-        PhysicalMetallic = 32,
-        PhysicalMetallicMap = 33,
-        PhysicalRoughness = 34,
-        PhysicalRoughnessMap = 35,
-        _Count = 36,  // Must always be last in the list (before _None)
-        _None = 37,
+        _Count = 32,  // Must always be last in the list (before _None)
+        _None = 33,
     };
 
     class StandardUniforms {

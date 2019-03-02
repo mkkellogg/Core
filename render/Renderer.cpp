@@ -312,6 +312,8 @@ namespace Core {
         this->getViewDescriptor(camera->getOwner()->getTransform().getWorldMatrix(),
                                 camera->getProjectionMatrix(), camera->getAutoClearRenderBuffers(), viewDescriptor);
         viewDescriptor.renderTarget = cameraRenderTarget;
+        viewDescriptor.cameraPosition.set(0.0f, 0.0f, 0.0f);
+        viewDescriptor.viewMatrix.transform(viewDescriptor.cameraPosition);
         if (camera->isSkyboxEnabled()) {
             viewDescriptor.skybox = &camera->getSkybox();
         }

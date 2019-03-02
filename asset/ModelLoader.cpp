@@ -19,6 +19,7 @@
 #include "../material/Material.h"
 #include "../material/BasicTexturedMaterial.h"
 #include "../material/BasicTexturedLitMaterial.h"
+#include "../material/StandardPhysicalMaterial.h"
 #include "../material/BasicMaterial.h"
 #include "../material/MaterialLibrary.h"
 #include "../material/ShaderMaterialCharacteristic.h"
@@ -737,7 +738,9 @@ namespace Core {
 
         // set the diffuse texture in the material for the mesh specified by [meshIndex]
         WeakPointer<Material> material = materialImportDesc.meshSpecificProperties[meshIndex].material;
-        WeakPointer<BasicTexturedLitMaterial> texturedMaterial = WeakPointer<Material>::dynamicPointerCast<BasicTexturedLitMaterial>(material);
+
+        // TODO: Need to not have this material hard coded in here....
+        WeakPointer<StandardPhysicalMaterial> texturedMaterial = WeakPointer<Material>::dynamicPointerCast<StandardPhysicalMaterial>(material);
 
         texturedMaterial->setTexture(texture);
 

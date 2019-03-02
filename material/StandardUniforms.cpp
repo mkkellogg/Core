@@ -41,11 +41,7 @@ namespace Core {
             "LIGHT_CASCADE_COUNT",
             "LIGHT_NEAR_PLANE",
             "LIGHT_COUNT",
-            "CAMERA_POSITION",
-            "PHYSICAL_METALLIC",
-            "PHYSICAL_METALLIC_MAP",
-            "PHYSICAL_ROUGHNESS",
-            "PHYSICAL_ROUGHNESS_MAP"
+            "CAMERA_POSITION"
         };
 
         nameToUniform =
@@ -81,11 +77,7 @@ namespace Core {
             {uniformNames[(UInt16)StandardUniform::LightCascadeCount],StandardUniform::LightCascadeCount},
             {uniformNames[(UInt16)StandardUniform::LightNearPlane],StandardUniform::LightNearPlane},
             {uniformNames[(UInt16)StandardUniform::LightCount],StandardUniform::LightCount},
-            {uniformNames[(UInt16)StandardUniform::LightCount],StandardUniform::CameraPosition},
-            {uniformNames[(UInt16)StandardUniform::LightCount],StandardUniform::PhysicalMetallic},
-            {uniformNames[(UInt16)StandardUniform::LightCount],StandardUniform::PhysicalMetallicMap},
-            {uniformNames[(UInt16)StandardUniform::LightCount],StandardUniform::PhysicalRoughness},
-            {uniformNames[(UInt16)StandardUniform::LightCount],StandardUniform::PhysicalRoughnessMap}
+            {uniformNames[(UInt16)StandardUniform::LightCount],StandardUniform::CameraPosition}
         };
     }
 

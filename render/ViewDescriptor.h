@@ -14,6 +14,7 @@ namespace Core {
     class ViewDescriptor {
     public:
 
+        Point3r cameraPosition;
         Matrix4x4 viewMatrix;
         Matrix4x4 viewInverseMatrix;
         Matrix4x4 viewInverseTransposeMatrix;
