@@ -14,6 +14,7 @@ namespace Core {
         VertexColors = 8,
         VertexNormals = 9,
         Lit = 10,
+        NormalMapped = 11
     };
 
 }

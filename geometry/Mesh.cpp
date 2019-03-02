@@ -17,6 +17,7 @@ namespace Core {
         this->enabledAttributes = StandardAttributes::createAttributeSet();
         this->normalsSmoothingThreshold = Math::PI / 2.0;
         this->shoudCalculateNormals = false;
+        this->shoudCalculateTangents = false;
         this->shouldCalculateBoundingBox = false;
         initAttributes();
     }
@@ -179,13 +180,19 @@ namespace Core {
         if (this->shoudCalculateNormals){
             this->calculateNormals((Real)this->normalsSmoothingThreshold);
         }
-       // if (calculateTangents)CalculateTangents((Real)normalsSmoothingThreshold);
+        if (this->shoudCalculateTangents){
+            this->calculateTangents((Real)this->normalsSmoothingThreshold);
+        }
         //if (buildFaces)BuildFaces();
 
     }
 
     void Mesh::setCalculateNormals(Bool calculateNormals) {
         this->shoudCalculateNormals = calculateNormals;
+    }
+
+    void Mesh::setCalculateTangents(Bool calculateTangents) {
+        this->shoudCalculateTangents = calculateTangents;
     }
 
     void Mesh::setCalculateBoundingBox(Bool calculateBoundingBox) {
@@ -512,6 +519,8 @@ namespace Core {
         }
 
         //if (invertTangents)InvertTangents();
+
+        tangents->updateGPUStorageData();
     }
 
     /*

@@ -71,6 +71,7 @@ namespace Core {
         LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::DiffuseTextured);
         LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::VertexNormals);
         LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::VertexColors);
+        LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::NormalMapped);
         LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::Lit);
         this->materialLibrary.addEntry(materialAttributes, standardPhysicalMaterial);
 

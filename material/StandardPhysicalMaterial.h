@@ -54,6 +54,7 @@ namespace Core {
         Int32 normalLocation;
         Int32 faceNormalLocation;
         Int32 colorLocation;
+        Int32 tangentLocation;
         Int32 albedoUVLocation;
         Int32 normalUVLocation;
         Int32 albedoMapLocation;

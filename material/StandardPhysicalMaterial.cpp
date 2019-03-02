@@ -41,6 +41,8 @@ namespace Core {
                 return this->normalLocation;
             case StandardAttribute::FaceNormal:
                 return this->faceNormalLocation;
+            case StandardAttribute::Tangent:
+                return this->tangentLocation;
             case StandardAttribute::Color:
                 return this->colorLocation;
             case StandardAttribute::AlbedoUV:
@@ -150,9 +152,16 @@ namespace Core {
     }
 
     void StandardPhysicalMaterial::sendCustomUniformsToShader() {
+        UInt32 textureLoc = 0;
         if (this->albedoMap) {
-            this->shader->setTexture2D(0, this->albedoMap->getTextureID());
-            this->shader->setUniform1i(this->albedoMapLocation, 0);
+            this->shader->setTexture2D(textureLoc, this->albedoMap->getTextureID());
+            this->shader->setUniform1i(this->albedoMapLocation, textureLoc);
+            textureLoc++;
+        }
+        if (this->normalMap) {
+            this->shader->setTexture2D(textureLoc, this->normalMap->getTextureID());
+            this->shader->setUniform1i(this->normalMapLocation, textureLoc);
+            textureLoc++;
         }
         this->shader->setUniform1f(this->metallicLocation, this->metallic);
         this->shader->setUniform1f(this->roughnessLocation, this->roughness);
@@ -167,6 +176,7 @@ namespace Core {
         newMaterial->positionLocation = this->positionLocation;
         newMaterial->normalLocation = this->normalLocation;
         newMaterial->faceNormalLocation = this->faceNormalLocation;
+        newMaterial->tangentLocation = this->tangentLocation;
         newMaterial->colorLocation = this->colorLocation;
         newMaterial->albedoUVLocation = this->albedoUVLocation;
         newMaterial->normalUVLocation = this->normalUVLocation;
@@ -210,6 +220,7 @@ namespace Core {
         this->positionLocation = this->shader->getAttributeLocation(StandardAttribute::Position);
         this->normalLocation = this->shader->getAttributeLocation(StandardAttribute::Normal);
         this->faceNormalLocation = this->shader->getAttributeLocation(StandardAttribute::FaceNormal);
+        this->tangentLocation = this->shader->getAttributeLocation(StandardAttribute::Tangent);
         this->colorLocation = this->shader->getAttributeLocation(StandardAttribute::Color);
         this->albedoUVLocation = this->shader->getAttributeLocation(StandardAttribute::AlbedoUV);
         this->normalUVLocation = this->shader->getAttributeLocation(StandardAttribute::NormalUV);
@@ -250,7 +261,10 @@ namespace Core {
     }
 
     UInt32 StandardPhysicalMaterial::textureCount() {
-        return 1;
+        UInt32 textureCount = 0;
+        if (this->albedoMap) textureCount++;
+        if (this->normalMap) textureCount++;
+       return textureCount;
     }
 
     UInt32 StandardPhysicalMaterial::getEnabledMapMask() {

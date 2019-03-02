@@ -493,6 +493,7 @@ namespace Core {
         // if (invert) mesh3D->SetInvertNormals(true);
         coreMesh->setNormalsSmoothingThreshold((Real)smoothingThreshold * Math::DegreesToRads);
         coreMesh->setCalculateNormals(true);
+        coreMesh->setCalculateTangents(true);
         coreMesh->setCalculateBoundingBox(true);
         coreMesh->update();
 
@@ -625,6 +626,11 @@ namespace Core {
         // check for a diffuse texture
         if (AI_SUCCESS == mtl->GetTexture(aiTextureType_DIFFUSE, 0, &path)) {
             LongMaskUtil::setBit(&flags, (Int16)ShaderMaterialCharacteristic::DiffuseTextured);
+        }
+
+        // check for a normals texture
+        if (AI_SUCCESS == mtl->GetTexture(aiTextureType_NORMALS, 0, &path)) {
+            LongMaskUtil::setBit(&flags, (Int16)ShaderMaterialCharacteristic::NormalMapped);
         }
 
         LongMaskUtil::setBit(&flags, (Int16)ShaderMaterialCharacteristic::Lit);
@@ -813,6 +819,9 @@ namespace Core {
         switch (textureType) {
             case TextureType::Diffuse:
                 return StandardAttribute::AlbedoUV;
+                break;
+             case TextureType::Normals:
+                return StandardAttribute::NormalUV;
                 break;
             default:
                 return StandardAttribute::_None;
