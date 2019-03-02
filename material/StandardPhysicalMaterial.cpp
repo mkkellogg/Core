@@ -13,6 +13,10 @@ namespace Core {
         this->metallic = 0.5f;
         this->roughness = 0.1f;
         this->ambientOcclusion = 0.0f;
+
+        this->albedoMapEnabled = false;
+        this->normalMapEnabled = false;
+        this->roughnessMapEnabled = false;
     }
 
     Bool StandardPhysicalMaterial::build() {
@@ -39,8 +43,10 @@ namespace Core {
                 return this->faceNormalLocation;
             case StandardAttribute::Color:
                 return this->colorLocation;
-            case StandardAttribute::UV0:
-                return this->uvLocation;
+            case StandardAttribute::AlbedoUV:
+                return this->albedoUVLocation;
+             case StandardAttribute::NormalUV:
+                return this->normalUVLocation;
             default:
                 return -1;
         }
@@ -123,6 +129,26 @@ namespace Core {
         this->albedoMap = albedoMap;
     }
 
+    void StandardPhysicalMaterial::setNormalMap(WeakPointer<Texture> normalMap) {
+        this->normalMap = normalMap;
+    }
+
+    void StandardPhysicalMaterial::setRoughnessMap(WeakPointer<Texture> roughnessMap) {
+        this->roughnessMap = roughnessMap;
+    }
+
+    void StandardPhysicalMaterial::setAlbedoMapEnabled(Bool enabled) {
+        this->albedoMapEnabled = enabled;
+    }
+
+    void StandardPhysicalMaterial::setNormalMapEnabled(Bool enabled) {
+        this->normalMapEnabled = enabled;
+    }
+
+    void StandardPhysicalMaterial::setRoughnessMapEnabled(Bool enabled) {
+        this->roughnessMapEnabled = enabled;
+    }
+
     void StandardPhysicalMaterial::sendCustomUniformsToShader() {
         if (this->albedoMap) {
             this->shader->setTexture2D(0, this->albedoMap->getTextureID());
@@ -131,6 +157,7 @@ namespace Core {
         this->shader->setUniform1f(this->metallicLocation, this->metallic);
         this->shader->setUniform1f(this->roughnessLocation, this->roughness);
         this->shader->setUniform1f(this->ambientOcclusion, this->ambientOcclusion);
+        this->shader->setUniform1i(this->enabledMapLcation, this->getEnabledMapMask());
     }
 
     WeakPointer<Material> StandardPhysicalMaterial::clone() {
@@ -141,12 +168,14 @@ namespace Core {
         newMaterial->normalLocation = this->normalLocation;
         newMaterial->faceNormalLocation = this->faceNormalLocation;
         newMaterial->colorLocation = this->colorLocation;
+        newMaterial->albedoUVLocation = this->albedoUVLocation;
+        newMaterial->normalUVLocation = this->normalUVLocation;
         newMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
         newMaterial->viewMatrixLocation = this->viewMatrixLocation;
         newMaterial->modelMatrixLocation = this->modelMatrixLocation;
         newMaterial->modelInverseTransposeMatrixLocation = this->modelInverseTransposeMatrixLocation;
-        newMaterial->uvLocation = this->uvLocation;
         newMaterial->albedoMapLocation = this->albedoMapLocation;
+        newMaterial->normalMapLocation = this->normalMapLocation;
         newMaterial->lightPositionLocation = this->lightPositionLocation;
         newMaterial->lightDirectionLocation = this->lightDirectionLocation;
         newMaterial->lightRangeLocation = this->lightRangeLocation;
@@ -173,6 +202,7 @@ namespace Core {
         newMaterial->metallicLocation = this->metallicLocation;
         newMaterial->roughnessLocation = this->roughnessLocation;
         newMaterial->ambientOcclusionLocation = this->ambientOcclusionLocation;
+        newMaterial->enabledMapLcation = this->enabledMapLcation;
         return newMaterial;
     }
 
@@ -181,8 +211,10 @@ namespace Core {
         this->normalLocation = this->shader->getAttributeLocation(StandardAttribute::Normal);
         this->faceNormalLocation = this->shader->getAttributeLocation(StandardAttribute::FaceNormal);
         this->colorLocation = this->shader->getAttributeLocation(StandardAttribute::Color);
+        this->albedoUVLocation = this->shader->getAttributeLocation(StandardAttribute::AlbedoUV);
+        this->normalUVLocation = this->shader->getAttributeLocation(StandardAttribute::NormalUV);
         this->albedoMapLocation = this->shader->getUniformLocation("albedoMap");
-        this->uvLocation = this->shader->getAttributeLocation(StandardAttribute::UV0);
+        this->normalMapLocation = this->shader->getUniformLocation("normalMap");
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
         this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);
@@ -214,9 +246,18 @@ namespace Core {
         this->metallicLocation = this->shader->getUniformLocation("metallic");
         this->roughnessLocation = this->shader->getUniformLocation("roughness");
         this->ambientOcclusionLocation = this->shader->getUniformLocation("ambientOcclusion");
+        this->enabledMapLcation = this->shader->getUniformLocation("enabledMap");
     }
 
     UInt32 StandardPhysicalMaterial::textureCount() {
         return 1;
+    }
+
+    UInt32 StandardPhysicalMaterial::getEnabledMapMask() {
+        UInt32 mask = 0;
+        if (this->albedoMapEnabled) mask = mask | ALBEDO_MAP_MASK;
+        if (this->normalMapEnabled) mask = mask | NORMAL_MAP_MASK;
+        if (this->roughnessMapEnabled) mask = mask | ROUGHNESS_MAP_MASK;
+        return mask;
     }
 }

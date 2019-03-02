@@ -31,7 +31,7 @@ namespace Core {
                 return this->positionLocation;
             case StandardAttribute::Color:
                 return this->colorLocation;
-            case StandardAttribute::UV0:
+            case StandardAttribute::AlbedoUV:
                 return this->uvLocation;
             default:
                 return -1;

@@ -33,7 +33,7 @@ namespace Core {
                 return this->normalLocation;
             case StandardAttribute::Color:
                 return this->colorLocation;
-            case StandardAttribute::UV0:
+            case StandardAttribute::AlbedoUV:
                 return this->uvLocation;
             default:
                 return -1;
@@ -83,7 +83,7 @@ namespace Core {
         this->positionLocation = this->shader->getAttributeLocation(StandardAttribute::Position);
         this->normalLocation = this->shader->getAttributeLocation(StandardAttribute::Normal);
         this->colorLocation = this->shader->getAttributeLocation(StandardAttribute::Color);
-        this->uvLocation = this->shader->getAttributeLocation(StandardAttribute::UV0);
+        this->uvLocation = this->shader->getAttributeLocation(StandardAttribute::AlbedoUV);
         this->textureLocation = this->shader->getUniformLocation("twoDtexture");
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);

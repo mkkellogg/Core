@@ -9,8 +9,8 @@ namespace Core {
         {
             "POSITION",
             "COLOR",
-            "UV0",
-            "UV1",
+            "ALBEDOUV",
+            "NORMALUV",
             "NORMAL",
             "AVERAGED_NORMAL",
             "TANGENT",
@@ -21,8 +21,8 @@ namespace Core {
         {
             {attributeNames[(UInt16)StandardAttribute::Position],StandardAttribute::Position},
             {attributeNames[(UInt16)StandardAttribute::Color],StandardAttribute::Color},
-            {attributeNames[(UInt16)StandardAttribute::UV0],StandardAttribute::UV0},
-            {attributeNames[(UInt16)StandardAttribute::UV1],StandardAttribute::UV1},
+            {attributeNames[(UInt16)StandardAttribute::AlbedoUV],StandardAttribute::AlbedoUV},
+            {attributeNames[(UInt16)StandardAttribute::NormalUV],StandardAttribute::NormalUV},
             {attributeNames[(UInt16)StandardAttribute::Normal],StandardAttribute::Normal},
             {attributeNames[(UInt16)StandardAttribute::AveragedNormal],StandardAttribute::AveragedNormal},
             {attributeNames[(UInt16)StandardAttribute::Tangent],StandardAttribute::Tangent},

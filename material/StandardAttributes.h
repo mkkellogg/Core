@@ -12,8 +12,8 @@ namespace Core {
     enum class StandardAttribute {
         Position = 0,
         Color = 1,
-        UV0 = 2,
-        UV1 = 3,
+        AlbedoUV = 2,
+        NormalUV = 3,
         Normal = 4,
         AveragedNormal = 5,
         Tangent = 6,

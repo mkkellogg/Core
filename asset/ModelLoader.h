@@ -46,7 +46,7 @@ namespace Core {
     private:
 
 #ifdef CORE_USE_PRIVATE_INCLUDES
-        enum class TextureType { Diffuse = 0, Specular = 1, BumpMap = 2, _None = 3 };
+        enum class TextureType { Diffuse = 0, Specular = 1, Normals = 2, _None = 3 };
 
         enum class SceneTraverseOrder { PreOrder = 0 };
 
@@ -88,8 +88,9 @@ namespace Core {
         Bool processMaterials(const std::string& modelPath, const aiScene& scene, std::vector<MaterialImportDescriptor>& materialImportDescriptors) const;
         WeakPointer<Texture> loadAITexture(aiMaterial& assimpMaterial, aiTextureType textureType, const std::string& modelPath) const;
         void getImportDetails(const aiMaterial* mtl, MaterialImportDescriptor& materialImportDesc, const aiScene& scene) const;
-        Bool setupMeshSpecificMaterialWithTexture(const aiMaterial& assimpMaterial, TextureType textureType, WeakPointer<Texture> texture,
-                                                  UInt32 meshIndex, MaterialImportDescriptor& materialImportDesc) const;
+        Bool setupMeshSpecificMaterialWithTextures(const aiMaterial& assimpMaterial, WeakPointer<Texture> diffuseTexture,
+                                                  WeakPointer<Texture> normalsTexture, UInt32 meshIndex,
+                                                  MaterialImportDescriptor& materialImportDesc) const;
         WeakPointer<Object3D> recursiveProcessModelScene(const aiScene& scene, const aiNode& node, std::vector<MaterialImportDescriptor>& materialImportDescriptors,
                                                          std::vector<WeakPointer<Object3D>>& createdSceneObjects, 
                                                          UInt32 smoothingThreshold, Bool castShadows, Bool receiveShadows) const;

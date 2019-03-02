@@ -86,9 +86,9 @@ namespace Core {
         Core::Bool normalsInited = gridPlane->initVertexNormals();
         gridPlane->getVertexNormals()->store(normals.data());
 
-        gridPlane->enableAttribute(Core::StandardAttribute::UV0);
-        Core::Bool uvsInited = gridPlane->initVertexUVs0();
-        gridPlane->getVertexUVs0()->store(uvs.data());
+        gridPlane->enableAttribute(Core::StandardAttribute::AlbedoUV);
+        Core::Bool uvsInited = gridPlane->initVertexAlbedoUVs();
+        gridPlane->getVertexAlbedoUVs()->store(uvs.data());
 
         gridPlane->getIndexBuffer()->setIndices(indices.data());
 

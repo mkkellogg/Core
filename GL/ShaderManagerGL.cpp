@@ -10,8 +10,10 @@ const std::string POSITION = _an(Core::StandardAttribute::Position);
 const std::string NORMAL = _an(Core::StandardAttribute::Normal);
 const std::string AVERAGED_NORMAL = _an(Core::StandardAttribute::AveragedNormal);
 const std::string FACE_NORMAL = _an(Core::StandardAttribute::FaceNormal);
+const std::string TANGENT = _an(Core::StandardAttribute::Tangent);
 const std::string COLOR = _an(Core::StandardAttribute::Color);
-const std::string UV0 = _an(Core::StandardAttribute::UV0);
+const std::string ALBEDO_UV = _an(Core::StandardAttribute::AlbedoUV);
+const std::string NORMAL_UV = _an(Core::StandardAttribute::NormalUV);
 const std::string MODEL_MATRIX = _un(Core::StandardUniform::ModelMatrix);
 const std::string MODEL_INVERSE_TRANSPOSE_MATRIX = _un(Core::StandardUniform::ModelInverseTransposeMatrix);
 const std::string VIEW_MATRIX = _un(Core::StandardUniform::ViewMatrix);
@@ -48,8 +50,10 @@ const std::string POSITION_DEF = "in vec4 " +  POSITION + ";\n";
 const std::string NORMAL_DEF = "in vec4 " +  NORMAL + ";\n";
 const std::string AVERAGED_NORMAL_DEF = "in vec4 " +  AVERAGED_NORMAL + ";\n";
 const std::string FACE_NORMAL_DEF = "in vec4 " +  FACE_NORMAL + ";\n";
+const std::string TANGENT_DEF = "in vec4 " +  TANGENT + ";\n";
 const std::string COLOR_DEF = "in vec4 " +  COLOR + ";\n";
-const std::string UV0_DEF = "in vec2 " +  UV0 + ";\n";
+const std::string ALBEDO_UV_DEF = "in vec2 " +  ALBEDO_UV + ";\n";
+const std::string NORMAL_UV_DEF = "in vec2 " +  NORMAL_UV + ";\n";
 const std::string MODEL_MATRIX_DEF = "uniform mat4 " +  MODEL_MATRIX + ";\n";
 const std::string MODEL_INVERSE_TRANSPOSE_MATRIX_DEF = "uniform mat4 " +  MODEL_INVERSE_TRANSPOSE_MATRIX + ";\n";
 const std::string VIEW_MATRIX_DEF = "uniform mat4 " +  VIEW_MATRIX + ";\n";
@@ -562,7 +566,23 @@ namespace Core {
             "        }\n"
             "    }\n"
             "    return albedo;\n"
-            "}\n";
+            "}\n"
+
+            "vec3 calcMappedNormal(vec3 mappedNormal, vec3 normal, vec3 tangent) \n"
+            "{ \n"
+            "    vec3 Normal = normalize(normal); \n "
+            "    vec3 Tangent = normalize(tangent); \n "
+            "    Tangent = normalize(Tangent - dot(Tangent, Normal) * Normal); \n "
+            "    vec3 Bitangent = cross(Tangent, Normal); \n "
+            "    vec3 BumpMapNormal = mappedNormal; \n "
+            "    BumpMapNormal = 2.0 * BumpMapNormal - vec3(1.0, 1.0, 1.0); \n "
+            "    vec3 NewNormal; \n "
+            "    mat3 TBN = mat3(Tangent, Bitangent, Normal); \n "
+
+            "    NewNormal = TBN * BumpMapNormal; \n "
+            "    NewNormal = normalize(NewNormal); \n "
+            "    return NewNormal; \n "
+            "} \n ";
 
         this->Physical_Lighting_Single_vertex =
             "#include \"LightingHeaderSingle\" \n"
@@ -676,27 +696,34 @@ namespace Core {
             "precision highp float;\n"
             "#include \"PhysicalLightingSingle\" \n"
             + POSITION_DEF
+            + TANGENT_DEF
             + COLOR_DEF
             + NORMAL_DEF
             + FACE_NORMAL_DEF
-            + UV0_DEF
+            + ALBEDO_UV_DEF
+            + NORMAL_UV_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
             + MODEL_MATRIX_DEF
             + MODEL_INVERSE_TRANSPOSE_MATRIX_DEF +
             "out vec4 vColor;\n"
             "out vec3 vNormal;\n"
+            "out vec3 vTangent;\n"
             "out vec3 vFaceNormal;\n"
-            "out vec2 vUV;\n"
+            "out vec2 vAlbedoUV;\n"
+            "out vec2 vNormalUV;\n"
             "out vec4 vWorldPos;\n"
             "void main() {\n"
             "    vWorldPos = " +  MODEL_MATRIX + " * " + POSITION + ";\n"
             "    vec4 viewSpacePos = " + VIEW_MATRIX + " * vWorldPos;\n"
             "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * vWorldPos;\n"
-            "    vUV = " + UV0 + ";\n"
+            "    vAlbedoUV = " + ALBEDO_UV + ";\n"
+            "    vNormalUV = " + NORMAL_UV + ";\n"
             "    vColor = " + COLOR + ";\n"
             "    vec4 eNormal = " + NORMAL + ";\n"
             "    vNormal = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * eNormal);\n"
+            "    vec4 eTangent = " + TANGENT + ";\n"
+            "    vTangent = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * eTangent);\n"
             "    vFaceNormal = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * " + FACE_NORMAL + ");\n"
             "    TRANSFER_LIGHTING(" + POSITION + ", gl_Position, viewSpacePos) \n"
             "}\n";
@@ -706,18 +733,38 @@ namespace Core {
             "precision highp float;\n"
             "#include \"PhysicalLightingSingle\"\n"
             + CAMERA_POSITION_DEF +
+            "uniform int enabledMap; \n"
+            "uniform vec4 albedo; \n"
             "uniform sampler2D albedoMap; \n"
+            "uniform sampler2D normalMap; \n"
             "uniform float metallic; \n"
             "uniform float roughness; \n"
             "uniform float ambientOcclusion; \n"
             "in vec4 vColor;\n"
             "in vec3 vNormal;\n"
+            "in vec3 vTangent;\n"
             "in vec3 vFaceNormal;\n"
-            "in vec2 vUV;\n"
+            "in vec2 vAlbedoUV;\n"
+            "in vec2 vNormalUV;\n"
             "in vec4 vWorldPos;\n"
             "out vec4 out_color;\n"
             "void main() {\n"
-            "   out_color = litColorPhysical(0, texture(albedoMap, vUV), vWorldPos, normalize(vNormal), " + CAMERA_POSITION + ", metallic, roughness, ambientOcclusion);\n"
+            "   int albedoMapEnabled = enabledMap & 1; \n"
+            "   int normalMapEnabled = enabledMap & 2; \n"
+            "   int roughnessMapEnabled = enabledMap & 4; \n"
+            "   vec4 _albedo; \n"
+            "   if (albedoMapEnabled != 0) { \n"
+            "       _albedo = texture(albedoMap, vAlbedoUV); \n"
+            "   } else { \n"
+            "      _albedo = albedo; \n"
+            "   } \n"
+            "   vec3 _normal; \n"
+            "   if (normalMapEnabled != 0) { \n"
+            "       _normal = calcMappedNormal(texture(normalMap, vNormalUV).xyz, vNormal, vTangent); \n"
+            "   } else { \n"
+            "       _normal = normalize(vNormal); \n"
+            "   } \n"
+            "   out_color = litColorPhysical(0, _albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", metallic, roughness, ambientOcclusion);\n"
             "}\n";
 
         this->Depth_vertex =
@@ -885,7 +932,7 @@ namespace Core {
             "#version 330\n"
             + POSITION_DEF
             + COLOR_DEF 
-            + UV0_DEF
+            + ALBEDO_UV_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
             + MODEL_MATRIX_DEF +
@@ -894,7 +941,7 @@ namespace Core {
             "out vec2 vUV;\n"
             "void main() {\n"
             "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
-            "    vUV = " + UV0 + ";\n"
+            "    vUV = " + ALBEDO_UV + ";\n"
             "    vColor = " + COLOR + ";\n"
             "}\n";
 
@@ -918,7 +965,7 @@ namespace Core {
             + COLOR_DEF
             + NORMAL_DEF
             + FACE_NORMAL_DEF
-            + UV0_DEF
+            + ALBEDO_UV_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
             + MODEL_MATRIX_DEF
@@ -933,7 +980,7 @@ namespace Core {
             "    vPos = " +  MODEL_MATRIX + " * " + POSITION + ";\n"
             "    vec4 viewSpacePos = " + VIEW_MATRIX + " * vPos;\n"
             "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * vPos;\n"
-            "    vUV = " + UV0 + ";\n"
+            "    vUV = " + ALBEDO_UV + ";\n"
             "    vColor = " + COLOR + ";\n"
             "    vec4 eNormal = " + NORMAL + ";\n"
             "    vNormal = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * eNormal);\n"

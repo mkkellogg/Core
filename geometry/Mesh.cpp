@@ -126,8 +126,12 @@ namespace Core {
         return this->vertexColors;
     }
 
-    WeakPointer<AttributeArray<Vector2rs>> Mesh::getVertexUVs0() {
-        return this->vertexUVs0;
+    WeakPointer<AttributeArray<Vector2rs>> Mesh::getVertexAlbedoUVs() {
+        return this->vertexAlbedoUVs;
+    }
+
+    WeakPointer<AttributeArray<Vector2rs>> Mesh::getVertexNormalUVs() {
+        return this->vertexNormalUVs;
     }
 
     Bool Mesh::initVertexPositions() {
@@ -153,8 +157,12 @@ namespace Core {
         return this->initVertexAttributes<ColorS>(&this->vertexColors, this->vertexCount);
     }
 
-    Bool Mesh::initVertexUVs0() {
-        return this->initVertexAttributes<Vector2rs>(&this->vertexUVs0, this->vertexCount);
+    Bool Mesh::initVertexAlbedoUVs() {
+        return this->initVertexAttributes<Vector2rs>(&this->vertexAlbedoUVs, this->vertexCount);
+    }
+
+    Bool Mesh::initVertexNormalUVs() {
+        return this->initVertexAttributes<Vector2rs>(&this->vertexNormalUVs, this->vertexCount);
     }
 
     Bool Mesh::initIndices() {
@@ -516,7 +524,9 @@ namespace Core {
     * v1 is the vertex at [leftIndex] in [positions].
     */
     void Mesh::calculateTangent(UInt32 vertexIndex, UInt32 rightIndex, UInt32 leftIndex, Vector3r& result) {
-        WeakPointer<AttributeArray<Vector2rs>> sourceUVs = this->getVertexUVs0();
+        // if the mesh doesn't have UVs dedicated for normal mapping, use the albedo UVs as a backup
+        WeakPointer<AttributeArray<Vector2rs>> sourceUVs = this->getVertexNormalUVs();
+        if (!sourceUVs) sourceUVs = this->getVertexAlbedoUVs();
         Vector2r uv0 = sourceUVs->getAttribute(vertexIndex);
         Vector2r uv2 = sourceUVs->getAttribute(rightIndex);
         Vector2r uv1 = sourceUVs->getAttribute(leftIndex);

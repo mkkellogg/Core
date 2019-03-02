@@ -23,23 +23,41 @@ namespace Core {
         void setRoughness(Real roughness);
         void setAmbientOcclusion(Real ambientOcclusion);
         void setAlbedoMap(WeakPointer<Texture> albedoMap);
+        void setNormalMap(WeakPointer<Texture> normalMap);
+        void setRoughnessMap(WeakPointer<Texture> roughnessMap);
+        void setAlbedoMapEnabled(Bool enabled);
+        void setNormalMapEnabled(Bool enabled);
+        void setRoughnessMapEnabled(Bool enabled);
         virtual UInt32 textureCount() override;
 
     protected:
+        const UInt32 ALBEDO_MAP_MASK = 0x1;
+        const UInt32 NORMAL_MAP_MASK = 0x1 << 1;
+        const UInt32 ROUGHNESS_MAP_MASK = 0x1 << 2;
+
         StandardPhysicalMaterial(WeakPointer<Graphics> graphics);
         void bindShaderVarLocations();
+        UInt32 getEnabledMapMask();
 
         Real metallic;
         Real roughness;
         Real ambientOcclusion;
         WeakPointer<Texture> albedoMap;
+        WeakPointer<Texture> normalMap;
+        WeakPointer<Texture> roughnessMap;
+
+        Bool albedoMapEnabled;
+        Bool normalMapEnabled;
+        Bool roughnessMapEnabled;
 
         Int32 positionLocation;
         Int32 normalLocation;
         Int32 faceNormalLocation;
         Int32 colorLocation;
+        Int32 albedoUVLocation;
+        Int32 normalUVLocation;
         Int32 albedoMapLocation;
-        Int32 uvLocation;
+        Int32 normalMapLocation;
         Int32 projectionMatrixLocation;
         Int32 viewMatrixLocation;
         Int32 modelMatrixLocation;
@@ -69,5 +87,6 @@ namespace Core {
         Int32 metallicLocation;
         Int32 roughnessLocation;
         Int32 ambientOcclusionLocation;
+        Int32 enabledMapLcation;
     };
 }

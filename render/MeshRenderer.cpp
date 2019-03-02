@@ -61,8 +61,13 @@ namespace Core {
         this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::Normal, mesh->getVertexNormals());
         this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::AveragedNormal, mesh->getVertexAveragedNormals());
         this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::FaceNormal, mesh->getVertexFaceNormals());
+        this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::Tangent, mesh->getVertexTangents());
         this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::Color, mesh->getVertexColors());
-        this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::UV0, mesh->getVertexUVs0());
+        this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::AlbedoUV, mesh->getVertexAlbedoUVs());
+        if (mesh->getVertexNormalUVs())
+            this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::NormalUV, mesh->getVertexNormalUVs());
+        else
+            this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::NormalUV, mesh->getVertexAlbedoUVs());
 
         Int32 cameraPositionLoc = material->getShaderLocation(StandardUniform::CameraPosition);
         Int32 projectionLoc = material->getShaderLocation(StandardUniform::ProjectionMatrix);

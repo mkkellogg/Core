@@ -314,6 +314,13 @@ namespace Core {
             diffuseTextureUVIndex = materialImportDescriptor.meshSpecificProperties[meshIndex].uvMapping[TextureType::Diffuse];
         }
 
+        Int32 normalsTextureUVIndex = -1;
+        // update the StandardAttributeSet to contain appropriate attributes (UV coords) for a normals texture
+        if (materialImportDescriptor.meshSpecificProperties[meshIndex].uvMappingHasKey(TextureType::Normals)) {
+            StandardAttributes::addAttribute(&meshAttributes, ModelLoader::mapTextureTypeToAttribute(TextureType::Normals));
+            normalsTextureUVIndex = materialImportDescriptor.meshSpecificProperties[meshIndex].uvMapping[TextureType::Normals];
+        }
+
         // add normals & tangents regardless of whether the mesh has them or not. if the mesh does not
         // have them, they can be calculated
         StandardAttributes::addAttribute(&meshAttributes, StandardAttribute::Normal);
@@ -334,7 +341,8 @@ namespace Core {
 
         Bool hasNormals = false;
         Bool hasColors = false;
-        Bool hasUVs = false;
+        Bool hasAlbedoUVs = false;
+        Bool hasNormalUVs = false;
 
         std::vector<Real> positions;
         if (!coreMesh->initVertexPositions()) {
@@ -372,14 +380,24 @@ namespace Core {
             hasColors = true;
         }
 
-        std::vector<Real> uvs;
+        std::vector<Real> albedoUVs;
         if (diffuseTextureUVIndex >= 0) {
-            uvs.reserve(mesh.mNumFaces * 6);
-            if (!coreMesh->initVertexUVs0()) {
-                throw ModelLoaderException("ModeLoader::convertAssimpMesh -> Unable to initialize vertex uvs.");
+            albedoUVs.reserve(mesh.mNumFaces * 6);
+            if (!coreMesh->initVertexAlbedoUVs()) {
+                throw ModelLoaderException("ModeLoader::convertAssimpMesh -> Unable to initialize albedo UVs.");
             }
-            coreMesh->enableAttribute(StandardAttribute::UV0);
-            hasUVs = true;
+            coreMesh->enableAttribute(StandardAttribute::AlbedoUV);
+            hasAlbedoUVs = true;
+        }
+
+        std::vector<Real> normalUVs;
+        if (normalsTextureUVIndex >= 0) {
+            normalUVs.reserve(mesh.mNumFaces * 6);
+            if (!coreMesh->initVertexNormalUVs()) {
+                throw ModelLoaderException("ModeLoader::convertAssimpMesh -> Unable to initialize normal UVs.");
+            }
+            coreMesh->enableAttribute(StandardAttribute::NormalUV);
+            hasNormalUVs = true;
         }
 
         // loop through each face in the mesh and copy relevant vertex attributes
@@ -442,13 +460,22 @@ namespace Core {
                     colors.push_back(color->a);
                 }
 
-                // copy relevant data for diffuse texture (UV coords)
-                if (hasUVs) {
-                    uvs.push_back(mesh.mTextureCoords[diffuseTextureUVIndex][vIndex].x);
+                // copy relevant data for albedo texture (UV coords)
+                if (hasAlbedoUVs) {
+                    albedoUVs.push_back(mesh.mTextureCoords[diffuseTextureUVIndex][vIndex].x);
                     if (materialImportDescriptor.meshSpecificProperties[meshIndex].invertVCoords) {
-                        uvs.push_back(1 - mesh.mTextureCoords[diffuseTextureUVIndex][vIndex].y);
+                        albedoUVs.push_back(1 - mesh.mTextureCoords[diffuseTextureUVIndex][vIndex].y);
                     } else {
-                        uvs.push_back(mesh.mTextureCoords[diffuseTextureUVIndex][vIndex].y);
+                        albedoUVs.push_back(mesh.mTextureCoords[diffuseTextureUVIndex][vIndex].y);
+                    }
+                }
+
+                if (hasNormalUVs) {
+                    normalUVs.push_back(mesh.mTextureCoords[normalsTextureUVIndex][vIndex].x);
+                    if (materialImportDescriptor.meshSpecificProperties[meshIndex].invertVCoords) {
+                        normalUVs.push_back(1 - mesh.mTextureCoords[normalsTextureUVIndex][vIndex].y);
+                    } else {
+                        normalUVs.push_back(mesh.mTextureCoords[normalsTextureUVIndex][vIndex].y);
                     }
                 }
             }
@@ -460,7 +487,8 @@ namespace Core {
             coreMesh->getVertexFaceNormals()->store(faceNormals.data());
         }
         if (hasColors) coreMesh->getVertexColors()->store(colors.data());
-        if (hasUVs) coreMesh->getVertexUVs0()->store(uvs.data());
+        if (hasAlbedoUVs) coreMesh->getVertexAlbedoUVs()->store(albedoUVs.data());
+        if (hasNormalUVs) coreMesh->getVertexNormalUVs()->store(normalUVs.data());
 
         // if (invert) mesh3D->SetInvertNormals(true);
         coreMesh->setNormalsSmoothingThreshold((Real)smoothingThreshold * Math::DegreesToRads);
@@ -516,13 +544,18 @@ namespace Core {
             aiReturn texFound = AI_SUCCESS;
 
             WeakPointer<Texture> diffuseTexture;
-            //	TextureRef bumpTexture;
+            WeakPointer<Texture> normalTexture;
             //	TextureRef specularTexture;
 
             // get diffuse texture (for now support only 1)
             texFound = assimpMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &aiTexturePath);
             if (texFound == AI_SUCCESS) {
                 diffuseTexture = this->loadAITexture(*assimpMaterial, aiTextureType_DIFFUSE, fixedModelPath);
+            }
+
+            texFound = assimpMaterial->GetTexture(aiTextureType_NORMALS, 0, &aiTexturePath);
+            if (texFound == AI_SUCCESS) {
+                normalTexture = this->loadAITexture(*assimpMaterial, aiTextureType_NORMALS, fixedModelPath);
             }
 
             MaterialLibrary& materialLibrary = Engine::instance()->getMaterialLibrary();
@@ -557,7 +590,7 @@ namespace Core {
                         // Add [diffuseTexture] to the new material (and for the appropriate shader variable), and store
                         // Assimp UV channel for it in [materialImportDescriptor] for later processing of the mesh
                         Bool setupSuccess =
-                            this->setupMeshSpecificMaterialWithTexture(*assimpMaterial, TextureType::Diffuse, diffuseTexture, i, materialImportDescriptor);
+                            this->setupMeshSpecificMaterialWithTextures(*assimpMaterial, diffuseTexture, normalTexture, i, materialImportDescriptor);
 
                         if (!setupSuccess) {
                             throw ModelLoaderException("ModelLoader::ProcessMaterials -> Could not set up diffuse texture.");
@@ -727,27 +760,40 @@ namespace Core {
      * The method then locates the Assimp UV data for that texture and stores that in the mesh-specific properties of
      * [materialImportDesc].
      */
-    Bool ModelLoader::setupMeshSpecificMaterialWithTexture(const aiMaterial& assimpMaterial, TextureType textureType, WeakPointer<Texture> texture,
-                                                           UInt32 meshIndex, MaterialImportDescriptor& materialImportDesc) const {
-        // get the Assimp material key for textures of type [textureType]
-        UInt32 aiTextureKey = this->convertTextureTypeToAITextureKey(textureType);
-
+    Bool ModelLoader::setupMeshSpecificMaterialWithTextures(const aiMaterial& assimpMaterial, WeakPointer<Texture> diffuseTexture,
+                                                           WeakPointer<Texture> normalsTexture,  UInt32 meshIndex,
+                                                           MaterialImportDescriptor& materialImportDesc) const {
+       
         // set the diffuse texture in the material for the mesh specified by [meshIndex]
         WeakPointer<Material> material = materialImportDesc.meshSpecificProperties[meshIndex].material;
 
         // TODO: Need to not have this material hard coded in here....
         WeakPointer<StandardPhysicalMaterial> texturedMaterial = WeakPointer<Material>::dynamicPointerCast<StandardPhysicalMaterial>(material);
 
-        texturedMaterial->setAlbedoMap(texture);
-
         Int32 mappedIndex;
 
-        // get the Assimp UV channel for the texture. the mapping will be used later when
-        // processing the meshes in the scene
-        if (AI_SUCCESS == aiGetMaterialInteger(&assimpMaterial, AI_MATKEY_UVWSRC(aiTextureKey, 0), &mappedIndex))
-            materialImportDesc.meshSpecificProperties[meshIndex].uvMapping[textureType] = mappedIndex;
-        else
-            materialImportDesc.meshSpecificProperties[meshIndex].uvMapping[textureType] = 0;
+        if (diffuseTexture) {
+             // get the Assimp material key for textures of type [textureType]
+            UInt32 aiDiffuseTextureKey = this->convertTextureTypeToAITextureKey(TextureType::Diffuse);
+            texturedMaterial->setAlbedoMap(diffuseTexture);
+            texturedMaterial->setAlbedoMapEnabled(true);
+            
+            if (AI_SUCCESS == aiGetMaterialInteger(&assimpMaterial, AI_MATKEY_UVWSRC(aiDiffuseTextureKey, 0), &mappedIndex))
+                materialImportDesc.meshSpecificProperties[meshIndex].uvMapping[TextureType::Diffuse] = mappedIndex;
+            else
+                materialImportDesc.meshSpecificProperties[meshIndex].uvMapping[TextureType::Diffuse] = 0;
+        }
+
+        if (normalsTexture) {
+            UInt32 aiNormalsTextureKey = this->convertTextureTypeToAITextureKey(TextureType::Normals);
+            texturedMaterial->setNormalMap(normalsTexture);
+            texturedMaterial->setNormalMapEnabled(true);
+
+            if (AI_SUCCESS == aiGetMaterialInteger(&assimpMaterial, AI_MATKEY_UVWSRC(aiNormalsTextureKey, 0), &mappedIndex))
+                materialImportDesc.meshSpecificProperties[meshIndex].uvMapping[TextureType::Normals] = mappedIndex;
+            else
+                materialImportDesc.meshSpecificProperties[meshIndex].uvMapping[TextureType::Normals] = 0;
+        }
 
         return true;
     }
@@ -757,7 +803,7 @@ namespace Core {
         if (aiTextureKey == aiTextureType_SPECULAR)
             textureType = TextureType::Specular;
         else if (aiTextureKey == aiTextureType_NORMALS)
-            textureType = TextureType::BumpMap;
+            textureType = TextureType::Normals;
         else if (aiTextureKey == aiTextureType_DIFFUSE)
             textureType = TextureType::Diffuse;
         return textureType;
@@ -766,7 +812,7 @@ namespace Core {
     StandardAttribute ModelLoader::mapTextureTypeToAttribute(TextureType textureType) {
         switch (textureType) {
             case TextureType::Diffuse:
-                return StandardAttribute::UV0;
+                return StandardAttribute::AlbedoUV;
                 break;
             default:
                 return StandardAttribute::_None;
@@ -780,7 +826,7 @@ namespace Core {
         Int32 aiTextureKey = -1;
         if (textureType == TextureType::Specular)
             aiTextureKey = aiTextureType_SPECULAR;
-        else if (textureType == TextureType::BumpMap)
+        else if (textureType == TextureType::Normals)
             aiTextureKey = aiTextureType_NORMALS;
         else if (textureType == TextureType::Diffuse)
             aiTextureKey = aiTextureType_DIFFUSE;

@@ -39,7 +39,8 @@ namespace Core {
         WeakPointer<AttributeArray<Vector3rs>> getVertexFaceNormals();
         WeakPointer<AttributeArray<Vector3rs>> getVertexTangents();
         WeakPointer<AttributeArray<ColorS>> getVertexColors();
-        WeakPointer<AttributeArray<Vector2rs>> getVertexUVs0();
+        WeakPointer<AttributeArray<Vector2rs>> getVertexAlbedoUVs();
+        WeakPointer<AttributeArray<Vector2rs>> getVertexNormalUVs();
         WeakPointer<IndexBuffer> getIndexBuffer();
 
         Bool initVertexPositions();
@@ -47,7 +48,8 @@ namespace Core {
         Bool initVertexFaceNormals();
         Bool initVertexTangents();
         Bool initVertexColors();
-        Bool initVertexUVs0();
+        Bool initVertexAlbedoUVs();
+        Bool initVertexNormalUVs();
 
         void enableAttribute(StandardAttribute attribute);
         void disableAttribute(StandardAttribute attribute);
@@ -103,7 +105,8 @@ namespace Core {
         std::shared_ptr<AttributeArray<Vector3rs>> vertexFaceNormals;
         std::shared_ptr<AttributeArray<Vector3rs>> vertexTangents;
         std::shared_ptr<AttributeArray<ColorS>> vertexColors;
-        std::shared_ptr<AttributeArray<Vector2rs>> vertexUVs0;
+        std::shared_ptr<AttributeArray<Vector2rs>> vertexAlbedoUVs;
+        std::shared_ptr<AttributeArray<Vector2rs>> vertexNormalUVs;
         std::shared_ptr<IndexBuffer> indexBuffer;
 
         // maps vertices to other equal vertices
