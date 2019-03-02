@@ -517,40 +517,45 @@ namespace Core {
             "   return vec4(" + LIGHT_COLOR + "[lightIndex].rgb * shadowFactor, 1.0);\n"
             "}\n"
 
-            "void getDirLightParameters(in int lightIndex, in vec3 worldNormal, out vec3 toLight, out float NdotL, out float bias) { \n"
+            "void getDirLightParameters(in int lightIndex, in vec3 worldNormal, in vec3 toViewer, out vec3 toLight, out vec3 halfwayVec, out float NdotL, out float bias) { \n"
             "    toLight = vec3(-" + LIGHT_DIRECTION + "[lightIndex]);\n"
             "    NdotL = max(cos(acos(dot(toLight, worldNormal)) * 1.1), 0.0); \n"  
+            "    halfwayVec = normalize(toViewer + toLight); \n"
             "    bias = (1.0 - NdotL) * " + LIGHT_ANGULAR_SHADOW_BIAS + "[lightIndex];"
             "} \n"
 
-            "void getPointLightParameters(in int lightIndex, in vec4 worldPos, in vec3 worldNormal, out vec3 lightLocalPos, out vec3 toLight, out float NdotL, out float bias, out float attenuation) { \n"
+            "void getPointLightParameters(in int lightIndex, in vec4 worldPos, in vec3 worldNormal, in vec3 toViewer, out vec3 lightLocalPos, out vec3 toLight, out vec3 halfwayVec, out float NdotL, out float bias, out float attenuation) { \n"
             "    lightLocalPos = vec3(" + LIGHT_MATRIX + "[lightIndex] * worldPos);\n"
             "    toLight = vec3(" + LIGHT_POSITION + "[lightIndex] - worldPos);\n"
             "    float distance = length(toLight); \n"
             "    vec3 toLightNormalized = normalize(toLight);\n"
             "    NdotL = max(cos(acos(dot(toLightNormalized, worldNormal)) * 1.025), 0.0); \n"
+            "    halfwayVec = normalize(toViewer + toLight); \n"
             "    attenuation = clamp(" + LIGHT_RANGE + "[lightIndex] / (distance * distance), 0.0, 1.0); \n"
             "    bias = (1.0 - NdotL) * " + LIGHT_ANGULAR_SHADOW_BIAS + "[lightIndex] + " + LIGHT_CONSTANT_SHADOW_BIAS + "[lightIndex];\n"
             "} \n"
 
-            "vec4 litColorBlinnPhong(in vec4 albedo, in vec4 worldPos, in vec3 worldNormal, in int lightIndex) {\n"
+            "vec4 litColorBlinnPhong(in int lightIndex, in vec4 albedo, in vec4 worldPos, in vec3 worldNormal, in vec4 cameraPos) {\n"
             "    if (" + LIGHT_ENABLED + "[lightIndex] != 0) {\n"
             "        if (" + LIGHT_TYPE + "[lightIndex] == 0) {\n"
             "            return vec4(albedo.rgb * " + LIGHT_COLOR + "[lightIndex].rgb, albedo.a);\n"
             "        }\n"
             "        else { \n"
-            "            vec3 lightLocalPos, toLight; \n"
+            "            vec3 radiance; \n"
+            "            vec3 lightLocalPos, toLight, halfwayVec; \n"
             "            float NdotL, bias, attenuation; \n"
+            "            vec3 toViewer = vec3(cameraPos - worldPos); \n"
             "            if (" + LIGHT_TYPE + "[lightIndex] == 1) {\n"
-            "                getDirLightParameters(lightIndex, worldNormal, toLight, NdotL, bias); \n"
+            "                getDirLightParameters(lightIndex, worldNormal, toViewer, toLight, halfwayVec, NdotL, bias); \n"
             "                vec4 lightColor = getDirLightColor(worldPos, bias, lightIndex); \n"
-            "                return vec4(lightColor.rgb * albedo.rgb * NdotL, albedo.a);\n"
+            "                radiance = lightColor.rgb; \n"
             "            }\n"
             "            else if (" + LIGHT_TYPE + "[lightIndex] == 2) {\n"
-            "                getPointLightParameters(lightIndex, worldPos, worldNormal, lightLocalPos, toLight, NdotL, bias, attenuation); \n"
+            "                getPointLightParameters(lightIndex, worldPos, worldNormal, toViewer, lightLocalPos, toLight, halfwayVec, NdotL, bias, attenuation); \n"
             "                vec4 lightColor = getPointLightColor(lightLocalPos, bias, lightIndex);\n"
-            "                return vec4(lightColor.rgb * albedo.rgb * NdotL * attenuation, albedo.a);\n"
+            "                radiance = lightColor.rgb * attenuation; \n"
             "            }\n"
+            "            return vec4(radiance * albedo.rgb * NdotL, albedo.a);\n"
             "        }\n"
             "    }\n"
             "    return albedo;\n"
@@ -612,30 +617,54 @@ namespace Core {
             "    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0); \n"
             "} \n"
 
-            "vec4 litColorPhysical(in int lightIndex, in vec4 albedo, in vec4 worldPos, in vec3 worldNormal, in vec4 cameraPos, in float metallic, int float roughness) {\n"
+            "vec4 litColorPhysical(in int lightIndex, in vec4 albedo, in vec4 worldPos, in vec3 worldNormal, in vec4 cameraPos, in float metallic, in float roughness) {\n"
             "    if (" + LIGHT_ENABLED + "[lightIndex] != 0) {\n"
             "        if (" + LIGHT_TYPE + "[lightIndex] == 0) {\n"
             "            return vec4(albedo.rgb * " + LIGHT_COLOR + "[lightIndex].rgb, albedo.a);\n"
             "        }\n"
             "        else { \n"
-            "            vec3 lightLocalPos, toLight; \n"
-            "            float NdotL, bias, attenuation; \n"
+            "            vec3 lightLocalPos, toLight, halfwayVec, radiance; \n"
+            "            float NdotL, bias, attenuation, H; \n"
             "            vec3 V = normalize(camPos - WorldPos); \n "
             "            vec3 F0 = vec3(0.04); \n "
-            "            F0 = mix(F0, albedo, metallic); \n "
+            "            F0 = mix(F0, albedo, metallic); \n "   
+
             "            if (" + LIGHT_TYPE + "[lightIndex] == 1) {\n"
-            "                getDirLightParameters(lightIndex, worldNormal, toLight, NdotL, bias); \n"
+            "                getDirLightParameters(lightIndex, worldNormal, V, toLight, halfwayVec, NdotL, bias); \n"
             "                vec4 lightColor = getDirLightColor(worldPos, bias, lightIndex); \n"
-            "                return vec4(lightColor.rgb * albedo.rgb * NdotL, albedo.a);\n"
+            "                radiance = lightColor.rgb; \n"
             "            }\n"
             "            else if (" + LIGHT_TYPE + "[lightIndex] == 2) {\n"
-            "                getPointLightParameters(lightIndex, worldPos, worldNormal, lightLocalPos, toLight, NdotL, bias, attenuation); \n"
+            "                getPointLightParameters(lightIndex, worldPos, worldNormal, V, lightLocalPos, toLight, halfwayVec, NdotL, bias, attenuation); \n"
             "                vec4 lightColor = getPointLightColor(lightLocalPos, bias, lightIndex);\n"
-            "                return vec4(lightColor.rgb * albedo.rgb * NdotL * attenuation, albedo.a);\n"
+            "                radiance = lightColor.rgb * attenuation; \n"
             "            }\n"
+
+            "            float NDF = gistributionGGX(N, H, roughness); \n "
+            "            float G   = geometrySmith(N, V, L, roughness); \n "
+            "            vec3 F    = fresnelSchlick(max(dot(H, V), 0.0), F0);     \n "  
+                        
+            "            vec3 kS = F; \n "
+            "            vec3 kD = vec3(1.0) - kS; \n "
+            "            kD *= 1.0 - metallic;	   \n "
+                        
+            "            vec3 numerator    = NDF * G * F; \n "
+            "            float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0); \n "
+            "            vec3 specular     = numerator / max(denominator, 0.001);  \n "
+                            
+            "            float NdotL = max(dot(N, L), 0.0);      \n "
+            "            vec3 Lo = (kD * albedo / PI + specular) * radiance * NdotL; \n "
+
+            "            vec3 ambient = vec3(0.03) * albedo * ao; \n"
+            "            vec3 color = ambient + Lo;  \n"
+                        
+            "            color = color / (color + vec3(1.0));  \n"
+            "            color = pow(color, vec3(1.0/2.2));  \n"
+
+            "            return vec4(color, albedo.a); \n" 
             "        }\n"
             "    }\n"
-            "    return baseColor;\n"
+            "    return albedo;\n"
             "}\n";
 
         this->StandardPhysical_vertex =  
@@ -833,6 +862,7 @@ namespace Core {
             "#version 330\n"
             "precision highp float;\n"
             "#include \"LightingSingle\"\n"
+            + CAMERA_POSITION_DEF +
             "in vec4 vColor;\n"
             "in vec3 vNormal;\n"
             "in vec4 vPos;\n"
@@ -841,7 +871,7 @@ namespace Core {
             // instead of passing [vColor] directly to the litColorBlinnPhong function, we copy it into a new
             // vector. passing it directly causes a weird bug on some platforms/GPUs/versions of Linux
             // where shadows are not rendered
-            "   out_color = litColorBlinnPhong(vec4(vColor.r, vColor.g, vColor.b, 1.0), vPos, normalize(vNormal), 0);\n"
+            "   out_color = litColorBlinnPhong(0, vec4(vColor.r, vColor.g, vColor.b, 1.0), vPos, normalize(vNormal), " + CAMERA_POSITION + ");\n"
             "}\n";
 
         this->BasicTextured_vertex =  
@@ -908,6 +938,7 @@ namespace Core {
             "#version 330\n"
             "precision highp float;\n"
             "#include \"LightingSingle\"\n"
+            + CAMERA_POSITION_DEF
             + TEXTURE2D0_DEF +
             "in vec4 vColor;\n"
             "in vec3 vNormal;\n"
@@ -916,7 +947,7 @@ namespace Core {
             "in vec4 vPos;\n"
             "out vec4 out_color;\n"
             "void main() {\n"
-            "   out_color = litColorBlinnPhong(texture(" + TEXTURE2D0 + ", vUV), vPos, normalize(vNormal), 0);\n"
+            "   out_color = litColorBlinnPhong(0, texture(" + TEXTURE2D0 + ", vUV), vPos, normalize(vNormal), " + CAMERA_POSITION + ");\n"
             "}\n";
 
         this->BasicCube_vertex =  
