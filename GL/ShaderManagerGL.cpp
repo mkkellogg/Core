@@ -18,6 +18,7 @@ const std::string MODEL_MATRIX = _un(Core::StandardUniform::ModelMatrix);
 const std::string MODEL_INVERSE_TRANSPOSE_MATRIX = _un(Core::StandardUniform::ModelInverseTransposeMatrix);
 const std::string VIEW_MATRIX = _un(Core::StandardUniform::ViewMatrix);
 const std::string PROJECTION_MATRIX = _un(Core::StandardUniform::ProjectionMatrix);
+const std::string CAMERA_POSITION = _un(Core::StandardUniform::CameraPosition);
 
 const std::string MAX_CASCADES = std::to_string(Core::Constants::MaxDirectionalCascades);
 const std::string MAX_LIGHTS = std::to_string(Core::Constants::MaxShaderLights);
@@ -57,7 +58,7 @@ const std::string MODEL_MATRIX_DEF = "uniform mat4 " +  MODEL_MATRIX + ";\n";
 const std::string MODEL_INVERSE_TRANSPOSE_MATRIX_DEF = "uniform mat4 " +  MODEL_INVERSE_TRANSPOSE_MATRIX + ";\n";
 const std::string VIEW_MATRIX_DEF = "uniform mat4 " +  VIEW_MATRIX + ";\n";
 const std::string PROJECTION_MATRIX_DEF = "uniform mat4 " +  PROJECTION_MATRIX + ";\n";
-
+const std::string CAMERA_POSITION_DEF = "uniform vec4 " +  CAMERA_POSITION + ";\n";
 
 const std::string MAX_CASCADES_SINGLE_DEF = "const int MAX_CASCADES =" + MAX_CASCADES + ";\n";
 const std::string MAX_LIGHTS_SINGLE_DEF = "const int MAX_LIGHTS = 1;\n";
@@ -140,6 +141,18 @@ namespace Core {
 
         this->setShader(ShaderType::Vertex, "Lighting", ShaderManagerGL::Lighting_vertex);
         this->setShader(ShaderType::Fragment, "Lighting", ShaderManagerGL::Lighting_fragment);
+        
+        this->setShader(ShaderType::Vertex, "PhysicalLightingSingle", ShaderManagerGL::Physical_Lighting_Single_vertex);
+        this->setShader(ShaderType::Fragment, "PhysicalLightingSingle", ShaderManagerGL::Physical_Lighting_Single_fragment);
+
+        this->setShader(ShaderType::Vertex, "PhysicalLightingMulti", ShaderManagerGL::Physical_Lighting_Multi_vertex);
+        this->setShader(ShaderType::Fragment, "PhysicalLightingMulti", ShaderManagerGL::Physical_Lighting_Multi_fragment);
+
+        this->setShader(ShaderType::Vertex, "PhysicalLighting", ShaderManagerGL::Physical_Lighting_vertex);
+        this->setShader(ShaderType::Fragment, "PhysicalLighting", ShaderManagerGL::Physical_Lighting_fragment);
+
+        this->setShader(ShaderType::Vertex, "StandardPhysical", ShaderManagerGL::StandardPhysical_vertex);
+        this->setShader(ShaderType::Fragment, "StandardPhysical", ShaderManagerGL::StandardPhysical_fragment);
 
         this->setShader(ShaderType::Vertex, "Depth", ShaderManagerGL::Depth_vertex);
         this->setShader(ShaderType::Fragment, "Depth", ShaderManagerGL::Depth_fragment);
@@ -317,32 +330,6 @@ namespace Core {
             "out vec4 _core_lightSpacePos[" + MAX_CASCADES_LIGHTS + "];\n"
             "out float _core_viewSpacePosZ[" + MAX_LIGHTS + "];\n";
 
-        this->Lighting_Header_Single_vertex =
-            MAX_CASCADES_SINGLE_DEF
-            + MAX_LIGHTS_SINGLE_DEF
-            + LIGHT_COUNT_SINGLE_DEF
-            + LIGHT_CASCADE_COUNT_SINGLE_DEF
-            + LIGHT_VIEW_PROJECTION_SINGLE_DEF +
-            "out vec4 _core_lightSpacePos[" + MAX_CASCADES + "];\n"
-            "out float _core_viewSpacePosZ[1];\n";
-
-         this->Lighting_Single_vertex =
-            "#include \"LightingHeaderSingle\" \n"
-            "#include \"Lighting\" \n";
-
-         this->Lighting_Multi_vertex =
-            "#include \"LightingHeaderMulti\" \n"
-            "#include \"Lighting\" \n";
-
-        this->Lighting_vertex = 
-            "#define TRANSFER_LIGHTING(localPos, clipSpacePos, viewSpacePos) "
-            "for (int l = 0 ; l < " + MAX_CASCADES + " * " + LIGHT_COUNT + "; l++) { "
-            "    _core_lightSpacePos[l] = " + LIGHT_VIEW_PROJECTION + "[l] * " + MODEL_MATRIX + " * (localPos); "
-            "}"
-            "for (int i = 0 ; i < " + LIGHT_COUNT + "; i++) { "
-            "_core_viewSpacePosZ[i] = (viewSpacePos).z;"
-            "}";
-
         this->Lighting_Header_Multi_fragment =
             MAX_CASCADES_DEF
             + MAX_LIGHTS_DEF
@@ -366,6 +353,15 @@ namespace Core {
             + LIGHT_NEAR_PLANE_DEF +
             "in float _core_viewSpacePosZ[" + MAX_LIGHTS + "];\n"
             "in vec4 _core_lightSpacePos[" + MAX_CASCADES_LIGHTS + "];\n";
+
+        this->Lighting_Header_Single_vertex =
+            MAX_CASCADES_SINGLE_DEF
+            + MAX_LIGHTS_SINGLE_DEF
+            + LIGHT_COUNT_SINGLE_DEF
+            + LIGHT_CASCADE_COUNT_SINGLE_DEF
+            + LIGHT_VIEW_PROJECTION_SINGLE_DEF +
+            "out vec4 _core_lightSpacePos[" + MAX_CASCADES + "];\n"
+            "out float _core_viewSpacePosZ[1];\n";
 
         this->Lighting_Header_Single_fragment =
             MAX_CASCADES_SINGLE_DEF
@@ -391,13 +387,30 @@ namespace Core {
             "in float _core_viewSpacePosZ[1];\n"
             "in vec4 _core_lightSpacePos[" + MAX_CASCADES + "];\n";
 
+        this->Lighting_Single_vertex =
+            "#include \"LightingHeaderSingle\" \n"
+            "#include \"Lighting\" \n";
+
         this->Lighting_Single_fragment =
             "#include \"LightingHeaderSingle\" \n"
+            "#include \"Lighting\" \n";
+
+        this->Lighting_Multi_vertex =
+            "#include \"LightingHeaderMulti\" \n"
             "#include \"Lighting\" \n";
 
         this->Lighting_Multi_fragment =
             "#include \"LightingHeaderMulti\" \n"
             "#include \"Lighting\" \n";
+
+        this->Lighting_vertex = 
+            "#define TRANSFER_LIGHTING(localPos, clipSpacePos, viewSpacePos) "
+            "for (int l = 0 ; l < " + MAX_CASCADES + " * " + LIGHT_COUNT + "; l++) { "
+            "    _core_lightSpacePos[l] = " + LIGHT_VIEW_PROJECTION + "[l] * " + MODEL_MATRIX + " * (localPos); "
+            "}"
+            "for (int i = 0 ; i < " + LIGHT_COUNT + "; i++) { "
+            "_core_viewSpacePosZ[i] = (viewSpacePos).z;"
+            "}";
 
         this->Lighting_fragment =
             "float calDirShadowFactorSingleIndex(int index, vec2 uv, float fragDepth, float angularBias, int lightIndex) { \n"
@@ -406,9 +419,9 @@ namespace Core {
             "    return (1.0-shadowDepth); \n"
             "} \n"
 
-            "float calcDirShadowFactor(int cascadeIndex, vec4 lSpacePos, float angularBias, vec4 fragPos, int lightIndex)\n"
+            "float calcDirShadowFactor(int cascadeIndex, vec4 lightSpacePos, float angularBias, vec4 fragPos, int lightIndex)\n"
             "{ \n"
-            "    vec3 projCoords = lSpacePos.xyz / lSpacePos.w; \n"
+            "    vec3 projCoords = lightSpacePos.xyz / lightSpacePos.w; \n"
             "    vec3 uvCoords = (projCoords * 0.5) + vec3(0.5, 0.5, 0.5); \n"
             "    float px = 1.0 / " + LIGHT_SHADOW_MAP_SIZE + "[lightIndex]; \n"
             "    float py =  " + LIGHT_SHADOW_MAP_ASPECT + "[cascadeIndex] / " + LIGHT_SHADOW_MAP_SIZE + "[lightIndex]; \n"
@@ -436,33 +449,33 @@ namespace Core {
             "    return shadowFactor; \n"
             "} \n"
 
-            "vec4 getDirLightColor(vec4 fragPos, float bias, int lightIndex) { \n"
+            "vec4 getDirLightColor(vec4 worldPos, float bias, int lightIndex) { \n"
             "    float shadowFactor = 0.0;\n"
             "    for (int i = 0 ; i < " + LIGHT_CASCADE_COUNT + "[lightIndex]; i++) { \n"
             "        int offset = lightIndex * " + MAX_CASCADES + " + i;\n"
             "        if (_core_viewSpacePosZ[lightIndex] <= " + LIGHT_CASCADE_END + "[offset]) { \n"
-            "            shadowFactor = calcDirShadowFactor(i, _core_lightSpacePos[offset], bias, fragPos, lightIndex); \n"
+            "            shadowFactor = calcDirShadowFactor(i, _core_lightSpacePos[offset], bias, worldPos, lightIndex); \n"
             "            break; \n"
             "        } \n"
             "    } \n"
             "    return vec4((1.0 - shadowFactor) * " + LIGHT_COLOR + "[lightIndex].rgb, 1.0);\n"      
             "} \n"
 
-            "float getPointLightShadowFactor(vec3 lightLocalFragPos, float bias, int lightIndex) { \n"
-            "   vec4 shadowDepthVec = texture(" + LIGHT_SHADOW_CUBE_MAP + "[lightIndex], lightLocalFragPos);\n"
+            "float getPointLightShadowFactor(vec3 lightLocalPos, float bias, int lightIndex) { \n"
+            "   vec4 shadowDepthVec = texture(" + LIGHT_SHADOW_CUBE_MAP + "[lightIndex], lightLocalPos);\n"
             "   float shadowDepth = shadowDepthVec.r;\n"
             "   float shadowFactor = 0.0; \n"
-            "   if (shadowDepth + bias > length(lightLocalFragPos) || shadowDepth < .001) {\n"
+            "   if (shadowDepth + bias > length(lightLocalPos) || shadowDepth < .001) {\n"
             "       shadowFactor = 1.0;\n"
             "   }\n"
             "   return shadowFactor;\n"
             "} \n"
 
-            "vec4 getPointLightColor(vec3 lightLocalFragPos, float bias, int lightIndex) { \n"
+            "vec4 getPointLightColor(vec3 lightLocalPos, float bias, int lightIndex) { \n"
             "    float pxToWorld = 1.0 / " + LIGHT_SHADOW_MAP_SIZE + "[lightIndex] * 0.2; \n"
             "    float near = " + LIGHT_NEAR_PLANE + "[lightIndex]; \n"
 
-            "    vec3 absVec = abs(lightLocalFragPos); \n"
+            "    vec3 absVec = abs(lightLocalPos); \n"
             "    float maxComponent = max(max(absVec.x, absVec.y), absVec.z); \n"
             "    vec3 normAbs = absVec / maxComponent; \n"
 
@@ -473,7 +486,7 @@ namespace Core {
             "    vec3 mask = vec3(0.0, 0.0, 1.0) * aFactor +  vec3(1.0, 0.0, 0.0) * bFactor + vec3(0.0, 1.0, 0.0) *  cFactor; \n"
 
             "    vec3 inverseMask = vec3(1.0, 1.0, 1.0) - mask; \n"
-            "    vec3 signVec = sign(lightLocalFragPos); \n"
+            "    vec3 signVec = sign(lightLocalPos); \n"
             "    vec3 forward = signVec * mask; \n"
             "    float scale = maxComponent / near; \n"
             "    vec3 up = vec3(0.0, 1.0, 0.0) * inverseMask + vec3(0.0, 0.0, forward.y) * inverseMask; \n"
@@ -483,49 +496,192 @@ namespace Core {
             
             "    float shadowFactor = 0.0; \n"
             "    if (" + LIGHT_SHADOW_SOFTNESS + "[lightIndex] == 2 || " + LIGHT_SHADOW_SOFTNESS + "[lightIndex] == 1) { \n"
-            "        shadowFactor += getPointLightShadowFactor(lightLocalFragPos, bias, lightIndex); \n"
+            "        shadowFactor += getPointLightShadowFactor(lightLocalPos, bias, lightIndex); \n"
             "        for (int i = 1; i <= " + LIGHT_SHADOW_SOFTNESS + "[lightIndex]; i++) { \n"
-            "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos + right * i, bias, lightIndex); \n"
-            "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos + up * i, bias, lightIndex); \n"
-            "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos - right * i, bias, lightIndex); \n"
-            "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos - up * i, bias, lightIndex); \n"
-            "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos + right * i + up * i, bias, lightIndex); \n"
-            "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos + right * i - up * i, bias, lightIndex); \n"
-            "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos - right * i + up * i, bias, lightIndex); \n"
-            "            shadowFactor += getPointLightShadowFactor(lightLocalFragPos - right * i - up * i, bias, lightIndex); \n"
+            "            shadowFactor += getPointLightShadowFactor(lightLocalPos + right * i, bias, lightIndex); \n"
+            "            shadowFactor += getPointLightShadowFactor(lightLocalPos + up * i, bias, lightIndex); \n"
+            "            shadowFactor += getPointLightShadowFactor(lightLocalPos - right * i, bias, lightIndex); \n"
+            "            shadowFactor += getPointLightShadowFactor(lightLocalPos - up * i, bias, lightIndex); \n"
+            "            shadowFactor += getPointLightShadowFactor(lightLocalPos + right * i + up * i, bias, lightIndex); \n"
+            "            shadowFactor += getPointLightShadowFactor(lightLocalPos + right * i - up * i, bias, lightIndex); \n"
+            "            shadowFactor += getPointLightShadowFactor(lightLocalPos - right * i + up * i, bias, lightIndex); \n"
+            "            shadowFactor += getPointLightShadowFactor(lightLocalPos - right * i - up * i, bias, lightIndex); \n"
             "        } \n "
             "        if (" + LIGHT_SHADOW_SOFTNESS + "[lightIndex] == 2) shadowFactor /= 17.0; \n"
             "        else shadowFactor /= 9.0; \n"
             "    } \n"
             "    else { \n"
-            "        shadowFactor += getPointLightShadowFactor(lightLocalFragPos, bias, lightIndex); \n"
+            "        shadowFactor += getPointLightShadowFactor(lightLocalPos, bias, lightIndex); \n"
             "    } \n"       
            
             "   return vec4(" + LIGHT_COLOR + "[lightIndex].rgb * shadowFactor, 1.0);\n"
             "}\n"
 
-            "vec4 litColor(in vec4 baseColor, in vec4 fragPos, in vec3 fragNormal, in int lightIndex) {\n"
+            "void getDirLightParameters(in int lightIndex, in vec3 worldNormal, out vec3 toLight, out float NdotL, out float bias) { \n"
+            "    toLight = vec3(-" + LIGHT_DIRECTION + "[lightIndex]);\n"
+            "    NdotL = max(cos(acos(dot(toLight, worldNormal)) * 1.1), 0.0); \n"  
+            "    bias = (1.0 - NdotL) * " + LIGHT_ANGULAR_SHADOW_BIAS + "[lightIndex];"
+            "} \n"
+
+            "void getPointLightParameters(in int lightIndex, in vec4 worldPos, in vec3 worldNormal, out vec3 lightLocalPos, out vec3 toLight, out float NdotL, out float bias, out float attenuation) { \n"
+            "    lightLocalPos = vec3(" + LIGHT_MATRIX + "[lightIndex] * worldPos);\n"
+            "    toLight = vec3(" + LIGHT_POSITION + "[lightIndex] - worldPos);\n"
+            "    float distance = length(toLight); \n"
+            "    vec3 toLightNormalized = normalize(toLight);\n"
+            "    NdotL = max(cos(acos(dot(toLightNormalized, worldNormal)) * 1.025), 0.0); \n"
+            "    attenuation = clamp(" + LIGHT_RANGE + "[lightIndex] / (distance * distance), 0.0, 1.0); \n"
+            "    bias = (1.0 - NdotL) * " + LIGHT_ANGULAR_SHADOW_BIAS + "[lightIndex] + " + LIGHT_CONSTANT_SHADOW_BIAS + "[lightIndex];\n"
+            "} \n"
+
+            "vec4 litColorBlinnPhong(in vec4 albedo, in vec4 worldPos, in vec3 worldNormal, in int lightIndex) {\n"
             "    if (" + LIGHT_ENABLED + "[lightIndex] != 0) {\n"
             "        if (" + LIGHT_TYPE + "[lightIndex] == 0) {\n"
-            "            return vec4(baseColor.rgb * " + LIGHT_COLOR + "[lightIndex].rgb, baseColor.a);\n"
+            "            return vec4(albedo.rgb * " + LIGHT_COLOR + "[lightIndex].rgb, albedo.a);\n"
             "        }\n"
-            "        else if (" + LIGHT_TYPE + "[lightIndex] == 1) {\n"
-            "            vec3 toLight = vec3(-" + LIGHT_DIRECTION + "[lightIndex]);\n"
-            "            float baseDot = max(cos(acos(dot(toLight, fragNormal)) * 1.1), 0.0); \n"  
-            "            float bias = (1.0 - baseDot) * " + LIGHT_ANGULAR_SHADOW_BIAS + "[lightIndex];"
-            "            vec4 lightColor = getDirLightColor(fragPos, bias, lightIndex); \n"
-            "            return vec4(lightColor.rgb * baseColor.rgb * baseDot, baseColor.a);\n"
+            "        else { \n"
+            "            vec3 lightLocalPos, toLight; \n"
+            "            float NdotL, bias, attenuation; \n"
+            "            if (" + LIGHT_TYPE + "[lightIndex] == 1) {\n"
+            "                getDirLightParameters(lightIndex, worldNormal, toLight, NdotL, bias); \n"
+            "                vec4 lightColor = getDirLightColor(worldPos, bias, lightIndex); \n"
+            "                return vec4(lightColor.rgb * albedo.rgb * NdotL, albedo.a);\n"
+            "            }\n"
+            "            else if (" + LIGHT_TYPE + "[lightIndex] == 2) {\n"
+            "                getPointLightParameters(lightIndex, worldPos, worldNormal, lightLocalPos, toLight, NdotL, bias, attenuation); \n"
+            "                vec4 lightColor = getPointLightColor(lightLocalPos, bias, lightIndex);\n"
+            "                return vec4(lightColor.rgb * albedo.rgb * NdotL * attenuation, albedo.a);\n"
+            "            }\n"
             "        }\n"
-            "        else if (" + LIGHT_TYPE + "[lightIndex] == 2) {\n"
-            "            vec3 lightLocalFragPos = vec3(" + LIGHT_MATRIX + "[lightIndex] * fragPos);\n"
-            "            vec3 toLight = normalize(vec3(" + LIGHT_POSITION + "[lightIndex] - fragPos));\n"
-            "            float baseDot = max(cos(acos(dot(toLight, fragNormal)) * 1.025), 0.0); \n"
-            "            float bias = (1.0 - baseDot) * " + LIGHT_ANGULAR_SHADOW_BIAS + "[lightIndex] + " + LIGHT_CONSTANT_SHADOW_BIAS + "[lightIndex];\n"
-            "            vec4 lightColor = getPointLightColor(lightLocalFragPos, bias, lightIndex);\n"
-            "            return vec4(lightColor.rgb * baseColor.rgb * baseDot, baseColor.a);\n"
+            "    }\n"
+            "    return albedo;\n"
+            "}\n";
+
+        this->Physical_Lighting_Single_vertex =
+            "#include \"LightingHeaderSingle\" \n"
+            "#include \"Lighting\" \n";
+
+        this->Physical_Lighting_Single_fragment =
+            "#include \"LightingHeaderSingle\" \n"
+            "#include \"PhysicalLighting\" \n";
+
+        this->Physical_Lighting_Multi_vertex =
+            "#include \"LightingHeaderMulti\" \n"
+            "#include \"Lighting\" \n";
+
+        this->Physical_Lighting_Multi_fragment =
+            "#include \"LightingHeaderMulti\" \n"
+            "#include \"PhysicalLighting\" \n";
+
+        this->Physical_Lighting_vertex =
+            "\n";
+
+        this->Physical_Lighting_fragment =
+            "float distributionGGX(vec3 N, vec3 H, float roughness) { \n"
+            "    float a      = roughness*roughness; \n"
+            "    float a2     = a*a; \n"
+            "    float NdotH  = max(dot(N, H), 0.0); \n"
+            "    float NdotH2 = NdotH*NdotH; \n"
+
+            "    float num   = a2; \n"
+            "    float denom = (NdotH2 * (a2 - 1.0) + 1.0); \n"
+            "    denom = PI * denom * denom; \n"
+
+            "    return num / denom; \n"
+            "} \n"
+
+            "float geometrySchlickGGX(float NdotV, float roughness) { \n"
+            "    float r = (roughness + 1.0); \n"
+            "    float k = (r*r) / 8.0; \n"
+
+            "    float num   = NdotV; \n"
+            "    float denom = NdotV * (1.0 - k) + k; \n"
+
+            "    return num / denom; \n"
+            "} \n"
+
+            "float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness) { \n"
+            "    float NdotV = max(dot(N, V), 0.0); \n"
+            "    float NdotL = max(dot(N, L), 0.0); \n"
+            "    float ggx2  = geometrySchlickGGX(NdotV, roughness); \n"
+            "    float ggx1  = geometrySchlickGGX(NdotL, roughness); \n"
+
+            "    return ggx1 * ggx2; \n"
+            "} \n"
+
+            "vec3 fresnelSchlick(float cosTheta, vec3 F0) { \n"
+            "    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0); \n"
+            "} \n"
+
+            "vec4 litColorPhysical(in int lightIndex, in vec4 albedo, in vec4 worldPos, in vec3 worldNormal, in vec4 cameraPos, in float metallic, int float roughness) {\n"
+            "    if (" + LIGHT_ENABLED + "[lightIndex] != 0) {\n"
+            "        if (" + LIGHT_TYPE + "[lightIndex] == 0) {\n"
+            "            return vec4(albedo.rgb * " + LIGHT_COLOR + "[lightIndex].rgb, albedo.a);\n"
+            "        }\n"
+            "        else { \n"
+            "            vec3 lightLocalPos, toLight; \n"
+            "            float NdotL, bias, attenuation; \n"
+            "            vec3 V = normalize(camPos - WorldPos); \n "
+            "            vec3 F0 = vec3(0.04); \n "
+            "            F0 = mix(F0, albedo, metallic); \n "
+            "            if (" + LIGHT_TYPE + "[lightIndex] == 1) {\n"
+            "                getDirLightParameters(lightIndex, worldNormal, toLight, NdotL, bias); \n"
+            "                vec4 lightColor = getDirLightColor(worldPos, bias, lightIndex); \n"
+            "                return vec4(lightColor.rgb * albedo.rgb * NdotL, albedo.a);\n"
+            "            }\n"
+            "            else if (" + LIGHT_TYPE + "[lightIndex] == 2) {\n"
+            "                getPointLightParameters(lightIndex, worldPos, worldNormal, lightLocalPos, toLight, NdotL, bias, attenuation); \n"
+            "                vec4 lightColor = getPointLightColor(lightLocalPos, bias, lightIndex);\n"
+            "                return vec4(lightColor.rgb * albedo.rgb * NdotL * attenuation, albedo.a);\n"
+            "            }\n"
             "        }\n"
             "    }\n"
             "    return baseColor;\n"
+            "}\n";
+
+        this->StandardPhysical_vertex =  
+            "#version 330\n"
+            "precision highp float;\n"
+            "#include \"PhysicalLightingSingle\" \n"
+            + POSITION_DEF
+            + COLOR_DEF
+            + NORMAL_DEF
+            + FACE_NORMAL_DEF
+            + UV0_DEF
+            + PROJECTION_MATRIX_DEF
+            + VIEW_MATRIX_DEF
+            + MODEL_MATRIX_DEF
+            + MODEL_INVERSE_TRANSPOSE_MATRIX_DEF +
+            "out vec4 vColor;\n"
+            "out vec3 vNormal;\n"
+            "out vec3 vFaceNormal;\n"
+            "out vec2 vUV;\n"
+            "out vec4 vWorldPos;\n"
+            "void main() {\n"
+            "    vPos = " +  MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    vec4 viewSpacePos = " + VIEW_MATRIX + " * vPos;\n"
+            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * vPos;\n"
+            "    vUV = " + UV0 + ";\n"
+            "    vColor = " + COLOR + ";\n"
+            "    vec4 eNormal = " + NORMAL + ";\n"
+            "    vNormal = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * eNormal);\n"
+            "    vFaceNormal = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * " + FACE_NORMAL + ");\n"
+            "    TRANSFER_LIGHTING(" + POSITION + ", gl_Position, viewSpacePos) \n"
+            "}\n";
+
+        this->StandardPhysical_fragment =   
+            "#version 330\n"
+            "precision highp float;\n"
+            "#include \"PhysicalLightingSingle\"\n"
+            + TEXTURE2D0_DEF
+            + CAMERA_POSITION_DEF +
+            "in vec4 vColor;\n"
+            "in vec3 vNormal;\n"
+            "in vec3 vFaceNormal;\n"
+            "in vec2 vUV;\n"
+            "in vec4 vWorldPos;\n"
+            "out vec4 out_color;\n"
+            "void main() {\n"
+            "   out_color = litColorPhysical(0, texture(" + TEXTURE2D0 + ", vUV), vWorldPos, normalize(vNormal), " + CAMERA_POSITION + ");\n"
             "}\n";
 
         this->Depth_vertex =
@@ -682,10 +838,10 @@ namespace Core {
             "in vec4 vPos;\n"
             "out vec4 out_color;\n"
             "void main() {\n"
-            // instead of passing [vColor] directly to the litColor function, we copy it into a new
+            // instead of passing [vColor] directly to the litColorBlinnPhong function, we copy it into a new
             // vector. passing it directly causes a weird bug on some platforms/GPUs/versions of Linux
             // where shadows are not rendered
-            "   out_color = litColor(vec4(vColor.r, vColor.g, vColor.b, 1.0), vPos, normalize(vNormal), 0);\n"
+            "   out_color = litColorBlinnPhong(vec4(vColor.r, vColor.g, vColor.b, 1.0), vPos, normalize(vNormal), 0);\n"
             "}\n";
 
         this->BasicTextured_vertex =  
@@ -760,7 +916,7 @@ namespace Core {
             "in vec4 vPos;\n"
             "out vec4 out_color;\n"
             "void main() {\n"
-            "   out_color = litColor(texture(" + TEXTURE2D0 + ", vUV), vPos, normalize(vNormal), 0);\n"
+            "   out_color = litColorBlinnPhong(texture(" + TEXTURE2D0 + ", vUV), vPos, normalize(vNormal), 0);\n"
             "}\n";
 
         this->BasicCube_vertex =  

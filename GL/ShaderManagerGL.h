@@ -39,6 +39,18 @@ namespace Core {
         std::string Lighting_vertex;
         std::string Lighting_fragment;
 
+        std::string Physical_Lighting_vertex;
+        std::string Physical_Lighting_fragment;
+
+        std::string Physical_Lighting_Single_vertex;
+        std::string Physical_Lighting_Single_fragment;
+
+        std::string Physical_Lighting_Multi_vertex;
+        std::string Physical_Lighting_Multi_fragment;
+
+        std::string StandardPhysical_vertex;
+        std::string StandardPhysical_fragment;
+
         std::string Depth_vertex;
         std::string Depth_fragment;
 
