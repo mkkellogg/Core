@@ -4,10 +4,11 @@ namespace Core {
 
     enum class LightType {
         Ambient = 0,
-        Directional = 1,
-        Point = 2,
-        Spot = 3,
-        Planar = 4
+        AmbientIBL = 1,
+        Directional = 2,
+        Point = 3,
+        Spot = 4,
+        Planar = 5
     };
 
 }
