@@ -353,8 +353,12 @@ namespace Core {
         if (!coreMesh->initVertexFaceNormals()) {
             throw ModelLoaderException("ModeLoader::convertAssimpMesh -> Unable to initialize face normals.");
         }
+        if (!coreMesh->initVertexTangents()) {
+            throw ModelLoaderException("ModeLoader::convertAssimpMesh -> Unable to initialize vertex tangents.");
+        }
         coreMesh->enableAttribute(StandardAttribute::Normal);
         coreMesh->enableAttribute(StandardAttribute::FaceNormal);
+        coreMesh->enableAttribute(StandardAttribute::Tangent);
         hasNormals = true;
 
         std::vector<Real> colors;

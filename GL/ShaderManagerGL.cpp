@@ -700,7 +700,7 @@ namespace Core {
             "precision highp float;\n"
             "#include \"PhysicalLightingSingle\"\n"
             + CAMERA_POSITION_DEF +
-            "uniform sampler2D twoDtexture; \n"
+            "uniform sampler2D albedoMap; \n"
             "uniform float metallic; \n"
             "uniform float roughness; \n"
             "uniform float ambientOcclusion; \n"
@@ -711,7 +711,7 @@ namespace Core {
             "in vec4 vWorldPos;\n"
             "out vec4 out_color;\n"
             "void main() {\n"
-            "   out_color = litColorPhysical(0, texture(twoDtexture, vUV), vWorldPos, normalize(vNormal), " + CAMERA_POSITION + ", metallic, roughness, ambientOcclusion);\n"
+            "   out_color = litColorPhysical(0, texture(albedoMap, vUV), vWorldPos, normalize(vNormal), " + CAMERA_POSITION + ", metallic, roughness, ambientOcclusion);\n"
             "}\n";
 
         this->Depth_vertex =

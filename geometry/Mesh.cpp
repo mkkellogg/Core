@@ -5,6 +5,8 @@
 #include "Vector3.h"
 #include "IndexBuffer.h"
 #include "IndexBuffer.h"
+#include "../math/Math.h"
+#include "../common/Constants.h"
 
 namespace Core {
 
@@ -116,6 +118,10 @@ namespace Core {
         return this->vertexFaceNormals;
     }
 
+    WeakPointer<AttributeArray<Vector3rs>> Mesh::getVertexTangents() {
+        return this->vertexTangents;
+    }
+
     WeakPointer<AttributeArray<ColorS>> Mesh::getVertexColors() {
         return this->vertexColors;
     }
@@ -137,6 +143,10 @@ namespace Core {
 
     Bool Mesh::initVertexFaceNormals() {
         return this->initVertexAttributes<Vector3rs>(&this->vertexFaceNormals, this->vertexCount);
+    }
+
+    Bool Mesh::initVertexTangents() {
+        return this->initVertexAttributes<Vector3rs>(&this->vertexTangents, this->vertexCount);
     }
 
     Bool Mesh::initVertexColors() {
@@ -390,6 +400,157 @@ namespace Core {
         // calculate cross product
         Vector3r::cross(a, b, result);
         result.normalize();
+    }
+
+     /*
+    * Calculate vertex tangents using the two incident edges of a given vertex.
+    * For all triangles that share a given vertex,the method will
+    * calculate the average tangent for that vertex as long as the angle between
+    * the un-averaged normals for the same vertices is less than [smoothingThreshhold].
+    * [smoothingThreshhold is specified in degrees.
+    */
+    void Mesh::calculateTangents(Real smoothingThreshhold) {
+        if (!StandardAttributes::hasAttribute(this->enabledAttributes, StandardAttribute::Tangent)) return;
+
+        WeakPointer<AttributeArray<Vector3rs>> tangents = this->getVertexTangents();
+        WeakPointer<AttributeArray<Vector3rs>> faceNormals = this->getVertexFaceNormals();
+
+        // loop through each triangle in this mesh's vertices
+        // and calculate tangents for each
+        for (UInt32 v = 0; v < this->vertexCount - 2; v += 3) {
+            Vector3r t0, t1, t2;
+
+            this->calculateTangent(v, v + 2, v + 1, t0);
+            this->calculateTangent(v + 1, v, v + 2, t1);
+            this->calculateTangent(v + 2, v + 1, v, t2);
+
+            tangents->getAttribute(v).copy(t0);
+            tangents->getAttribute(v + 1).copy(t1);
+            tangents->getAttribute(v + 2).copy(t2);
+        }
+
+        // This vector is used to store the calculated average tangent for all equal vertices
+        std::vector<Vector3r> averageTangents;
+
+        // loop through each vertex and lookup the associated list of
+        // tangents associated with that vertex, and then calculate the
+        // average tangents from that list.
+        for (UInt32 v = 0; v < this->vertexCount; v++) {
+            // get existing normal for this vertex
+            Vector3r oNormal;
+            oNormal = faceNormals->getAttribute(v);
+            oNormal.normalize();
+
+            Vector3r oTangent;
+            oTangent = vertexTangents->getAttribute(v);
+            oTangent.normalize();
+
+            // retrieve the list of equal vertices for vertex [v]
+            std::vector<UInt32>* listPtr = vertexCrossMap[v];
+            if (listPtr == nullptr) {
+                throw Exception("Mesh::calculateTangents -> Null pointer to vertex group list.");
+            }
+
+            Vector3r avg(0, 0, 0);
+            Real divisor = 0;
+
+            std::vector<UInt32>& list = *listPtr;
+
+            // compute the cosine of the smoothing threshhold angle
+            Real cosSmoothingThreshhold = (Math::cos(Math::DegreesToRads * smoothingThreshhold));
+
+            for (UInt32 i = 0; i < list.size(); i++) {
+                UInt32 vIndex = list[i];
+                Vector3rs& current = faceNormals->getAttribute(vIndex);
+                current.normalize();
+
+                // calculate angle between the normal that exists for this vertex,
+                // and the current normal in the list.
+                Real dot = Vector3r::dot(current, oNormal);
+
+                if (dot > cosSmoothingThreshhold) {
+                    Vector3rs& tangent = tangents->getAttribute(vIndex);
+                    avg.x += tangent.x;
+                    avg.y += tangent.y;
+                    avg.z += tangent.z;
+                    divisor++;
+                }
+            }
+
+            // if divisor < 1, then no extra tangents were found to include in the average,
+            // so just use the original one
+
+            if (divisor <= 1) {
+                avg.x = oTangent.x;
+                avg.y = oTangent.y;
+                avg.z = oTangent.z;
+            }
+            else {
+                Real scaleFactor = (Real)1.0 / divisor;
+                avg.scale(scaleFactor);
+                //avg.Normalize();
+            }
+
+            averageTangents.push_back(avg);
+        }
+
+        // loop through each vertex and assign the average tangent
+        // calculated for that vertex
+        for (UInt32 v = 0; v < this->vertexCount; v++) {
+            Vector3r avg = averageTangents[v];
+            avg.normalize();
+            // set the tangent for this vertex to the averaged tangent
+            tangents->getAttribute(v).set(avg.x, avg.y, avg.z);
+        }
+
+        //if (invertTangents)InvertTangents();
+    }
+
+    /*
+    * Calculate the tangent for the vertex at [vertexIndex] in member [positions].
+    *
+    * The two edges used in the calculation (e1 and e2) are formed from the three vertices: v0, v1, v2.
+    *
+    * v0 is the vertex at [vertexIndex] in [positions].
+    * v2 is the vertex at [rightIndex] in [positions].
+    * v1 is the vertex at [leftIndex] in [positions].
+    */
+    void Mesh::calculateTangent(UInt32 vertexIndex, UInt32 rightIndex, UInt32 leftIndex, Vector3r& result) {
+        WeakPointer<AttributeArray<Vector2rs>> sourceUVs = this->getVertexUVs0();
+        Vector2r uv0 = sourceUVs->getAttribute(vertexIndex);
+        Vector2r uv2 = sourceUVs->getAttribute(rightIndex);
+        Vector2r uv1 = sourceUVs->getAttribute(leftIndex);
+
+        WeakPointer<AttributeArray<Point3rs>> sourcePositions = this->getVertexPositions();
+        Point3r p0 = sourcePositions->getAttribute(vertexIndex);
+        Point3r p2 = sourcePositions->getAttribute(rightIndex);
+        Point3r p1 = sourcePositions->getAttribute(leftIndex);
+
+        Vector3r e1 = p1 - p0;
+        Vector3r e2 = p2 - p0;
+
+        Real u0, u1, u2;
+        Real v0, v1, v2;
+
+        u0 = uv0.x;
+        u1 = uv1.x;
+        u2 = uv2.x;
+
+        v0 = uv0.y;
+        v1 = uv1.y;
+        v2 = uv2.y;
+
+        Real du1 = u1 - u0;
+        Real du2 = u2 - u0;
+
+        Real dv1 = v1 - v0;
+        Real dv2 = v2 - v0;
+
+        Real ood = 1.0f / ((du1 * dv2) - (du2 * dv1));
+
+        result.set(dv2*e1.x - dv1 * e2.x, dv2*e1.y - dv1 * e2.y, dv2*e1.z - dv1 * e2.z);
+
+        result.scale(ood);
     }
 
     /*

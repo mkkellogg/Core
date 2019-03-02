@@ -37,6 +37,7 @@ namespace Core {
         WeakPointer<AttributeArray<Vector3rs>> getVertexNormals();
         WeakPointer<AttributeArray<Vector3rs>> getVertexAveragedNormals();
         WeakPointer<AttributeArray<Vector3rs>> getVertexFaceNormals();
+        WeakPointer<AttributeArray<Vector3rs>> getVertexTangents();
         WeakPointer<AttributeArray<ColorS>> getVertexColors();
         WeakPointer<AttributeArray<Vector2rs>> getVertexUVs0();
         WeakPointer<IndexBuffer> getIndexBuffer();
@@ -44,6 +45,7 @@ namespace Core {
         Bool initVertexPositions();
         Bool initVertexNormals();
         Bool initVertexFaceNormals();
+        Bool initVertexTangents();
         Bool initVertexColors();
         Bool initVertexUVs0();
 
@@ -59,6 +61,7 @@ namespace Core {
         void setCalculateNormals(Bool calculateNormals);
         void setCalculateBoundingBox(Bool calculateBoundingBox);
         void calculateNormals(Real smoothingThreshold);
+        void calculateTangents(Real smoothingThreshhold);
 
         void update();
 
@@ -67,6 +70,7 @@ namespace Core {
         void initAttributes();
         Bool initIndices();
         void calculateFaceNormal(UInt32 faceIndex, Vector3r& result);
+        void calculateTangent(UInt32 vertexIndex, UInt32 rightIndex, UInt32 leftIndex, Vector3r& result);
         void destroyVertexCrossMap();
         Bool buildVertexCrossMap();
 
@@ -97,6 +101,7 @@ namespace Core {
         std::shared_ptr<AttributeArray<Vector3rs>> vertexNormals;
         std::shared_ptr<AttributeArray<Vector3rs>> vertexAveragedNormals;
         std::shared_ptr<AttributeArray<Vector3rs>> vertexFaceNormals;
+        std::shared_ptr<AttributeArray<Vector3rs>> vertexTangents;
         std::shared_ptr<AttributeArray<ColorS>> vertexColors;
         std::shared_ptr<AttributeArray<Vector2rs>> vertexUVs0;
         std::shared_ptr<IndexBuffer> indexBuffer;

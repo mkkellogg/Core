@@ -17,6 +17,8 @@ namespace Core {
     public:
         Vector2() : Vector2(0.0, 0.0) {}
         Vector2(const T& x, const T& y) : Vector2Components<T>(this->data, x, y) {}
+        Vector2(const Vector2<T, true>& src) : Vector2(src.x, src.y) {}
+        Vector2(const Vector2<T, false>& src) : Vector2(src.x, src.y) {}
         Vector2(T* storage) : Vector2(storage, 0.0, 0.0) {}
         Vector2(T* storage, const T& x, const T& y) : VectorStorage<T, VECTOR2_COMPONENT_COUNT, true>(storage), Vector2Components<T>(this->data, x, y) {}
 
