@@ -22,6 +22,7 @@ namespace Core {
         void setMetallic(Real metallic);
         void setRoughness(Real roughness);
         void setAmbientOcclusion(Real ambientOcclusion);
+        void setAlbedo(Color albedo);
         void setAlbedoMap(WeakPointer<Texture> albedoMap);
         void setNormalMap(WeakPointer<Texture> normalMap);
         void setRoughnessMap(WeakPointer<Texture> roughnessMap);
@@ -42,6 +43,7 @@ namespace Core {
         Real metallic;
         Real roughness;
         Real ambientOcclusion;
+        Color albedo;
         WeakPointer<Texture> albedoMap;
         WeakPointer<Texture> normalMap;
         WeakPointer<Texture> roughnessMap;
@@ -57,6 +59,7 @@ namespace Core {
         Int32 tangentLocation;
         Int32 albedoUVLocation;
         Int32 normalUVLocation;
+        Int32 albedoLocation;
         Int32 albedoMapLocation;
         Int32 normalMapLocation;
         Int32 projectionMatrixLocation;

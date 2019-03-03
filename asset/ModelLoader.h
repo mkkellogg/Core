@@ -86,7 +86,7 @@ namespace Core {
         WeakPointer<Object3D> processModelScene(const std::string& modelPath, const aiScene& scene, Real importScale,  UInt32 smoothingThreshold,
                                                 Bool castShadows, Bool receiveShadows) const;
         Bool processMaterials(const std::string& modelPath, const aiScene& scene, std::vector<MaterialImportDescriptor>& materialImportDescriptors) const;
-        WeakPointer<Texture> loadAITexture(aiMaterial& assimpMaterial, aiTextureType textureType, const std::string& modelPath) const;
+        WeakPointer<Texture> loadAITexture(aiMaterial& assimpMaterial, aiTextureType textureType, const std::string& modelPath, TextureFilter filter, UInt32 mipMapLevel) const;
         void getImportDetails(const aiMaterial* mtl, MaterialImportDescriptor& materialImportDesc, const aiScene& scene) const;
         Bool setupMeshSpecificMaterialWithTextures(const aiMaterial& assimpMaterial, WeakPointer<Texture> diffuseTexture,
                                                   WeakPointer<Texture> normalsTexture, UInt32 meshIndex,

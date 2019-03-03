@@ -567,6 +567,8 @@ namespace Core {
 
         Real ood = 1.0f / ((du1 * dv2) - (du2 * dv1));
 
+        if (ood < 0) ood = -ood;
+
         result.set(dv2*e1.x - dv1 * e2.x, dv2*e1.y - dv1 * e2.y, dv2*e1.z - dv1 * e2.z);
 
         result.scale(ood);

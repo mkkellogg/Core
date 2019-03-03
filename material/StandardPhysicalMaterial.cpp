@@ -10,6 +10,7 @@
 namespace Core {
 
     StandardPhysicalMaterial::StandardPhysicalMaterial(WeakPointer<Graphics> graphics): Material(graphics) {
+        this->albedo.set(1.0f, 1.0f, 1.0f, 1.0f);
         this->metallic = 0.5f;
         this->roughness = 0.1f;
         this->ambientOcclusion = 0.0f;
@@ -127,6 +128,10 @@ namespace Core {
         this->ambientOcclusion = ambientOcclusion;
     }
 
+    void StandardPhysicalMaterial::setAlbedo(Color albedo) {
+        this->albedo = albedo;
+    }
+
     void StandardPhysicalMaterial::setAlbedoMap(WeakPointer<Texture> albedoMap) {
         this->albedoMap = albedoMap;
     }
@@ -153,12 +158,15 @@ namespace Core {
 
     void StandardPhysicalMaterial::sendCustomUniformsToShader() {
         UInt32 textureLoc = 0;
-        if (this->albedoMap) {
+        if (this->albedoMapEnabled) {
             this->shader->setTexture2D(textureLoc, this->albedoMap->getTextureID());
             this->shader->setUniform1i(this->albedoMapLocation, textureLoc);
             textureLoc++;
         }
-        if (this->normalMap) {
+        else {
+            this->shader->setUniform4f(this->albedoLocation, this->albedo.r, this->albedo.g, this->albedo.b, this->albedo.a);
+        }
+        if (this->normalMapEnabled) {
             this->shader->setTexture2D(textureLoc, this->normalMap->getTextureID());
             this->shader->setUniform1i(this->normalMapLocation, textureLoc);
             textureLoc++;
@@ -184,6 +192,7 @@ namespace Core {
         newMaterial->viewMatrixLocation = this->viewMatrixLocation;
         newMaterial->modelMatrixLocation = this->modelMatrixLocation;
         newMaterial->modelInverseTransposeMatrixLocation = this->modelInverseTransposeMatrixLocation;
+        newMaterial->albedoLocation = this->albedoLocation;
         newMaterial->albedoMapLocation = this->albedoMapLocation;
         newMaterial->normalMapLocation = this->normalMapLocation;
         newMaterial->lightPositionLocation = this->lightPositionLocation;
@@ -224,6 +233,7 @@ namespace Core {
         this->colorLocation = this->shader->getAttributeLocation(StandardAttribute::Color);
         this->albedoUVLocation = this->shader->getAttributeLocation(StandardAttribute::AlbedoUV);
         this->normalUVLocation = this->shader->getAttributeLocation(StandardAttribute::NormalUV);
+        this->albedoLocation = this->shader->getUniformLocation("albedo");
         this->albedoMapLocation = this->shader->getUniformLocation("albedoMap");
         this->normalMapLocation = this->shader->getUniformLocation("normalMap");
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
@@ -262,8 +272,8 @@ namespace Core {
 
     UInt32 StandardPhysicalMaterial::textureCount() {
         UInt32 textureCount = 0;
-        if (this->albedoMap) textureCount++;
-        if (this->normalMap) textureCount++;
+        if (this->albedoMapEnabled) textureCount++;
+        if (this->normalMapEnabled) textureCount++;
        return textureCount;
     }
 

@@ -760,7 +760,7 @@ namespace Core {
             "   } \n"
             "   vec3 _normal; \n"
             "   if (normalMapEnabled != 0) { \n"
-            "       _normal = calcMappedNormal(texture(normalMap, vNormalUV).xyz, vNormal, vTangent); \n"
+            "      _normal = calcMappedNormal(texture(normalMap, vNormalUV).xyz, vNormal, vTangent); \n"
             "   } else { \n"
             "       _normal = normalize(vNormal); \n"
             "   } \n"

@@ -551,12 +551,12 @@ namespace Core {
             // get diffuse texture (for now support only 1)
             texFound = assimpMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &aiTexturePath);
             if (texFound == AI_SUCCESS) {
-                diffuseTexture = this->loadAITexture(*assimpMaterial, aiTextureType_DIFFUSE, fixedModelPath);
+                diffuseTexture = this->loadAITexture(*assimpMaterial, aiTextureType_DIFFUSE, fixedModelPath, TextureFilter::TriLinear, 4);
             }
 
             texFound = assimpMaterial->GetTexture(aiTextureType_NORMALS, 0, &aiTexturePath);
             if (texFound == AI_SUCCESS) {
-                normalTexture = this->loadAITexture(*assimpMaterial, aiTextureType_NORMALS, fixedModelPath);
+                normalTexture = this->loadAITexture(*assimpMaterial, aiTextureType_NORMALS, fixedModelPath, TextureFilter::TriLinear, 4);
             }
 
             MaterialLibrary& materialLibrary = Engine::instance()->getMaterialLibrary();
@@ -697,7 +697,7 @@ namespace Core {
      * [assimpMaterial] - The Assimp material.
      * [textureType] - The type of texture to look for (diffuse, specular, normal map, etc...)
      */
-    WeakPointer<Texture> ModelLoader::loadAITexture(aiMaterial& assimpMaterial, aiTextureType textureType, const std::string& modelPath) const {
+    WeakPointer<Texture> ModelLoader::loadAITexture(aiMaterial& assimpMaterial, aiTextureType textureType, const std::string& modelPath, TextureFilter filter, UInt32 mipMapLevel) const {
         // temp variables
         WeakPointer<Texture2D> texture;
         aiString aiTexturePath;
@@ -720,8 +720,9 @@ namespace Core {
         std::string fullTextureFilePath = fileSystem->concatenatePaths(modelDirectory, texPath);
 
         TextureAttributes texAttributes;
-        texAttributes.FilterMode = TextureFilter::TriLinear;
-        texAttributes.MipMapLevel = 4;
+        texAttributes.FilterMode = filter;
+        texAttributes.MipMapLevel = mipMapLevel;
+        texAttributes.WrapMode = TextureWrap::Clamp;
         texAttributes.Format = TextureFormat::RGBA8;
 
         std::shared_ptr<RawImage> textureImage;
