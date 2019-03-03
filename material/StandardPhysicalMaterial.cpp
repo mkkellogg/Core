@@ -11,8 +11,8 @@ namespace Core {
 
     StandardPhysicalMaterial::StandardPhysicalMaterial(WeakPointer<Graphics> graphics): Material(graphics) {
         this->albedo.set(1.0f, 1.0f, 1.0f, 1.0f);
-        this->metallic = 0.5f;
-        this->roughness = 0.1f;
+        this->metallic = 0.9f;
+        this->roughness = 0.35f;
         this->ambientOcclusion = 0.0f;
 
         this->albedoMapEnabled = false;
