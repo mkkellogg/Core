@@ -309,9 +309,9 @@ namespace Core {
 
         Int32 diffuseTextureUVIndex = -1;
         // update the StandardAttributeSet to contain appropriate attributes (UV coords) for a diffuse texture
-        if (materialImportDescriptor.meshSpecificProperties[meshIndex].uvMappingHasKey(TextureType::Diffuse)) {
-            StandardAttributes::addAttribute(&meshAttributes, ModelLoader::mapTextureTypeToAttribute(TextureType::Diffuse));
-            diffuseTextureUVIndex = materialImportDescriptor.meshSpecificProperties[meshIndex].uvMapping[TextureType::Diffuse];
+        if (materialImportDescriptor.meshSpecificProperties[meshIndex].uvMappingHasKey(TextureType::Albedo)) {
+            StandardAttributes::addAttribute(&meshAttributes, ModelLoader::mapTextureTypeToAttribute(TextureType::Albedo));
+            diffuseTextureUVIndex = materialImportDescriptor.meshSpecificProperties[meshIndex].uvMapping[TextureType::Albedo];
         }
 
         Int32 normalsTextureUVIndex = -1;
@@ -625,7 +625,7 @@ namespace Core {
 
         // check for a diffuse texture
         if (AI_SUCCESS == mtl->GetTexture(aiTextureType_DIFFUSE, 0, &path)) {
-            LongMaskUtil::setBit(&flags, (Int16)ShaderMaterialCharacteristic::DiffuseTextured);
+            LongMaskUtil::setBit(&flags, (Int16)ShaderMaterialCharacteristic::AlbedoMapped);
         }
 
         // check for a normals texture
@@ -781,14 +781,14 @@ namespace Core {
 
         if (diffuseTexture) {
              // get the Assimp material key for textures of type [textureType]
-            UInt32 aiDiffuseTextureKey = this->convertTextureTypeToAITextureKey(TextureType::Diffuse);
+            UInt32 aiDiffuseTextureKey = this->convertTextureTypeToAITextureKey(TextureType::Albedo);
             texturedMaterial->setAlbedoMap(diffuseTexture);
             texturedMaterial->setAlbedoMapEnabled(true);
             
             if (AI_SUCCESS == aiGetMaterialInteger(&assimpMaterial, AI_MATKEY_UVWSRC(aiDiffuseTextureKey, 0), &mappedIndex))
-                materialImportDesc.meshSpecificProperties[meshIndex].uvMapping[TextureType::Diffuse] = mappedIndex;
+                materialImportDesc.meshSpecificProperties[meshIndex].uvMapping[TextureType::Albedo] = mappedIndex;
             else
-                materialImportDesc.meshSpecificProperties[meshIndex].uvMapping[TextureType::Diffuse] = 0;
+                materialImportDesc.meshSpecificProperties[meshIndex].uvMapping[TextureType::Albedo] = 0;
         }
 
         if (normalsTexture) {
@@ -812,13 +812,13 @@ namespace Core {
         else if (aiTextureKey == aiTextureType_NORMALS)
             textureType = TextureType::Normals;
         else if (aiTextureKey == aiTextureType_DIFFUSE)
-            textureType = TextureType::Diffuse;
+            textureType = TextureType::Albedo;
         return textureType;
     }
 
     StandardAttribute ModelLoader::mapTextureTypeToAttribute(TextureType textureType) {
         switch (textureType) {
-            case TextureType::Diffuse:
+            case TextureType::Albedo:
                 return StandardAttribute::AlbedoUV;
                 break;
              case TextureType::Normals:
@@ -838,7 +838,7 @@ namespace Core {
             aiTextureKey = aiTextureType_SPECULAR;
         else if (textureType == TextureType::Normals)
             aiTextureKey = aiTextureType_NORMALS;
-        else if (textureType == TextureType::Diffuse)
+        else if (textureType == TextureType::Albedo)
             aiTextureKey = aiTextureType_DIFFUSE;
         return aiTextureKey;
     }

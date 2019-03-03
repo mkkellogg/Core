@@ -46,7 +46,7 @@ namespace Core {
     private:
 
 #ifdef CORE_USE_PRIVATE_INCLUDES
-        enum class TextureType { Diffuse = 0, Specular = 1, Normals = 2, _None = 3 };
+        enum class TextureType { Albedo = 0, Specular = 1, Normals = 2, _None = 3 };
 
         enum class SceneTraverseOrder { PreOrder = 0 };
 

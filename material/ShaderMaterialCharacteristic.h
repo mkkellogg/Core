@@ -3,9 +3,9 @@
 namespace Core {
 
     enum class ShaderMaterialCharacteristic {
-        DiffuseColored = 0,
+        AlbedoSolid = 0,
         SpecularColored = 1,
-        DiffuseTextured = 2,
+        AlbedoMapped = 2,
         SpecularTextured = 3,
         CubeTextured = 4,
         Bumped = 5,
