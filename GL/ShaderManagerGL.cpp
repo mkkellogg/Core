@@ -22,6 +22,8 @@ const std::string CAMERA_POSITION = _un(Core::StandardUniform::CameraPosition);
 
 const std::string MAX_CASCADES = std::to_string(Core::Constants::MaxDirectionalCascades);
 const std::string MAX_LIGHTS = std::to_string(Core::Constants::MaxShaderLights);
+const std::string MAX_POINT_LIGHTS = std::to_string(Core::Constants::MaxShaderPointLights);
+const std::string MAX_DIRECTIONAL_LIGHTS = std::to_string(Core::Constants::MaxShaderDirectionalLights);
 const std::string MAX_CASCADES_LIGHTS = std::to_string(Core::Constants::MaxShaderLights * Core::Constants::MaxDirectionalCascades);
 const std::string LIGHT_COUNT = _un(Core::StandardUniform::LightCount);
 const std::string LIGHT_POSITION = _un(Core::StandardUniform::LightPosition);
@@ -34,7 +36,6 @@ const std::string LIGHT_RANGE = _un(Core::StandardUniform::LightRange);
 const std::string LIGHT_ENABLED = _un(Core::StandardUniform::LightEnabled);
 const std::string LIGHT_MATRIX = _un(Core::StandardUniform::LightMatrix);
 const std::string LIGHT_VIEW_PROJECTION = _un(Core::StandardUniform::LightViewProjection);
-
 const std::string LIGHT_CASCADE_COUNT = _un(Core::StandardUniform::LightCascadeCount);
 const std::string LIGHT_SHADOW_MAP = _un(Core::StandardUniform::LightShadowMap);
 const std::string LIGHT_CASCADE_END = _un(Core::StandardUniform::LightCascadeEnd);
@@ -45,6 +46,8 @@ const std::string LIGHT_ANGULAR_SHADOW_BIAS = _un(Core::StandardUniform::LightAn
 const std::string LIGHT_SHADOW_MAP_SIZE = _un(Core::StandardUniform::LightShadowMapSize);
 const std::string LIGHT_SHADOW_SOFTNESS = _un(Core::StandardUniform::LightShadowSoftness);
 const std::string LIGHT_NEAR_PLANE = _un(Core::StandardUniform::LightNearPlane);
+const std::string POINT_LIGHT_COUNT = _un(Core::StandardUniform::PointLightCount);
+const std::string DIRECTIONAL_LIGHT_COUNT = _un(Core::StandardUniform::DirectionalLightCount);
 
 const std::string POSITION_DEF = "in vec4 " +  POSITION + ";\n";
 const std::string NORMAL_DEF = "in vec4 " +  NORMAL + ";\n";
@@ -60,55 +63,68 @@ const std::string VIEW_MATRIX_DEF = "uniform mat4 " +  VIEW_MATRIX + ";\n";
 const std::string PROJECTION_MATRIX_DEF = "uniform mat4 " +  PROJECTION_MATRIX + ";\n";
 const std::string CAMERA_POSITION_DEF = "uniform vec4 " +  CAMERA_POSITION + ";\n";
 
-const std::string MAX_CASCADES_SINGLE_DEF = "const int MAX_CASCADES =" + MAX_CASCADES + ";\n";
-const std::string MAX_LIGHTS_SINGLE_DEF = "const int MAX_LIGHTS = 1;\n";
-const std::string LIGHT_COUNT_SINGLE_DEF = "uniform int " + LIGHT_COUNT + ";\n";
-const std::string LIGHT_POSITION_SINGLE_DEF = "uniform vec4 " + LIGHT_POSITION + "[1];\n";
-const std::string LIGHT_DIRECTION_SINGLE_DEF = "uniform vec4 " + LIGHT_DIRECTION + "[1];\n";
+// ------------------------------------
+// Single-pass lighting definitions
+// ------------------------------------
+
+// Common single-pass light parameters
 const std::string LIGHT_COLOR_SINGLE_DEF = "uniform vec4 " + LIGHT_COLOR + "[1];\n";
 const std::string LIGHT_INTENSITY_SINGLE_DEF = "uniform float " + LIGHT_INTENSITY + "[1];\n";
-const std::string LIGHT_ATTENUATION_SINGLE_DEF = "uniform float " + LIGHT_ATTENUATION + "[1];\n";
 const std::string LIGHT_TYPE_SINGLE_DEF = "uniform int " + LIGHT_TYPE + "[1];\n";
-const std::string LIGHT_RANGE_SINGLE_DEF = "uniform float " + LIGHT_RANGE + "[1];\n";
 const std::string LIGHT_ENABLED_SINGLE_DEF = "uniform int " + LIGHT_ENABLED + "[1];\n";
 const std::string LIGHT_MATRIX_SINGLE_DEF = "uniform mat4 " + LIGHT_MATRIX + "[1];\n";
-const std::string LIGHT_VIEW_PROJECTION_SINGLE_DEF = "uniform mat4 " + LIGHT_VIEW_PROJECTION + "[" + MAX_CASCADES + "];\n";
-
-const std::string LIGHT_CASCADE_COUNT_SINGLE_DEF = "uniform int " + LIGHT_CASCADE_COUNT + "[" + MAX_CASCADES + "];\n";
-const std::string LIGHT_SHADOW_MAP_SINGLE_DEF = "uniform sampler2DShadow " + LIGHT_SHADOW_MAP + "[" + MAX_CASCADES + "];\n";
-const std::string LIGHT_CASCADE_END_SINGLE_DEF = "uniform float " + LIGHT_CASCADE_END + "[" + MAX_CASCADES + "];\n";
-const std::string LIGHT_SHADOW_MAP_ASPECT_SINGLE_DEF = "uniform float " + LIGHT_SHADOW_MAP_ASPECT + "[" + MAX_CASCADES + "];\n";
-const std::string LIGHT_SHADOW_CUBE_MAP_SINGLE_DEF = "uniform samplerCube " + LIGHT_SHADOW_CUBE_MAP + "[1];\n";
 const std::string LIGHT_CONSTANT_SHADOW_BIAS_SINGLE_DEF = "uniform float " + LIGHT_CONSTANT_SHADOW_BIAS + "[1];\n";
 const std::string LIGHT_ANGULAR_SHADOW_BIAS_SINGLE_DEF ="uniform float " + LIGHT_ANGULAR_SHADOW_BIAS + "[1];\n";
 const std::string LIGHT_SHADOW_MAP_SIZE_SINGLE_DEF = "uniform float " + LIGHT_SHADOW_MAP_SIZE + "[1];\n";
 const std::string LIGHT_SHADOW_SOFTNESS_SINGLE_DEF = "uniform int " + LIGHT_SHADOW_SOFTNESS + "[1];\n";
+// Single-pass point light parameters
+const std::string LIGHT_POSITION_SINGLE_DEF = "uniform vec4 " + LIGHT_POSITION + "[1];\n";
+const std::string LIGHT_ATTENUATION_SINGLE_DEF = "uniform float " + LIGHT_ATTENUATION + "[1];\n";
+const std::string LIGHT_RANGE_SINGLE_DEF = "uniform float " + LIGHT_RANGE + "[1];\n";
 const std::string LIGHT_NEAR_PLANE_SINGLE_DEF = "uniform float " + LIGHT_NEAR_PLANE + "[1];\n";
+const std::string LIGHT_SHADOW_CUBE_MAP_SINGLE_DEF = "uniform samplerCube " + LIGHT_SHADOW_CUBE_MAP + "[1];\n";
+// Single-pass directional light paramters
+const std::string MAX_CASCADES_SINGLE_DEF = "const int MAX_CASCADES =" + MAX_CASCADES + ";\n";
+const std::string LIGHT_DIRECTION_SINGLE_DEF = "uniform vec4 " + LIGHT_DIRECTION + "[1];\n";
+const std::string LIGHT_CASCADE_COUNT_SINGLE_DEF = "uniform int " + LIGHT_CASCADE_COUNT + "[" + MAX_CASCADES + "];\n";
+const std::string LIGHT_SHADOW_MAP_SINGLE_DEF = "uniform sampler2DShadow " + LIGHT_SHADOW_MAP + "[" + MAX_CASCADES + "];\n";
+const std::string LIGHT_CASCADE_END_SINGLE_DEF = "uniform float " + LIGHT_CASCADE_END + "[" + MAX_CASCADES + "];\n";
+const std::string LIGHT_SHADOW_MAP_ASPECT_SINGLE_DEF = "uniform float " + LIGHT_SHADOW_MAP_ASPECT + "[" + MAX_CASCADES + "];\n";
+const std::string LIGHT_VIEW_PROJECTION_SINGLE_DEF = "uniform mat4 " + LIGHT_VIEW_PROJECTION + "[" + MAX_CASCADES + "];\n";
 
-const std::string MAX_CASCADES_DEF = "const int MAX_CASCADES =" + MAX_CASCADES + ";\n";
-const std::string MAX_LIGHTS_DEF = "const int MAX_LIGHTS =" + MAX_LIGHTS + ";\n";
+// ------------------------------------
+// Multi-pass lighting definitions
+// ------------------------------------
+const std::string MAX_LIGHTS_DEF = "const int MAX_LIGHTS = " + MAX_LIGHTS + ";\n";
+const std::string MAX_POINT_LIGHTS_DEF = "const int MAX_POINT_LIGHTS = " + MAX_POINT_LIGHTS + ";\n";
+const std::string MAX_DIRECTIONAL_LIGHTS_DEF = "const int MAX_DIRECTIONAL_LIGHTS = " + MAX_DIRECTIONAL_LIGHTS + ";\n";
+const std::string POINT_LIGHT_COUNT_DEF = "uniform int " + POINT_LIGHT_COUNT + ";\n";
+const std::string DIRECTIONAL_LIGHT_DEF = "unfirm int " + DIRECTIONAL_LIGHT_COUNT + ";\n";
 const std::string LIGHT_COUNT_DEF = "uniform int " + LIGHT_COUNT + ";\n";
-const std::string LIGHT_POSITION_DEF = "uniform vec4 " + LIGHT_POSITION + "[" + MAX_LIGHTS + "];\n";
-const std::string LIGHT_DIRECTION_DEF = "uniform vec4 " + LIGHT_DIRECTION + "[" + MAX_LIGHTS + "];\n";
+// Common multi-pass light parameters
 const std::string LIGHT_COLOR_DEF = "uniform vec4 " + LIGHT_COLOR + "[" + MAX_LIGHTS + "];\n";
 const std::string LIGHT_INTENSITY_DEF = "uniform float " + LIGHT_INTENSITY + "[" + MAX_LIGHTS + "];\n";
-const std::string LIGHT_ATTENUATION_DEF = "uniform float " + LIGHT_ATTENUATION + "[" + MAX_LIGHTS + "];\n";;
 const std::string LIGHT_TYPE_DEF = "uniform int " + LIGHT_TYPE + "[" + MAX_LIGHTS + "];\n";
-const std::string LIGHT_RANGE_DEF = "uniform float " + LIGHT_RANGE + "[" + MAX_LIGHTS + "];\n";
 const std::string LIGHT_ENABLED_DEF = "uniform int " + LIGHT_ENABLED + "[" + MAX_LIGHTS + "];\n";
 const std::string LIGHT_MATRIX_DEF = "uniform mat4 " + LIGHT_MATRIX + "[" + MAX_LIGHTS + "];\n";
+const std::string LIGHT_SHADOW_MAP_SIZE_DEF = "uniform float " + LIGHT_SHADOW_MAP_SIZE + "[" + MAX_LIGHTS + "];\n";
+const std::string LIGHT_SHADOW_SOFTNESS_DEF = "uniform int " + LIGHT_SHADOW_SOFTNESS + "[" + MAX_LIGHTS + "];\n";
+const std::string LIGHT_CONSTANT_SHADOW_BIAS_DEF = "uniform float " + LIGHT_CONSTANT_SHADOW_BIAS + "[" + MAX_LIGHTS + "];\n";
+const std::string LIGHT_ANGULAR_SHADOW_BIAS_DEF ="uniform float " + LIGHT_ANGULAR_SHADOW_BIAS + "[" + MAX_LIGHTS + "];\n";
+// Multi-pass point light parameters
+const std::string LIGHT_POSITION_DEF = "uniform vec4 " + LIGHT_POSITION + "[" + MAX_LIGHTS + "];\n";
+const std::string LIGHT_ATTENUATION_DEF = "uniform float " + LIGHT_ATTENUATION + "[" + MAX_LIGHTS + "];\n";;
+const std::string LIGHT_RANGE_DEF = "uniform float " + LIGHT_RANGE + "[" + MAX_LIGHTS + "];\n";
+const std::string LIGHT_SHADOW_CUBE_MAP_DEF = "uniform samplerCube " + LIGHT_SHADOW_CUBE_MAP + "[" + MAX_LIGHTS + "];\n";
+const std::string LIGHT_NEAR_PLANE_DEF = "uniform float " + LIGHT_NEAR_PLANE + "[" + MAX_LIGHTS + "];\n";
+// Multi-pass directional light parameters
+const std::string LIGHT_DIRECTION_DEF = "uniform vec4 " + LIGHT_DIRECTION + "[" + MAX_LIGHTS + "];\n";
 const std::string LIGHT_VIEW_PROJECTION_DEF = "uniform mat4 " + LIGHT_VIEW_PROJECTION + "[" + MAX_CASCADES_LIGHTS + "];\n";
-
 const std::string LIGHT_CASCADE_COUNT_DEF = "uniform int " + LIGHT_CASCADE_COUNT + "[" + MAX_CASCADES_LIGHTS + "];\n";
 const std::string LIGHT_SHADOW_MAP_DEF = "uniform sampler2DShadow " + LIGHT_SHADOW_MAP + "[" + MAX_CASCADES_LIGHTS + "];\n";
 const std::string LIGHT_CASCADE_END_DEF = "uniform float " + LIGHT_CASCADE_END + "[" + MAX_CASCADES_LIGHTS + "];\n";
 const std::string LIGHT_SHADOW_MAP_ASPECT_DEF = "uniform float " + LIGHT_SHADOW_MAP_ASPECT + "[" + MAX_CASCADES_LIGHTS + "];\n";
-const std::string LIGHT_SHADOW_CUBE_MAP_DEF = "uniform samplerCube " + LIGHT_SHADOW_CUBE_MAP + "[" + MAX_LIGHTS + "];\n";
-const std::string LIGHT_CONSTANT_SHADOW_BIAS_DEF = "uniform float " + LIGHT_CONSTANT_SHADOW_BIAS + "[" + MAX_LIGHTS + "];\n";
-const std::string LIGHT_ANGULAR_SHADOW_BIAS_DEF ="uniform float " + LIGHT_ANGULAR_SHADOW_BIAS + "[" + MAX_LIGHTS + "];\n";
-const std::string LIGHT_SHADOW_MAP_SIZE_DEF = "uniform float " + LIGHT_SHADOW_MAP_SIZE + "[" + MAX_LIGHTS + "];\n";
-const std::string LIGHT_SHADOW_SOFTNESS_DEF = "uniform int " + LIGHT_SHADOW_SOFTNESS + "[" + MAX_LIGHTS + "];\n";
-const std::string LIGHT_NEAR_PLANE_DEF = "uniform float " + LIGHT_NEAR_PLANE + "[" + MAX_LIGHTS + "];\n";
+const std::string MAX_CASCADES_DEF = "const int MAX_CASCADES =" + MAX_CASCADES + ";\n";
 
 namespace Core {
 
@@ -356,8 +372,6 @@ namespace Core {
 
         this->Lighting_Header_Single_vertex =
             MAX_CASCADES_SINGLE_DEF
-            + MAX_LIGHTS_SINGLE_DEF
-            + LIGHT_COUNT_SINGLE_DEF
             + LIGHT_CASCADE_COUNT_SINGLE_DEF
             + LIGHT_VIEW_PROJECTION_SINGLE_DEF +
             "out vec4 _core_lightSpacePos[" + MAX_CASCADES + "];\n"
@@ -365,8 +379,6 @@ namespace Core {
 
         this->Lighting_Header_Single_fragment =
             MAX_CASCADES_SINGLE_DEF
-            + MAX_LIGHTS_SINGLE_DEF
-            + LIGHT_COUNT_SINGLE_DEF
             + LIGHT_CASCADE_COUNT_SINGLE_DEF
             + LIGHT_SHADOW_MAP_SINGLE_DEF
             + LIGHT_CASCADE_END_SINGLE_DEF

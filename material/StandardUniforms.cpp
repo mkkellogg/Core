@@ -41,6 +41,8 @@ namespace Core {
             "LIGHT_CASCADE_COUNT",
             "LIGHT_NEAR_PLANE",
             "LIGHT_COUNT",
+            "POINT_LIGHT_COUNT",
+            "DIRECTIONAL_LIGHT_COUNT",
             "CAMERA_POSITION"
         };
 
@@ -74,6 +76,8 @@ namespace Core {
             {uniformNames[(UInt16)StandardUniform::LightCascadeCount],StandardUniform::LightCascadeCount},
             {uniformNames[(UInt16)StandardUniform::LightNearPlane],StandardUniform::LightNearPlane},
             {uniformNames[(UInt16)StandardUniform::LightCount],StandardUniform::LightCount},
+            {uniformNames[(UInt16)StandardUniform::LightCount],StandardUniform::PointLightCount},
+            {uniformNames[(UInt16)StandardUniform::LightCount],StandardUniform::DirectionalLightCount},
             {uniformNames[(UInt16)StandardUniform::LightCount],StandardUniform::CameraPosition}
         };
     }

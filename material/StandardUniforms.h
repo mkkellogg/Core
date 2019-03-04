@@ -37,9 +37,11 @@ namespace Core {
         LightCascadeCount = 25,
         LightNearPlane = 26,
         LightCount = 27,
-        CameraPosition = 28,
-        _Count = 29,  // Must always be last in the list (before _None)
-        _None = 30,
+        PointLightCount = 28,
+        DirectionalLightCount = 29,
+        CameraPosition = 30,
+        _Count = 31,  // Must always be last in the list (before _None)
+        _None = 32,
     };
 
     class StandardUniforms {
