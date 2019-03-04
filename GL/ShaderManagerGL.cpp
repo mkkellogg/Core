@@ -68,6 +68,7 @@ const std::string CAMERA_POSITION_DEF = "uniform vec4 " +  CAMERA_POSITION + ";\
 // ------------------------------------
 
 // Common single-pass light parameters
+const std::string LIGHT_COUNT_SINGLE_DEF = "const int " + LIGHT_COUNT + " = 1;\n";
 const std::string LIGHT_COLOR_SINGLE_DEF = "uniform vec4 " + LIGHT_COLOR + "[1];\n";
 const std::string LIGHT_INTENSITY_SINGLE_DEF = "uniform float " + LIGHT_INTENSITY + "[1];\n";
 const std::string LIGHT_TYPE_SINGLE_DEF = "uniform int " + LIGHT_TYPE + "[1];\n";
@@ -371,9 +372,11 @@ namespace Core {
             "in vec4 _core_lightSpacePos[" + MAX_CASCADES_LIGHTS + "];\n";
 
         this->Lighting_Header_Single_vertex =
-            MAX_CASCADES_SINGLE_DEF
+            LIGHT_COUNT_SINGLE_DEF
+            + MAX_CASCADES_SINGLE_DEF
             + LIGHT_CASCADE_COUNT_SINGLE_DEF
-            + LIGHT_VIEW_PROJECTION_SINGLE_DEF +
+            + LIGHT_VIEW_PROJECTION_SINGLE_DEF
+            + LIGHT_CASCADE_END_SINGLE_DEF +
             "out vec4 _core_lightSpacePos[" + MAX_CASCADES + "];\n"
             "out float _core_viewSpacePosZ[1];\n";
 
