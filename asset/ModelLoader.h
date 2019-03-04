@@ -41,11 +41,12 @@ namespace Core {
         ModelLoader();
         ~ModelLoader();
         WeakPointer<Object3D> loadModel(const std::string& filePath, Real importScale, UInt32 smoothingThreshold, 
-                                        Bool castShadows, Bool receiveShadows, Bool preserveFBXPivots);
+                                        Bool castShadows, Bool receiveShadows, Bool preserveFBXPivots, Bool preferPhysicalMaterial);
 
     private:
 
 #ifdef CORE_USE_PRIVATE_INCLUDES
+        void setTexturesOnMaterial(WeakPointer<Material> material, WeakPointer<Texture> albedoMap, WeakPointer<Texture> normalMap) const;
         enum class TextureType { Albedo = 0, Specular = 1, Normals = 2, _None = 3 };
 
         enum class SceneTraverseOrder { PreOrder = 0 };
@@ -84,10 +85,11 @@ namespace Core {
         const aiScene* loadAIScene(const std::string& filePath, Bool preserveFBXPivots);
 
         WeakPointer<Object3D> processModelScene(const std::string& modelPath, const aiScene& scene, Real importScale,  UInt32 smoothingThreshold,
-                                                Bool castShadows, Bool receiveShadows) const;
-        Bool processMaterials(const std::string& modelPath, const aiScene& scene, std::vector<MaterialImportDescriptor>& materialImportDescriptors) const;
+                                                Bool castShadows, Bool receiveShadows, Bool preferPhysicalMaterial) const;
+        Bool processMaterials(const std::string& modelPath, const aiScene& scene,
+                             std::vector<MaterialImportDescriptor>& materialImportDescriptors, Bool preferPhysicalMaterial) const;
         WeakPointer<Texture> loadAITexture(aiMaterial& assimpMaterial, aiTextureType textureType, const std::string& modelPath, TextureFilter filter, UInt32 mipMapLevel) const;
-        void getImportDetails(const aiMaterial* mtl, MaterialImportDescriptor& materialImportDesc, const aiScene& scene) const;
+        void getImportDetails(const aiMaterial* mtl, MaterialImportDescriptor& materialImportDesc, const aiScene& scene, Bool preferPhysicalMaterial) const;
         Bool setupMeshSpecificMaterialWithTextures(const aiMaterial& assimpMaterial, WeakPointer<Texture> diffuseTexture,
                                                   WeakPointer<Texture> normalsTexture, UInt32 meshIndex,
                                                   MaterialImportDescriptor& materialImportDesc) const;

@@ -90,7 +90,7 @@ namespace Core {
      * [importScale] - Allows for the adjustment of the model's scale
      */
     WeakPointer<Object3D> ModelLoader::loadModel(const std::string& modelPath, Real importScale, UInt32 smoothingThreshold, 
-                                                 Bool castShadows, Bool receiveShadows, Bool preserveFBXPivots) {
+                                                 Bool castShadows, Bool receiveShadows, Bool preserveFBXPivots, Bool preferPhysicalMaterial) {
         std::shared_ptr<FileSystem> fileSystem = FileSystem::getInstance();
         std::string fixedModelPath = fileSystem->fixupPathForLocalFilesystem(modelPath);
 
@@ -99,7 +99,7 @@ namespace Core {
 
         if (scene) {
             // the model has been loaded from disk into Assimp data structures, now convert to engine-native structures
-            WeakPointer<Object3D> result = processModelScene(fixedModelPath, *scene, importScale, smoothingThreshold, castShadows, receiveShadows);
+            WeakPointer<Object3D> result = processModelScene(fixedModelPath, *scene, importScale, smoothingThreshold, castShadows, receiveShadows, preferPhysicalMaterial);
             result->setActive(true);
             return result;
         } else {
@@ -108,7 +108,7 @@ namespace Core {
     }
 
     WeakPointer<Object3D> ModelLoader::processModelScene(const std::string& modelPath, const aiScene& scene, Real importScale,
-                                                         UInt32 smoothingThreshold, Bool castShadows, Bool receiveShadows) const {
+                                                         UInt32 smoothingThreshold, Bool castShadows, Bool receiveShadows, Bool preferPhysicalMaterial) const {
         // container for MaterialImportDescriptor instances that describe the engine-native
         // materials that get created during the call to ProcessMaterials()
         std::vector<MaterialImportDescriptor> materialImportDescriptors;
@@ -122,7 +122,7 @@ namespace Core {
         // process all the Assimp materials in [scene] and create equivalent engine native materials.
         // store those materials and their properties in MaterialImportDescriptor instances, which get
         // added to [materialImportDescriptors]
-        Bool processMaterialsSuccess = this->processMaterials(fixedModelPath, scene, materialImportDescriptors);
+        Bool processMaterialsSuccess = this->processMaterials(fixedModelPath, scene, materialImportDescriptors, preferPhysicalMaterial);
         if (!processMaterialsSuccess) {
             throw ModelLoaderException("ModelLoader::processModelScene -> processMaterials() returned an error.");
         }
@@ -515,7 +515,7 @@ namespace Core {
      * [materialImportDescriptors] - A vector of MaterialImportDescriptor structures that will be populated by ProcessMaterials().
      */
     Bool ModelLoader::processMaterials(const std::string& modelPath, const aiScene& scene,
-                                       std::vector<MaterialImportDescriptor>& materialImportDescriptors) const {
+                                       std::vector<MaterialImportDescriptor>& materialImportDescriptors, Bool preferPhysicalMaterial) const {
         // TODO: Implement support for embedded textures
         if (scene.HasTextures()) {
             throw ModelLoaderException("ModelLoader::processMaterials -> Support for meshes with embedded textures is not implemented");
@@ -540,7 +540,7 @@ namespace Core {
 
             // build an import descriptor for this material
             MaterialImportDescriptor materialImportDescriptor;
-            this->getImportDetails(assimpMaterial, materialImportDescriptor, scene);
+            this->getImportDetails(assimpMaterial, materialImportDescriptor, scene, preferPhysicalMaterial);
 
             aiReturn texFound = AI_SUCCESS;
 
@@ -587,7 +587,7 @@ namespace Core {
                     materialImportDescriptor.meshSpecificProperties[i].material = matchingMaterial;
 
                     // if there is a diffuse texture, set it up in the new material
-                    if (diffuseTexture.isValid()) {
+                    if (diffuseTexture.isValid() || normalTexture.isValid()) {
                         // Add [diffuseTexture] to the new material (and for the appropriate shader variable), and store
                         // Assimp UV channel for it in [materialImportDescriptor] for later processing of the mesh
                         Bool setupSuccess =
@@ -614,7 +614,7 @@ namespace Core {
      * Additionally, get the mesh-specific properties for the Assimp material and store in the mesh-specific
      * properties section of the supplied MaterialImportDescriptor instance.
      */
-    void ModelLoader::getImportDetails(const aiMaterial* mtl, MaterialImportDescriptor& materialImportDesc, const aiScene& scene) const {
+    void ModelLoader::getImportDetails(const aiMaterial* mtl, MaterialImportDescriptor& materialImportDesc, const aiScene& scene, Bool preferPhysicalMaterials) const {
         LongMask flags = LongMaskUtil::createMask();
         aiString path;
         aiColor4t<Real> color;
@@ -634,6 +634,8 @@ namespace Core {
         }
 
         LongMaskUtil::setBit(&flags, (Int16)ShaderMaterialCharacteristic::Lit);
+
+        if (preferPhysicalMaterials)  LongMaskUtil::setBit(&flags, (Int16)ShaderMaterialCharacteristic::Physical);
 
         /*if(AI_SUCCESS == mtl->GetTexture(aiTextureType_SPECULAR, 0, &path))
         {
@@ -771,21 +773,11 @@ namespace Core {
                                                            WeakPointer<Texture> normalsTexture,  UInt32 meshIndex,
                                                            MaterialImportDescriptor& materialImportDesc) const {
        
-        // set the diffuse texture in the material for the mesh specified by [meshIndex]
-        WeakPointer<Material> material = materialImportDesc.meshSpecificProperties[meshIndex].material;
-
-        // TODO: Need to not have this material hard coded in here....
-        //WeakPointer<StandardPhysicalMaterial> texturedMaterial = WeakPointer<Material>::dynamicPointerCast<StandardPhysicalMaterial>(material);
-        WeakPointer<BasicTexturedLitMaterial> texturedMaterial = WeakPointer<Material>::dynamicPointerCast<BasicTexturedLitMaterial>(material);
-
         Int32 mappedIndex;
 
         if (diffuseTexture) {
              // get the Assimp material key for textures of type [textureType]
             UInt32 aiDiffuseTextureKey = this->convertTextureTypeToAITextureKey(TextureType::Albedo);
-            texturedMaterial->setAlbedoMap(diffuseTexture);
-            texturedMaterial->setAlbedoMapEnabled(true);
-            
             if (AI_SUCCESS == aiGetMaterialInteger(&assimpMaterial, AI_MATKEY_UVWSRC(aiDiffuseTextureKey, 0), &mappedIndex))
                 materialImportDesc.meshSpecificProperties[meshIndex].uvMapping[TextureType::Albedo] = mappedIndex;
             else
@@ -794,16 +786,44 @@ namespace Core {
 
         if (normalsTexture) {
             UInt32 aiNormalsTextureKey = this->convertTextureTypeToAITextureKey(TextureType::Normals);
-            texturedMaterial->setNormalMap(normalsTexture);
-            texturedMaterial->setNormalMapEnabled(true);
-
             if (AI_SUCCESS == aiGetMaterialInteger(&assimpMaterial, AI_MATKEY_UVWSRC(aiNormalsTextureKey, 0), &mappedIndex))
                 materialImportDesc.meshSpecificProperties[meshIndex].uvMapping[TextureType::Normals] = mappedIndex;
             else
                 materialImportDesc.meshSpecificProperties[meshIndex].uvMapping[TextureType::Normals] = 0;
         }
 
+        this->setTexturesOnMaterial(materialImportDesc.meshSpecificProperties[meshIndex].material, diffuseTexture, normalsTexture);
+
         return true;
+    }
+
+    void ModelLoader::setTexturesOnMaterial(WeakPointer<Material> material, WeakPointer<Texture> albedoMap, WeakPointer<Texture> normalMap) const {
+        WeakPointer<BasicTexturedLitMaterial> texturedLitMaterial = WeakPointer<Material>::dynamicPointerCast<BasicTexturedLitMaterial>(material);
+        WeakPointer<StandardPhysicalMaterial> physicalMaterial = WeakPointer<Material>::dynamicPointerCast<StandardPhysicalMaterial>(material);
+  
+        if (texturedLitMaterial) {
+            if (albedoMap) {
+                texturedLitMaterial->setAlbedoMap(albedoMap);
+                texturedLitMaterial->setAlbedoMapEnabled(true);
+            }
+            if (normalMap) {
+                texturedLitMaterial->setNormalMap(normalMap);
+                texturedLitMaterial->setNormalMapEnabled(true);
+            }
+            return;
+        }
+
+        if (physicalMaterial) {
+            if (albedoMap) {
+                physicalMaterial->setAlbedoMap(albedoMap);
+                physicalMaterial->setAlbedoMapEnabled(true);
+            }
+            if (normalMap) {
+                physicalMaterial->setNormalMap(normalMap);
+                physicalMaterial->setNormalMapEnabled(true);
+            }
+            return;
+        }
     }
 
     ModelLoader::TextureType ModelLoader::convertAITextureKeyToTextureType(Int32 aiTextureKey) {

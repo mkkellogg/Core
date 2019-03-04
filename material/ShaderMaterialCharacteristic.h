@@ -9,7 +9,8 @@ namespace Core {
         VertexColors = 3,
         VertexNormals = 4,
         Lit = 5,
-        NormalMapped = 6
+        NormalMapped = 6,
+        Physical = 7
     };
 
 }
