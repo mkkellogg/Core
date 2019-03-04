@@ -91,6 +91,6 @@ namespace Core {
         Int32 metallicLocation;
         Int32 roughnessLocation;
         Int32 ambientOcclusionLocation;
-        Int32 enabledMapLcation;
+        Int32 enabledMapLocation;
     };
 }

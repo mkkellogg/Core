@@ -19,20 +19,33 @@ namespace Core {
         virtual Int32 getShaderLocation(StandardUniform uniform, UInt32 offset = 0) override;
         virtual void sendCustomUniformsToShader() override;
         virtual WeakPointer<Material> clone() override;
-        void setTexture(WeakPointer<Texture> texture);
+        void setAlbedoMapEnabled(Bool enabled);
+        void setAlbedoMap(WeakPointer<Texture> albedoMap);
+        void setNormalMapEnabled(Bool enabled);
+        void setNormalMap(WeakPointer<Texture> normalMap);
         virtual UInt32 textureCount() override;
 
     protected:
         BasicTexturedLitMaterial(WeakPointer<Graphics> graphics);
         void bindShaderVarLocations();
 
-        WeakPointer<Texture> texture;
+        Color albedo;
+        WeakPointer<Texture> albedoMap;
+        WeakPointer<Texture> normalMap;
+        Bool albedoMapEnabled;
+        Bool normalMapEnabled;
+
         Int32 positionLocation;
         Int32 normalLocation;
         Int32 faceNormalLocation;
         Int32 colorLocation;
-        Int32 textureLocation;
-        Int32 uvLocation;
+        Int32 albedoMapEnabledLocation;
+        Int32 normalMapEnabledLocation;
+        Int32 albedoLocation;
+        Int32 albedoMapLocation;
+        Int32 albedoUVLocation;
+        Int32 normalUVLocation;
+        Int32 normalMapLocation;
         Int32 projectionMatrixLocation;
         Int32 viewMatrixLocation;
         Int32 modelMatrixLocation;

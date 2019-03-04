@@ -775,7 +775,8 @@ namespace Core {
         WeakPointer<Material> material = materialImportDesc.meshSpecificProperties[meshIndex].material;
 
         // TODO: Need to not have this material hard coded in here....
-        WeakPointer<StandardPhysicalMaterial> texturedMaterial = WeakPointer<Material>::dynamicPointerCast<StandardPhysicalMaterial>(material);
+        //WeakPointer<StandardPhysicalMaterial> texturedMaterial = WeakPointer<Material>::dynamicPointerCast<StandardPhysicalMaterial>(material);
+        WeakPointer<BasicTexturedLitMaterial> texturedMaterial = WeakPointer<Material>::dynamicPointerCast<BasicTexturedLitMaterial>(material);
 
         Int32 mappedIndex;
 

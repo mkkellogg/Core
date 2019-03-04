@@ -10,6 +10,8 @@
 namespace Core {
 
     BasicTexturedLitMaterial::BasicTexturedLitMaterial(WeakPointer<Graphics> graphics): Material(graphics) {
+        this->albedoMapEnabled = false;
+        this->normalMapEnabled = false;
     }
 
     Bool BasicTexturedLitMaterial::build() {
@@ -37,7 +39,7 @@ namespace Core {
             case StandardAttribute::Color:
                 return this->colorLocation;
             case StandardAttribute::AlbedoUV:
-                return this->uvLocation;
+                return this->albedoUVLocation;
             default:
                 return -1;
         }
@@ -102,31 +104,62 @@ namespace Core {
         }
     }
 
-    void BasicTexturedLitMaterial::setTexture(WeakPointer<Texture> texture) {
-        this->texture = texture;
+    void BasicTexturedLitMaterial::setAlbedoMapEnabled(Bool enabled) {
+        this->albedoMapEnabled = enabled;
+    }
+
+    void BasicTexturedLitMaterial::setAlbedoMap(WeakPointer<Texture> albedoMap) {
+        this->albedoMap = albedoMap;
+    }
+
+    void BasicTexturedLitMaterial::setNormalMapEnabled(Bool enabled) {
+        this->albedoMapEnabled = enabled;
+    }
+
+    void BasicTexturedLitMaterial::setNormalMap(WeakPointer<Texture> normalMap) {
+        this->normalMap = normalMap;
     }
 
     void BasicTexturedLitMaterial::sendCustomUniformsToShader() {
-        if (this->texture) {
-            this->shader->setTexture2D(0, this->texture->getTextureID());
-            this->shader->setUniform1i(textureLocation, 0);
+        UInt32 textureLoc = 0;
+        if (this->albedoMapEnabled) {
+            this->shader->setTexture2D(textureLoc, this->albedoMap->getTextureID());
+            this->shader->setUniform1i(this->albedoMapLocation, textureLoc);
+            textureLoc++;
         }
+        else {
+            this->shader->setUniform4f(this->albedoLocation, this->albedo.r, this->albedo.g, this->albedo.b, this->albedo.a);
+        }
+        if (this->normalMapEnabled) {
+            this->shader->setTexture2D(textureLoc, this->normalMap->getTextureID());
+            this->shader->setUniform1i(this->normalMapLocation, textureLoc);
+            textureLoc++;
+        }
+        this->shader->setUniform1i(this->albedoMapEnabledLocation, this->albedoMapEnabled ? 1 : 0);
+        this->shader->setUniform1i(this->normalMapEnabledLocation, this->normalMapEnabled ? 1 : 0);
     }
 
     WeakPointer<Material> BasicTexturedLitMaterial::clone() {
         WeakPointer<BasicTexturedLitMaterial> newMaterial = Engine::instance()->createMaterial<BasicTexturedLitMaterial>(false);
         this->copyTo(newMaterial);
-        newMaterial->texture = this->texture;
+        newMaterial->albedoMap = this->albedoMap;
+        newMaterial->normalMap = this->normalMap;
+        newMaterial->albedoMapEnabled = this->albedoMapEnabled;
+        newMaterial->normalMapEnabled = this->normalMapEnabled;
         newMaterial->positionLocation = this->positionLocation;
         newMaterial->normalLocation = this->normalLocation;
         newMaterial->faceNormalLocation = this->faceNormalLocation;
         newMaterial->colorLocation = this->colorLocation;
+        newMaterial->albedoMapEnabledLocation = this->albedoMapEnabledLocation;
+        newMaterial->normalMapEnabledLocation = this->normalMapEnabledLocation;
         newMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
         newMaterial->viewMatrixLocation = this->viewMatrixLocation;
         newMaterial->modelMatrixLocation = this->modelMatrixLocation;
         newMaterial->modelInverseTransposeMatrixLocation = this->modelInverseTransposeMatrixLocation;
-        newMaterial->uvLocation = this->uvLocation;
-        newMaterial->textureLocation = this->textureLocation;
+        newMaterial->albedoUVLocation = this->albedoUVLocation;
+        newMaterial->albedoMapLocation = this->albedoMapLocation;
+        newMaterial->normalUVLocation = this->normalUVLocation;
+        newMaterial->normalMapLocation = this->normalMapLocation;
         newMaterial->lightPositionLocation = this->lightPositionLocation;
         newMaterial->lightDirectionLocation = this->lightDirectionLocation;
         newMaterial->lightRangeLocation = this->lightRangeLocation;
@@ -157,8 +190,13 @@ namespace Core {
         this->normalLocation = this->shader->getAttributeLocation(StandardAttribute::Normal);
         this->faceNormalLocation = this->shader->getAttributeLocation(StandardAttribute::FaceNormal);
         this->colorLocation = this->shader->getAttributeLocation(StandardAttribute::Color);
-        this->textureLocation = this->shader->getUniformLocation("twoDtexture");
-        this->uvLocation = this->shader->getAttributeLocation(StandardAttribute::AlbedoUV);
+        this->albedoMapEnabledLocation = this->shader->getUniformLocation("albedoMapEnabled");
+        this->normalMapEnabledLocation = this->shader->getUniformLocation("normalMapEnabled");
+        this->albedoLocation = this->shader->getUniformLocation("albedo");
+        this->albedoMapLocation = this->shader->getUniformLocation("albedoMap");
+        this->normalMapLocation = this->shader->getUniformLocation("normalMap");
+        this->albedoUVLocation = this->shader->getAttributeLocation(StandardAttribute::AlbedoUV);
+        this->normalUVLocation = this->shader->getAttributeLocation(StandardAttribute::NormalUV);
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
         this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);

@@ -174,13 +174,16 @@ namespace Core {
         this->shader->setUniform1f(this->metallicLocation, this->metallic);
         this->shader->setUniform1f(this->roughnessLocation, this->roughness);
         this->shader->setUniform1f(this->ambientOcclusion, this->ambientOcclusion);
-        this->shader->setUniform1i(this->enabledMapLcation, this->getEnabledMapMask());
+        this->shader->setUniform1i(this->enabledMapLocation, this->getEnabledMapMask());
     }
 
     WeakPointer<Material> StandardPhysicalMaterial::clone() {
         WeakPointer<StandardPhysicalMaterial> newMaterial = Engine::instance()->createMaterial<StandardPhysicalMaterial>(false);
         this->copyTo(newMaterial);
         newMaterial->albedoMap = this->albedoMap;
+        newMaterial->albedoMapEnabled = this->albedoMapEnabled;
+        newMaterial->normalMapEnabled = this->normalMapEnabled;
+        newMaterial->roughnessMapEnabled = this->roughnessMapEnabled;
         newMaterial->positionLocation = this->positionLocation;
         newMaterial->normalLocation = this->normalLocation;
         newMaterial->faceNormalLocation = this->faceNormalLocation;
@@ -221,7 +224,7 @@ namespace Core {
         newMaterial->metallicLocation = this->metallicLocation;
         newMaterial->roughnessLocation = this->roughnessLocation;
         newMaterial->ambientOcclusionLocation = this->ambientOcclusionLocation;
-        newMaterial->enabledMapLcation = this->enabledMapLcation;
+        newMaterial->enabledMapLocation = this->enabledMapLocation;
         return newMaterial;
     }
 
@@ -267,7 +270,7 @@ namespace Core {
         this->metallicLocation = this->shader->getUniformLocation("metallic");
         this->roughnessLocation = this->shader->getUniformLocation("roughness");
         this->ambientOcclusionLocation = this->shader->getUniformLocation("ambientOcclusion");
-        this->enabledMapLcation = this->shader->getUniformLocation("enabledMap");
+        this->enabledMapLocation = this->shader->getUniformLocation("enabledMap");
     }
 
     UInt32 StandardPhysicalMaterial::textureCount() {
