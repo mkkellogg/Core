@@ -33,7 +33,7 @@ namespace Core {
         Bool initializeSuccess = initialize();
 
         if (!initializeSuccess) {
-            throw ImageLoaderException("ImageLoader::LoadImage -> Error occurred while initializing image loader.");
+            throw ImageLoaderException("ImageLoader::LoadImageU -> Error occurred while initializing image loader.");
         }
      
         if (reverseOrigin) {
@@ -85,7 +85,14 @@ namespace Core {
     }
 
     std::shared_ptr<HDRImage> ImageLoader::loadImageHDR(const std::string& fullPath, bool invertY) {
+        Bool initializeSuccess = initialize();
+
+        if (!initializeSuccess) {
+            throw ImageLoaderException("ImageLoader::loadImageHDR -> Error occurred while initializing image loader.");
+        }
+
         stbi_set_flip_vertically_on_load(invertY);
+
         int width, height, nrComponents;
         float *hdr_data = stbi_loadf(fullPath.c_str(), &width, &height, &nrComponents, 0);
 
@@ -103,9 +110,13 @@ namespace Core {
         if (!initSuccess) {
             throw ImageLoaderException("ImageLoader::loadImageHDR -> Could not init HDRImage.");
         }
-
-        for (UInt32 i = 0; i < width * height * 4; i++) {
-            hdrImage->setElement(i, hdr_data[i]);
+        for (UInt32 i = 0; i < width * height; i++) {
+            UInt32 baseIndex = i * 4;
+            UInt32 baseHDRIndex = i * 3;
+            hdrImage->setElement(baseIndex, hdr_data[baseHDRIndex]);
+            hdrImage->setElement(baseIndex + 1, hdr_data[baseHDRIndex + 1]);
+            hdrImage->setElement(baseIndex + 2, hdr_data[baseHDRIndex + 2]);
+            hdrImage->setElement(baseIndex + 3, 1.0f);
         }
 
         return hdrImage;

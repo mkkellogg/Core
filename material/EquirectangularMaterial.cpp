@@ -54,8 +54,10 @@ namespace Core {
     }
 
     void EquirectangularMaterial::sendCustomUniformsToShader() {
-        this->shader->setTexture2D(0, this->texture->getTextureID());
-        this->shader->setUniform1i(this->textureLocation, 0);
+        if (this->texture) {
+            this->shader->setTexture2D(0, this->texture->getTextureID());
+            this->shader->setUniform1i(this->textureLocation, 0);
+        }
     }
 
     WeakPointer<Material> EquirectangularMaterial::clone() {

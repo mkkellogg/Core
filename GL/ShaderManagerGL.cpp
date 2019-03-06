@@ -213,7 +213,7 @@ namespace Core {
             "void main()\n "
             "{\n "
             "    localPos = " + POSITION + ";  \n "
-            "    gl_Position =  " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * vec4(localPos, 1.0);\n "
+            "    gl_Position =  " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " + MODEL_MATRIX + " * " + POSITION + ";\n"
             "}\n ";
 
         this->Equirectangular_fragment =   
@@ -233,7 +233,8 @@ namespace Core {
             "{	\n"
             "    vec2 uv = SampleSphericalMap(normalize(localPos)); \n"
             "    vec3 color = texture(equirectangularMap, uv).rgb; \n"
-            "    FragColor = vec4(color, 1.0);\n"
+            //"    FragColor = vec4(color, 1.0);\n"
+            "    FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n"
             "}\n";
 
          this->Skybox_vertex =

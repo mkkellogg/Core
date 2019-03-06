@@ -9,7 +9,7 @@
 
 namespace Core {
 
-    template <typename T = Byte> class RawImage {
+    template <typename T = Byte, UInt16 channels = 4> class RawImage {
         friend class ImageLoader;
 
     public:
@@ -32,7 +32,7 @@ namespace Core {
         }
 
         Bool init() {
-            this->imageData = (T *)::operator new (imageSizeBytes(), std::nothrow);
+            this->imageData = (T *)(::operator new (imageSizeBytes(), std::nothrow));
             if (this->imageData == nullptr) {
                 throw AllocationException("RawImage::init() -> Unable to allocate memory for raw image");
             }
@@ -90,7 +90,7 @@ namespace Core {
         }
 
         UInt32 calcRowSizeElements(UInt32 pixels) const {
-            return pixels * 4;
+            return pixels * channels;
         }
 
          UInt32 calcRowSizeBytes() const {
@@ -114,6 +114,6 @@ namespace Core {
         T * imageData;
     };
 
-    using StandardImage = RawImage<Byte>;
-    using HDRImage = RawImage<Real>;
+    using StandardImage = RawImage<Byte, 4>;
+    using HDRImage = RawImage<Real, 4>;
 }
