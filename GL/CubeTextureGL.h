@@ -16,6 +16,9 @@ namespace Core {
         void build(WeakPointer<StandardImage> frontData, WeakPointer<StandardImage> backData, 
                    WeakPointer<StandardImage> topData,WeakPointer<StandardImage> bottomData, 
                    WeakPointer<StandardImage> leftData, WeakPointer<StandardImage> rightData) override;
+        void build(WeakPointer<HDRImage> frontData, WeakPointer<HDRImage> backData, 
+                   WeakPointer<HDRImage> topData,WeakPointer<HDRImage> bottomData, 
+                   WeakPointer<HDRImage> leftData, WeakPointer<HDRImage> rightData) override;
         void build(UInt32 width, UInt32 height) override;
 
     private:

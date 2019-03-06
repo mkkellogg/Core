@@ -12,6 +12,7 @@ namespace Core {
     public:
         virtual ~Texture2D();
         virtual void build(WeakPointer<StandardImage> imageData) = 0;
+        virtual void build(WeakPointer<HDRImage> imageData) = 0;
 
     protected:
         Texture2D(const TextureAttributes& attributes);

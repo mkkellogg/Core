@@ -4,11 +4,19 @@
 
 #include "../base/CoreObject.h"
 #include "TextureAttr.h"
+#include "../common/Exception.h"
 
 namespace Core {
 
     class Texture : CoreObject {
     public:
+
+        class TextureException: Exception {
+        public:
+            TextureException(const std::string& msg): Exception(msg) {}
+            TextureException(const char* msg): Exception(msg) {}
+        };
+
         virtual ~Texture();
         Int32 getTextureID() const;
         Bool isBuilt() const;

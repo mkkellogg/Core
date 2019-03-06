@@ -61,6 +61,10 @@ namespace Core {
             return imageData;
         }
 
+        Byte * getImageBytes() {
+            return (Byte*)imageData;
+        }
+
         UInt32 getWidth() const {
             return width;
         }
@@ -111,4 +115,5 @@ namespace Core {
     };
 
     using StandardImage = RawImage<Byte>;
+    using HDRImage = RawImage<Real>;
 }

@@ -17,6 +17,7 @@ namespace Core {
         ~Texture2DGL();
 
         void build(WeakPointer<StandardImage> imageData) override;
+        void build(WeakPointer<HDRImage> imageData) override;
         void build(UInt32 width, UInt32 height) override;
 
     protected:
