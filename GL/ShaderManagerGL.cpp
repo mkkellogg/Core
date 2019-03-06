@@ -140,6 +140,9 @@ namespace Core {
         this->setShader(ShaderType::Vertex, "Skybox", ShaderManagerGL::Skybox_vertex);
         this->setShader(ShaderType::Fragment, "Skybox", ShaderManagerGL::Skybox_fragment);
 
+        this->setShader(ShaderType::Vertex, "Equirectangular", ShaderManagerGL::Skybox_vertex);
+        this->setShader(ShaderType::Fragment, "Equirectangular", ShaderManagerGL::Skybox_fragment);
+
         this->setShader(ShaderType::Vertex, "Outline", ShaderManagerGL::Outline_vertex);
         this->setShader(ShaderType::Geometry, "Outline", ShaderManagerGL::Outline_geometry);
         this->setShader(ShaderType::Fragment, "Outline", ShaderManagerGL::Outline_fragment);
@@ -200,6 +203,38 @@ namespace Core {
     }
 
     ShaderManagerGL::ShaderManagerGL() {
+
+         this->Equirectangular_vertex =
+            "#version 330 core\n "
+            "layout (location = 0) " + POSITION_DEF
+            + PROJECTION_MATRIX_DEF
+            + VIEW_MATRIX_DEF +
+            "out vec3 localPos;\n "
+            "void main()\n "
+            "{\n "
+            "    localPos = " + POSITION + ";  \n "
+            "    gl_Position =  " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * vec4(localPos, 1.0);\n "
+            "}\n ";
+
+        this->Equirectangular_fragment =   
+            "#version 330 core \n"
+            "out vec4 FragColor; \n"
+            "in vec3 localPos; \n"
+            "uniform sampler2D equirectangularTexture; \n"
+            "const vec2 invAtan = vec2(0.1591, 0.3183); \n"
+            "vec2 SampleSphericalMap(vec3 v) \n"
+            "{\n"
+            "    vec2 uv = vec2(atan(v.z, v.x), asin(v.y)); \n"
+            "    uv *= invAtan; \n"
+            "    uv += 0.5; \n"
+            "    return uv; \n"
+            "}\n"
+            "void main()\n"
+            "{	\n"
+            "    vec2 uv = SampleSphericalMap(normalize(localPos)); \n"
+            "    vec3 color = texture(equirectangularMap, uv).rgb; \n"
+            "    FragColor = vec4(color, 1.0);\n"
+            "}\n";
 
          this->Skybox_vertex =
             "#version 330\n"

@@ -2,6 +2,8 @@
 
 #include "ImageLoader.h"
 #include "RawImage.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "STBImage.h"
 
 namespace Core {
 
@@ -76,6 +78,37 @@ namespace Core {
         }
 
         return rawImage;
+    }
+
+    std::shared_ptr<HDRImage> ImageLoader::loadImageHDR(const std::string& fullPath) {
+        return loadImageHDR(fullPath, false);
+    }
+
+    std::shared_ptr<HDRImage> ImageLoader::loadImageHDR(const std::string& fullPath, bool invertY) {
+        stbi_set_flip_vertically_on_load(invertY);
+        int width, height, nrComponents;
+        float *hdr_data = stbi_loadf(fullPath.c_str(), &width, &height, &nrComponents, 0);
+
+        if (hdr_data == NULL) {
+            std::string msg("ImageLoader::loadImageHDR -> Could not load HDRImage: ");
+            msg = msg + stbi_failure_reason();
+            throw ImageLoaderException(msg);
+        }
+
+        HDRImage * hdrImagePtr = new(std::nothrow) HDRImage(width, height);
+        if (hdrImagePtr == nullptr) throw ImageLoaderException("ImageLoader::loadImageHDR -> Could not allocate HDRImage.");
+
+        std::shared_ptr<HDRImage> hdrImage(hdrImagePtr);
+        Bool initSuccess = hdrImage->init();
+        if (!initSuccess) {
+            throw ImageLoaderException("ImageLoader::loadImageHDR -> Could not init HDRImage.");
+        }
+
+        for (UInt32 i = 0; i < width * height * 4; i++) {
+            hdrImage->setElement(i, hdr_data[i]);
+        }
+
+        return hdrImage;
     }
 
     std::shared_ptr<StandardImage> ImageLoader::getStandardImageFromILData(const ILubyte * data, UInt32 width, UInt32 height) {

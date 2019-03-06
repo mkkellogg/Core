@@ -29,6 +29,8 @@ namespace Core {
 
         static std::shared_ptr<StandardImage> loadImageU(const std::string& fullPath);
         static std::shared_ptr<StandardImage> loadImageU(const std::string& fullPath, Bool reverseOrigin);
+        static std::shared_ptr<HDRImage> loadImageHDR(const std::string& fullPath);
+        static std::shared_ptr<HDRImage> loadImageHDR(const std::string& fullPath, Bool reverseOrigin);
         static std::string getFileExtension(const std::string& filePath);
     
     private:

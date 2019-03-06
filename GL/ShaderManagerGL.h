@@ -17,6 +17,9 @@ namespace Core {
         std::string Test_vertex;
         std::string Test_fragment;
 
+        std::string Equirectangular_vertex;
+        std::string Equirectangular_fragment;
+
         std::string Skybox_vertex;
         std::string Skybox_fragment;
 
