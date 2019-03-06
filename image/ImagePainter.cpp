@@ -3,7 +3,7 @@
 
 namespace Core {
 
-    ImagePainter::ImagePainter(WeakPointer<RawImage> targetImage): targetImage(targetImage) {
+    ImagePainter::ImagePainter(WeakPointer<StandardImage> targetImage): targetImage(targetImage) {
 
     }
 
@@ -78,7 +78,7 @@ namespace Core {
         x = this->clipX(x);
         y = this->clipY(y);
         if (y != oldY || x != oldX) return;
-        Byte * location = this->targetImage->calcOffsetLocation(x, y);
+        Byte * location = this->targetImage->calcOffsetLocationElements(x, y);
         IntColor& color = this->drawState.drawColor;
         location[0] = color.r;
         location[1] = color.g;
@@ -95,8 +95,8 @@ namespace Core {
         ex = this->clipX(ex);
         Int32 finalLength = ex - x;
         if(finalLength > 0) {
-            Byte * location = this->targetImage->calcOffsetLocation(x, y);
-            UInt32 byteCount = this->targetImage->calcRowSize(finalLength);
+            Byte * location = this->targetImage->calcOffsetLocationElements(x, y);
+            UInt32 byteCount = this->targetImage->calcRowSizeElements(finalLength);
             if (byteCount % 4 != 0) {
                 throw PaintException("ImagePainter::drawHorizontalLine() -> image byte count must be multiple of 4.");
             }
@@ -120,8 +120,8 @@ namespace Core {
 
         Int32 finalLength = ey - y;
         if(finalLength > 0) {
-            Byte * location = this->targetImage->calcOffsetLocation(x, y);
-            UInt32 rowSize = this->targetImage->calcRowSize();
+            Byte * location = this->targetImage->calcOffsetLocationElements(x, y);
+            UInt32 rowSize = this->targetImage->calcRowSizeElements();
             if (rowSize % 4 != 0) {
                 throw PaintException("ImagePainter::drawHorizontalLine() -> image byte count must be multiple of 4.");
             }

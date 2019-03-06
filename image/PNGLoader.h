@@ -7,11 +7,9 @@
 
 #include "../common/types.h"
 #include "../common/Exception.h"
+#include "RawImage.h"
 
 namespace Core {
-
-    //forward declarations
-    class RawImage;
 
     class PNGLoader {
     public:
@@ -22,7 +20,7 @@ namespace Core {
             PNGLoaderException(const char* msg): Exception(msg) {}
         };
 
-        static std::shared_ptr<RawImage> loadPNG(const std::string& path);
+        static std::shared_ptr<StandardImage> loadPNG(const std::string& path);
 
     };
 

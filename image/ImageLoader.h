@@ -10,16 +10,13 @@
 #include "../common/types.h"
 #include "../common/debug.h"
 #include "../common/Exception.h"
+#include "../image/RawImage.h"
 
 namespace Core {
-
-    //forward declarations
-    class RawImage;
 
     enum ImageLoaderError {
         GeneralLoadError = 1
     };
-
 
     class ImageLoader {
     public:
@@ -30,15 +27,15 @@ namespace Core {
             ImageLoaderException(const char* msg): Exception(msg) {}
         };
 
-        static std::shared_ptr<RawImage> loadImageU(const std::string& fullPath);
-        static std::shared_ptr<RawImage> loadImageU(const std::string& fullPath, Bool reverseOrigin);
+        static std::shared_ptr<StandardImage> loadImageU(const std::string& fullPath);
+        static std::shared_ptr<StandardImage> loadImageU(const std::string& fullPath, Bool reverseOrigin);
         static std::string getFileExtension(const std::string& filePath);
     
     private:
         static Bool initialized;
         static Bool initialize();
 #ifdef CORE_USE_PRIVATE_INCLUDES
-        static std::shared_ptr<RawImage> getRawImageFromILData(const ILubyte * data, UInt32 width, UInt32 height);
+        static std::shared_ptr<StandardImage> getStandardImageFromILData(const ILubyte * data, UInt32 width, UInt32 height);
 #endif
     };
 

@@ -23,11 +23,11 @@ namespace Core {
         return true;
     }
 
-    std::shared_ptr<RawImage> ImageLoader::loadImageU(const std::string& fullPath) {
+    std::shared_ptr<StandardImage> ImageLoader::loadImageU(const std::string& fullPath) {
         return loadImageU(fullPath, false);
     }
 
-    std::shared_ptr<RawImage> ImageLoader::loadImageU(const std::string& fullPath, Bool reverseOrigin) {
+    std::shared_ptr<StandardImage> ImageLoader::loadImageU(const std::string& fullPath, Bool reverseOrigin) {
         Bool initializeSuccess = initialize();
 
         if (!initializeSuccess) {
@@ -43,7 +43,7 @@ namespace Core {
         ILuint imageIds[1];
         ilGenImages(1, imageIds); // Generation of numTextures image names
         ilBindImage(imageIds[0]); // Binding of DevIL image name
-        std::shared_ptr<RawImage> rawImage;
+        std::shared_ptr<StandardImage> rawImage;
 
         ILboolean success = ilLoadImage(fullPath.c_str());
 
@@ -55,7 +55,7 @@ namespace Core {
                 ilDeleteImages(1, imageIds);
                 throw ImageLoaderException("ImageLoader::LoadImage -> Couldn't convert image");
             }
-            rawImage = getRawImageFromILData(ilGetData(), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
+            rawImage = getStandardImageFromILData(ilGetData(), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
         } else {
             ILenum i = ilGetError();
             std::string msg = "ImageLoader::LoadImage -> Couldn't load image: ";
@@ -78,21 +78,21 @@ namespace Core {
         return rawImage;
     }
 
-    std::shared_ptr<RawImage> ImageLoader::getRawImageFromILData(const ILubyte * data, UInt32 width, UInt32 height) {
-        if (data == nullptr) throw ImageLoaderException("ImageLoader::getRawImageFromILData -> 'data' is null.");
+    std::shared_ptr<StandardImage> ImageLoader::getStandardImageFromILData(const ILubyte * data, UInt32 width, UInt32 height) {
+        if (data == nullptr) throw ImageLoaderException("ImageLoader::getStandardImageFromILData -> 'data' is null.");
 
-        RawImage * rawImagePtr = new(std::nothrow) RawImage(width, height);
-        if (rawImagePtr == nullptr) throw ImageLoaderException("ImageLoader::getRawImageFromILData -> Could not allocate RawImage.");
+        StandardImage * rawImagePtr = new(std::nothrow) StandardImage(width, height);
+        if (rawImagePtr == nullptr) throw ImageLoaderException("ImageLoader::getStandardImageFromILData -> Could not allocate StandardImage.");
 
-        std::shared_ptr<RawImage> rawImage(rawImagePtr);
+        std::shared_ptr<StandardImage> rawImage(rawImagePtr);
 
         Bool initSuccess = rawImage->init();
         if (!initSuccess) {
-            throw ImageLoaderException("ImageLoader::getRawImageFromILData -> Could not init RawImage.");
+            throw ImageLoaderException("ImageLoader::getStandardImageFromILData -> Could not init StandardImage.");
         }
 
         for (UInt32 i = 0; i < width * height * 4; i++) {
-            rawImage->setByte(i, (Byte)data[i]);
+            rawImage->setElement(i, (Byte)data[i]);
         }
 
         return rawImage;

@@ -10,7 +10,7 @@ namespace Core {
 
   class Demo {
 
-    std::vector<std::shared_ptr<RawImage>> skyboxImages;
+    std::vector<std::shared_ptr<StandardImage>> skyboxImages;
     std::shared_ptr<CubeTexture> skyboxTexture;
     PersistentWeakPointer<BasicMaterial> skyboxMaterial;
 

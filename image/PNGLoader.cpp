@@ -2,11 +2,10 @@
 #include <vector>
 
 #include "PNGLoader.h"
-#include "RawImage.h"
 
 namespace Core {
 
-    std::shared_ptr<RawImage> PNGLoader::loadPNG(const std::string& path) {
+    std::shared_ptr<StandardImage> PNGLoader::loadPNG(const std::string& path) {
 
         int width, height;
         png_byte color_type;
@@ -75,12 +74,12 @@ namespace Core {
 
         fclose(fp);
 
-        RawImage * rawPNG = new RawImage(width, height);
+        StandardImage * rawPNG = new StandardImage(width, height);
         if (rawPNG == nullptr) {
-            throw PNGLoaderException("PNGLoader::loadPNG() -> Could not allocate RawImage object.");
+            throw PNGLoaderException("PNGLoader::loadPNG() -> Could not allocate StandardImage object.");
         }
         rawPNG->init();
-        std::shared_ptr<RawImage> pngPtr = std::shared_ptr<RawImage>(rawPNG);
+        std::shared_ptr<StandardImage> pngPtr = std::shared_ptr<StandardImage>(rawPNG);
 
         Byte * rawData = rawPNG->getImageData();
 

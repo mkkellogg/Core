@@ -16,7 +16,7 @@ namespace Core {
         }
     }
 
-    void Texture2DGL::build(WeakPointer<RawImage> imageData) {
+    void Texture2DGL::build(WeakPointer<StandardImage> imageData) {
         this->setupTexture(imageData->getWidth(), imageData->getHeight(), imageData->getImageData());
     }
       

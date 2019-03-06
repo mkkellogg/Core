@@ -17,7 +17,7 @@ namespace Core {
             PaintException(const char* msg): Exception(msg) {}
         };
 
-        ImagePainter(WeakPointer<RawImage> targetImage);
+        ImagePainter(WeakPointer<StandardImage> targetImage);
         void setDrawColor(IntColor color);
         void setFillColor(IntColor color);
         void setPixel(Int32 x, Int32 y);
@@ -42,7 +42,7 @@ namespace Core {
         };
 
         DrawState drawState;
-        PersistentWeakPointer<RawImage> targetImage;
+        PersistentWeakPointer<StandardImage> targetImage;
     };
 
 }

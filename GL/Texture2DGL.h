@@ -9,7 +9,6 @@ namespace Core {
 
     // forward declaration
     class GraphicsGL;
-    class RawImage;
 
     class Texture2DGL final : public Texture2D {
         friend class GraphicsGL;
@@ -17,7 +16,7 @@ namespace Core {
     public:
         ~Texture2DGL();
 
-        void build(WeakPointer<RawImage> imageData) override;
+        void build(WeakPointer<StandardImage> imageData) override;
         void build(UInt32 width, UInt32 height) override;
 
     protected:

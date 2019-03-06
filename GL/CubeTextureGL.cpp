@@ -18,9 +18,9 @@ namespace Core {
         
     }
 
-    void CubeTextureGL::build(WeakPointer<RawImage> front, WeakPointer<RawImage> back, 
-                              WeakPointer<RawImage> top, WeakPointer<RawImage> bottom, 
-                              WeakPointer<RawImage> left, WeakPointer<RawImage> right) {
+    void CubeTextureGL::build(WeakPointer<StandardImage> front, WeakPointer<StandardImage> back, 
+                              WeakPointer<StandardImage> top, WeakPointer<StandardImage> bottom, 
+                              WeakPointer<StandardImage> left, WeakPointer<StandardImage> right) {
                                   
         this->setupTexture(front->getWidth(), front->getHeight(), 
                            front->getImageData(), back->getImageData(), 

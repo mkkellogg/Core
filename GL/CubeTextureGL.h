@@ -1,21 +1,21 @@
 #pragma once
 
 #include "../image/CubeTexture.h"
+#include "../image/RawImage.h"
 
 namespace Core {
 
     // forward declaration
     class GraphicsGL;
-    class RawImage;
 
     class CubeTextureGL final : public CubeTexture {
         friend class GraphicsGL;
 
     public:
         ~CubeTextureGL();
-        void build(WeakPointer<RawImage> frontData, WeakPointer<RawImage> backData, 
-                   WeakPointer<RawImage> topData,WeakPointer<RawImage> bottomData, 
-                   WeakPointer<RawImage> leftData, WeakPointer<RawImage> rightData) override;
+        void build(WeakPointer<StandardImage> frontData, WeakPointer<StandardImage> backData, 
+                   WeakPointer<StandardImage> topData,WeakPointer<StandardImage> bottomData, 
+                   WeakPointer<StandardImage> leftData, WeakPointer<StandardImage> rightData) override;
         void build(UInt32 width, UInt32 height) override;
 
     private:

@@ -727,7 +727,7 @@ namespace Core {
         texAttributes.WrapMode = TextureWrap::Clamp;
         texAttributes.Format = TextureFormat::RGBA8;
 
-        std::shared_ptr<RawImage> textureImage;
+        std::shared_ptr<StandardImage> textureImage;
         // check if the file specified by the full path in the Assimp material exists
         if (fileSystem->fileExists(fullTextureFilePath)) {
             textureImage = ImageLoader::loadImageU(fullTextureFilePath);
