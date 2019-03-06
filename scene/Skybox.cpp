@@ -42,8 +42,6 @@ namespace Core {
         skyboxMesh->getVertexPositions()->store(vertexPositions);
 
         WeakPointer<SkyboxMaterial> skyboxMaterial = Engine::instance()->createMaterial<SkyboxMaterial>();
-       // WeakPointer<BasicMaterial> skyboxMaterial = Engine::instance()->createMaterial<BasicMaterial>();
-        skyboxMaterial->build();
         skyboxMaterial->setTexture(skyboxTexture);
         skyboxMaterial->setCullFace(RenderState::CullFace::Front);
 

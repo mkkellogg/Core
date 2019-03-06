@@ -82,6 +82,9 @@ namespace Core {
     }
 
     UInt32 EquirectangularMaterial::textureCount() {
-        return 1;
+        if (this->texture) {
+            return 1;
+        }
+        else return 0;
     }
 }

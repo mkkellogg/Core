@@ -140,8 +140,8 @@ namespace Core {
         this->setShader(ShaderType::Vertex, "Skybox", ShaderManagerGL::Skybox_vertex);
         this->setShader(ShaderType::Fragment, "Skybox", ShaderManagerGL::Skybox_fragment);
 
-        this->setShader(ShaderType::Vertex, "Equirectangular", ShaderManagerGL::Skybox_vertex);
-        this->setShader(ShaderType::Fragment, "Equirectangular", ShaderManagerGL::Skybox_fragment);
+        this->setShader(ShaderType::Vertex, "Equirectangular", ShaderManagerGL::Equirectangular_vertex);
+        this->setShader(ShaderType::Fragment, "Equirectangular", ShaderManagerGL::Equirectangular_fragment);
 
         this->setShader(ShaderType::Vertex, "Outline", ShaderManagerGL::Outline_vertex);
         this->setShader(ShaderType::Geometry, "Outline", ShaderManagerGL::Outline_geometry);
@@ -208,11 +208,12 @@ namespace Core {
             "#version 330 core\n "
             "layout (location = 0) " + POSITION_DEF
             + PROJECTION_MATRIX_DEF
-            + VIEW_MATRIX_DEF +
+            + VIEW_MATRIX_DEF
+            + MODEL_MATRIX_DEF +
             "out vec3 localPos;\n "
             "void main()\n "
             "{\n "
-            "    localPos = " + POSITION + ";  \n "
+            "    localPos = " + POSITION + ".xyz;  \n "
             "    gl_Position =  " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " + MODEL_MATRIX + " * " + POSITION + ";\n"
             "}\n ";
 
@@ -232,9 +233,9 @@ namespace Core {
             "void main()\n"
             "{	\n"
             "    vec2 uv = SampleSphericalMap(normalize(localPos)); \n"
-            "    vec3 color = texture(equirectangularMap, uv).rgb; \n"
-            //"    FragColor = vec4(color, 1.0);\n"
-            "    FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n"
+            "    vec3 color = texture(equirectangularTexture, uv).rgb; \n"
+            "    FragColor = vec4(color, 1.0);\n"
+           // "    FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n"
             "}\n";
 
          this->Skybox_vertex =
@@ -260,7 +261,10 @@ namespace Core {
             "out vec4 out_color;\n"
             "void main()\n"
             "{\n"
-            "    out_color = texture(cubeTexture, TexCoord0.xyz);\n"
+            "    vec3 color =  texture(cubeTexture, TexCoord0.xyz).rgb; \n "
+            "    color = color / (color + vec3(1.0));  \n"
+            "    color = pow(color, vec3(1.0/2.2));  \n"
+            "    out_color = vec4(color, 1.0);\n"
             "}\n";
 
         this->Outline_vertex =
