@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../util/WeakPointer.h"
-#include "Material.h"
+#include "ShaderMaterial.h"
 
 namespace Core {
 
@@ -9,7 +9,7 @@ namespace Core {
     class Engine;
     class CubeTexture;
 
-    class SkyboxMaterial : public Material {
+    class SkyboxMaterial : public ShaderMaterial {
         friend class Engine;
 
     public:
@@ -21,8 +21,9 @@ namespace Core {
         void setTexture(WeakPointer<CubeTexture> texture);
         virtual UInt32 textureCount() override;
 
-    private:
+    protected:
         SkyboxMaterial(WeakPointer<Graphics> graphics);
+        SkyboxMaterial(const std::string& vertShaderName, const std::string& fragShaderName, WeakPointer<Graphics> graphics);
         void bindShaderVarLocations();
         
         Int32 positionLocation;

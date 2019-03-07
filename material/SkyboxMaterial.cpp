@@ -9,18 +9,15 @@
 
 namespace Core {
 
-    SkyboxMaterial::SkyboxMaterial(WeakPointer<Graphics> graphics) : Material(graphics) {
+    SkyboxMaterial::SkyboxMaterial(const std::string& vertShaderName, const std::string& fragShaderName, WeakPointer<Graphics> graphics): ShaderMaterial(vertShaderName, fragShaderName, graphics) {
+
+    }
+    
+    SkyboxMaterial::SkyboxMaterial(WeakPointer<Graphics> graphics) : SkyboxMaterial("Skybox", "Skybox", graphics) {
     }
 
     Bool SkyboxMaterial::build() {
-        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-        ShaderManager& shaderDirectory = graphics->getShaderManager();
-        const std::string& vertexSrc = shaderDirectory.getShader(ShaderType::Vertex, "Skybox");
-        const std::string& fragmentSrc = shaderDirectory.getShader(ShaderType::Fragment, "Skybox");
-        Bool ready = this->buildFromSource(vertexSrc, fragmentSrc);
-        if (!ready) {
-            return false;
-        }
+        if(!ShaderMaterial::build()) return false;
         this->bindShaderVarLocations();
         return true;
     }

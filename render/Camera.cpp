@@ -173,8 +173,8 @@ namespace Core {
        this->clearRenderBuffers = other->clearRenderBuffers;
     }
 
-    void Camera::buildSkybox(WeakPointer<CubeTexture> texture) {
-        this->skybox.build(texture);
+    void Camera::buildSkybox(WeakPointer<CubeTexture> texture, Bool isPhysical) {
+        this->skybox.build(texture, isPhysical);
     }
 
     Skybox& Camera::getSkybox() {

@@ -61,6 +61,7 @@ set(INCLUDE_FILES
     asset/AssetLoader.h
     asset/ModelLoader.h
     material/Material.h
+    material/ShaderMaterial.h
     material/DepthOnlyMaterial.h
     material/DistanceOnlyMaterial.h
     material/BasicMaterial.h
@@ -72,6 +73,7 @@ set(INCLUDE_FILES
     material/BasicCubeMaterial.h
     material/OutlineMaterial.h
     material/SkyboxMaterial.h
+    material/PhysicalSkyboxMaterial.h
     material/EquirectangularMaterial.h
     material/StandardPhysicalMaterial.h
     material/StandardUniforms.h
@@ -189,6 +191,7 @@ set(SOURCE_FILES
     light/DirectionalLight.cpp
     light/AmbientLight.cpp
     material/Material.cpp
+    material/ShaderMaterial.cpp
     material/DepthOnlyMaterial.cpp
     material/DistanceOnlyMaterial.cpp
     material/BasicMaterial.cpp
@@ -200,6 +203,7 @@ set(SOURCE_FILES
     material/BasicCubeMaterial.cpp
     material/OutlineMaterial.cpp
     material/SkyboxMaterial.cpp
+    material/PhysicalSkyboxMaterial.cpp
     material/EquirectangularMaterial.cpp
     material/StandardPhysicalMaterial.cpp
     material/Shader.cpp

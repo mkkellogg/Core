@@ -17,8 +17,14 @@ namespace Core {
         std::string Test_vertex;
         std::string Test_fragment;
 
+        std::string PhysicalCommon_vertex;
+        std::string PhysicalCommon_fragment;
+
         std::string Equirectangular_vertex;
         std::string Equirectangular_fragment;
+
+        std::string PhysicalSkybox_vertex;
+        std::string PhysicalSkybox_fragment;
 
         std::string Skybox_vertex;
         std::string Skybox_fragment;

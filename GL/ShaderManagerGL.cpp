@@ -140,6 +140,12 @@ namespace Core {
         this->setShader(ShaderType::Vertex, "Skybox", ShaderManagerGL::Skybox_vertex);
         this->setShader(ShaderType::Fragment, "Skybox", ShaderManagerGL::Skybox_fragment);
 
+        this->setShader(ShaderType::Vertex, "PhysicalSkybox", ShaderManagerGL::PhysicalSkybox_vertex);
+        this->setShader(ShaderType::Fragment, "PhysicalSkybox", ShaderManagerGL::PhysicalSkybox_fragment);
+
+        this->setShader(ShaderType::Vertex, "PhysicalCommon", ShaderManagerGL::PhysicalCommon_vertex);
+        this->setShader(ShaderType::Fragment, "PhysicalCommon", ShaderManagerGL::PhysicalCommon_fragment);
+
         this->setShader(ShaderType::Vertex, "Equirectangular", ShaderManagerGL::Equirectangular_vertex);
         this->setShader(ShaderType::Fragment, "Equirectangular", ShaderManagerGL::Equirectangular_fragment);
 
@@ -204,7 +210,18 @@ namespace Core {
 
     ShaderManagerGL::ShaderManagerGL() {
 
-         this->Equirectangular_vertex =
+        this->PhysicalCommon_vertex =
+            "\n";
+
+        this->PhysicalCommon_fragment =
+            "vec3 toneMapBasic(vec3 color) { \n"
+            "    return color / (color + vec3(1.0));\n"
+            "}\n"
+            "vec3 gammaCorrectBasic(vec3 color) { \n"
+            "    return pow(color, vec3(1.0/2.2));\n"
+            "}\n";
+
+        this->Equirectangular_vertex =
             "#version 330 core\n "
             "layout (location = 0) " + POSITION_DEF
             + PROJECTION_MATRIX_DEF
@@ -235,7 +252,6 @@ namespace Core {
             "    vec2 uv = SampleSphericalMap(normalize(localPos)); \n"
             "    vec3 color = texture(equirectangularTexture, uv).rgb; \n"
             "    FragColor = vec4(color, 1.0);\n"
-           // "    FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n"
             "}\n";
 
          this->Skybox_vertex =
@@ -262,8 +278,36 @@ namespace Core {
             "void main()\n"
             "{\n"
             "    vec3 color =  texture(cubeTexture, TexCoord0.xyz).rgb; \n "
-            "    color = color / (color + vec3(1.0));  \n"
-            "    color = pow(color, vec3(1.0/2.2));  \n"
+            "    out_color = vec4(color, 1.0);\n"
+            "}\n";
+
+        this->PhysicalSkybox_vertex =
+            "#version 330\n"
+            "precision highp float;\n"
+            "layout (location = 0 ) " + POSITION_DEF
+            + PROJECTION_MATRIX_DEF
+            + VIEW_MATRIX_DEF
+            + MODEL_MATRIX_DEF +
+            "out vec4 TexCoord0;\n"
+            "void main()\n"
+            "{\n"
+            "    TexCoord0 = " + POSITION + ";\n"
+            "    vec4 vWorldPos = " + VIEW_MATRIX + " * " + MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    gl_Position = (" + PROJECTION_MATRIX + " * vWorldPos).xyww;\n"
+            "}\n";
+
+        this->PhysicalSkybox_fragment =   
+            "#version 330\n"
+            "#include \"PhysicalCommon\" \n"
+            "precision highp float;\n"
+            "uniform samplerCube cubeTexture; \n"
+            "in vec4 TexCoord0;\n"
+            "out vec4 out_color;\n"
+            "void main()\n"
+            "{\n"
+            "    vec3 color =  texture(cubeTexture, TexCoord0.xyz).rgb; \n "
+            "    color = toneMapBasic(color); \n"
+            "    color = gammaCorrectBasic(color); \n"
             "    out_color = vec4(color, 1.0);\n"
             "}\n";
 
@@ -661,6 +705,7 @@ namespace Core {
             "\n";
 
         this->Physical_Lighting_fragment =
+            "#include \"PhysicalCommon\" \n"
             "float distributionGGX(vec3 N, vec3 H, float roughness) { \n"
             "    float a      = roughness*roughness; \n"
             "    float a2     = a*a; \n"
@@ -737,8 +782,8 @@ namespace Core {
             "            vec3 ambient = vec3(0.03) * albedo.rgb * ao; \n"
             "            vec3 color = ambient + Lo;  \n"
                         
-            "            color = color / (color + vec3(1.0));  \n"
-            "            color = pow(color, vec3(1.0/2.2));  \n"
+            "            color = toneMapBasic(color);  \n"
+            "            color = gammaCorrectBasic(color);  \n"
 
             "            return vec4(color, albedo.a); \n" 
             "        }\n"

@@ -1,6 +1,7 @@
 #include "Skybox.h"
 #include "../material/StandardAttributes.h"
 #include "../material/SkyboxMaterial.h"
+#include "../material/PhysicalSkyboxMaterial.h"
 #include "../material/BasicMaterial.h"
 #include "../geometry/Mesh.h"
 #include "../render/MeshRenderer.h"
@@ -11,7 +12,7 @@ namespace Core {
 
     }
 
-    void Skybox::build(WeakPointer<CubeTexture> skyboxTexture) {
+    void Skybox::build(WeakPointer<CubeTexture> skyboxTexture, Bool isPhysical) {
         WeakPointer<Mesh> skyboxMesh(Engine::instance()->createMesh(36, false));
         skyboxMesh->init();
 
@@ -41,7 +42,9 @@ namespace Core {
         ASSERT(positionInited, "Unable to initialize skybox mesh vertex positions.");
         skyboxMesh->getVertexPositions()->store(vertexPositions);
 
-        WeakPointer<SkyboxMaterial> skyboxMaterial = Engine::instance()->createMaterial<SkyboxMaterial>();
+        WeakPointer<SkyboxMaterial> skyboxMaterial;
+        if (isPhysical) skyboxMaterial = Engine::instance()->createMaterial<PhysicalSkyboxMaterial>();
+        else  skyboxMaterial = Engine::instance()->createMaterial<SkyboxMaterial>();
         skyboxMaterial->setTexture(skyboxTexture);
         skyboxMaterial->setCullFace(RenderState::CullFace::Front);
 
