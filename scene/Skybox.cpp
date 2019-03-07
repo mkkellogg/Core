@@ -12,7 +12,7 @@ namespace Core {
 
     }
 
-    void Skybox::build(WeakPointer<CubeTexture> skyboxTexture, Bool isPhysical) {
+    void Skybox::build(WeakPointer<CubeTexture> skyboxTexture, Bool isPhysical, Real exposure) {
         WeakPointer<Mesh> skyboxMesh(Engine::instance()->createMesh(36, false));
         skyboxMesh->init();
 
@@ -43,8 +43,14 @@ namespace Core {
         skyboxMesh->getVertexPositions()->store(vertexPositions);
 
         WeakPointer<SkyboxMaterial> skyboxMaterial;
-        if (isPhysical) skyboxMaterial = Engine::instance()->createMaterial<PhysicalSkyboxMaterial>();
-        else  skyboxMaterial = Engine::instance()->createMaterial<SkyboxMaterial>();
+        if (isPhysical) {
+            WeakPointer<PhysicalSkyboxMaterial> physicalSkyboxMaterial = Engine::instance()->createMaterial<PhysicalSkyboxMaterial>();
+            physicalSkyboxMaterial->setExposure(exposure);
+            skyboxMaterial = physicalSkyboxMaterial;
+        }
+        else {
+            skyboxMaterial = Engine::instance()->createMaterial<SkyboxMaterial>();
+        }
         skyboxMaterial->setTexture(skyboxTexture);
         skyboxMaterial->setCullFace(RenderState::CullFace::Front);
 

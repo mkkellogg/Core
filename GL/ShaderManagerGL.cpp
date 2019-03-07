@@ -214,8 +214,11 @@ namespace Core {
             "\n";
 
         this->PhysicalCommon_fragment =
-            "vec3 toneMapBasic(vec3 color) { \n"
+            "vec3 toneMapReinhard(vec3 color) { \n"
             "    return color / (color + vec3(1.0));\n"
+            "}\n"
+            "vec3 toneMapExposure(vec3 color, float exposure) { \n"
+            "    return vec3(1.0) - exp(-color * exposure);\n"
             "}\n"
             "vec3 gammaCorrectBasic(vec3 color) { \n"
             "    return pow(color, vec3(1.0/2.2));\n"
@@ -301,12 +304,13 @@ namespace Core {
             "#include \"PhysicalCommon\" \n"
             "precision highp float;\n"
             "uniform samplerCube cubeTexture; \n"
+            "uniform float exposure; \n"
             "in vec4 TexCoord0;\n"
             "out vec4 out_color;\n"
             "void main()\n"
             "{\n"
             "    vec3 color =  texture(cubeTexture, TexCoord0.xyz).rgb; \n "
-            "    color = toneMapBasic(color); \n"
+            "    color = toneMapExposure(color, exposure); \n"
             "    color = gammaCorrectBasic(color); \n"
             "    out_color = vec4(color, 1.0);\n"
             "}\n";
@@ -782,7 +786,7 @@ namespace Core {
             "            vec3 ambient = vec3(0.03) * albedo.rgb * ao; \n"
             "            vec3 color = ambient + Lo;  \n"
                         
-            "            color = toneMapBasic(color);  \n"
+            "            color = toneMapReinhard(color);  \n"
             "            color = gammaCorrectBasic(color);  \n"
 
             "            return vec4(color, albedo.a); \n" 

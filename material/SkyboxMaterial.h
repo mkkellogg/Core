@@ -24,7 +24,8 @@ namespace Core {
     protected:
         SkyboxMaterial(WeakPointer<Graphics> graphics);
         SkyboxMaterial(const std::string& vertShaderName, const std::string& fragShaderName, WeakPointer<Graphics> graphics);
-        void bindShaderVarLocations();
+        virtual void copyTo(WeakPointer<Material> target) override;
+        virtual void bindShaderVarLocations() override;
         
         Int32 positionLocation;
         Int32 colorLocation;

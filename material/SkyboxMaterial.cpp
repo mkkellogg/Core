@@ -55,15 +55,20 @@ namespace Core {
         this->shader->setUniform1i(this->cubeTextureLocation, 0);
     }
 
+    void SkyboxMaterial::copyTo(WeakPointer<Material> target) {
+        ShaderMaterial::copyTo(target);
+        WeakPointer<SkyboxMaterial> _target = WeakPointer<Material>::dynamicPointerCast<SkyboxMaterial>(target);
+        _target->positionLocation = this->positionLocation;
+        _target->colorLocation = this->colorLocation;
+        _target->projectionMatrixLocation = this->projectionMatrixLocation;
+        _target->viewMatrixLocation = this->viewMatrixLocation;
+        _target->modelMatrixLocation = this->modelMatrixLocation;
+        _target->cubeTextureLocation = this->cubeTextureLocation;
+    }
+
     WeakPointer<Material> SkyboxMaterial::clone() {
         WeakPointer<SkyboxMaterial> newMaterial = Engine::instance()->createMaterial<SkyboxMaterial>(false);
         this->copyTo(newMaterial);
-        newMaterial->positionLocation = this->positionLocation;
-        newMaterial->colorLocation = this->colorLocation;
-        newMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
-        newMaterial->viewMatrixLocation = this->viewMatrixLocation;
-        newMaterial->modelMatrixLocation = this->modelMatrixLocation;
-        newMaterial->cubeTextureLocation = this->cubeTextureLocation;
         return newMaterial;
     }
 

@@ -19,9 +19,14 @@ namespace Core {
         const std::string& vertexSrc = shaderDirectory.getShader(ShaderType::Vertex, this->vertexShaderName);
         const std::string& fragmentSrc = shaderDirectory.getShader(ShaderType::Fragment, this->fragmentShaderName);
         Bool ready = this->buildFromSource(vertexSrc, fragmentSrc);
+        this->bindShaderVarLocations();
         if (!ready) {
             return false;
         }
         return true;
+    }
+
+    void ShaderMaterial::copyTo(WeakPointer<Material> target) {
+        Material::copyTo(target);
     }
 }
