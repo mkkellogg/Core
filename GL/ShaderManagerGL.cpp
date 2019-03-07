@@ -673,18 +673,18 @@ namespace Core {
 
             "vec3 calcMappedNormal(vec3 mappedNormal, vec3 normal, vec3 tangent) \n"
             "{ \n"
-            "    vec3 Normal = normalize(normal); \n "
-            "    vec3 Tangent = normalize(tangent); \n "
-            "    Tangent = normalize(Tangent - dot(Tangent, Normal) * Normal); \n "
-            "    vec3 Bitangent = cross(Tangent, Normal); \n "
-            "    vec3 BumpMapNormal = mappedNormal; \n "
-            "    BumpMapNormal = 2.0 * BumpMapNormal - vec3(1.0, 1.0, 1.0); \n "
-            "    vec3 NewNormal; \n "
-            "    mat3 TBN = mat3(Tangent, Bitangent, Normal); \n "
+            "    normal = normalize(normal); \n "
+            "    tangent = normalize(tangent); \n "
+            "    tangent = normalize(tangent - dot(tangent, normal) * normal); \n "
+            "    vec3 biTangent = cross(tangent, normal); \n "
+            "    vec3 bumpMapNormal = mappedNormal; \n "
+            "    bumpMapNormal = 2.0 * bumpMapNormal - vec3(1.0, 1.0, 1.0); \n "
+            "    vec3 newNormal; \n "
+            "    mat3 tbn = mat3(tangent, biTangent, normal); \n "
 
-            "    NewNormal = TBN * BumpMapNormal; \n "
-            "    NewNormal = normalize(NewNormal); \n "
-            "    return NewNormal; \n "
+            "    newNormal = tbn * bumpMapNormal; \n "
+            "    newNormal = normalize(newNormal); \n "
+            "    return newNormal; \n "
             "} \n ";
 
         this->Physical_Lighting_Single_vertex =
