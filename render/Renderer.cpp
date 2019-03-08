@@ -25,6 +25,7 @@
 namespace Core {
 
     Renderer::Renderer() {
+        this->ambientLightMode = RenderState::AmbientLightMode::Basic;
     }
 
     Renderer::~Renderer() {
@@ -32,6 +33,10 @@ namespace Core {
 
     Bool Renderer::init() {
         return true;
+    }
+
+    void Renderer::setAmbientLighMode(RenderState::AmbientLightMode mode) {
+        this->ambientLightMode = mode;
     }
 
     void Renderer::renderScene(WeakPointer<Scene> scene, WeakPointer<Material> overrideMaterial) {
@@ -68,9 +73,11 @@ namespace Core {
                     cameraList.push_back(cameraPtr);
                     continue;
                 }
-                WeakPointer<Light> lightPtr = WeakPointer<Object3DComponent>::dynamicPointerCast<Light>(comp);
-                if (lightPtr.isValid()) {
-                    lightList.push_back(lightPtr);
+                WeakPointer<Light> light = WeakPointer<Object3DComponent>::dynamicPointerCast<Light>(comp);
+                if (light.isValid()) {
+                    if (light->getType() == LightType::Ambient && this->ambientLightMode != RenderState::AmbientLightMode::Basic) continue;
+                    if (light->getType() == LightType::AmbientIBL && this->ambientLightMode != RenderState::AmbientLightMode::ImageBased) continue;
+                    lightList.push_back(light);
                     continue;
                 }
             }

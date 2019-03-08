@@ -59,5 +59,10 @@ namespace Core {
             DecrementWrap = 6,
             Invert = 7
         };
+
+        enum class AmbientLightMode {
+            Basic = 0,
+            ImageBased = 1,
+        };
     };
 }
