@@ -2,24 +2,26 @@
 #include <algorithm>
 
 #include "../Engine.h"
-#include "../math/Matrix4x4.h"
-#include "../render/BaseRenderableContainer.h"
-#include "../render/MeshRenderer.h"
-#include "../render/RenderableContainer.h"
-#include "../scene/Scene.h"
 #include "Camera.h"
 #include "Renderer.h"
 #include "ViewDescriptor.h"
 #include "RenderTarget.h"
 #include "RenderTargetCube.h"
 #include "RenderTarget2D.h"
+#include "../math/Matrix4x4.h"
+#include "../render/BaseRenderableContainer.h"
+#include "../render/MeshRenderer.h"
+#include "../render/RenderableContainer.h"
+#include "../scene/Scene.h"
 #include "../image/TextureAttr.h"
 #include "../image/Texture.h"
 #include "../material/DepthOnlyMaterial.h"
 #include "../material/DistanceOnlyMaterial.h"
+#include "../material/IrridianceRendererMaterial.h"
 #include "../math/Matrix4x4.h"
 #include "../math/Quaternion.h"
 #include "../light/PointLight.h"
+#include "ReflectionProbe.h"
 
 
 namespace Core {
@@ -47,9 +49,11 @@ namespace Core {
         static std::vector<WeakPointer<Object3D>> objectList;
         static std::vector<WeakPointer<Camera>> cameraList;
         static std::vector<WeakPointer<Light>> lightList;
+        static std::vector<WeakPointer<ReflectionProbe>> reflectionProbeList;
         objectList.resize(0);
         cameraList.resize(0);
         lightList.resize(0);
+        reflectionProbeList.resize(0);
 
         if (!this->depthMaterial.isValid()) {
             this->depthMaterial = Engine::instance()->createMaterial<DepthOnlyMaterial>();
@@ -66,22 +70,42 @@ namespace Core {
 
         for (WeakPointer<Object3D> object : objectList) {
             for (SceneObjectIterator<Object3DComponent> compItr = object->beginIterateComponents(); compItr != object->endIterateComponents(); ++compItr) {
-                // check if this component is a camera
                 WeakPointer<Object3DComponent> comp = (*compItr);
-                WeakPointer<Camera> cameraPtr = WeakPointer<Object3DComponent>::dynamicPointerCast<Camera>(comp);
-                if (cameraPtr.isValid()) {
-                    cameraList.push_back(cameraPtr);
+                WeakPointer<Camera> camera = WeakPointer<Object3DComponent>::dynamicPointerCast<Camera>(comp);
+                if (camera.isValid() && camera->isActive()) {
+                    cameraList.push_back(camera);
                     continue;
                 }
                 WeakPointer<Light> light = WeakPointer<Object3DComponent>::dynamicPointerCast<Light>(comp);
-                if (light.isValid()) {
+                if (light.isValid() && light->isActive()) {
                     if (light->getType() == LightType::Ambient && this->ambientLightMode != RenderState::AmbientLightMode::Basic) continue;
                     if (light->getType() == LightType::AmbientIBL && this->ambientLightMode != RenderState::AmbientLightMode::ImageBased) continue;
                     lightList.push_back(light);
                     continue;
                 }
+                WeakPointer<ReflectionProbe> reflectionProbe = WeakPointer<Object3DComponent>::dynamicPointerCast<ReflectionProbe>(comp);
+                if (reflectionProbe.isValid() && reflectionProbe->isActive()) {
+                    reflectionProbeList.push_back(reflectionProbe);
+                    continue;
+                }
             }
         }
+
+        RenderState::AmbientLightMode oldAmbientMode = this->ambientLightMode;
+        this->setAmbientLighMode(RenderState::AmbientLightMode::Basic);
+        for (auto reflectionProbe : reflectionProbeList) {
+            if (reflectionProbe->getNeedsUpdate()) {
+                WeakPointer<Camera> probeCam = reflectionProbe->getRenderCamera();
+                probeCam->setRenderTarget(reflectionProbe->getSceneRenderTarget());
+                this->renderShadowMaps(lightList, LightType::Directional, objectList, probeCam);
+                this->render(probeCam, objectList, lightList, WeakPointer<Material>::nullPtr());
+                probeCam->setRenderTarget(reflectionProbe->getIrridianceMap());
+                this->renderObjectBasic(reflectionProbe->getSkyboxObject(), probeCam, reflectionProbe->getIrridianceRendererMaterial());
+                reflectionProbe->setNeedsUpdate(false);
+            }
+        }
+        this->setAmbientLighMode(oldAmbientMode);
+
         std::sort(lightList.begin(), lightList.end(), Renderer::compareLights);
 
         this->renderShadowMaps(lightList, LightType::Point, objectList);

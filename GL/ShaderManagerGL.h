@@ -17,9 +17,6 @@ namespace Core {
         std::string Test_vertex;
         std::string Test_fragment;
 
-        std::string PhysicalCommon_vertex;
-        std::string PhysicalCommon_fragment;
-
         std::string Equirectangular_vertex;
         std::string Equirectangular_fragment;
 
@@ -48,6 +45,9 @@ namespace Core {
         std::string Lighting_vertex;
         std::string Lighting_fragment;
 
+        std::string PhysicalCommon_vertex;
+        std::string PhysicalCommon_fragment;
+
         std::string Physical_Lighting_vertex;
         std::string Physical_Lighting_fragment;
 
@@ -59,6 +59,9 @@ namespace Core {
 
         std::string StandardPhysical_vertex;
         std::string StandardPhysical_fragment;
+
+        std::string IrridianceRenderer_vertex;
+        std::string IrridianceRenderer_fragment;
 
         std::string Depth_vertex;
         std::string Depth_fragment;

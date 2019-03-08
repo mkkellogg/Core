@@ -85,7 +85,7 @@ namespace Core {
         if (!texture.isValid()) {
             throw RenderTargetException("RenderTarget::buildAndVerifyTexture -> Texture is not valid.");
         }
-        texture->build(this->size.x, this->size.y);
+        texture->buildEmpty(this->size.x, this->size.y);
         return true;
     }
 }

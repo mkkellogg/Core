@@ -750,7 +750,7 @@ namespace Core {
 
         WeakPointer<Texture2D> texturePtr(texture);
         if (textureImage && texturePtr) {
-            texturePtr->build(textureImage);
+            texturePtr->buildFromImage(textureImage);
         }
         
         // did texture fail to load?

@@ -10,7 +10,9 @@
 #include "util/Time.h"
 #include "GL/GraphicsGL.h"
 #include "render/BaseObjectRenderer.h"
+#include "render/ReflectionProbe.h"
 #include "scene/Scene.h"
+#include "scene/Object3D.h"
 #include "render/Camera.h"
 #include "geometry/Mesh.h"
 #include "image/CubeTexture.h"
@@ -203,6 +205,15 @@ namespace Core {
 
     void Engine::destroyCubeTexture(WeakPointer<CubeTexture> texture) {
         this->graphics->destroyCubeTexture(texture);
+    }
+
+    WeakPointer<ReflectionProbe> Engine::createReflectionProbe(WeakPointer<Object3D> owner) {
+        std::shared_ptr<ReflectionProbe> newReflectionProbe = std::shared_ptr<ReflectionProbe>(new ReflectionProbe(owner));
+        newReflectionProbe->init();
+        this->reflectionProbes.push_back(newReflectionProbe);
+        WeakPointer<ReflectionProbe> probePtr(newReflectionProbe);
+        owner->addComponent(probePtr);
+        return newReflectionProbe;
     }
 
     void Engine::setImageLoader(WeakPointer<ImageLoader> imageLoader) {

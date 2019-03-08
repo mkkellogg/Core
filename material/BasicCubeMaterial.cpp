@@ -42,6 +42,8 @@ namespace Core {
                 return this->projectionMatrixLocation;
             case StandardUniform::ViewMatrix:
                 return this->viewMatrixLocation;
+            case StandardUniform::ModelMatrix:
+                return this->modelMatrixLocation;
             default:
                 return -1;
         }
@@ -63,6 +65,7 @@ namespace Core {
         newMaterial->colorLocation = this->colorLocation;
         newMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
         newMaterial->viewMatrixLocation = this->viewMatrixLocation;
+        newMaterial->modelMatrixLocation = this->modelMatrixLocation;
         newMaterial->cubeTextureLocation = this->cubeTextureLocation;
         return newMaterial;
     }
@@ -73,6 +76,7 @@ namespace Core {
         this->cubeTextureLocation = this->shader->getUniformLocation("cubeTexture");
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
+        this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);
     }
 
     UInt32 BasicCubeMaterial::textureCount() {

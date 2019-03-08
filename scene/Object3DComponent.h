@@ -18,8 +18,11 @@ namespace Core {
         WeakPointer<Object3D> getOwner() {
             return this->owner;
         }
+        void setActive(Bool active);
+        Bool isActive();
 
     protected:
         WeakPointer<Object3D> owner;
+        Bool active;
     };
 }

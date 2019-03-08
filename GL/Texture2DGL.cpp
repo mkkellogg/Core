@@ -16,21 +16,21 @@ namespace Core {
         }
     }
 
-    void Texture2DGL::build(WeakPointer<StandardImage> imageData) {
+    void Texture2DGL::buildFromImage(WeakPointer<StandardImage> imageData) {
         if (this->attributes.Format != TextureFormat::RGBA8) {
             throw TextureException("Texture2DGL::build() -> Textures built with StandardImage must have type RGBA8.");
         }
         this->setupTexture(imageData->getWidth(), imageData->getHeight(), imageData->getImageData());
     }
 
-    void Texture2DGL::build(WeakPointer<HDRImage> imageData) {
+    void Texture2DGL::buildFromImage(WeakPointer<HDRImage> imageData) {
         if (this->attributes.Format != TextureFormat::RGBA16F && this->attributes.Format != TextureFormat::RGBA32F) {
             throw TextureException("Texture2DGL::build() -> Textures built with HDRImage must have type RGBA16F or RGBA32F.");
         }
         this->setupTexture(imageData->getWidth(), imageData->getHeight(), imageData->getImageBytes());
     }
       
-    void Texture2DGL::build(UInt32 width, UInt32 height) {
+    void Texture2DGL::buildEmpty(UInt32 width, UInt32 height) {
         this->setupTexture(width, height, nullptr);
     }
 

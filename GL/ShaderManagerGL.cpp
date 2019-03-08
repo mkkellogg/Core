@@ -140,12 +140,6 @@ namespace Core {
         this->setShader(ShaderType::Vertex, "Skybox", ShaderManagerGL::Skybox_vertex);
         this->setShader(ShaderType::Fragment, "Skybox", ShaderManagerGL::Skybox_fragment);
 
-        this->setShader(ShaderType::Vertex, "PhysicalSkybox", ShaderManagerGL::PhysicalSkybox_vertex);
-        this->setShader(ShaderType::Fragment, "PhysicalSkybox", ShaderManagerGL::PhysicalSkybox_fragment);
-
-        this->setShader(ShaderType::Vertex, "PhysicalCommon", ShaderManagerGL::PhysicalCommon_vertex);
-        this->setShader(ShaderType::Fragment, "PhysicalCommon", ShaderManagerGL::PhysicalCommon_fragment);
-
         this->setShader(ShaderType::Vertex, "Equirectangular", ShaderManagerGL::Equirectangular_vertex);
         this->setShader(ShaderType::Fragment, "Equirectangular", ShaderManagerGL::Equirectangular_fragment);
 
@@ -168,6 +162,9 @@ namespace Core {
         this->setShader(ShaderType::Vertex, "Lighting", ShaderManagerGL::Lighting_vertex);
         this->setShader(ShaderType::Fragment, "Lighting", ShaderManagerGL::Lighting_fragment);
         
+        this->setShader(ShaderType::Vertex, "PhysicalCommon", ShaderManagerGL::PhysicalCommon_vertex);
+        this->setShader(ShaderType::Fragment, "PhysicalCommon", ShaderManagerGL::PhysicalCommon_fragment);
+
         this->setShader(ShaderType::Vertex, "PhysicalLightingSingle", ShaderManagerGL::Physical_Lighting_Single_vertex);
         this->setShader(ShaderType::Fragment, "PhysicalLightingSingle", ShaderManagerGL::Physical_Lighting_Single_fragment);
 
@@ -179,6 +176,12 @@ namespace Core {
 
         this->setShader(ShaderType::Vertex, "StandardPhysical", ShaderManagerGL::StandardPhysical_vertex);
         this->setShader(ShaderType::Fragment, "StandardPhysical", ShaderManagerGL::StandardPhysical_fragment);
+
+        this->setShader(ShaderType::Vertex, "PhysicalSkybox", ShaderManagerGL::PhysicalSkybox_vertex);
+        this->setShader(ShaderType::Fragment, "PhysicalSkybox", ShaderManagerGL::PhysicalSkybox_fragment);
+
+        this->setShader(ShaderType::Vertex, "IrridianceRenderer", ShaderManagerGL::IrridianceRenderer_vertex);
+        this->setShader(ShaderType::Fragment, "IrridianceRenderer", ShaderManagerGL::IrridianceRenderer_fragment);
 
         this->setShader(ShaderType::Vertex, "Depth", ShaderManagerGL::Depth_vertex);
         this->setShader(ShaderType::Fragment, "Depth", ShaderManagerGL::Depth_fragment);
@@ -209,20 +212,6 @@ namespace Core {
     }
 
     ShaderManagerGL::ShaderManagerGL() {
-
-        this->PhysicalCommon_vertex =
-            "\n";
-
-        this->PhysicalCommon_fragment =
-            "vec3 toneMapReinhard(vec3 color) { \n"
-            "    return color / (color + vec3(1.0));\n"
-            "}\n"
-            "vec3 toneMapExposure(vec3 color, float exposure) { \n"
-            "    return vec3(1.0) - exp(-color * exposure);\n"
-            "}\n"
-            "vec3 gammaCorrectBasic(vec3 color) { \n"
-            "    return pow(color, vec3(1.0/2.2));\n"
-            "}\n";
 
         this->Equirectangular_vertex =
             "#version 330 core\n "
@@ -257,7 +246,7 @@ namespace Core {
             "    FragColor = vec4(color, 1.0);\n"
             "}\n";
 
-         this->Skybox_vertex =
+        this->Skybox_vertex =
             "#version 330\n"
             "precision highp float;\n"
             "layout (location = 0 ) " + POSITION_DEF
@@ -281,37 +270,6 @@ namespace Core {
             "void main()\n"
             "{\n"
             "    vec3 color =  texture(cubeTexture, TexCoord0.xyz).rgb; \n "
-            "    out_color = vec4(color, 1.0);\n"
-            "}\n";
-
-        this->PhysicalSkybox_vertex =
-            "#version 330\n"
-            "precision highp float;\n"
-            "layout (location = 0 ) " + POSITION_DEF
-            + PROJECTION_MATRIX_DEF
-            + VIEW_MATRIX_DEF
-            + MODEL_MATRIX_DEF +
-            "out vec4 TexCoord0;\n"
-            "void main()\n"
-            "{\n"
-            "    TexCoord0 = " + POSITION + ";\n"
-            "    vec4 vWorldPos = " + VIEW_MATRIX + " * " + MODEL_MATRIX + " * " + POSITION + ";\n"
-            "    gl_Position = (" + PROJECTION_MATRIX + " * vWorldPos).xyww;\n"
-            "}\n";
-
-        this->PhysicalSkybox_fragment =   
-            "#version 330\n"
-            "#include \"PhysicalCommon\" \n"
-            "precision highp float;\n"
-            "uniform samplerCube cubeTexture; \n"
-            "uniform float exposure; \n"
-            "in vec4 TexCoord0;\n"
-            "out vec4 out_color;\n"
-            "void main()\n"
-            "{\n"
-            "    vec3 color =  texture(cubeTexture, TexCoord0.xyz).rgb; \n "
-            "    color = toneMapExposure(color, exposure); \n"
-            "    color = gammaCorrectBasic(color); \n"
             "    out_color = vec4(color, 1.0);\n"
             "}\n";
 
@@ -687,6 +645,20 @@ namespace Core {
             "    return newNormal; \n "
             "} \n ";
 
+        this->PhysicalCommon_vertex =
+            "\n";
+
+        this->PhysicalCommon_fragment =
+            "vec3 toneMapReinhard(vec3 color) { \n"
+            "    return color / (color + vec3(1.0));\n"
+            "}\n"
+            "vec3 toneMapExposure(vec3 color, float exposure) { \n"
+            "    return vec3(1.0) - exp(-color * exposure);\n"
+            "}\n"
+            "vec3 gammaCorrectBasic(vec3 color) { \n"
+            "    return pow(color, vec3(1.0/2.2));\n"
+            "}\n";
+
         this->Physical_Lighting_Single_vertex =
             "#include \"LightingHeaderSingle\" \n"
             "#include \"Lighting\" \n";
@@ -869,6 +841,83 @@ namespace Core {
             "       _normal = normalize(vNormal); \n"
             "   } \n"
             "   out_color = litColorPhysical(0, _albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", metallic, roughness, ambientOcclusion);\n"
+            "}\n";
+        
+        this->PhysicalSkybox_vertex =
+            "#version 330\n"
+            "precision highp float;\n"
+            "layout (location = 0 ) " + POSITION_DEF
+            + PROJECTION_MATRIX_DEF
+            + VIEW_MATRIX_DEF
+            + MODEL_MATRIX_DEF +
+            "out vec4 TexCoord0;\n"
+            "void main()\n"
+            "{\n"
+            "    TexCoord0 = " + POSITION + ";\n"
+            "    vec4 vWorldPos = " + VIEW_MATRIX + " * " + MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    gl_Position = (" + PROJECTION_MATRIX + " * vWorldPos).xyww;\n"
+            "}\n";
+
+        this->PhysicalSkybox_fragment =   
+            "#version 330\n"
+            "#include \"PhysicalCommon\" \n"
+            "precision highp float;\n"
+            "uniform samplerCube cubeTexture; \n"
+            "uniform float exposure; \n"
+            "in vec4 TexCoord0;\n"
+            "out vec4 out_color;\n"
+            "void main()\n"
+            "{\n"
+            "    vec3 color =  texture(cubeTexture, TexCoord0.xyz).rgb; \n "
+            "    color = toneMapExposure(color, exposure); \n"
+            "    color = gammaCorrectBasic(color); \n"
+            "    out_color = vec4(color, 1.0);\n"
+            "}\n";
+
+        this->IrridianceRenderer_vertex =
+            "#version 330\n"
+            "precision highp float;\n"
+            "layout (location = 0 ) " + POSITION_DEF
+            + PROJECTION_MATRIX_DEF
+            + VIEW_MATRIX_DEF
+            + MODEL_MATRIX_DEF +
+            "out vec4 localPos;\n"
+            "void main()\n"
+            "{\n"
+            "    localPos = " + POSITION + ";\n"
+            "    vec4 vWorldPos = " + VIEW_MATRIX + " * " + MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    gl_Position = (" + PROJECTION_MATRIX + " * vWorldPos).xyww;\n"
+            "}\n";
+
+        this->IrridianceRenderer_fragment =   
+            "#version 330\n"
+            "out vec4 FragColor;\n"
+            "in vec4 localPos;\n"
+            "uniform samplerCube cubeTexture;\n"
+            "const float PI = 3.14159265359;\n"
+            "void main()\n"
+            "{\n"
+            // the sample direction equals the hemisphere's orientation 
+            "    vec3 normal = normalize(localPos.xyz);\n"
+            "    vec3 irradiance = vec3(0.0);\n"
+            "    vec3 up    = vec3(0.0, 1.0, 0.0);\n"
+            "    vec3 right = cross(up, normal);\n"
+            "    up         = cross(normal, right);\n"
+
+            "    float sampleDelta = 0.025;\n"
+            "    float nrSamples = 0.0;\n" 
+            "    for(float phi = 0.0; phi < 2.0 * PI; phi += sampleDelta) { \n"
+            "        for(float theta = 0.0; theta < 0.5 * PI; theta += sampleDelta) { \n"
+                         // spherical to cartesian (in tangent space)
+            "            vec3 tangentSample = vec3(sin(theta) * cos(phi),  sin(theta) * sin(phi), cos(theta));\n"
+                         // tangent space to world
+            "            vec3 sampleVec = tangentSample.x * right + tangentSample.y * up + tangentSample.z * normal;\n" 
+            "            irradiance += texture(cubeTexture, sampleVec).rgb * cos(theta) * sin(theta);\n"
+            "            nrSamples++;\n"
+            "        }\n"
+            "    }\n"
+            "    irradiance = PI * irradiance * (1.0 / float(nrSamples));\n"
+            "    FragColor = vec4(irradiance, 1.0);\n"
             "}\n";
 
         this->Depth_vertex =
@@ -1138,15 +1187,12 @@ namespace Core {
             + POSITION_DEF
             + COLOR_DEF
             + PROJECTION_MATRIX_DEF
-            + VIEW_MATRIX_DEF +
-            "mat4 scale = mat4(1.0, 0.0, 0.0, 0.0,\n"
-            "                  0.0, 1.0, 0.0, 0.0,\n"
-            "                  0.0, 0.0, 1.0, -20.0,\n"
-            "                  0.0, 0.0, 0.0, 1.0);\n"
+            + VIEW_MATRIX_DEF
+            + MODEL_MATRIX_DEF +
             "out vec4 vColor;\n"
             "out vec3 vUV;\n"
             "void main() {\n"
-            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " + POSITION + ";\n"
+            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
             "    vUV = normalize(" + POSITION + ".xyz);\n"
             "    vColor = " + COLOR + ";\n"
             "}\n";

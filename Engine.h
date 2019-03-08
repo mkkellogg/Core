@@ -27,6 +27,7 @@ namespace Core {
     class BaseObjectRenderer;
     class Camera;
     class Scene;
+    class ReflectionProbe;
 
     class Engine final {
     public:
@@ -92,6 +93,7 @@ namespace Core {
             std::shared_ptr<T> objPtr = std::shared_ptr<T>(new T());
             WeakPointer<T> _temp = objPtr;
             objPtr->_self = _temp;
+            objPtr->setName("GameObject");
             this->sceneObjects.push_back(objPtr);
             return objPtr;
         }
@@ -122,6 +124,8 @@ namespace Core {
         void destroyTexture2D(WeakPointer<Texture2D> texture);
         void destroyCubeTexture(WeakPointer<CubeTexture> texture);
 
+        WeakPointer<ReflectionProbe> createReflectionProbe(WeakPointer<Object3D> owner);
+
         void setImageLoader(WeakPointer<ImageLoader> imageLoader);
         WeakPointer<ImageLoader> getImageLoader();
         void setAssetLoader(WeakPointer<AssetLoader> assetLoader);
@@ -151,6 +155,7 @@ namespace Core {
         std::vector<std::shared_ptr<Material>> materials;
         std::vector<std::shared_ptr<BaseObjectRenderer>> objectRenderers;
         std::vector<std::shared_ptr<Mesh>> meshes;
+        std::vector<std::shared_ptr<ReflectionProbe>> reflectionProbes;
 
         PersistentWeakPointer<ImageLoader> imageLoader;
         PersistentWeakPointer<AssetLoader> assetLoader;

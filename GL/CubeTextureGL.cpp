@@ -18,9 +18,9 @@ namespace Core {
         
     }
 
-    void CubeTextureGL::build(WeakPointer<StandardImage> front, WeakPointer<StandardImage> back, 
-                              WeakPointer<StandardImage> top, WeakPointer<StandardImage> bottom, 
-                              WeakPointer<StandardImage> left, WeakPointer<StandardImage> right) {
+    void CubeTextureGL::buildFromImages(WeakPointer<StandardImage> front, WeakPointer<StandardImage> back, 
+                                        WeakPointer<StandardImage> top, WeakPointer<StandardImage> bottom, 
+                                        WeakPointer<StandardImage> left, WeakPointer<StandardImage> right) {
         if (this->attributes.Format != TextureFormat::RGBA8) {
             throw TextureException("CubeTextureGL::build() -> Textures built with StandardImage must have type RGBA8.");
         }                  
@@ -30,9 +30,9 @@ namespace Core {
                            left->getImageData(), right->getImageData());
     }
 
-     void CubeTextureGL::build(WeakPointer<HDRImage> front, WeakPointer<HDRImage> back, 
-                              WeakPointer<HDRImage> top, WeakPointer<HDRImage> bottom, 
-                              WeakPointer<HDRImage> left, WeakPointer<HDRImage> right) {
+     void CubeTextureGL::buildFromImages(WeakPointer<HDRImage> front, WeakPointer<HDRImage> back, 
+                                         WeakPointer<HDRImage> top, WeakPointer<HDRImage> bottom, 
+                                         WeakPointer<HDRImage> left, WeakPointer<HDRImage> right) {
         if (this->attributes.Format != TextureFormat::RGBA16F && this->attributes.Format != TextureFormat::RGBA32F) {
             throw TextureException("CubeTextureGL::build() -> Textures built with HDRImage must have type RGBA16F or RGBA32F.");
         }                          
@@ -42,7 +42,7 @@ namespace Core {
                            left->getImageBytes(), right->getImageBytes());
     }
 
-    void CubeTextureGL::build(UInt32 width, UInt32 height) {
+    void CubeTextureGL::buildEmpty(UInt32 width, UInt32 height) {
         this->setupTexture(width, height, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
     }
 

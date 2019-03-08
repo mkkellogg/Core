@@ -13,7 +13,7 @@ namespace Core {
     }
 
     void Scene::visitScene(WeakPointer<Object3D> object, VisitorCallback callback) {
-        if (object == WeakPointer<Object3D>::nullPtr) return;
+        if (object == WeakPointer<Object3D>::nullPtr()) return;
         callback(object);
 
         for (SceneObjectIterator<Object3D> itr = object->beginIterateChildren(); itr != object->endIterateChildren(); ++itr) {

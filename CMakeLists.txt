@@ -74,6 +74,7 @@ set(INCLUDE_FILES
     material/OutlineMaterial.h
     material/SkyboxMaterial.h
     material/PhysicalSkyboxMaterial.h
+    material/IrridianceRendererMaterial.h
     material/EquirectangularMaterial.h
     material/StandardPhysicalMaterial.h
     material/StandardUniforms.h
@@ -206,6 +207,7 @@ set(SOURCE_FILES
     material/OutlineMaterial.cpp
     material/SkyboxMaterial.cpp
     material/PhysicalSkyboxMaterial.cpp
+    material/IrridianceRendererMaterial.cpp
     material/EquirectangularMaterial.cpp
     material/StandardPhysicalMaterial.cpp
     material/Shader.cpp

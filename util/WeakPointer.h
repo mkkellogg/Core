@@ -22,17 +22,17 @@ namespace Core {
     class WeakPointer : public std::weak_ptr<T> {
     public:
 
-        WeakPointer(Bool cacheShared = true): std::weak_ptr<T>(), _ptr(nullptr), _cacheShared(cacheShared), _cachedSharedSet(false)  {
+        WeakPointer(): std::weak_ptr<T>(), _ptr(nullptr), _cacheShared(true), _cachedSharedSet(false)  {
         }
 
-        WeakPointer(const std::weak_ptr<T>& ptr, Bool cacheShared = true) : std::weak_ptr<T>(ptr), _ptr(nullptr), _cacheShared(cacheShared), _cachedSharedSet(false) {
+        WeakPointer(const std::weak_ptr<T>& ptr) : std::weak_ptr<T>(ptr), _ptr(nullptr), _cacheShared(true), _cachedSharedSet(false) {
         }
 
-        WeakPointer(const std::shared_ptr<T>& ptr, Bool cacheShared = true) : std::weak_ptr<T>(ptr), _ptr(nullptr), _cacheShared(cacheShared), _cachedSharedSet(false) {
+        WeakPointer(const std::shared_ptr<T>& ptr) : std::weak_ptr<T>(ptr), _ptr(nullptr), _cacheShared(true), _cachedSharedSet(false) {
         }
 
         template <typename U>
-        WeakPointer(const WeakPointer<U>& ptr, Bool cacheShared = true) : std::weak_ptr<T>(ptr),  _cacheShared(cacheShared), _cachedSharedSet(false) {
+        WeakPointer(const WeakPointer<U>& ptr) : std::weak_ptr<T>(ptr),  _cacheShared(true), _cachedSharedSet(false) {
             this->_ptr = static_cast<T*>(const_cast<WeakPointer<U>&>(ptr)._getPtr());
         }
 
@@ -120,6 +120,21 @@ namespace Core {
         }
 
     protected:
+
+        WeakPointer(const std::weak_ptr<T>& ptr, Bool cacheShared) : std::weak_ptr<T>(ptr), _ptr(nullptr), _cacheShared(cacheShared), _cachedSharedSet(false) {
+        }
+
+        WeakPointer(const std::shared_ptr<T>& ptr, Bool cacheShared) : std::weak_ptr<T>(ptr), _ptr(nullptr), _cacheShared(cacheShared), _cachedSharedSet(false) {
+        }
+
+        template <typename U>
+        WeakPointer(const WeakPointer<U>& ptr, Bool cacheShared) : std::weak_ptr<T>(ptr),  _cacheShared(cacheShared), _cachedSharedSet(false) {
+            this->_ptr = static_cast<T*>(const_cast<WeakPointer<U>&>(ptr)._getPtr());
+        }
+
+        WeakPointer(Bool cacheShared): std::weak_ptr<T>(), _ptr(nullptr), _cacheShared(cacheShared), _cachedSharedSet(false)  {
+        }
+
         T* tryGetPtr() {
 
 #ifdef __CORE_WEAK_POINTER_CACHE_SHARED
