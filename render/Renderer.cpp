@@ -101,7 +101,6 @@ namespace Core {
                 this->renderShadowMaps(lightList, LightType::Directional, objectList, probeCam);
                 this->render(probeCam, objectList, lightList, WeakPointer<Material>::nullPtr());
                 probeCam->setRenderTarget(reflectionProbe->getIrridianceMap());
-                reflectionProbe->getSkyboxObject()->getTransform().setWorldPosition(probeCam->getOwner()->getTransform().getWorldPosition());
                 this->renderObjectBasic(reflectionProbe->getSkyboxObject(), probeCam, reflectionProbe->getIrridianceRendererMaterial());
                 reflectionProbe->setNeedsUpdate(false);
             }

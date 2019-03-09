@@ -39,8 +39,6 @@ namespace Core {
                 return this->projectionMatrixLocation;
             case StandardUniform::ViewMatrix:
                 return this->viewMatrixLocation;
-            case StandardUniform::ModelMatrix:
-                return this->modelMatrixLocation;
             default:
                 return -1;
         }
@@ -62,7 +60,6 @@ namespace Core {
         _target->colorLocation = this->colorLocation;
         _target->projectionMatrixLocation = this->projectionMatrixLocation;
         _target->viewMatrixLocation = this->viewMatrixLocation;
-        _target->modelMatrixLocation = this->modelMatrixLocation;
         _target->cubeTextureLocation = this->cubeTextureLocation;
     }
 
@@ -78,7 +75,6 @@ namespace Core {
         this->cubeTextureLocation = this->shader->getUniformLocation("cubeTexture");
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
-        this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);
     }
 
     UInt32 SkyboxMaterial::textureCount() {

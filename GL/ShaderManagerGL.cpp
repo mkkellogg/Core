@@ -251,13 +251,12 @@ namespace Core {
             "precision highp float;\n"
             "layout (location = 0 ) " + POSITION_DEF
             + PROJECTION_MATRIX_DEF
-            + VIEW_MATRIX_DEF
-            + MODEL_MATRIX_DEF +
+            + VIEW_MATRIX_DEF +
             "out vec4 TexCoord0;\n"
             "void main()\n"
             "{\n"
             "    TexCoord0 = " + POSITION + ";\n"
-            "    vec4 vWorldPos = " + VIEW_MATRIX + " * " + MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    vec4 vWorldPos = mat4(mat3(" + VIEW_MATRIX + ")) * " + POSITION + ";\n"
             "    gl_Position = (" + PROJECTION_MATRIX + " * vWorldPos).xyww;\n"
             "}\n";
 
@@ -848,13 +847,12 @@ namespace Core {
             "precision highp float;\n"
             "layout (location = 0 ) " + POSITION_DEF
             + PROJECTION_MATRIX_DEF
-            + VIEW_MATRIX_DEF
-            + MODEL_MATRIX_DEF +
+            + VIEW_MATRIX_DEF +
             "out vec4 TexCoord0;\n"
             "void main()\n"
             "{\n"
             "    TexCoord0 = " + POSITION + ";\n"
-            "    vec4 vWorldPos = " + VIEW_MATRIX + " * " + MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    vec4 vWorldPos = mat4(mat3(" + VIEW_MATRIX + ")) * " + POSITION + ";\n"
             "    gl_Position = (" + PROJECTION_MATRIX + " * vWorldPos).xyww;\n"
             "}\n";
 
@@ -879,13 +877,12 @@ namespace Core {
             "precision highp float;\n"
             "layout (location = 0 ) " + POSITION_DEF
             + PROJECTION_MATRIX_DEF
-            + VIEW_MATRIX_DEF
-            + MODEL_MATRIX_DEF +
+            + VIEW_MATRIX_DEF + 
             "out vec4 localPos;\n"
             "void main()\n"
             "{\n"
             "    localPos = " + POSITION + ";\n"
-            "    vec4 vWorldPos = " + VIEW_MATRIX + " * " + MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    vec4 vWorldPos = mat4(mat3(" + VIEW_MATRIX + ")) * " + POSITION + ";\n"
             "    gl_Position = (" + PROJECTION_MATRIX + " * vWorldPos).xyww;\n"
             "}\n";
 
