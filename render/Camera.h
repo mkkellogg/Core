@@ -52,8 +52,8 @@ namespace Core {
         IntMask getAutoClearRenderBuffers() const;
         Ray getRay(const Vector4u& viewport, Core::Int32 x, Core::Int32 y);
         void copyFrom(WeakPointer<Camera> other);
-        void copySkyboxFrom(WeakPointer<Camera> other);
         Skybox& getSkybox();
+        void setSkybox(Skybox& skybox);
         void setSkyboxEnabled(Bool enabled);
         Bool isSkyboxEnabled();
 

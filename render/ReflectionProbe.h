@@ -15,6 +15,7 @@ namespace Core {
     class Light;
     class RenderTargetCube;
     class IrridianceRendererMaterial;
+    class Skybox;
 
     class ReflectionProbe : public Object3DComponent {
     public:
@@ -22,6 +23,7 @@ namespace Core {
         void init();
         void setNeedsUpdate(Bool needsUpdate);
         Bool getNeedsUpdate();
+        void setSkybox(Skybox& skybox);
         WeakPointer<Camera> getRenderCamera();
         WeakPointer<Object3D> getSkyboxObject();
         WeakPointer<RenderTargetCube> getSceneRenderTarget();

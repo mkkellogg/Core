@@ -65,4 +65,8 @@ namespace Core {
     WeakPointer<IrridianceRendererMaterial> ReflectionProbe::getIrridianceRendererMaterial() {
         return this->irridianceRendererMaterial;
     }
+
+    void ReflectionProbe::setSkybox(Skybox& skybox) {
+        this->renderCamera->setSkybox(skybox);
+    }
 }

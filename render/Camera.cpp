@@ -173,13 +173,12 @@ namespace Core {
         this->clearRenderBuffers = other->clearRenderBuffers;
     }
 
-    void Camera::copySkyboxFrom(WeakPointer<Camera> other) {
-        this->skybox = other->skybox;
-        this->skyboxEnabled = other->skyboxEnabled;
-    }
-
     Skybox& Camera::getSkybox() {
         return this->skybox;
+    }
+
+    void Camera::setSkybox(Skybox& skybox) {
+        this->skybox = skybox;
     }
 
     void Camera::setSkyboxEnabled(Bool enabled) {

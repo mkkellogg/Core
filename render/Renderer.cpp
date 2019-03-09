@@ -92,6 +92,9 @@ namespace Core {
             }
         }
 
+        std::sort(lightList.begin(), lightList.end(), Renderer::compareLights);
+        this->renderShadowMaps(lightList, LightType::Point, objectList);
+
         RenderState::AmbientLightMode oldAmbientMode = this->ambientLightMode;
         this->setAmbientLighMode(RenderState::AmbientLightMode::Basic);
         for (auto reflectionProbe : reflectionProbeList) {
@@ -107,9 +110,6 @@ namespace Core {
         }
         this->setAmbientLighMode(oldAmbientMode);
 
-        std::sort(lightList.begin(), lightList.end(), Renderer::compareLights);
-
-        this->renderShadowMaps(lightList, LightType::Point, objectList);
         for (auto camera : cameraList) {
             this->renderShadowMaps(lightList, LightType::Directional, objectList, camera);
             this->render(camera, objectList, lightList, overrideMaterial);
