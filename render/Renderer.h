@@ -23,6 +23,7 @@ namespace Core {
     class DistanceOnlyMaterial;
     class Material;
     class RenderTarget;
+    class Skybox;
 
     class Renderer {
     public:
@@ -49,7 +50,7 @@ namespace Core {
                               std::vector<WeakPointer<Object3D>>& objects, WeakPointer<Camera> renderCamera = WeakPointer<Camera>());
         void getViewDescriptorForCamera(WeakPointer<Camera> camera, ViewDescriptor& viewDescriptor);
         void getViewDescriptor(const Matrix4x4& worldMatrix, const Matrix4x4& projectionMatrix,
-                               IntMask clearBuffers, ViewDescriptor& viewDescriptor);
+                               IntMask clearBuffers, Skybox* skybox, ViewDescriptor& viewDescriptor);
         void processScene(WeakPointer<Scene> scene, std::vector<WeakPointer<Object3D>>& outObjects);
         void processScene(WeakPointer<Object3D> object, const Matrix4x4& curTransform,
                           std::vector<WeakPointer<Object3D>>& outObjects);
@@ -61,5 +62,6 @@ namespace Core {
 
         WeakPointer<DepthOnlyMaterial> depthMaterial;
         WeakPointer<DistanceOnlyMaterial> distanceMaterial;
+        WeakPointer<Object3D> reflectionProbeObject;
     };
 }

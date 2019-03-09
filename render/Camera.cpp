@@ -155,22 +155,27 @@ namespace Core {
     }
 
     void Camera::copyFrom(WeakPointer<Camera> other) {
-       this->ortho = other->ortho;
-       this->fov = other->fov;
-       this->aspectRatio = other->aspectRatio;
-       this->near = other->near;
-       this->far = other->far;
-       this->top = other->top;
-       this->bottom = other->bottom;
-       this->left = other->left;
-       this->right = other->right;
-       this->skybox = other->skybox;
-       this->skyboxEnabled = other->skyboxEnabled;
-       this->projectionMatrix.copy(other->projectionMatrix);
+        this->ortho = other->ortho;
+        this->fov = other->fov;
+        this->aspectRatio = other->aspectRatio;
+        this->near = other->near;
+        this->far = other->far;
+        this->top = other->top;
+        this->bottom = other->bottom;
+        this->left = other->left;
+        this->right = other->right;
+        this->skybox = other->skybox;
+        this->skyboxEnabled = other->skyboxEnabled;
+        this->projectionMatrix.copy(other->projectionMatrix);
 
-       // TODO: Do we need a deep copy here?
-       this->renderTarget = other->renderTarget;
-       this->clearRenderBuffers = other->clearRenderBuffers;
+        // TODO: Do we need a deep copy here?
+        this->renderTarget = other->renderTarget;
+        this->clearRenderBuffers = other->clearRenderBuffers;
+    }
+
+    void Camera::copySkyboxFrom(WeakPointer<Camera> other) {
+        this->skybox = other->skybox;
+        this->skyboxEnabled = other->skyboxEnabled;
     }
 
     Skybox& Camera::getSkybox() {

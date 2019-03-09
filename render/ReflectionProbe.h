@@ -37,4 +37,5 @@ namespace Core {
         WeakPointer<IrridianceRendererMaterial> irridianceRendererMaterial;
         WeakPointer<Object3D> skyboxCube;
     };
+
 }

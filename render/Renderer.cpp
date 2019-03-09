@@ -13,6 +13,7 @@
 #include "../render/MeshRenderer.h"
 #include "../render/RenderableContainer.h"
 #include "../scene/Scene.h"
+#include "../scene/Skybox.h"
 #include "../image/TextureAttr.h"
 #include "../image/Texture.h"
 #include "../material/DepthOnlyMaterial.h"
@@ -100,6 +101,7 @@ namespace Core {
                 this->renderShadowMaps(lightList, LightType::Directional, objectList, probeCam);
                 this->render(probeCam, objectList, lightList, WeakPointer<Material>::nullPtr());
                 probeCam->setRenderTarget(reflectionProbe->getIrridianceMap());
+                reflectionProbe->getSkyboxObject()->getTransform().setWorldPosition(probeCam->getOwner()->getTransform().getWorldPosition());
                 this->renderObjectBasic(reflectionProbe->getSkyboxObject(), probeCam, reflectionProbe->getIrridianceRendererMaterial());
                 reflectionProbe->setNeedsUpdate(false);
             }
@@ -202,8 +204,10 @@ namespace Core {
             ViewDescriptor viewDescriptor;
             Matrix4x4 cameraTransform = camera->getOwner()->getTransform().getWorldMatrix();
             cameraTransform.multiply(orientations[i]);
+            Skybox * skybox = camera->isSkyboxEnabled() ? &camera->getSkybox() : nullptr;
             this->getViewDescriptor(cameraTransform, camera->getProjectionMatrix(),
-                                    camera->getAutoClearRenderBuffers(), viewDescriptor);
+                                    camera->getAutoClearRenderBuffers(),
+                                    skybox, viewDescriptor);
             viewDescriptor.overrideMaterial = overrideMaterial;
             viewDescriptor.cubeFace = i;
             viewDescriptor.renderTarget = camera->getRenderTarget();
@@ -322,7 +326,8 @@ namespace Core {
 
                                 ViewDescriptor viewDesc;
                                 this->getViewDescriptor(viewTrans, orthoShadowMapCamera->getProjectionMatrix(),
-                                                        orthoShadowMapCamera->getAutoClearRenderBuffers(), viewDesc);
+                                                        orthoShadowMapCamera->getAutoClearRenderBuffers(),
+                                                        nullptr, viewDesc);
                                 viewDesc.overrideMaterial = this->depthMaterial;
                                 viewDesc.renderTarget = directionalLight->getShadowMap(i);
                                 this->render(viewDesc, toRender, dummyLights);
@@ -340,18 +345,18 @@ namespace Core {
          if (!cameraRenderTarget.isValid()) {
             cameraRenderTarget = graphics->getDefaultRenderTarget();
         }
+        Skybox * skybox = camera->isSkyboxEnabled() ? &camera->getSkybox() : nullptr;
         this->getViewDescriptor(camera->getOwner()->getTransform().getWorldMatrix(),
-                                camera->getProjectionMatrix(), camera->getAutoClearRenderBuffers(), viewDescriptor);
+                                camera->getProjectionMatrix(), camera->getAutoClearRenderBuffers(),
+                                skybox, viewDescriptor);
         viewDescriptor.renderTarget = cameraRenderTarget;
         viewDescriptor.cameraPosition.set(0.0f, 0.0f, 0.0f);
         viewDescriptor.viewMatrix.transform(viewDescriptor.cameraPosition);
-        if (camera->isSkyboxEnabled()) {
-            viewDescriptor.skybox = &camera->getSkybox();
-        }
+       
     }
 
     void Renderer::getViewDescriptor(const Matrix4x4& worldMatrix, const Matrix4x4& projectionMatrix,
-                                     IntMask clearBuffers, ViewDescriptor& viewDescriptor) {
+                                     IntMask clearBuffers, Skybox* skybox, ViewDescriptor& viewDescriptor) {
         viewDescriptor.projectionMatrix.copy(projectionMatrix);
         viewDescriptor.viewMatrix.copy(worldMatrix);
         viewDescriptor.viewInverseMatrix.copy(viewDescriptor.viewMatrix);
@@ -359,7 +364,7 @@ namespace Core {
         viewDescriptor.viewInverseTransposeMatrix.copy(viewDescriptor.viewInverseMatrix);
         viewDescriptor.viewInverseTransposeMatrix.transpose();
         viewDescriptor.clearRenderBuffers = clearBuffers;
-        viewDescriptor.skybox = nullptr;
+        viewDescriptor.skybox = skybox;
     }
 
     void Renderer::processScene(WeakPointer<Scene> scene, 

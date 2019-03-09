@@ -31,6 +31,7 @@ namespace Core {
         this->irridianceRendererMaterial = Engine::instance()->createMaterial<IrridianceRendererMaterial>();
         Core::WeakPointer<Core::CubeTexture> sceneCubeTexture = Core::WeakPointer<Core::Texture>::dynamicPointerCast<Core::CubeTexture>(this->sceneRenderTarget->getColorTexture());
         this->irridianceRendererMaterial->setTexture(sceneCubeTexture);
+        this->irridianceRendererMaterial->setFaceCullingEnabled(false);
 
         Color cubeColor(1.0f, 1.0f, 1.0f, 1.0f);
         WeakPointer<Mesh> cubeMesh = GeometryUtils::buildBoxMesh(1.0, 1.0, 1.0, cubeColor);
