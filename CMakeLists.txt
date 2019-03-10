@@ -120,6 +120,7 @@ set(INCLUDE_FILES
     image/TextureAttr.h
     image/RawImage.h
     image/ImagePainter.h
+    image/TextureUtils.h
     color/Color.h
     color/Color4Components.h
     color/IntColor.h
@@ -161,6 +162,7 @@ set(SOURCE_FILES
     image/CubeTexture.cpp
     image/PNGLoader.cpp
     image/ImagePainter.cpp
+    image/TextureUtils.cpp
     geometry/AttributeArrayGPUStorage.cpp
     geometry/IndexBuffer.cpp
     geometry/Mesh.cpp
