@@ -1,5 +1,8 @@
 #include "RenderTarget2D.h"
 
+#include "../Engine.h"
+#include "../image/Texture2D.h"
+
 namespace Core {
 
     RenderTarget2D::~RenderTarget2D() {

@@ -7,14 +7,14 @@ namespace Core {
     }
 
     RenderTargetGL::~RenderTargetGL() {
-        this->destroy();
+        this->destroyFrameBuffer();
     }
 
     /*
      * Get the OpenGL FBO ID.
      */
     GLuint RenderTargetGL::getFBOID() const {
-        return fboID;
+        return this->fboID;
     }
 
     /*
@@ -28,24 +28,25 @@ namespace Core {
      * Destroy the FBO associated with this render target and all attached textures and/or
      * render buffers.
      */
-    void RenderTargetGL::destroy() {
+    void RenderTargetGL::destroyFrameBuffer() {
         // destroy the FBO
-        if (fboID > 0) {
-            glDeleteFramebuffers(1, &fboID);
+        if (this->fboID > 0) {
+            glDeleteFramebuffers(1, &this->fboID);
+            this->fboID = 0;
         }
     }
 
     void RenderTargetGL::initFramebuffer() {
         // make sure to clean up existing frame-buffer objects (if they exist).
-        this->destroy();
+        this->destroyFrameBuffer();
 
         // generate an OpenGL FBO.
-        glGenFramebuffers(1, &fboID);
-        if (fboID == 0) {
+        glGenFramebuffers(1, &this->fboID);
+        if (this->fboID == 0) {
             throw RenderTargetException("RenderTargetGL::initFramebuffer -> Unable to create frame buffer object.");
         }
 
-        glBindFramebuffer(GL_FRAMEBUFFER, fboID);
+        glBindFramebuffer(GL_FRAMEBUFFER, this->fboID);
         
     }
 
@@ -78,10 +79,9 @@ namespace Core {
          // In OpengL, if we want depth AND stencil abilities then they must both be render buffers and
         // they must be shared.
 
-        GLuint depthStencilRenderBufferID;
-        glGenRenderbuffers(1, &depthStencilRenderBufferID);
+        glGenRenderbuffers(1, &this->depthStencilRenderBufferID);
 
-        if (depthStencilRenderBufferID == 0) {
+        if (this->depthStencilRenderBufferID == 0) {
             throw RenderTargetException("RenderTargetCubeGL::init -> Unable to create depth/stencil render buffer.");
         }
 
@@ -90,6 +90,11 @@ namespace Core {
 
         //Attach stencil buffer to FBO
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthStencilRenderBufferID);
+    }
+
+    void RenderTargetGL::destroyDepthStencilBufferCombo() {
+        glDeleteRenderbuffers(1, &this->depthStencilRenderBufferID);
+        this->depthStencilRenderBufferID = 0;
     }
 
 }

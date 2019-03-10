@@ -14,13 +14,14 @@ namespace Core {
         void setFBOID(GLuint id);
 
     protected:
-        void destroy();
+        void destroyFrameBuffer();
         void initFramebuffer();
         void completeFramebuffer();
         void initDepthStencilBufferCombo(UInt32 sizeX, UInt32 sizeY);
+        void destroyDepthStencilBufferCombo();
 
         // OpenGL Framebuffer Object ID.
         GLuint fboID;
-
+        GLuint depthStencilRenderBufferID;
     };
 }

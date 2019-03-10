@@ -71,9 +71,11 @@ namespace Core {
         virtual WeakPointer<RenderTarget2D> createRenderTarget2D(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
                                                                  const TextureAttributes& colorTextureAttributes,
                                                                  const TextureAttributes& depthTextureAttributes, Vector2u size) = 0;
+        virtual void destroyRenderTarget2D(WeakPointer<RenderTarget2D> renderTarget, Bool destroyColor, Bool destroyDepth) = 0;
         virtual WeakPointer<RenderTargetCube> createRenderTargetCube(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
                                                                      const TextureAttributes& colorTextureAttributes,
                                                                      const TextureAttributes& depthTextureAttributes, Vector2u size) = 0;
+        virtual void destroyRenderTargetCube(WeakPointer<RenderTargetCube> renderTarget, Bool destroyColor, Bool destroyDepth) = 0;
 
         virtual void setColorWriteEnabled(Bool enabled) = 0;                                                               
         virtual void setClearColor(Color color) = 0;

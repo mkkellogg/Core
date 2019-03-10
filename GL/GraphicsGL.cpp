@@ -191,6 +191,25 @@ namespace Core {
         return weakPtr;
     }
 
+    void GraphicsGL::destroyRenderTarget2D(WeakPointer<RenderTarget2D> renderTarget, Bool destroyColor, Bool destroyDepth) {
+        if (destroyColor) {
+            renderTarget->destroyColorBuffer();
+        }
+        if (destroyDepth) {
+            renderTarget->destroyDepthBuffer();
+        }
+
+        std::shared_ptr<RenderTarget2D> sharedPtr = renderTarget.lock();
+        if (!sharedPtr) {
+            throw Exception("GraphicsGL::destroyRenderTarget2D -> Invalid render target.");
+        }
+        auto end = this->renderTarget2Ds.end();
+        auto result = std::find(this->renderTarget2Ds.begin(), end, sharedPtr);
+        if (result != end) {
+            this->renderTarget2Ds.erase(result);
+        }
+    }
+
     WeakPointer<RenderTargetCube> GraphicsGL::createRenderTargetCube(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
                                                                      const TextureAttributes& colorTextureAttributes,
                                                                      const TextureAttributes& depthTextureAttributes, Vector2u size) {
@@ -206,6 +225,25 @@ namespace Core {
 
         WeakPointer<RenderTargetCubeGL> weakPtr = target;
         return weakPtr;
+    }
+
+    void GraphicsGL::destroyRenderTargetCube(WeakPointer<RenderTargetCube> renderTarget, Bool destroyColor, Bool destroyDepth) {
+        if (destroyColor) {
+            renderTarget->destroyColorBuffer();
+        }
+        if (destroyDepth) {
+            renderTarget->destroyDepthBuffer();
+        }
+
+        std::shared_ptr<RenderTargetCube> sharedPtr = renderTarget.lock();
+        if (!sharedPtr) {
+            throw Exception("GraphicsGL::destroyRenderTargetCube -> Invalid render target.");
+        }
+        auto end = this->renderTargetCubes.end();
+        auto result = std::find(this->renderTargetCubes.begin(), end, sharedPtr);
+        if (result != end) {
+            this->renderTargetCubes.erase(result);
+        }
     }
 
     void GraphicsGL::setColorWriteEnabled(Bool enabled) {

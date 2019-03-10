@@ -30,6 +30,7 @@ namespace Core {
         this->initFramebuffer();
 
         // generate a color texture attachment
+        // TODO: For now we are only supporting a texture type color attachment
         if (this->hasColorBuffer) {
             colorTexture = Engine::instance()->createTexture2D(this->colorTextureAttributes);
             this->buildAndVerifyTexture(this->colorTexture);
@@ -38,6 +39,7 @@ namespace Core {
         }
 
         // generate a depth texture attachment
+        // TODO: For now we are only supporting a texture type depth attachment if a stencil attachment is not included
         if (this->hasDepthBuffer && !this->enableStencilBuffer) {
             this->depthTexture = Engine::instance()->createTexture2D(this->depthTextureAttributes);
             this->buildAndVerifyTexture(this->depthTexture);
@@ -50,6 +52,31 @@ namespace Core {
 
         this->completeFramebuffer();
         return true;
+    }
+
+    void RenderTarget2DGL::destroyColorBuffer() {
+        if (this->hasColorBuffer) {
+            if (this->colorTexture) {
+                WeakPointer<Texture2D> texture = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->colorTexture);
+                Engine::instance()->destroyTexture2D(texture);
+                this->colorTexture = WeakPointer<Texture>::nullPtr();
+            }
+        }
+    }
+
+    void RenderTarget2DGL::destroyDepthBuffer() {
+        if (this->hasDepthBuffer) {
+            if (!this->enableStencilBuffer) {
+                if (this->depthTexture) {
+                    WeakPointer<Texture2D> texture = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->depthTexture);
+                    Engine::instance()->destroyTexture2D(texture);
+                    this->depthTexture = WeakPointer<Texture>::nullPtr();
+                }
+            }
+            else if (this->hasDepthBuffer && this->enableStencilBuffer) {
+                this->destroyDepthStencilBufferCombo();
+            }
+        }
     }
 
 }

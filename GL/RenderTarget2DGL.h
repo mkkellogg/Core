@@ -25,10 +25,10 @@ namespace Core {
     class RenderTarget2DGL final : public RenderTarget2D, public RenderTargetGL {
         friend class GraphicsGL;
     public:
-
-       
         ~RenderTarget2DGL();
         Bool init() override;
+        virtual void destroyColorBuffer() override;
+        virtual void destroyDepthBuffer() override;
 
     protected:
 

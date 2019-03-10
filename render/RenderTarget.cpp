@@ -20,10 +20,12 @@ namespace Core {
         depthBufferIsTexture = false;
         colorBufferIsTexture = false;
 
+        // TODO: For now we are only supporting textures for the color attachment
         if (this->hasColorBuffer) {
             colorBufferIsTexture = true;
         }
 
+        // TODO: For now we are only supporting textures for the depth attachment if a stencil buffer is not included
         if (this->hasDepthBuffer && !this->enableStencilBuffer) {
             depthBufferIsTexture = true;
         }
