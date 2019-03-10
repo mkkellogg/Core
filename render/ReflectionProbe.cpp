@@ -68,5 +68,6 @@ namespace Core {
 
     void ReflectionProbe::setSkybox(Skybox& skybox) {
         this->renderCamera->setSkybox(skybox);
+        this->renderCamera->setSkyboxEnabled(true);
     }
 }
