@@ -6,6 +6,7 @@
 #include "../common/types.h"
 #include "../geometry/Vector3.h"
 #include "../math/Matrix4x4.h"
+#include "ObjectRenderer.h"
 #include "BaseRenderableContainer.h"
 
 namespace Core {
@@ -31,8 +32,8 @@ namespace Core {
             return renderables;
         }
 
-        std::shared_ptr<ObjectRenderer<T>> getRenderer() {
-            return renderer;
+        WeakPointer<ObjectRenderer<T>> getRenderer() {
+            return this->localRendererRef;
         }
 
         ValueIterator<typename std::vector<WeakPointer<T>>::iterator> begin() {
@@ -49,8 +50,10 @@ namespace Core {
 
         void setRenderer(std::shared_ptr<ObjectRenderer<T>> renderer) {
             this->setBaseRenderer(std::static_pointer_cast<BaseObjectRenderer>(renderer));
+            this->localRendererRef = renderer;
         }
 
+        WeakPointer<ObjectRenderer<T>> localRendererRef;
         std::vector<WeakPointer<T>> renderables;
     };
 }

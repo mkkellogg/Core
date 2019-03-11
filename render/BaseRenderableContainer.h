@@ -12,9 +12,10 @@ namespace Core {
     public:
         virtual ~BaseRenderableContainer() = 0;
         WeakPointer<BaseObjectRenderer> getBaseRenderer();
-        void setBaseRenderer(WeakPointer<BaseObjectRenderer> renderer);
 
-    private:
+    protected:
+        void setBaseRenderer(WeakPointer<BaseObjectRenderer> renderer);
+        
         PersistentWeakPointer<BaseObjectRenderer> renderer;
     };
 }

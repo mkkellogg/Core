@@ -40,7 +40,8 @@ namespace Core {
             "LIGHT_COUNT",
             "POINT_LIGHT_COUNT",
             "DIRECTIONAL_LIGHT_COUNT",
-            "CAMERA_POSITION"
+            "CAMERA_POSITION",
+            "TEXTURE0"
         };
 
         nameToUniform =
@@ -73,9 +74,10 @@ namespace Core {
             {uniformNames[(UInt16)StandardUniform::LightCascadeCount],StandardUniform::LightCascadeCount},
             {uniformNames[(UInt16)StandardUniform::LightNearPlane],StandardUniform::LightNearPlane},
             {uniformNames[(UInt16)StandardUniform::LightCount],StandardUniform::LightCount},
-            {uniformNames[(UInt16)StandardUniform::LightCount],StandardUniform::PointLightCount},
-            {uniformNames[(UInt16)StandardUniform::LightCount],StandardUniform::DirectionalLightCount},
-            {uniformNames[(UInt16)StandardUniform::LightCount],StandardUniform::CameraPosition}
+            {uniformNames[(UInt16)StandardUniform::PointLightCount],StandardUniform::PointLightCount},
+            {uniformNames[(UInt16)StandardUniform::DirectionalLightCount],StandardUniform::DirectionalLightCount},
+            {uniformNames[(UInt16)StandardUniform::CameraPosition],StandardUniform::CameraPosition},
+            {uniformNames[(UInt16)StandardUniform::Texture0], StandardUniform::Texture0}
         };
     }
 

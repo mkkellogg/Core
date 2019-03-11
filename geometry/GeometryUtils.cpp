@@ -1,12 +1,12 @@
 #include <vector>
 
+#include "GeometryUtils.h"
 #include "../Engine.h"
 #include "../geometry/IndexBuffer.h"
 #include "../geometry/Mesh.h"
 #include "../math/Math.h"
 #include "../material/StandardAttributes.h"
 #include "../render/MeshRenderer.h"
-#include "GeometryUtils.h"
 #include "Vector2.h"
 #include "Vector3.h"
 
@@ -383,7 +383,7 @@ namespace Core {
         WeakPointer<Engine> engine = Engine::instance();
         WeakPointer<RenderableContainer<Mesh>> obj(engine->createObject3D<RenderableContainer<Mesh>>());
         obj->setName(name);
-        WeakPointer<MeshRenderer> renderer(engine->createRenderer<MeshRenderer>(material, obj));
+        WeakPointer<MeshRenderer> renderer = engine->createRenderer<MeshRenderer>(material, obj);
         obj->addRenderable(mesh);
         return obj;
     }

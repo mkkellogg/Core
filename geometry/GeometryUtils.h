@@ -2,11 +2,14 @@
 
 #include "../common/types.h"
 #include "../util/WeakPointer.h"
+#include "../color/Color.h"
+#include "../render/RenderableContainer.h"
 
 namespace Core {
 
     // forward declarations
     class Mesh;
+    class Material;
 
     class GeometryUtils {
     public:

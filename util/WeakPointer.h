@@ -47,7 +47,7 @@ namespace Core {
 
         WeakPointer& operator =(std::shared_ptr<T>& other) {
             std::weak_ptr<T>::operator=(other);
-            this->_ptr = other._getPtr();
+            this->_ptr = other.get();
             return *this;
         }
 

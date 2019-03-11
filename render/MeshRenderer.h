@@ -24,6 +24,7 @@ namespace Core {
         virtual Bool forwardRender(const ViewDescriptor& viewDescriptor, const std::vector<WeakPointer<Light>>& lights) override;
         virtual Bool forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh, const std::vector<WeakPointer<Light>>& lights) override;
         virtual Bool supportsRenderPath(RenderPath renderPath) override;
+        void setMaterial(WeakPointer<Material> material);
 
     private:
         MeshRenderer(WeakPointer<Graphics> graphics, WeakPointer<Material> material, WeakPointer<Object3D> owner);
