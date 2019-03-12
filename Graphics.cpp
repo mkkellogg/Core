@@ -64,8 +64,7 @@ namespace Core {
         }
         Int32 texture0Loc = material->getShaderLocation(StandardUniform::Texture0);
         if (texture0Loc >= 0) {
-           material->getShader()->setTexture2D(0, source->getColorTexture()->getTextureID());
-           material->getShader()->setUniform1i(texture0Loc, 0);
+           material->getShader()->setTexture2D(0, texture0Loc, source->getColorTexture()->getTextureID());
         }
         Bool depthTestEnabled = material->getDepthTestEnabled();
         Bool faceCullingEnabled = material->getFaceCullingEnabled();

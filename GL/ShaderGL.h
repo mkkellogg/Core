@@ -29,8 +29,10 @@ namespace Core {
         Int32 getAttributeLocation(StandardAttribute attribute) const override;
         Int32 getAttributeLocation(StandardAttribute attribute, UInt32 index) const override;
 
-        void setTexture2D(UInt32 slot, UInt32 textureID) override;
-        void setTextureCube(UInt32 slot, UInt32 textureID) override;
+        void setTexture2D(UInt32 samplerSlot, UInt32 textureID) override;
+        void setTexture2D(UInt32 samplerSlot, UInt32 uniformLocation, UInt32 textureID) override;
+        void setTextureCube(UInt32 samplerSlot, UInt32 textureID) override;
+        void setTextureCube(UInt32 samplerSlot, UInt32 uniformLocation, UInt32 textureID) override;
         void setUniform1i(UInt32 location, Int32 val) override;
         void setUniform1f(UInt32 location, Real val) override;
         void setUniform4f(UInt32 location, Real x, Real y, Real z, Real w) override;

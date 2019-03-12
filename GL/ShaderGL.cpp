@@ -86,6 +86,11 @@ namespace Core {
         glBindTexture(GL_TEXTURE_2D, textureID);
     }
 
+    void ShaderGL::setTexture2D(UInt32 samplerSlot, UInt32 uniformLocation, UInt32 textureID) {
+        this->setTexture2D(samplerSlot, textureID);
+        this->setUniform1i(uniformLocation, samplerSlot);
+    }
+
     void ShaderGL::setTextureCube(UInt32 slot, UInt32 textureID) {
         static UInt32 slots[] = {GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2, GL_TEXTURE3, GL_TEXTURE4, GL_TEXTURE5};
 
@@ -96,6 +101,11 @@ namespace Core {
         glActiveTexture(slots[slot]);
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+    }
+
+    void ShaderGL::setTextureCube(UInt32 samplerSlot, UInt32 uniformLocation, UInt32 textureID) {
+        this->setTextureCube(samplerSlot, textureID);
+        this->setUniform1i(uniformLocation, samplerSlot);
     }
 
     void ShaderGL::setUniform1i(UInt32 location, Int32 val) {

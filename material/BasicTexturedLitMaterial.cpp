@@ -121,19 +121,17 @@ namespace Core {
     }
 
     void BasicTexturedLitMaterial::sendCustomUniformsToShader() {
-        UInt32 textureLoc = 0;
+        UInt32 samplerSlot = 0;
         if (this->albedoMapEnabled) {
-            this->shader->setTexture2D(textureLoc, this->albedoMap->getTextureID());
-            this->shader->setUniform1i(this->albedoMapLocation, textureLoc);
-            textureLoc++;
+            this->shader->setTexture2D(samplerSlot, this->albedoMapLocation, this->albedoMap->getTextureID());
+            samplerSlot++;
         }
         else {
             this->shader->setUniform4f(this->albedoLocation, this->albedo.r, this->albedo.g, this->albedo.b, this->albedo.a);
         }
         if (this->normalMapEnabled) {
-            this->shader->setTexture2D(textureLoc, this->normalMap->getTextureID());
-            this->shader->setUniform1i(this->normalMapLocation, textureLoc);
-            textureLoc++;
+            this->shader->setTexture2D(samplerSlot, this->normalMapLocation, this->normalMap->getTextureID());
+            samplerSlot++;
         }
         this->shader->setUniform1i(this->albedoMapEnabledLocation, this->albedoMapEnabled ? 1 : 0);
         this->shader->setUniform1i(this->normalMapEnabledLocation, this->normalMapEnabled ? 1 : 0);

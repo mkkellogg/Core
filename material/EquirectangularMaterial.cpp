@@ -55,8 +55,7 @@ namespace Core {
 
     void EquirectangularMaterial::sendCustomUniformsToShader() {
         if (this->texture) {
-            this->shader->setTexture2D(0, this->texture->getTextureID());
-            this->shader->setUniform1i(this->textureLocation, 0);
+            this->shader->setTexture2D(0, this->textureLocation, this->texture->getTextureID());
         }
     }
 

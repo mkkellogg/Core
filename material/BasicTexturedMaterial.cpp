@@ -59,8 +59,7 @@ namespace Core {
 
     void BasicTexturedMaterial::sendCustomUniformsToShader() {
         if (this->texture) {
-            this->shader->setTexture2D(0, this->texture->getTextureID());
-            this->shader->setUniform1i(textureLocation, 0);
+            this->shader->setTexture2D(0, textureLocation, this->texture->getTextureID());
         }
     }
 
