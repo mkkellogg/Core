@@ -45,7 +45,7 @@ namespace Core {
         this->updateDefaultRenderTargetViewport(Vector4u(hOffset, vOffset, viewPortWidth, viewPortHeight));
     }
 
-    void Graphics::blit(WeakPointer<RenderTarget> source, WeakPointer<RenderTarget> destination, WeakPointer<Material> material, Bool updateDepth) {
+    void Graphics::blit(WeakPointer<RenderTarget> source, WeakPointer<RenderTarget> destination, WeakPointer<Material> material, Bool includeDepth) {
         static Bool initialized = false;
         static WeakPointer<Mesh> fullScreenQuadMesh;
         static WeakPointer<RenderableContainer<Mesh>> fullScreenQuadObject;
@@ -76,31 +76,20 @@ namespace Core {
             samplerSlot++;
         }
 
-        RenderState::DepthFunction depthFunc = material->getDepthFunction();
         Bool depthTestEnabled = material->getDepthTestEnabled();
-        if (updateDepth) {
-            material->setDepthFunction(RenderState::DepthFunction::Always);
-            renderCamera->setAutoClearRenderBuffer(RenderBufferType::Depth, true);
-        }
-        else {
-            material->setDepthTestEnabled(false);
-            renderCamera->setAutoClearRenderBuffer(RenderBufferType::Depth, false);
-        }
-
         Bool faceCullingEnabled = material->getFaceCullingEnabled();
+        material->setDepthTestEnabled(false);
         material->setFaceCullingEnabled(false);
         renderCamera->setRenderTarget(destination);
         renderCamera->setAutoClearRenderBuffer(RenderBufferType::Color, true);
+        renderCamera->setAutoClearRenderBuffer(RenderBufferType::Depth, false);
         renderCamera->setAutoClearRenderBuffer(RenderBufferType::Stencil, false);
         this->getRenderer()->renderObjectDirect(fullScreenQuadObject, renderCamera, material);
         material->setFaceCullingEnabled(faceCullingEnabled);
+        material->setDepthTestEnabled(depthTestEnabled);
 
-        if (updateDepth) {
-            material->setDepthFunction(depthFunc);
+        if (includeDepth) {
+            this->lowLevelBlit(source, destination, false, true);
         }
-        else {
-            material->setDepthTestEnabled(depthTestEnabled);
-        }
-        
     }
 }

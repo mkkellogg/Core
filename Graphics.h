@@ -77,7 +77,7 @@ namespace Core {
                                                                      const TextureAttributes& colorTextureAttributes,
                                                                      const TextureAttributes& depthTextureAttributes, const Vector2u& size) = 0;
         virtual void destroyRenderTargetCube(WeakPointer<RenderTargetCube> renderTarget, Bool destroyColor, Bool destroyDepth) = 0;
-        void blit(WeakPointer<RenderTarget> source, WeakPointer<RenderTarget> destination, WeakPointer<Material> material, Bool updateDepth);
+        void blit(WeakPointer<RenderTarget> source, WeakPointer<RenderTarget> destination, WeakPointer<Material> material, Bool includeDepth);
         virtual void lowLevelBlit(WeakPointer<RenderTarget> source, WeakPointer<RenderTarget> destination, Bool includeColor, Bool includeDepth) = 0;
 
         virtual void setColorWriteEnabled(Bool enabled) = 0;                                                               
