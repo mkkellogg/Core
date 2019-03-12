@@ -19,6 +19,7 @@ const std::string MODEL_INVERSE_TRANSPOSE_MATRIX = _un(Core::StandardUniform::Mo
 const std::string VIEW_MATRIX = _un(Core::StandardUniform::ViewMatrix);
 const std::string PROJECTION_MATRIX = _un(Core::StandardUniform::ProjectionMatrix);
 const std::string CAMERA_POSITION = _un(Core::StandardUniform::CameraPosition);
+const std::string TEXTURE0 = _un(Core::StandardUniform::Texture0);
 
 const std::string MAX_CASCADES = std::to_string(Core::Constants::MaxDirectionalCascades);
 const std::string MAX_LIGHTS = std::to_string(Core::Constants::MaxShaderLights);
@@ -62,6 +63,7 @@ const std::string MODEL_INVERSE_TRANSPOSE_MATRIX_DEF = "uniform mat4 " +  MODEL_
 const std::string VIEW_MATRIX_DEF = "uniform mat4 " +  VIEW_MATRIX + ";\n";
 const std::string PROJECTION_MATRIX_DEF = "uniform mat4 " +  PROJECTION_MATRIX + ";\n";
 const std::string CAMERA_POSITION_DEF = "uniform vec4 " +  CAMERA_POSITION + ";\n";
+const std::string TEXTURE0_DEF = "uniform sampler2D " +  TEXTURE0 + ";\n";
 
 // ------------------------------------
 // Single-pass lighting definitions
@@ -179,6 +181,9 @@ namespace Core {
 
         this->setShader(ShaderType::Vertex, "PhysicalSkybox", ShaderManagerGL::PhysicalSkybox_vertex);
         this->setShader(ShaderType::Fragment, "PhysicalSkybox", ShaderManagerGL::PhysicalSkybox_fragment);
+
+        this->setShader(ShaderType::Vertex, "Tonemap", ShaderManagerGL::Tonemap_vertex);
+        this->setShader(ShaderType::Fragment, "Tonemap", ShaderManagerGL::Tonemap_fragment);
 
         this->setShader(ShaderType::Vertex, "IrridianceRenderer", ShaderManagerGL::IrridianceRenderer_vertex);
         this->setShader(ShaderType::Fragment, "IrridianceRenderer", ShaderManagerGL::IrridianceRenderer_fragment);
@@ -756,9 +761,6 @@ namespace Core {
 
             "            vec3 ambient = vec3(0.03) * albedo.rgb * ao; \n"
             "            vec3 color = ambient + Lo;  \n"
-                        
-            "            color = toneMapReinhard(color);  \n"
-            "            color = gammaCorrectBasic(color);  \n"
 
             "            return vec4(color, albedo.a); \n" 
             "        }\n"
@@ -867,6 +869,34 @@ namespace Core {
             "void main()\n"
             "{\n"
             "    vec3 color =  texture(cubeTexture, TexCoord0.xyz).rgb; \n "
+            "    out_color = vec4(color, 1.0);\n"
+            "}\n";
+
+        this->Tonemap_vertex =
+            "#version 330\n"
+            "precision highp float;\n"
+            "layout (location = 0 ) " + POSITION_DEF
+            + PROJECTION_MATRIX_DEF
+            + VIEW_MATRIX_DEF
+            + MODEL_MATRIX_DEF +
+            "out vec4 localPos;\n"
+            "void main()\n"
+            "{\n"
+            "    localPos = " + POSITION + ";\n"
+            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
+            "}\n";
+
+        this->Tonemap_fragment =   
+            "#version 330\n"
+            "#include \"PhysicalCommon\" \n"
+            "precision highp float;\n"
+            + TEXTURE0_DEF +
+            "uniform float exposure; \n"
+            "in vec4 localPos;\n"
+            "out vec4 out_color;\n"
+            "void main()\n"
+            "{\n"
+            "    vec3 color =  texture(" + TEXTURE0 + ", localPos.xy / 2.0 + 0.5).rgb; \n "
             "    color = toneMapExposure(color, exposure); \n"
             "    color = gammaCorrectBasic(color); \n"
             "    out_color = vec4(color, 1.0);\n"

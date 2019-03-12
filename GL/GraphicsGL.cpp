@@ -33,15 +33,15 @@ namespace Core {
 
         UInt32 maxGL = 0;
         const char* versionStr = (const char*)glGetString(GL_VERSION);
-
-        this->renderer = this->createRenderer();
         this->defaultRenderTarget = this->createDefaultRenderTarget();
         this->currentRenderTarget = this->defaultRenderTarget;
         this->shaderDirectory.init();
 
+        this->renderer = this->createRenderer();
         if (!this->sharedRenderState) {
             this->setupRenderState();
         }
+        
     }
 
     WeakPointer<Renderer> GraphicsGL::getRenderer() {
@@ -176,7 +176,7 @@ namespace Core {
 
     WeakPointer<RenderTarget2D> GraphicsGL::createRenderTarget2D(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
                                                                  const TextureAttributes& colorTextureAttributes, 
-                                                                 const TextureAttributes& depthTextureAttributes, Vector2u size) {
+                                                                 const TextureAttributes& depthTextureAttributes, const Vector2u& size) {
 
         RenderTarget2DGL* renderTargetPtr = new(std::nothrow) RenderTarget2DGL(hasColor, hasDepth, enableStencilBuffer,
                                                                                colorTextureAttributes, depthTextureAttributes, size);
@@ -212,7 +212,7 @@ namespace Core {
 
     WeakPointer<RenderTargetCube> GraphicsGL::createRenderTargetCube(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
                                                                      const TextureAttributes& colorTextureAttributes,
-                                                                     const TextureAttributes& depthTextureAttributes, Vector2u size) {
+                                                                     const TextureAttributes& depthTextureAttributes, const Vector2u& size) {
        
         RenderTargetCubeGL* renderTargetPtr = new(std::nothrow) RenderTargetCubeGL(hasColor, hasDepth, enableStencilBuffer,
                                                                                    colorTextureAttributes, depthTextureAttributes, size);

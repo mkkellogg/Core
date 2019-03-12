@@ -20,9 +20,6 @@ namespace Core {
         std::string Equirectangular_vertex;
         std::string Equirectangular_fragment;
 
-        std::string PhysicalSkybox_vertex;
-        std::string PhysicalSkybox_fragment;
-
         std::string Skybox_vertex;
         std::string Skybox_fragment;
 
@@ -59,6 +56,12 @@ namespace Core {
 
         std::string StandardPhysical_vertex;
         std::string StandardPhysical_fragment;
+
+        std::string PhysicalSkybox_vertex;
+        std::string PhysicalSkybox_fragment;
+
+        std::string Tonemap_vertex;
+        std::string Tonemap_fragment;
 
         std::string IrridianceRenderer_vertex;
         std::string IrridianceRenderer_fragment;

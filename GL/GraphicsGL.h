@@ -63,11 +63,11 @@ namespace Core {
 
         WeakPointer<RenderTarget2D> createRenderTarget2D(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
                                                      const TextureAttributes& colorTextureAttributes, 
-                                                     const TextureAttributes& depthTextureAttributes, Vector2u size) override;
+                                                     const TextureAttributes& depthTextureAttributes, const Vector2u& size) override;
         void destroyRenderTarget2D(WeakPointer<RenderTarget2D> renderTarget, Bool destroyColor, Bool destroyDepth) override;
         WeakPointer<RenderTargetCube> createRenderTargetCube(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
                                                      const TextureAttributes& colorTextureAttributes,
-                                                     const TextureAttributes& depthTextureAttributes, Vector2u size) override;
+                                                     const TextureAttributes& depthTextureAttributes, const Vector2u& size) override;
         void destroyRenderTargetCube(WeakPointer<RenderTargetCube> renderTarget, Bool destroyColor, Bool destroyDepth) override;
 
         void setColorWriteEnabled(Bool enabled) override;

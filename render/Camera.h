@@ -56,6 +56,8 @@ namespace Core {
         void setSkybox(Skybox& skybox);
         void setSkyboxEnabled(Bool enabled);
         Bool isSkyboxEnabled();
+        void setHDREnabled(Bool enabled);
+        Bool isHDREnabled();
 
         static void buildPerspectiveProjectionMatrix(Real fov, Real aspectRatio, Real near, Real far, Matrix4x4& out);
         static void buildOrthographicProjectionMatrix(Real top, Real bottom, Real left, Real right, Real near, Real far, Matrix4x4& matrix);
@@ -86,5 +88,7 @@ namespace Core {
 
         Bool skyboxEnabled;
         Skybox skybox;
+
+        Bool hdrEnabled;
     };
 }

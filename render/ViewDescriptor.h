@@ -24,6 +24,7 @@ namespace Core {
         Int32 cubeFace = -1;
         IntMask clearRenderBuffers;
         Skybox* skybox = nullptr;
+        Bool isSystemHDR = false;
 
     };
 

@@ -1,6 +1,9 @@
 #include <vector>
 #include <algorithm>
 
+#include "../common/gl.h"
+#include "../GL/RenderTargetGL.h"
+
 #include "../Engine.h"
 #include "Camera.h"
 #include "Renderer.h"
@@ -17,7 +20,9 @@
 #include "../image/TextureAttr.h"
 #include "../image/Texture.h"
 #include "../material/DepthOnlyMaterial.h"
+#include "../material/BasicColoredMaterial.h"
 #include "../material/DistanceOnlyMaterial.h"
+#include "../material/TonemapMaterial.h"
 #include "../material/IrridianceRendererMaterial.h"
 #include "../math/Matrix4x4.h"
 #include "../math/Quaternion.h"
@@ -35,6 +40,19 @@ namespace Core {
     }
 
     Bool Renderer::init() {
+        if (!this->depthMaterial.isValid()) {
+            this->depthMaterial = Engine::instance()->createMaterial<DepthOnlyMaterial>();
+            this->depthMaterial->setLit(false);
+        }
+        if (!this->distanceMaterial.isValid()) {
+            this->distanceMaterial = Engine::instance()->createMaterial<DistanceOnlyMaterial>();
+            this->distanceMaterial->setLit(false);
+        }
+        if (!this->tonemapMaterial.isValid()) {
+            this->tonemapMaterial = Engine::instance()->createMaterial<TonemapMaterial>();
+            this->tonemapMaterial->setExposure(1.5f);
+            this->tonemapMaterial->setLit(false);
+        }
         return true;
     }
 
@@ -56,14 +74,6 @@ namespace Core {
         lightList.resize(0);
         reflectionProbeList.resize(0);
 
-        if (!this->depthMaterial.isValid()) {
-            this->depthMaterial = Engine::instance()->createMaterial<DepthOnlyMaterial>();
-            this->depthMaterial->setLit(false);
-        }
-        if (!this->distanceMaterial.isValid()) {
-            this->distanceMaterial = Engine::instance()->createMaterial<DistanceOnlyMaterial>();
-            this->distanceMaterial->setLit(false);
-        }
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
 
         Matrix4x4 curTransform;
@@ -199,22 +209,21 @@ namespace Core {
         }
 
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
+        ViewDescriptor baseViewDescriptor;
+        this->getViewDescriptorForCamera(camera, baseViewDescriptor);
         for (unsigned int i = 0; i < 6; i++) {
-            ViewDescriptor viewDescriptor;
+            ViewDescriptor viewDescriptor = baseViewDescriptor;
             Matrix4x4 cameraTransform = camera->getOwner()->getTransform().getWorldMatrix();
             cameraTransform.multiply(orientations[i]);
-            Skybox * skybox = camera->isSkyboxEnabled() ? &camera->getSkybox() : nullptr;
-            this->getViewDescriptor(cameraTransform, camera->getProjectionMatrix(),
-                                    camera->getAutoClearRenderBuffers(),
-                                    skybox, viewDescriptor);
+            this->getViewDescriptorTransformations(cameraTransform, camera->getProjectionMatrix(),
+                                    camera->getAutoClearRenderBuffers(), viewDescriptor);
             viewDescriptor.overrideMaterial = overrideMaterial;
             viewDescriptor.cubeFace = i;
-            viewDescriptor.renderTarget = camera->getRenderTarget();
             render(viewDescriptor, objects, lights);
         }
     }
 
-    void Renderer::render(const ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objectList, std::vector<WeakPointer<Light>>& lightList) {
+    void Renderer::render(ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objectList, std::vector<WeakPointer<Light>>& lightList) {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         WeakPointer<RenderTarget> currentRenderTarget = graphics->getCurrentRenderTarget();
         Vector4u currentViewport = currentRenderTarget->getViewport();
@@ -249,18 +258,40 @@ namespace Core {
         }
 
         for (auto object : objectList) {
-            std::shared_ptr<Object3D> objectShared = object.lock();
-            std::shared_ptr<BaseRenderableContainer> containerPtr = std::dynamic_pointer_cast<BaseRenderableContainer>(objectShared);
-            if (containerPtr) {
-                WeakPointer<BaseObjectRenderer> objectRenderer = containerPtr->getBaseRenderer();
-                if (objectRenderer) {
-                    objectRenderer->forwardRender(viewDescriptor, lightList);
-                }
-            }
+            this->renderObjectDirect(object, viewDescriptor, lightList);
         }
 
         graphics->activateRenderTarget(currentRenderTarget);
         graphics->setViewport(currentViewport.x, currentViewport.y, currentViewport.z, currentViewport.w);
+
+        if (viewDescriptor.isSystemHDR) {
+            graphics->blit(nextRenderTarget, graphics->getDefaultRenderTarget(), this->tonemapMaterial);
+        }
+    }
+
+    void Renderer::renderObjectDirect(WeakPointer<Object3D> object, WeakPointer<Camera> camera, WeakPointer<Material> overrideMaterial) {
+        static std::vector<WeakPointer<Light>> lightList;
+        this->renderObjectDirect(object, camera, lightList, overrideMaterial);
+    }
+
+    void Renderer::renderObjectDirect(WeakPointer<Object3D> object, WeakPointer<Camera> camera,
+                                     std::vector<WeakPointer<Light>>& lightList, WeakPointer<Material> overrideMaterial) {
+        ViewDescriptor viewDescriptor;
+        this->getViewDescriptorForCamera(camera, viewDescriptor);
+        viewDescriptor.overrideMaterial = overrideMaterial;
+        this->renderObjectDirect(object, viewDescriptor, lightList);
+    }
+
+    void Renderer::renderObjectDirect(WeakPointer<Object3D> object, ViewDescriptor& viewDescriptor,
+                            std::vector<WeakPointer<Light>>& lightList) {
+        std::shared_ptr<Object3D> objectShared = object.lock();
+        std::shared_ptr<BaseRenderableContainer> containerPtr = std::dynamic_pointer_cast<BaseRenderableContainer>(objectShared);
+        if (containerPtr) {
+            WeakPointer<BaseObjectRenderer> objectRenderer = containerPtr->getBaseRenderer();
+            if (objectRenderer) {
+                objectRenderer->forwardRender(viewDescriptor, lightList);
+            }
+        }
     }
 
     void Renderer::renderShadowMaps(std::vector<WeakPointer<Light>>& lights, LightType lightType,
@@ -324,9 +355,10 @@ namespace Core {
                                 orthoShadowMapCamera->setNearAndFar(proj.near, proj.far);
 
                                 ViewDescriptor viewDesc;
-                                this->getViewDescriptor(viewTrans, orthoShadowMapCamera->getProjectionMatrix(),
-                                                        orthoShadowMapCamera->getAutoClearRenderBuffers(),
-                                                        nullptr, viewDesc);
+                                viewDesc.isSystemHDR = false;
+                                viewDesc.cubeFace = -1;
+                                this->getViewDescriptorTransformations(viewTrans, orthoShadowMapCamera->getProjectionMatrix(),
+                                                        orthoShadowMapCamera->getAutoClearRenderBuffers(), viewDesc);
                                 viewDesc.overrideMaterial = this->depthMaterial;
                                 viewDesc.renderTarget = directionalLight->getShadowMap(i);
                                 this->render(viewDesc, toRender, dummyLights);
@@ -340,22 +372,37 @@ namespace Core {
     
     void Renderer::getViewDescriptorForCamera(WeakPointer<Camera> camera, ViewDescriptor& viewDescriptor) {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-        WeakPointer<RenderTarget> cameraRenderTarget = camera->getRenderTarget();
-         if (!cameraRenderTarget.isValid()) {
-            cameraRenderTarget = graphics->getDefaultRenderTarget();
+        WeakPointer<RenderTarget> cameraRenderTarget;
+        viewDescriptor.isSystemHDR = false;
+        if (camera->isHDREnabled()) {
+            Vector2u defaultRenderTargetSize = graphics->getDefaultRenderTarget()->getSize();
+            if (!this->hdrRenderTarget.isValid() || 
+                hdrRenderTarget->getSize().x != defaultRenderTargetSize.x ||
+                hdrRenderTarget->getSize().y != defaultRenderTargetSize.y) {
+                this->buildHDRRenderTarget(defaultRenderTargetSize);
+            }
+            cameraRenderTarget = this->hdrRenderTarget;
+            viewDescriptor.isSystemHDR = true;
+        }
+        else {
+            cameraRenderTarget = camera->getRenderTarget();
+            if (!cameraRenderTarget.isValid()) {
+                cameraRenderTarget = graphics->getDefaultRenderTarget();
+            }
         }
         Skybox * skybox = camera->isSkyboxEnabled() ? &camera->getSkybox() : nullptr;
-        this->getViewDescriptor(camera->getOwner()->getTransform().getWorldMatrix(),
-                                camera->getProjectionMatrix(), camera->getAutoClearRenderBuffers(),
-                                skybox, viewDescriptor);
+        viewDescriptor.skybox = skybox;
+        this->getViewDescriptorTransformations(camera->getOwner()->getTransform().getWorldMatrix(),
+                                camera->getProjectionMatrix(), camera->getAutoClearRenderBuffers(), viewDescriptor);
         viewDescriptor.renderTarget = cameraRenderTarget;
         viewDescriptor.cameraPosition.set(0.0f, 0.0f, 0.0f);
+        viewDescriptor.cubeFace = -1;
         viewDescriptor.viewMatrix.transform(viewDescriptor.cameraPosition);
        
     }
 
-    void Renderer::getViewDescriptor(const Matrix4x4& worldMatrix, const Matrix4x4& projectionMatrix,
-                                     IntMask clearBuffers, Skybox* skybox, ViewDescriptor& viewDescriptor) {
+    void Renderer::getViewDescriptorTransformations(const Matrix4x4& worldMatrix, const Matrix4x4& projectionMatrix,
+                                     IntMask clearBuffers, ViewDescriptor& viewDescriptor) {
         viewDescriptor.projectionMatrix.copy(projectionMatrix);
         viewDescriptor.viewMatrix.copy(worldMatrix);
         viewDescriptor.viewInverseMatrix.copy(viewDescriptor.viewMatrix);
@@ -363,7 +410,6 @@ namespace Core {
         viewDescriptor.viewInverseTransposeMatrix.copy(viewDescriptor.viewInverseMatrix);
         viewDescriptor.viewInverseTransposeMatrix.transpose();
         viewDescriptor.clearRenderBuffers = clearBuffers;
-        viewDescriptor.skybox = skybox;
     }
 
     void Renderer::processScene(WeakPointer<Scene> scene, 
@@ -401,6 +447,23 @@ namespace Core {
 
     Bool Renderer::compareLights (WeakPointer<Light> a, WeakPointer<Light> b) { 
         return ((UInt32)a->getType() < (UInt32)b->getType()); 
+    }
+
+    void Renderer::buildHDRRenderTarget(const Vector2u& size) {
+        if (this->hdrRenderTarget) {
+            Engine::instance()->getGraphicsSystem()->destroyRenderTarget2D(this->hdrRenderTarget, true, true);
+        }
+        TextureAttributes hdrColorAttributes;
+        hdrColorAttributes.Format = TextureFormat::RGBA8;
+        hdrColorAttributes.FilterMode = TextureFilter::Point;
+        hdrColorAttributes.MipMapLevel = 5;
+        hdrColorAttributes.WrapMode = TextureWrap::Mirror;
+        TextureAttributes hdrDepthAttributes;
+        hdrDepthAttributes.IsDepthTexture = true;
+        this->hdrRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTarget2D(true, true, false, hdrColorAttributes, hdrDepthAttributes, size);
+        
+        RenderTargetGL* rtgl =   dynamic_cast<RenderTargetGL *>(this->hdrRenderTarget.get());
+
     }
 
 }

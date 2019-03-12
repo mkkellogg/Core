@@ -49,21 +49,34 @@ namespace Core {
         static Bool initialized = false;
         static WeakPointer<Mesh> fullScreenQuadMesh;
         static WeakPointer<RenderableContainer<Mesh>> fullScreenQuadObject;
+        static WeakPointer<Mesh> fullScreenCubeMesh;
+        static WeakPointer<RenderableContainer<Mesh>> fullScreenCubeObject;
         static WeakPointer<Object3D> renderCameraObject;
         static WeakPointer<Camera> renderCamera;
         if (!initialized) {
-            fullScreenQuadMesh = GeometryUtils::createGrid(2.0f, 2.0f, 1, 1, 1.0f, 1.0f);
+            fullScreenQuadMesh = GeometryUtils::createGrid(2.0f, 2.0f, 2, 2, 1.0f, 1.0f);
             fullScreenQuadObject = GeometryUtils::buildMeshContainer(fullScreenQuadMesh, material, "");
             renderCameraObject = Engine::instance()->createObject3D();
-            renderCameraObject->getTransform().translate(0.0f, 0.0f, 1.0f);
+            renderCameraObject->getTransform().translate(0.0f, 0.0f, 4.0f);
+            renderCameraObject->getTransform().updateWorldMatrix();
             renderCamera = Engine::instance()->createOrthographicCamera(renderCameraObject, 1.0f, -1.0f, -1.0f, 1.0f, 0.1f, 10.0f);
             initialized = true;
         }
         Int32 texture0Loc = material->getShaderLocation(StandardUniform::Texture0);
         if (texture0Loc >= 0) {
-            material->getShader()->setTexture2D(0, source->getColorTexture()->getTextureID());
-            material->getShader()->setUniform1i(texture0Loc, 0);
+           material->getShader()->setTexture2D(0, source->getColorTexture()->getTextureID());
+           material->getShader()->setUniform1i(texture0Loc, 0);
         }
-        this->getRenderer()->renderObjectBasic(fullScreenQuadObject, renderCamera, material);
+        Bool depthTestEnabled = material->getDepthTestEnabled();
+        Bool faceCullingEnabled = material->getFaceCullingEnabled();
+        material->setDepthTestEnabled(false);
+        material->setFaceCullingEnabled(false);
+        renderCamera->setRenderTarget(destination);
+        renderCamera->setAutoClearRenderBuffer(RenderBufferType::Color, false);
+        renderCamera->setAutoClearRenderBuffer(RenderBufferType::Depth, false);
+        renderCamera->setAutoClearRenderBuffer(RenderBufferType::Stencil, false);
+        this->getRenderer()->renderObjectDirect(fullScreenQuadObject, renderCamera, material);
+        material->setDepthTestEnabled(depthTestEnabled);
+        material->setFaceCullingEnabled(faceCullingEnabled);
     }
 }

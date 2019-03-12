@@ -77,6 +77,7 @@ set(INCLUDE_FILES
     material/IrridianceRendererMaterial.h
     material/EquirectangularMaterial.h
     material/StandardPhysicalMaterial.h
+    material/TonemapMaterial.h
     material/StandardUniforms.h
     material/StandardAttributes.h
     material/Shader.h
@@ -212,6 +213,7 @@ set(SOURCE_FILES
     material/IrridianceRendererMaterial.cpp
     material/EquirectangularMaterial.cpp
     material/StandardPhysicalMaterial.cpp
+    material/TonemapMaterial.cpp
     material/Shader.cpp
     material/MaterialLibrary.cpp
     material/StandardUniforms.cpp
