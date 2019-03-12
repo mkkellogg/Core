@@ -1,9 +1,5 @@
 #include <vector>
 #include <algorithm>
-
-#include "../common/gl.h"
-#include "../GL/RenderTargetGL.h"
-
 #include "../Engine.h"
 #include "Camera.h"
 #include "Renderer.h"
@@ -454,16 +450,13 @@ namespace Core {
             Engine::instance()->getGraphicsSystem()->destroyRenderTarget2D(this->hdrRenderTarget, true, true);
         }
         TextureAttributes hdrColorAttributes;
-        hdrColorAttributes.Format = TextureFormat::RGBA8;
+        hdrColorAttributes.Format = TextureFormat::RGBA16F;
         hdrColorAttributes.FilterMode = TextureFilter::Point;
-        hdrColorAttributes.MipMapLevel = 5;
-        hdrColorAttributes.WrapMode = TextureWrap::Mirror;
+        hdrColorAttributes.MipMapLevel = 0;
+        hdrColorAttributes.WrapMode = TextureWrap::Clamp;
         TextureAttributes hdrDepthAttributes;
         hdrDepthAttributes.IsDepthTexture = true;
         this->hdrRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTarget2D(true, true, false, hdrColorAttributes, hdrDepthAttributes, size);
-        
-        RenderTargetGL* rtgl =   dynamic_cast<RenderTargetGL *>(this->hdrRenderTarget.get());
-
     }
 
 }
