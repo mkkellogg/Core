@@ -33,7 +33,11 @@ namespace Core {
         RGBA8 = 1,
         RGBA16F = 2,
         RGBA32F = 3,
-        R32F = 4
+        R32F = 4,
+        DEPTH = 5,
+        DEPTH16 = 6,
+        DEPTH24 = 7,
+        DEPTH32 = 8,
     };
 
     class TextureAttributes {

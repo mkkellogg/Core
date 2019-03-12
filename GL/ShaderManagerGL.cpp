@@ -880,25 +880,29 @@ namespace Core {
             "layout (location = 0 ) " + POSITION_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
-            + MODEL_MATRIX_DEF +
+            + MODEL_MATRIX_DEF + 
             "out vec4 localPos;\n"
+            "out vec2 vUV; \n"
             "void main()\n"
             "{\n"
             "    localPos = " + POSITION + ";\n"
-            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    vUV = localPos.xy / 2.0 + 0.5; \n"
+            "    vec4 out_pos = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    gl_Position = out_pos; \n"
             "}\n";
 
         this->Tonemap_fragment =   
             "#version 330\n"
             "#include \"PhysicalCommon\" \n"
             "precision highp float;\n"
-            + TEXTURE0_DEF + 
+            + TEXTURE0_DEF +
             "uniform float exposure; \n"
             "in vec4 localPos;\n"
+            "in vec2 vUV; \n"
             "out vec4 out_color;\n"
             "void main()\n"
             "{\n"
-            "    vec3 color =  texture(" + TEXTURE0 + ", localPos.xy / 2.0 + 0.5).rgb; \n "
+            "    vec3 color = texture(" + TEXTURE0 + ", vUV).rgb; \n "
             "    color = toneMapExposure(color, exposure); \n"
             "    color = gammaCorrectBasic(color); \n"
             "    out_color = vec4(color, 1.0);\n"

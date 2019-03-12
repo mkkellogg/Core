@@ -261,7 +261,8 @@ namespace Core {
         graphics->setViewport(currentViewport.x, currentViewport.y, currentViewport.z, currentViewport.w);
 
         if (viewDescriptor.isSystemHDR) {
-            graphics->blit(nextRenderTarget, graphics->getDefaultRenderTarget(), this->tonemapMaterial);
+            graphics->blit(nextRenderTarget, graphics->getDefaultRenderTarget(), this->tonemapMaterial, false);
+            graphics->lowLevelBlit(nextRenderTarget, graphics->getDefaultRenderTarget(), false, true);
         }
     }
 

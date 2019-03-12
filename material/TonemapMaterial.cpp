@@ -42,6 +42,8 @@ namespace Core {
                 return this->modelMatrixLocation;
             case StandardUniform::Texture0:
                 return this->textureLocation;
+            case StandardUniform::DepthTexture:
+                return this->depthTextureLocation;
             default:
                 return -1;
         }
@@ -53,6 +55,10 @@ namespace Core {
 
     void TonemapMaterial::setTexture(WeakPointer<Texture2D> texture) {
         this->texture = texture;
+    }
+
+    void TonemapMaterial::setDepthTexture(WeakPointer<Texture2D> texture) {
+        this->depthTexture = depthTexture;
     }
 
     void TonemapMaterial::setExposure(Real exposure) {
@@ -68,6 +74,7 @@ namespace Core {
         _target->viewMatrixLocation = this->viewMatrixLocation;
         _target->modelMatrixLocation = this->modelMatrixLocation;
         _target->textureLocation = this->textureLocation;
+        _target->depthTextureLocation = this->depthTextureLocation;
         _target->exposureLocation = this->exposureLocation;
     }
 
@@ -81,6 +88,7 @@ namespace Core {
         this->positionLocation = this->shader->getAttributeLocation(StandardAttribute::Position);
         this->colorLocation = this->shader->getAttributeLocation(StandardAttribute::Color);
         this->textureLocation = this->shader->getUniformLocation(StandardUniform::Texture0);
+        this->depthTextureLocation = this->shader->getUniformLocation(StandardUniform::DepthTexture);
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
         this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);
@@ -88,9 +96,9 @@ namespace Core {
     }
 
     UInt32 TonemapMaterial::textureCount() {
-        if (this->texture) {
-            return 1;
-        }
-        return 0;
+        UInt32 count = 0;
+        if (this->texture) count++;
+        if (this->depthTexture) count++;
+        return count;
     }
 }

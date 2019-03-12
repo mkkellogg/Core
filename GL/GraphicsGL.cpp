@@ -452,6 +452,19 @@ namespace Core {
         glPolygonMode(GL_BACK, this->_statePolygonMode[1]);
     }
 
+    void GraphicsGL::lowLevelBlit(WeakPointer<RenderTarget> source, WeakPointer<RenderTarget> destination, Bool includeColor, Bool includeDepth) {
+        GLint srcID = (dynamic_cast<RenderTargetGL *>(source.get()))->getFBOID();
+        GLint destID = (dynamic_cast<RenderTargetGL *>(destination.get()))->getFBOID();
+        Vector2u size = destination->getSize();
+
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, srcID);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, destID);
+        GLuint mask = 0;
+        if (includeColor) mask |= GL_COLOR_BUFFER_BIT;
+        if (includeDepth) mask |= GL_DEPTH_BUFFER_BIT;
+        glBlitFramebuffer(0, 0, size.x, size.y, 0, 0, size.x, size.y, mask, GL_NEAREST);
+    }
+
     /*
      * Set the test that is used when performing depth-buffer occlusion.
      */
@@ -556,6 +569,12 @@ namespace Core {
                 return GL_RGBA16F;
             case TextureFormat::RGBA32F:
                 return GL_RGBA32F;
+            case TextureFormat::DEPTH16:
+                return GL_DEPTH_COMPONENT16;
+            case TextureFormat::DEPTH24:
+                return GL_DEPTH_COMPONENT24;
+            case TextureFormat::DEPTH32:
+                return GL_DEPTH_COMPONENT32;
 
         }
 
@@ -575,6 +594,8 @@ namespace Core {
                 return GL_RGBA;
             case TextureFormat::RGBA32F:
                 return GL_RGBA;
+            case TextureFormat::DEPTH:
+                return GL_DEPTH_COMPONENT;
 
         }
 

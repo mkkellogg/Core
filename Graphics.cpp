@@ -45,7 +45,7 @@ namespace Core {
         this->updateDefaultRenderTargetViewport(Vector4u(hOffset, vOffset, viewPortWidth, viewPortHeight));
     }
 
-    void Graphics::blit(WeakPointer<RenderTarget> source, WeakPointer<RenderTarget> destination, WeakPointer<Material> material) {
+    void Graphics::blit(WeakPointer<RenderTarget> source, WeakPointer<RenderTarget> destination, WeakPointer<Material> material, Bool updateDepth) {
         static Bool initialized = false;
         static WeakPointer<Mesh> fullScreenQuadMesh;
         static WeakPointer<RenderableContainer<Mesh>> fullScreenQuadObject;
@@ -62,27 +62,45 @@ namespace Core {
             renderCamera = Engine::instance()->createOrthographicCamera(renderCameraObject, 1.0f, -1.0f, -1.0f, 1.0f, 0.1f, 10.0f);
             initialized = true;
         }
+
         UInt32 samplerSlot = 0;
         Int32 texture0Loc = material->getShaderLocation(StandardUniform::Texture0);
         if (texture0Loc >= 0) {
            material->getShader()->setTexture2D(samplerSlot, texture0Loc, source->getColorTexture()->getTextureID());
            samplerSlot++;
         }
+
         Int32 depthTextureLoc = material->getShaderLocation(StandardUniform::DepthTexture);
         if (depthTextureLoc >= 0 && source->isDepthBufferTexture()) {
-           material->getShader()->setTexture2D(samplerSlot, depthTextureLoc, source->getDepthTexture()->getTextureID());
-           samplerSlot++;
+            material->getShader()->setTexture2D(samplerSlot, depthTextureLoc, source->getDepthTexture()->getTextureID());
+            samplerSlot++;
         }
+
+        RenderState::DepthFunction depthFunc = material->getDepthFunction();
         Bool depthTestEnabled = material->getDepthTestEnabled();
+        if (updateDepth) {
+            material->setDepthFunction(RenderState::DepthFunction::Always);
+            renderCamera->setAutoClearRenderBuffer(RenderBufferType::Depth, true);
+        }
+        else {
+            material->setDepthTestEnabled(false);
+            renderCamera->setAutoClearRenderBuffer(RenderBufferType::Depth, false);
+        }
+
         Bool faceCullingEnabled = material->getFaceCullingEnabled();
-        material->setDepthTestEnabled(false);
         material->setFaceCullingEnabled(false);
         renderCamera->setRenderTarget(destination);
-        renderCamera->setAutoClearRenderBuffer(RenderBufferType::Color, false);
-        renderCamera->setAutoClearRenderBuffer(RenderBufferType::Depth, false);
+        renderCamera->setAutoClearRenderBuffer(RenderBufferType::Color, true);
         renderCamera->setAutoClearRenderBuffer(RenderBufferType::Stencil, false);
         this->getRenderer()->renderObjectDirect(fullScreenQuadObject, renderCamera, material);
-        material->setDepthTestEnabled(depthTestEnabled);
         material->setFaceCullingEnabled(faceCullingEnabled);
+
+        if (updateDepth) {
+            material->setDepthFunction(depthFunc);
+        }
+        else {
+            material->setDepthTestEnabled(depthTestEnabled);
+        }
+        
     }
 }

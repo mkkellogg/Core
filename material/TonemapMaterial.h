@@ -20,6 +20,7 @@ namespace Core {
         virtual WeakPointer<Material> clone() override;
         void setExposure(Real exposure);
         void setTexture(WeakPointer<Texture2D> texture);
+        void setDepthTexture(WeakPointer<Texture2D> depthTexture);
         virtual UInt32 textureCount() override;
         
     protected:
@@ -30,6 +31,7 @@ namespace Core {
 
         Real exposure;
         PersistentWeakPointer<Texture2D> texture;
+        PersistentWeakPointer<Texture2D> depthTexture;
 
         Int32 positionLocation;
         Int32 colorLocation;
@@ -37,6 +39,7 @@ namespace Core {
         Int32 viewMatrixLocation;
         Int32 modelMatrixLocation;
         Int32 textureLocation;
+        Int32 depthTextureLocation;
         Int32 exposureLocation;
     };
 }
