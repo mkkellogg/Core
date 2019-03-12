@@ -20,6 +20,7 @@ const std::string VIEW_MATRIX = _un(Core::StandardUniform::ViewMatrix);
 const std::string PROJECTION_MATRIX = _un(Core::StandardUniform::ProjectionMatrix);
 const std::string CAMERA_POSITION = _un(Core::StandardUniform::CameraPosition);
 const std::string TEXTURE0 = _un(Core::StandardUniform::Texture0);
+const std::string DEPTH_TEXTURE = _un(Core::StandardUniform::DepthTexture);
 
 const std::string MAX_CASCADES = std::to_string(Core::Constants::MaxDirectionalCascades);
 const std::string MAX_LIGHTS = std::to_string(Core::Constants::MaxShaderLights);
@@ -64,6 +65,7 @@ const std::string VIEW_MATRIX_DEF = "uniform mat4 " +  VIEW_MATRIX + ";\n";
 const std::string PROJECTION_MATRIX_DEF = "uniform mat4 " +  PROJECTION_MATRIX + ";\n";
 const std::string CAMERA_POSITION_DEF = "uniform vec4 " +  CAMERA_POSITION + ";\n";
 const std::string TEXTURE0_DEF = "uniform sampler2D " +  TEXTURE0 + ";\n";
+const std::string DEPTH_TEXTURE_DEF = "uniform sampler2D " +  DEPTH_TEXTURE + ";\n";
 
 // ------------------------------------
 // Single-pass lighting definitions
@@ -890,7 +892,7 @@ namespace Core {
             "#version 330\n"
             "#include \"PhysicalCommon\" \n"
             "precision highp float;\n"
-            + TEXTURE0_DEF +
+            + TEXTURE0_DEF + 
             "uniform float exposure; \n"
             "in vec4 localPos;\n"
             "out vec4 out_color;\n"

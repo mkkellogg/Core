@@ -41,8 +41,9 @@ namespace Core {
         DirectionalLightCount = 29,
         CameraPosition = 30,
         Texture0 = 31,
-        _Count = 32,  // Must always be last in the list (before _None)
-        _None = 33,
+        DepthTexture = 32,
+        _Count = 33,  // Must always be last in the list (before _None)
+        _None = 34,
     };
 
     class StandardUniforms {

@@ -62,9 +62,16 @@ namespace Core {
             renderCamera = Engine::instance()->createOrthographicCamera(renderCameraObject, 1.0f, -1.0f, -1.0f, 1.0f, 0.1f, 10.0f);
             initialized = true;
         }
+        UInt32 samplerSlot = 0;
         Int32 texture0Loc = material->getShaderLocation(StandardUniform::Texture0);
         if (texture0Loc >= 0) {
-           material->getShader()->setTexture2D(0, texture0Loc, source->getColorTexture()->getTextureID());
+           material->getShader()->setTexture2D(samplerSlot, texture0Loc, source->getColorTexture()->getTextureID());
+           samplerSlot++;
+        }
+        Int32 depthTextureLoc = material->getShaderLocation(StandardUniform::DepthTexture);
+        if (depthTextureLoc >= 0 && source->isDepthBufferTexture()) {
+           material->getShader()->setTexture2D(samplerSlot, depthTextureLoc, source->getDepthTexture()->getTextureID());
+           samplerSlot++;
         }
         Bool depthTestEnabled = material->getDepthTestEnabled();
         Bool faceCullingEnabled = material->getFaceCullingEnabled();

@@ -41,7 +41,8 @@ namespace Core {
             "POINT_LIGHT_COUNT",
             "DIRECTIONAL_LIGHT_COUNT",
             "CAMERA_POSITION",
-            "TEXTURE0"
+            "TEXTURE0",
+            "DEPTH_TEXTURE"
         };
 
         nameToUniform =
@@ -77,7 +78,8 @@ namespace Core {
             {uniformNames[(UInt16)StandardUniform::PointLightCount],StandardUniform::PointLightCount},
             {uniformNames[(UInt16)StandardUniform::DirectionalLightCount],StandardUniform::DirectionalLightCount},
             {uniformNames[(UInt16)StandardUniform::CameraPosition],StandardUniform::CameraPosition},
-            {uniformNames[(UInt16)StandardUniform::Texture0], StandardUniform::Texture0}
+            {uniformNames[(UInt16)StandardUniform::Texture0], StandardUniform::Texture0},
+            {uniformNames[(UInt16)StandardUniform::DepthTexture], StandardUniform::DepthTexture}
         };
     }
 
