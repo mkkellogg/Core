@@ -15,6 +15,7 @@ namespace Core {
         this->renderStyle = RenderStyle::Fill;
         this->transparent = false;
         this->lit = false;
+        this->physical = false;
         
         this->depthWriteEnabled = true;
         this->depthTestEnabled = true;
@@ -94,6 +95,14 @@ namespace Core {
 
     void Material::setLit(Bool lit) {
         this->lit = lit;
+    }
+
+    Bool Material::isPhysical() const {
+        return this->physical;
+    }
+
+    void Material::setPhysical(Bool physical) {
+        this->physical = physical;
     }
 
     Bool Material::getDepthWriteEnabled() const {

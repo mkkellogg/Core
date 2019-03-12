@@ -10,6 +10,7 @@ namespace Core {
 
     PhysicalSkyboxMaterial::PhysicalSkyboxMaterial(WeakPointer<Graphics> graphics) : SkyboxMaterial("PhysicalSkybox", "PhysicalSkybox", graphics) {
         this->exposure = 1.0f;
+        this->setPhysical(true);
     }
     
     void PhysicalSkyboxMaterial::sendCustomUniformsToShader() {

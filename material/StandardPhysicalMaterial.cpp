@@ -30,7 +30,8 @@ namespace Core {
             return false;
         }
         this->bindShaderVarLocations();
-        this->lit = true;
+        this->setLit(true);
+        this->setPhysical(true);
         return true;
     }
 

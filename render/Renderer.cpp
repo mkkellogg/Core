@@ -46,7 +46,7 @@ namespace Core {
         }
         if (!this->tonemapMaterial.isValid()) {
             this->tonemapMaterial = Engine::instance()->createMaterial<TonemapMaterial>();
-            this->tonemapMaterial->setExposure(1.5f);
+            this->tonemapMaterial->setExposure(1.0f);
             this->tonemapMaterial->setLit(false);
         }
         return true;

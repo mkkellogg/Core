@@ -23,7 +23,7 @@ namespace Core {
             return false;
         }
         this->bindShaderVarLocations();
-        this->lit = true;
+        this->setLit(true);
         return true;
     }
 

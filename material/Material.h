@@ -41,6 +41,8 @@ namespace Core {
         void setTransparent(Bool transparent);
         Bool isLit() const;
         void setLit(Bool lit);
+        Bool isPhysical() const;
+        void setPhysical(Bool physical);
         
         Bool getDepthWriteEnabled() const;
         void setDepthWriteEnabled(Bool enabled);
@@ -80,6 +82,7 @@ namespace Core {
         PersistentWeakPointer<Graphics> graphics;
         PersistentWeakPointer<Shader> shader;
 
+    private:
         Bool colorWriteEnabled;
         RenderState::BlendingMode blendingMode;
         RenderState::BlendingMethod srcBlendingMethod;
@@ -88,6 +91,7 @@ namespace Core {
         Bool ready;
         Bool transparent;
         Bool lit;
+        Bool physical;
 
         Bool stencilTestEnabled;
         Byte stencilRef;
