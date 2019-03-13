@@ -19,7 +19,7 @@
 #include "../material/BasicColoredMaterial.h"
 #include "../material/DistanceOnlyMaterial.h"
 #include "../material/TonemapMaterial.h"
-#include "../material/IrridianceRendererMaterial.h"
+#include "../material/IrradianceRendererMaterial.h"
 #include "../math/Matrix4x4.h"
 #include "../math/Quaternion.h"
 #include "../light/PointLight.h"
@@ -97,7 +97,7 @@ namespace Core {
                     if (light->getType() == LightType::AmbientIBL) {
                         if (objectReflectionProbe) {
                             WeakPointer<AmbientIBLLight> ambientIBLlight = WeakPointer<Object3DComponent>::dynamicPointerCast<AmbientIBLLight>(comp);
-                            WeakPointer<CubeTexture> iblMap = WeakPointer<Texture>::dynamicPointerCast<CubeTexture>(objectReflectionProbe->getIrridianceMap()->getColorTexture());
+                            WeakPointer<CubeTexture> iblMap = WeakPointer<Texture>::dynamicPointerCast<CubeTexture>(objectReflectionProbe->getIrradianceMap()->getColorTexture());
                             ambientIBLlight->setIBLTexture(iblMap);
                         }
                         else continue;
@@ -121,8 +121,8 @@ namespace Core {
                 probeCam->setRenderTarget(reflectionProbe->getSceneRenderTarget());
                 this->renderShadowMaps(nonIBLLightList, LightType::Directional, objectList, probeCam);
                 this->render(probeCam, objectList, nonIBLLightList, WeakPointer<Material>::nullPtr());
-                probeCam->setRenderTarget(reflectionProbe->getIrridianceMap());
-                this->renderObjectBasic(reflectionProbe->getSkyboxObject(), probeCam, reflectionProbe->getIrridianceRendererMaterial());
+                probeCam->setRenderTarget(reflectionProbe->getIrradianceMap());
+                this->renderObjectBasic(reflectionProbe->getSkyboxObject(), probeCam, reflectionProbe->getIrradianceRendererMaterial());
                 reflectionProbe->setNeedsUpdate(false);
             }
         }
@@ -235,9 +235,16 @@ namespace Core {
         WeakPointer<RenderTarget> currentRenderTarget = graphics->getCurrentRenderTarget();
         Vector4u currentViewport = currentRenderTarget->getViewport();
 
-        WeakPointer<RenderTarget> nextRenderTarget = viewDescriptor.renderTarget; 
+        WeakPointer<RenderTarget> nextRenderTarget;
+        if (viewDescriptor.indirectHDREnabled) {
+            nextRenderTarget = viewDescriptor.hdrRenderTarget;
+        }
+        else {
+            nextRenderTarget = viewDescriptor.renderTarget; 
+        }
+
         graphics->activateRenderTarget(nextRenderTarget);
-        if (viewDescriptor.cubeFace >= 0) {
+        if (viewDescriptor.cubeFace >= 0 && !viewDescriptor.indirectHDREnabled) {
             graphics->activateCubeRenderTargetSide((CubeTextureSide)viewDescriptor.cubeFace);
         }
         Vector2u renderTargetSize = nextRenderTarget->getSize();
@@ -268,12 +275,13 @@ namespace Core {
             this->renderObjectDirect(object, viewDescriptor, lightList);
         }
 
+        if (viewDescriptor.indirectHDREnabled) {
+            graphics->blit(viewDescriptor.hdrRenderTarget, viewDescriptor.renderTarget, viewDescriptor.cubeFace, this->tonemapMaterial, true);
+        }
+
         graphics->activateRenderTarget(currentRenderTarget);
         graphics->setViewport(currentViewport.x, currentViewport.y, currentViewport.z, currentViewport.w);
 
-        if (viewDescriptor.isSystemHDR) {
-            graphics->blit(nextRenderTarget, graphics->getDefaultRenderTarget(), this->tonemapMaterial, true);
-        }
     }
 
     void Renderer::renderObjectDirect(WeakPointer<Object3D> object, WeakPointer<Camera> camera, WeakPointer<Material> overrideMaterial) {
@@ -362,7 +370,7 @@ namespace Core {
                                 orthoShadowMapCamera->setNearAndFar(proj.near, proj.far);
 
                                 ViewDescriptor viewDesc;
-                                viewDesc.isSystemHDR = false;
+                                viewDesc.indirectHDREnabled = false;
                                 viewDesc.cubeFace = -1;
                                 this->getViewDescriptorTransformations(viewTrans, orthoShadowMapCamera->getProjectionMatrix(),
                                                         orthoShadowMapCamera->getAutoClearRenderBuffers(), viewDesc);
@@ -379,29 +387,30 @@ namespace Core {
     
     void Renderer::getViewDescriptorForCamera(WeakPointer<Camera> camera, ViewDescriptor& viewDescriptor) {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-        WeakPointer<RenderTarget> cameraRenderTarget;
-        viewDescriptor.isSystemHDR = false;
-        if (camera->isHDREnabled()) {
-            Vector2u defaultRenderTargetSize = graphics->getDefaultRenderTarget()->getSize();
-            if (!this->hdrRenderTarget.isValid() || 
-                hdrRenderTarget->getSize().x != defaultRenderTargetSize.x ||
-                hdrRenderTarget->getSize().y != defaultRenderTargetSize.y) {
-                this->buildHDRRenderTarget(defaultRenderTargetSize);
+        WeakPointer<RenderTarget> cameraRenderTarget = camera->getRenderTarget();
+        if (!cameraRenderTarget.isValid()) {
+            cameraRenderTarget = graphics->getDefaultRenderTarget();
+        }
+        if (camera->isHDREnabled() && !cameraRenderTarget->isHDRCapable()) {
+            Vector2u targetSize = cameraRenderTarget->getSize();
+            WeakPointer<RenderTarget2D> cameraHDRRenderTarget = camera->getHDRRenderTarget();
+            if (!cameraHDRRenderTarget.isValid() || 
+                cameraHDRRenderTarget->getSize().x != targetSize.x ||
+                cameraHDRRenderTarget->getSize().y != targetSize.y) {
+                camera->buildHDRRenderTarget(targetSize);
             }
-            cameraRenderTarget = this->hdrRenderTarget;
-            viewDescriptor.isSystemHDR = true;
+            viewDescriptor.renderTarget = cameraRenderTarget;
+            viewDescriptor.hdrRenderTarget = camera->getHDRRenderTarget();
+            viewDescriptor.indirectHDREnabled = true;
         }
         else {
-            cameraRenderTarget = camera->getRenderTarget();
-            if (!cameraRenderTarget.isValid()) {
-                cameraRenderTarget = graphics->getDefaultRenderTarget();
-            }
+            viewDescriptor.indirectHDREnabled = false;
+            viewDescriptor.hdrRenderTarget = WeakPointer<RenderTarget2D>::nullPtr();
+            viewDescriptor.renderTarget = cameraRenderTarget;
         }
-        Skybox * skybox = camera->isSkyboxEnabled() ? &camera->getSkybox() : nullptr;
-        viewDescriptor.skybox = skybox;
+        viewDescriptor.skybox = camera->isSkyboxEnabled() ? &camera->getSkybox() : nullptr;
         this->getViewDescriptorTransformations(camera->getOwner()->getTransform().getWorldMatrix(),
                                 camera->getProjectionMatrix(), camera->getAutoClearRenderBuffers(), viewDescriptor);
-        viewDescriptor.renderTarget = cameraRenderTarget;
         viewDescriptor.cameraPosition.set(0.0f, 0.0f, 0.0f);
         viewDescriptor.cubeFace = -1;
         viewDescriptor.viewMatrix.transform(viewDescriptor.cameraPosition);
@@ -454,20 +463,6 @@ namespace Core {
 
     Bool Renderer::compareLights (WeakPointer<Light> a, WeakPointer<Light> b) { 
         return ((UInt32)a->getType() < (UInt32)b->getType()); 
-    }
-
-    void Renderer::buildHDRRenderTarget(const Vector2u& size) {
-        if (this->hdrRenderTarget) {
-            Engine::instance()->getGraphicsSystem()->destroyRenderTarget2D(this->hdrRenderTarget, true, true);
-        }
-        TextureAttributes hdrColorAttributes;
-        hdrColorAttributes.Format = TextureFormat::RGBA16F;
-        hdrColorAttributes.FilterMode = TextureFilter::Point;
-        hdrColorAttributes.MipMapLevel = 0;
-        hdrColorAttributes.WrapMode = TextureWrap::Clamp;
-        TextureAttributes hdrDepthAttributes;
-        hdrDepthAttributes.IsDepthTexture = true;
-        this->hdrRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTarget2D(true, true, false, hdrColorAttributes, hdrDepthAttributes, size);
     }
 
 }

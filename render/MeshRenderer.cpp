@@ -172,10 +172,10 @@ namespace Core {
                 }
 
                 if (lightType == LightType::AmbientIBL) {
-                    Int32 irridianceMapLoc = shader->getUniformLocation(StandardUniform::LightIrridianceMap);
-                    if (irridianceMapLoc >= 0) {
+                    Int32 irradianceMapLoc = shader->getUniformLocation(StandardUniform::LightIrradianceMap);
+                    if (irradianceMapLoc >= 0) {
                         WeakPointer<AmbientIBLLight> ambientIBLLight = WeakPointer<Light>::dynamicPointerCast<AmbientIBLLight>(light);
-                        shader->setTextureCube(currentTextureSlot, irridianceMapLoc, ambientIBLLight->getIBLTexture()->getTextureID());
+                        shader->setTextureCube(currentTextureSlot, irradianceMapLoc, ambientIBLLight->getIBLTexture()->getTextureID());
                         currentTextureSlot++;
                     }
                 }

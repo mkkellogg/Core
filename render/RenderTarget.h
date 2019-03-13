@@ -27,6 +27,7 @@ namespace Core {
         Vector4u getViewport();
         Bool isColorBufferTexture() const;
         Bool isDepthBufferTexture() const;
+        Bool isHDRCapable() const;
         virtual void destroyColorBuffer() = 0;
         virtual void destroyDepthBuffer() = 0;
 

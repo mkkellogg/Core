@@ -3,7 +3,7 @@
 #include "../image/TextureAttr.h"
 #include "../render/Camera.h"
 #include "../render/RenderTargetCube.h"
-#include "../material/IrridianceRendererMaterial.h"
+#include "../material/IrradianceRendererMaterial.h"
 #include "../geometry/GeometryUtils.h"
 #include "../scene/Object3D.h"
 
@@ -15,27 +15,32 @@ namespace Core {
 
     void ReflectionProbe::init() {
         Vector2u size(512, 512);
-        Core::TextureAttributes colorAttributes;
-        colorAttributes.Format = Core::TextureFormat::RGBA8;
-        colorAttributes.FilterMode = Core::TextureFilter::Linear;
+        Core::TextureAttributes colorAttributesScene;
+        colorAttributesScene.Format = Core::TextureFormat::RGBA16F;
+        colorAttributesScene.FilterMode = Core::TextureFilter::Linear;
+        Core::TextureAttributes colorAttributesIrradiance;
+        colorAttributesIrradiance.Format = Core::TextureFormat::RGBA16F;
+        colorAttributesIrradiance.FilterMode = Core::TextureFilter::Linear;
         Core::TextureAttributes depthAttributes;
-        this->sceneRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorAttributes, depthAttributes, size);
-        this->irridianceMap = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorAttributes, depthAttributes, size);
+        depthAttributes.IsDepthTexture = true;
+        this->sceneRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorAttributesScene, depthAttributes, size);
+        this->irradianceMap = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorAttributesIrradiance, depthAttributes, size);
 
         this->renderCamera = Engine::instance()->createPerspectiveCamera(this->getOwner(), Core::Math::PI / 2.0f, 1.0, 0.1f, 100.0f);
         this->renderCamera->setRenderTarget(this->sceneRenderTarget);
         this->renderCamera->setAutoClearRenderBuffer(RenderBufferType::Color, true);
         this->renderCamera->setAutoClearRenderBuffer(RenderBufferType::Depth, true);
         this->renderCamera->setActive(false);
+        this->renderCamera->setHDREnabled(false);
 
-        this->irridianceRendererMaterial = Engine::instance()->createMaterial<IrridianceRendererMaterial>();
+        this->irradianceRendererMaterial = Engine::instance()->createMaterial<IrradianceRendererMaterial>();
         Core::WeakPointer<Core::CubeTexture> sceneCubeTexture = Core::WeakPointer<Core::Texture>::dynamicPointerCast<Core::CubeTexture>(this->sceneRenderTarget->getColorTexture());
-        this->irridianceRendererMaterial->setTexture(sceneCubeTexture);
-        this->irridianceRendererMaterial->setFaceCullingEnabled(false);
+        this->irradianceRendererMaterial->setTexture(sceneCubeTexture);
+        this->irradianceRendererMaterial->setFaceCullingEnabled(false);
 
         Color cubeColor(1.0f, 1.0f, 1.0f, 1.0f);
         WeakPointer<Mesh> cubeMesh = GeometryUtils::buildBoxMesh(1.0, 1.0, 1.0, cubeColor);
-        this->skyboxCube = GeometryUtils::buildMeshContainer(cubeMesh, this->irridianceRendererMaterial, "irridianceCube");
+        this->skyboxCube = GeometryUtils::buildMeshContainer(cubeMesh, this->irradianceRendererMaterial, "irradianceCube");
     }
 
     void ReflectionProbe::setNeedsUpdate(Bool needsUpdate) {
@@ -58,12 +63,12 @@ namespace Core {
         return this->sceneRenderTarget;
     }
 
-    WeakPointer<RenderTargetCube> ReflectionProbe::getIrridianceMap() {
-        return this->irridianceMap;
+    WeakPointer<RenderTargetCube> ReflectionProbe::getIrradianceMap() {
+        return this->irradianceMap;
     }
 
-    WeakPointer<IrridianceRendererMaterial> ReflectionProbe::getIrridianceRendererMaterial() {
-        return this->irridianceRendererMaterial;
+    WeakPointer<IrradianceRendererMaterial> ReflectionProbe::getIrradianceRendererMaterial() {
+        return this->irradianceRendererMaterial;
     }
 
     void ReflectionProbe::setSkybox(Skybox& skybox) {

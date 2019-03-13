@@ -23,15 +23,6 @@ namespace Core {
         this->setAutoClearRenderBuffer(RenderBufferType::Stencil, true);
     }
 
-    void Camera::updateProjection() {
-        if (this->ortho) {
-            Camera::buildOrthographicProjectionMatrix(this->top, this->bottom, this->left, this->right, this->near, this->far, this->projectionMatrix);
-        }
-        else {
-            Camera::buildPerspectiveProjectionMatrix(this->fov, this->aspectRatio, this->near, this->far, this->projectionMatrix);
-        }
-    }
-
     void Camera::setAspectRatio(Real ratio) {
         this->aspectRatio = ratio;
         this->updateProjection();
@@ -107,6 +98,10 @@ namespace Core {
 
     WeakPointer<RenderTarget> Camera::getRenderTarget() {
         return this->renderTarget;
+    }
+    
+    WeakPointer<RenderTarget2D> Camera::getHDRRenderTarget() {
+        return this->hdrRenderTarget;
     }
 
     void Camera::setOrtho(Bool ortho) {
@@ -247,6 +242,29 @@ namespace Core {
         data[11] = 0.0f;
 
         matrix.copy(data);
+    }
+
+    void Camera::updateProjection() {
+        if (this->ortho) {
+            Camera::buildOrthographicProjectionMatrix(this->top, this->bottom, this->left, this->right, this->near, this->far, this->projectionMatrix);
+        }
+        else {
+            Camera::buildPerspectiveProjectionMatrix(this->fov, this->aspectRatio, this->near, this->far, this->projectionMatrix);
+        }
+    }
+
+    void Camera::buildHDRRenderTarget(const Vector2u& size) {
+        if (this->hdrRenderTarget) {
+            Engine::instance()->getGraphicsSystem()->destroyRenderTarget2D(this->hdrRenderTarget, true, true);
+        }
+        TextureAttributes hdrColorAttributes;
+        hdrColorAttributes.Format = TextureFormat::RGBA16F;
+        hdrColorAttributes.FilterMode = TextureFilter::Point;
+        hdrColorAttributes.MipMapLevel = 0;
+        hdrColorAttributes.WrapMode = TextureWrap::Clamp;
+        TextureAttributes hdrDepthAttributes;
+        hdrDepthAttributes.IsDepthTexture = true;
+        this->hdrRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTarget2D(true, true, false, hdrColorAttributes, hdrDepthAttributes, size);
     }
 
     Camera* Camera::createPerspectiveCamera(WeakPointer<Object3D> owner, Real fov, Real aspectRatio, Real near, Real far) {

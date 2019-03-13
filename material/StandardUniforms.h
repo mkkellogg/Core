@@ -36,7 +36,7 @@ namespace Core {
         LightCascadeEnd = 24,
         LightCascadeCount = 25,
         LightNearPlane = 26,
-        LightIrridianceMap = 27,
+        LightIrradianceMap = 27,
         LightCount = 28,
         AmbientLightCount = 29,
         AmbientIBLLightCount = 30,

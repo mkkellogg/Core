@@ -19,6 +19,7 @@ namespace Core {
 
     class Camera : public Object3DComponent {
         friend class Engine;
+        friend class Renderer;
 
     public:
         static const UInt32 DEFAULT_FOV;
@@ -45,6 +46,7 @@ namespace Core {
         void unProject(Vector3Base<Real>& vec) const;
         void setRenderTarget(WeakPointer<RenderTarget> renderTarget);
         WeakPointer<RenderTarget> getRenderTarget();
+        WeakPointer<RenderTarget2D> getHDRRenderTarget();
         void setOrtho(Bool ortho);
         Bool isOrtho() const;
         void setAutoClearRenderBuffer(RenderBufferType type, Bool clear);
@@ -65,6 +67,7 @@ namespace Core {
     private:
         Camera(WeakPointer<Object3D> owner);
         void updateProjection();
+        void buildHDRRenderTarget(const Vector2u& size);
 
         static Camera* createPerspectiveCamera(WeakPointer<Object3D> owner, Real fov, Real aspectRatio, Real near, Real far);
         static Camera* createOrthographicCamera(WeakPointer<Object3D> owner, Real top, Real bottom, Real left, Real right, Real near, Real far);
@@ -84,6 +87,7 @@ namespace Core {
 
         Matrix4x4 projectionMatrix;
         PersistentWeakPointer<RenderTarget> renderTarget;
+        PersistentWeakPointer<RenderTarget2D> hdrRenderTarget;
         IntMask clearRenderBuffers;
 
         Bool skyboxEnabled;

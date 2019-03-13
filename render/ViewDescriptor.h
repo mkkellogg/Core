@@ -9,6 +9,7 @@ namespace Core {
     // forward declarations
     class Material;
     class RenderTarget;
+    class RenderTarget2D;
     class Skybox;
 
     class ViewDescriptor {
@@ -21,10 +22,11 @@ namespace Core {
         Matrix4x4 projectionMatrix;
         PersistentWeakPointer<Material> overrideMaterial;
         PersistentWeakPointer<RenderTarget> renderTarget;
+        PersistentWeakPointer<RenderTarget2D> hdrRenderTarget;
         Int32 cubeFace = -1;
         IntMask clearRenderBuffers;
         Skybox* skybox = nullptr;
-        Bool isSystemHDR = false;
+        Bool indirectHDREnabled = false;
 
     };
 

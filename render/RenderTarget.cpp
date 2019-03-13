@@ -83,6 +83,10 @@ namespace Core {
         return depthBufferIsTexture;
     }
 
+    Bool RenderTarget::isHDRCapable() const {
+        return this->colorTextureAttributes.Format == TextureFormat::RGBA16F || this->colorTextureAttributes.Format == TextureFormat::RGBA32F;
+    }
+
     Bool RenderTarget::buildAndVerifyTexture(WeakPointer<Texture> texture) {
         if (!texture.isValid()) {
             throw RenderTargetException("RenderTarget::buildAndVerifyTexture -> Texture is not valid.");

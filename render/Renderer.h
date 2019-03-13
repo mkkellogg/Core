@@ -68,7 +68,6 @@ namespace Core {
         WeakPointer<DepthOnlyMaterial> depthMaterial;
         WeakPointer<DistanceOnlyMaterial> distanceMaterial;
         WeakPointer<Object3D> reflectionProbeObject;
-        WeakPointer<RenderTarget2D> hdrRenderTarget;
         WeakPointer<TonemapMaterial> tonemapMaterial;
     };
 }

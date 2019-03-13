@@ -13,6 +13,7 @@
 #include "render/RenderableContainer.h"
 #include "render/Camera.h"
 #include "render/RenderTarget.h"
+#include "render/RenderTarget2D.h"
 #include "geometry/AttributeArrayGPUStorage.h"
 #include "geometry/Mesh.h"
 #include "geometry/GeometryUtils.h"
@@ -45,7 +46,7 @@ namespace Core {
         this->updateDefaultRenderTargetViewport(Vector4u(hOffset, vOffset, viewPortWidth, viewPortHeight));
     }
 
-    void Graphics::blit(WeakPointer<RenderTarget> source, WeakPointer<RenderTarget> destination, WeakPointer<Material> material, Bool includeDepth) {
+    void Graphics::blit(WeakPointer<RenderTarget2D> source, WeakPointer<RenderTarget> destination, Int16 cubeFace, WeakPointer<Material> material, Bool includeDepth) {
         static Bool initialized = false;
         static WeakPointer<Mesh> fullScreenQuadMesh;
         static WeakPointer<RenderableContainer<Mesh>> fullScreenQuadObject;
@@ -84,12 +85,18 @@ namespace Core {
         renderCamera->setAutoClearRenderBuffer(RenderBufferType::Color, true);
         renderCamera->setAutoClearRenderBuffer(RenderBufferType::Depth, false);
         renderCamera->setAutoClearRenderBuffer(RenderBufferType::Stencil, false);
+
+        Engine::instance()->getGraphicsSystem()->activateRenderTarget(destination);
+        if (cubeFace >= 0) {
+            Engine::instance()->getGraphicsSystem()->activateCubeRenderTargetSide((CubeTextureSide)cubeFace);
+        }
         this->getRenderer()->renderObjectDirect(fullScreenQuadObject, renderCamera, material);
+
         material->setFaceCullingEnabled(faceCullingEnabled);
         material->setDepthTestEnabled(depthTestEnabled);
 
         if (includeDepth) {
-            this->lowLevelBlit(source, destination, false, true);
+            this->lowLevelBlit(source, destination, -1, false, true);
         }
     }
 }

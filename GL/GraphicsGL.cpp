@@ -452,13 +452,17 @@ namespace Core {
         glPolygonMode(GL_BACK, this->_statePolygonMode[1]);
     }
 
-    void GraphicsGL::lowLevelBlit(WeakPointer<RenderTarget> source, WeakPointer<RenderTarget> destination, Bool includeColor, Bool includeDepth) {
+    void GraphicsGL::lowLevelBlit(WeakPointer<RenderTarget2D> source, WeakPointer<RenderTarget> destination, Int16 cubeFace, Bool includeColor, Bool includeDepth) {
         GLint srcID = (dynamic_cast<RenderTargetGL *>(source.get()))->getFBOID();
         GLint destID = (dynamic_cast<RenderTargetGL *>(destination.get()))->getFBOID();
         Vector2u size = destination->getSize();
 
         glBindFramebuffer(GL_READ_FRAMEBUFFER, srcID);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, destID);
+        if (includeColor && cubeFace >= 0) {
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, getGLCubeTarget((CubeTextureSide)cubeFace), destination->getColorTexture()->getTextureID(), 0);
+
+        }
         GLuint mask = 0;
         if (includeColor) mask |= GL_COLOR_BUFFER_BIT;
         if (includeDepth) mask |= GL_DEPTH_BUFFER_BIT;

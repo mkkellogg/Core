@@ -14,7 +14,7 @@ namespace Core {
     class Camera;
     class Light;
     class RenderTargetCube;
-    class IrridianceRendererMaterial;
+    class IrradianceRendererMaterial;
     class Skybox;
 
     class ReflectionProbe : public Object3DComponent {
@@ -27,16 +27,16 @@ namespace Core {
         WeakPointer<Camera> getRenderCamera();
         WeakPointer<Object3D> getSkyboxObject();
         WeakPointer<RenderTargetCube> getSceneRenderTarget();
-        WeakPointer<RenderTargetCube> getIrridianceMap();
-        WeakPointer<IrridianceRendererMaterial> getIrridianceRendererMaterial();
+        WeakPointer<RenderTargetCube> getIrradianceMap();
+        WeakPointer<IrradianceRendererMaterial> getIrradianceRendererMaterial();
 
     private:
         Bool needsUpdate;
         WeakPointer<RenderTargetCube> sceneRenderTarget;
-        WeakPointer<RenderTargetCube> irridianceMap;
+        WeakPointer<RenderTargetCube> irradianceMap;
         WeakPointer<Object3D> renderCameraObject;
         WeakPointer<Camera> renderCamera;
-        WeakPointer<IrridianceRendererMaterial> irridianceRendererMaterial;
+        WeakPointer<IrradianceRendererMaterial> irradianceRendererMaterial;
         WeakPointer<Object3D> skyboxCube;
     };
 

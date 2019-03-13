@@ -48,7 +48,7 @@ const std::string LIGHT_ANGULAR_SHADOW_BIAS = _un(Core::StandardUniform::LightAn
 const std::string LIGHT_SHADOW_MAP_SIZE = _un(Core::StandardUniform::LightShadowMapSize);
 const std::string LIGHT_SHADOW_SOFTNESS = _un(Core::StandardUniform::LightShadowSoftness);
 const std::string LIGHT_NEAR_PLANE = _un(Core::StandardUniform::LightNearPlane);
-const std::string LIGHT_IRRIDIANCE_MAP = _un(Core::StandardUniform::LightIrridianceMap);
+const std::string LIGHT_IRRADIANCE_MAP = _un(Core::StandardUniform::LightIrradianceMap);
 const std::string AMBIENT_LIGHT_COUNT = _un(Core::StandardUniform::AmbientLightCount);
 const std::string AMBIENT_IBL_LIGHT_COUNT = _un(Core::StandardUniform::AmbientIBLLightCount);
 const std::string POINT_LIGHT_COUNT = _un(Core::StandardUniform::PointLightCount);
@@ -86,7 +86,7 @@ const std::string LIGHT_ANGULAR_SHADOW_BIAS_SINGLE_DEF ="uniform float " + LIGHT
 const std::string LIGHT_SHADOW_MAP_SIZE_SINGLE_DEF = "uniform float " + LIGHT_SHADOW_MAP_SIZE + "[1];\n";
 const std::string LIGHT_SHADOW_SOFTNESS_SINGLE_DEF = "uniform int " + LIGHT_SHADOW_SOFTNESS + "[1];\n";
 // Single-pass ambient IBL light parameters
-const std::string LIGHT_IRRIDIANCE_MAP_SINGLE_DEF = "uniform samplerCube " + LIGHT_IRRIDIANCE_MAP + "[1];\n";
+const std::string LIGHT_IRRADIANCE_MAP_SINGLE_DEF = "uniform samplerCube " + LIGHT_IRRADIANCE_MAP + "[1];\n";
 // Single-pass point light parameters
 const std::string LIGHT_POSITION_SINGLE_DEF = "uniform vec4 " + LIGHT_POSITION + "[1];\n";
 const std::string LIGHT_ATTENUATION_SINGLE_DEF = "uniform float " + LIGHT_ATTENUATION + "[1];\n";
@@ -114,7 +114,7 @@ const std::string AMBIENTL_LIGHT_DEF = "unfirm int " + AMBIENT_LIGHT_COUNT + ";\
 const std::string AMBIENTL_IBL_LIGHT_DEF = "unfirm int " + AMBIENT_IBL_LIGHT_COUNT + ";\n";
 const std::string LIGHT_COUNT_DEF = "uniform int " + LIGHT_COUNT + ";\n";
 // Single-pass ambient IBL light parameters
-const std::string LIGHT_IRRIDIANCE_MAP_DEF = "uniform samplerCube " + LIGHT_IRRIDIANCE_MAP + "[" + MAX_LIGHTS + "];\n";
+const std::string LIGHT_IRRADIANCE_MAP_DEF = "uniform samplerCube " + LIGHT_IRRADIANCE_MAP + "[" + MAX_LIGHTS + "];\n";
 // Common multi-pass light parameters
 const std::string LIGHT_COLOR_DEF = "uniform vec4 " + LIGHT_COLOR + "[" + MAX_LIGHTS + "];\n";
 const std::string LIGHT_INTENSITY_DEF = "uniform float " + LIGHT_INTENSITY + "[" + MAX_LIGHTS + "];\n";
@@ -196,8 +196,8 @@ namespace Core {
         this->setShader(ShaderType::Vertex, "Tonemap", ShaderManagerGL::Tonemap_vertex);
         this->setShader(ShaderType::Fragment, "Tonemap", ShaderManagerGL::Tonemap_fragment);
 
-        this->setShader(ShaderType::Vertex, "IrridianceRenderer", ShaderManagerGL::IrridianceRenderer_vertex);
-        this->setShader(ShaderType::Fragment, "IrridianceRenderer", ShaderManagerGL::IrridianceRenderer_fragment);
+        this->setShader(ShaderType::Vertex, "IrradianceRenderer", ShaderManagerGL::IrradianceRenderer_vertex);
+        this->setShader(ShaderType::Fragment, "IrradianceRenderer", ShaderManagerGL::IrradianceRenderer_fragment);
 
         this->setShader(ShaderType::Vertex, "Depth", ShaderManagerGL::Depth_vertex);
         this->setShader(ShaderType::Fragment, "Depth", ShaderManagerGL::Depth_fragment);
@@ -429,7 +429,7 @@ namespace Core {
             + LIGHT_COLOR_DEF
             + LIGHT_SHADOW_MAP_SIZE_DEF
             + LIGHT_NEAR_PLANE_DEF
-            + LIGHT_IRRIDIANCE_MAP_DEF +
+            + LIGHT_IRRADIANCE_MAP_DEF +
             "in float _core_viewSpacePosZ[" + MAX_LIGHTS + "];\n"
             "in vec4 _core_lightSpacePos[" + MAX_CASCADES_LIGHTS + "];\n";
 
@@ -461,7 +461,7 @@ namespace Core {
             + LIGHT_COLOR_SINGLE_DEF
             + LIGHT_SHADOW_MAP_SIZE_SINGLE_DEF
             + LIGHT_NEAR_PLANE_SINGLE_DEF
-            + LIGHT_IRRIDIANCE_MAP_SINGLE_DEF +
+            + LIGHT_IRRADIANCE_MAP_SINGLE_DEF +
             "in float _core_viewSpacePosZ[1];\n"
             "in vec4 _core_lightSpacePos[" + MAX_CASCADES + "];\n";
 
@@ -741,7 +741,7 @@ namespace Core {
             "            return vec4(albedo.rgb * " + LIGHT_COLOR + "[lightIndex].rgb, albedo.a);\n"
             "        }\n"
             "        else if (" + LIGHT_TYPE + "[lightIndex] == AMBIENT_IBL_LIGHT) {\n"
-            "            vec4 lightColor = texture(" + LIGHT_IRRIDIANCE_MAP + "[lightIndex], worldNormal); \n"
+            "            vec4 lightColor = texture(" + LIGHT_IRRADIANCE_MAP + "[lightIndex], worldNormal); \n"
             //"            lightColor = vec4(1.0, 0.0, 0.0, 1.0); \n"
             "            return vec4(albedo.rgb * lightColor.rgb, albedo.a);\n"
             "        }\n"
@@ -924,7 +924,7 @@ namespace Core {
             "    out_color = vec4(color, 1.0);\n"
             "}\n";
 
-        this->IrridianceRenderer_vertex =
+        this->IrradianceRenderer_vertex =
             "#version 330\n"
             "precision highp float;\n"
             "layout (location = 0 ) " + POSITION_DEF
@@ -938,8 +938,9 @@ namespace Core {
             "    gl_Position = (" + PROJECTION_MATRIX + " * vWorldPos).xyww;\n"
             "}\n";
 
-        this->IrridianceRenderer_fragment =   
+        this->IrradianceRenderer_fragment =   
             "#version 330\n"
+             "precision highp float;\n"
             "out vec4 FragColor;\n"
             "in vec4 localPos;\n"
             "uniform samplerCube cubeTexture;\n"
@@ -954,18 +955,24 @@ namespace Core {
             "    up         = cross(normal, right);\n"
 
             "    float sampleDelta = 0.025;\n"
-            "    float nrSamples = 0.0;\n" 
-            "    for(float phi = 0.0; phi < 2.0 * PI; phi += sampleDelta) { \n"
-            "        for(float theta = 0.0; theta < 0.5 * PI; theta += sampleDelta) { \n"
+            "    float samplesTaken = 0.0;\n" 
+            "    float rangePhi = 2.0 * PI; \n"
+            "    float rangeTheta = 0.5 * PI; \n"
+            "    float nrSamples = (rangePhi / sampleDelta) * (rangeTheta / sampleDelta);"
+            "    float avgScale = 1.0 / nrSamples;"
+            "    for(float phi = 0.0; phi < rangePhi; phi += sampleDelta) { \n"
+            "        for(float theta = 0.0; theta < rangeTheta; theta += sampleDelta) { \n"
                          // spherical to cartesian (in tangent space)
             "            vec3 tangentSample = vec3(sin(theta) * cos(phi),  sin(theta) * sin(phi), cos(theta));\n"
                          // tangent space to world
             "            vec3 sampleVec = tangentSample.x * right + tangentSample.y * up + tangentSample.z * normal;\n" 
-            "            irradiance += texture(cubeTexture, sampleVec).rgb * cos(theta) * sin(theta);\n"
-            "            nrSamples++;\n"
+            "            vec3 texColor = texture(cubeTexture, sampleVec).rgb; \n"
+            "            texColor = clamp(texColor, 0.0, 128.0); \n"
+            "            irradiance += texColor * cos(theta) * sin(theta);\n"
+            "            samplesTaken++;\n"
             "        }\n"
             "    }\n"
-            "    irradiance = PI * irradiance * (1.0 / float(nrSamples));\n"
+            "    irradiance = PI * irradiance * (1.0 / samplesTaken);\n"
             "    FragColor = vec4(irradiance, 1.0);\n"
             "}\n";
 
@@ -1249,13 +1256,16 @@ namespace Core {
         this->BasicCube_fragment =  
             "#version 330\n"
             "precision mediump float;\n"
+            "#include \"PhysicalCommon\" \n"
             "uniform samplerCube cubeTexture; \n"
             "in vec4 vColor;\n"
             "in vec3 vUV;\n"
             "out vec4 out_color;\n"
             "void main() {\n"
-            "    vec4 textureColor = texture(cubeTexture, vUV);\n"
-            "    out_color = textureColor;\n"
+            "    vec3 textureColor = texture(cubeTexture, vUV).rgb;\n"
+            "    textureColor = toneMapReinhard(textureColor); \n"
+            "    textureColor = gammaCorrectBasic(textureColor); \n"
+            "    out_color = vec4(textureColor, 1.0);\n"
             "}\n";
     }
 

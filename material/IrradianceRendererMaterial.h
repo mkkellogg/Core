@@ -8,11 +8,11 @@ namespace Core {
     // forward declarations
     class Engine;
 
-    class IrridianceRendererMaterial : public SkyboxMaterial {
+    class IrradianceRendererMaterial : public SkyboxMaterial {
         friend class Engine;
     public:
 
     protected:
-        IrridianceRendererMaterial(WeakPointer<Graphics> graphics);
+        IrradianceRendererMaterial(WeakPointer<Graphics> graphics);
     };
 }
