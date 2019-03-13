@@ -48,6 +48,9 @@ const std::string LIGHT_ANGULAR_SHADOW_BIAS = _un(Core::StandardUniform::LightAn
 const std::string LIGHT_SHADOW_MAP_SIZE = _un(Core::StandardUniform::LightShadowMapSize);
 const std::string LIGHT_SHADOW_SOFTNESS = _un(Core::StandardUniform::LightShadowSoftness);
 const std::string LIGHT_NEAR_PLANE = _un(Core::StandardUniform::LightNearPlane);
+const std::string LIGHT_IRRIDIANCE_MAP = _un(Core::StandardUniform::LightIrridianceMap);
+const std::string AMBIENT_LIGHT_COUNT = _un(Core::StandardUniform::AmbientLightCount);
+const std::string AMBIENT_IBL_LIGHT_COUNT = _un(Core::StandardUniform::AmbientIBLLightCount);
 const std::string POINT_LIGHT_COUNT = _un(Core::StandardUniform::PointLightCount);
 const std::string DIRECTIONAL_LIGHT_COUNT = _un(Core::StandardUniform::DirectionalLightCount);
 
@@ -82,6 +85,8 @@ const std::string LIGHT_CONSTANT_SHADOW_BIAS_SINGLE_DEF = "uniform float " + LIG
 const std::string LIGHT_ANGULAR_SHADOW_BIAS_SINGLE_DEF ="uniform float " + LIGHT_ANGULAR_SHADOW_BIAS + "[1];\n";
 const std::string LIGHT_SHADOW_MAP_SIZE_SINGLE_DEF = "uniform float " + LIGHT_SHADOW_MAP_SIZE + "[1];\n";
 const std::string LIGHT_SHADOW_SOFTNESS_SINGLE_DEF = "uniform int " + LIGHT_SHADOW_SOFTNESS + "[1];\n";
+// Single-pass ambient IBL light parameters
+const std::string LIGHT_IRRIDIANCE_MAP_SINGLE_DEF = "uniform samplerCube " + LIGHT_IRRIDIANCE_MAP + "[1];\n";
 // Single-pass point light parameters
 const std::string LIGHT_POSITION_SINGLE_DEF = "uniform vec4 " + LIGHT_POSITION + "[1];\n";
 const std::string LIGHT_ATTENUATION_SINGLE_DEF = "uniform float " + LIGHT_ATTENUATION + "[1];\n";
@@ -105,7 +110,11 @@ const std::string MAX_POINT_LIGHTS_DEF = "const int MAX_POINT_LIGHTS = " + MAX_P
 const std::string MAX_DIRECTIONAL_LIGHTS_DEF = "const int MAX_DIRECTIONAL_LIGHTS = " + MAX_DIRECTIONAL_LIGHTS + ";\n";
 const std::string POINT_LIGHT_COUNT_DEF = "uniform int " + POINT_LIGHT_COUNT + ";\n";
 const std::string DIRECTIONAL_LIGHT_DEF = "unfirm int " + DIRECTIONAL_LIGHT_COUNT + ";\n";
+const std::string AMBIENTL_LIGHT_DEF = "unfirm int " + AMBIENT_LIGHT_COUNT + ";\n";
+const std::string AMBIENTL_IBL_LIGHT_DEF = "unfirm int " + AMBIENT_IBL_LIGHT_COUNT + ";\n";
 const std::string LIGHT_COUNT_DEF = "uniform int " + LIGHT_COUNT + ";\n";
+// Single-pass ambient IBL light parameters
+const std::string LIGHT_IRRIDIANCE_MAP_DEF = "uniform samplerCube " + LIGHT_IRRIDIANCE_MAP + "[" + MAX_LIGHTS + "];\n";
 // Common multi-pass light parameters
 const std::string LIGHT_COLOR_DEF = "uniform vec4 " + LIGHT_COLOR + "[" + MAX_LIGHTS + "];\n";
 const std::string LIGHT_INTENSITY_DEF = "uniform float " + LIGHT_INTENSITY + "[" + MAX_LIGHTS + "];\n";
@@ -419,7 +428,8 @@ namespace Core {
             + LIGHT_SHADOW_SOFTNESS_DEF
             + LIGHT_COLOR_DEF
             + LIGHT_SHADOW_MAP_SIZE_DEF
-            + LIGHT_NEAR_PLANE_DEF +
+            + LIGHT_NEAR_PLANE_DEF
+            + LIGHT_IRRIDIANCE_MAP_DEF +
             "in float _core_viewSpacePosZ[" + MAX_LIGHTS + "];\n"
             "in vec4 _core_lightSpacePos[" + MAX_CASCADES_LIGHTS + "];\n";
 
@@ -450,7 +460,8 @@ namespace Core {
             + LIGHT_SHADOW_SOFTNESS_SINGLE_DEF
             + LIGHT_COLOR_SINGLE_DEF
             + LIGHT_SHADOW_MAP_SIZE_SINGLE_DEF
-            + LIGHT_NEAR_PLANE_SINGLE_DEF +
+            + LIGHT_NEAR_PLANE_SINGLE_DEF
+            + LIGHT_IRRIDIANCE_MAP_SINGLE_DEF +
             "in float _core_viewSpacePosZ[1];\n"
             "in vec4 _core_lightSpacePos[" + MAX_CASCADES + "];\n";
 
@@ -728,6 +739,11 @@ namespace Core {
             "    if (" + LIGHT_ENABLED + "[lightIndex] != 0) {\n"
             "        if (" + LIGHT_TYPE + "[lightIndex] == AMBIENT_LIGHT) {\n"
             "            return vec4(albedo.rgb * " + LIGHT_COLOR + "[lightIndex].rgb, albedo.a);\n"
+            "        }\n"
+            "        else if (" + LIGHT_TYPE + "[lightIndex] == AMBIENT_IBL_LIGHT) {\n"
+            "            vec4 lightColor = texture(" + LIGHT_IRRIDIANCE_MAP + "[lightIndex], worldNormal); \n"
+            //"            lightColor = vec4(1.0, 0.0, 0.0, 1.0); \n"
+            "            return vec4(albedo.rgb * lightColor.rgb, albedo.a);\n"
             "        }\n"
             "        else { \n"
             "            vec3 lightLocalPos, toLight, halfwayVec, radiance; \n"

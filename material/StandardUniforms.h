@@ -36,14 +36,17 @@ namespace Core {
         LightCascadeEnd = 24,
         LightCascadeCount = 25,
         LightNearPlane = 26,
-        LightCount = 27,
-        PointLightCount = 28,
-        DirectionalLightCount = 29,
-        CameraPosition = 30,
-        Texture0 = 31,
-        DepthTexture = 32,
-        _Count = 33,  // Must always be last in the list (before _None)
-        _None = 34,
+        LightIrridianceMap = 27,
+        LightCount = 28,
+        AmbientLightCount = 29,
+        AmbientIBLLightCount = 30,
+        PointLightCount = 31,
+        DirectionalLightCount = 32,
+        CameraPosition = 33,
+        Texture0 = 34,
+        DepthTexture = 35,
+        _Count = 36,  // Must always be last in the list (before _None)
+        _None = 37,
     };
 
     class StandardUniforms {

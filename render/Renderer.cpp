@@ -23,13 +23,14 @@
 #include "../math/Matrix4x4.h"
 #include "../math/Quaternion.h"
 #include "../light/PointLight.h"
+#include "../light/AmbientIBLLight.h"
 #include "ReflectionProbe.h"
 
 
 namespace Core {
 
     Renderer::Renderer() {
-        this->ambientLightMode = RenderState::AmbientLightMode::Basic;
+        
     }
 
     Renderer::~Renderer() {
@@ -52,10 +53,6 @@ namespace Core {
         return true;
     }
 
-    void Renderer::setAmbientLighMode(RenderState::AmbientLightMode mode) {
-        this->ambientLightMode = mode;
-    }
-
     void Renderer::renderScene(WeakPointer<Scene> scene, WeakPointer<Material> overrideMaterial) {
         this->renderScene(scene->getRoot(), overrideMaterial);
     }
@@ -64,10 +61,12 @@ namespace Core {
         static std::vector<WeakPointer<Object3D>> objectList;
         static std::vector<WeakPointer<Camera>> cameraList;
         static std::vector<WeakPointer<Light>> lightList;
+        static std::vector<WeakPointer<Light>> nonIBLLightList;
         static std::vector<WeakPointer<ReflectionProbe>> reflectionProbeList;
         objectList.resize(0);
         cameraList.resize(0);
         lightList.resize(0);
+        nonIBLLightList.resize(0);
         reflectionProbeList.resize(0);
 
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
@@ -76,6 +75,7 @@ namespace Core {
         this->processScene(rootObject, curTransform, objectList);
 
         for (WeakPointer<Object3D> object : objectList) {
+            WeakPointer<ReflectionProbe> objectReflectionProbe;
             for (SceneObjectIterator<Object3DComponent> compItr = object->beginIterateComponents(); compItr != object->endIterateComponents(); ++compItr) {
                 WeakPointer<Object3DComponent> comp = (*compItr);
                 WeakPointer<Camera> camera = WeakPointer<Object3DComponent>::dynamicPointerCast<Camera>(comp);
@@ -83,38 +83,49 @@ namespace Core {
                     cameraList.push_back(camera);
                     continue;
                 }
-                WeakPointer<Light> light = WeakPointer<Object3DComponent>::dynamicPointerCast<Light>(comp);
-                if (light.isValid() && light->isActive()) {
-                    if (light->getType() == LightType::Ambient && this->ambientLightMode != RenderState::AmbientLightMode::Basic) continue;
-                    if (light->getType() == LightType::AmbientIBL && this->ambientLightMode != RenderState::AmbientLightMode::ImageBased) continue;
-                    lightList.push_back(light);
-                    continue;
-                }
                 WeakPointer<ReflectionProbe> reflectionProbe = WeakPointer<Object3DComponent>::dynamicPointerCast<ReflectionProbe>(comp);
                 if (reflectionProbe.isValid() && reflectionProbe->isActive()) {
                     reflectionProbeList.push_back(reflectionProbe);
+                    objectReflectionProbe = reflectionProbe;
+                    continue;
+                }
+            }
+            for (SceneObjectIterator<Object3DComponent> compItr = object->beginIterateComponents(); compItr != object->endIterateComponents(); ++compItr) {
+                WeakPointer<Object3DComponent> comp = (*compItr);
+                WeakPointer<Light> light = WeakPointer<Object3DComponent>::dynamicPointerCast<Light>(comp);
+                if (light.isValid() && light->isActive()) {
+                    if (light->getType() == LightType::AmbientIBL) {
+                        if (objectReflectionProbe) {
+                            WeakPointer<AmbientIBLLight> ambientIBLlight = WeakPointer<Object3DComponent>::dynamicPointerCast<AmbientIBLLight>(comp);
+                            WeakPointer<CubeTexture> iblMap = WeakPointer<Texture>::dynamicPointerCast<CubeTexture>(objectReflectionProbe->getIrridianceMap()->getColorTexture());
+                            ambientIBLlight->setIBLTexture(iblMap);
+                        }
+                        else continue;
+                    }
+                    else {
+                        nonIBLLightList.push_back(light);
+                    }
+                    lightList.push_back(light);
                     continue;
                 }
             }
         }
 
         std::sort(lightList.begin(), lightList.end(), Renderer::compareLights);
+        std::sort(nonIBLLightList.begin(), nonIBLLightList.end(), Renderer::compareLights);
         this->renderShadowMaps(lightList, LightType::Point, objectList);
 
-        RenderState::AmbientLightMode oldAmbientMode = this->ambientLightMode;
-        this->setAmbientLighMode(RenderState::AmbientLightMode::Basic);
         for (auto reflectionProbe : reflectionProbeList) {
             if (reflectionProbe->getNeedsUpdate()) {
                 WeakPointer<Camera> probeCam = reflectionProbe->getRenderCamera();
                 probeCam->setRenderTarget(reflectionProbe->getSceneRenderTarget());
-                this->renderShadowMaps(lightList, LightType::Directional, objectList, probeCam);
-                this->render(probeCam, objectList, lightList, WeakPointer<Material>::nullPtr());
+                this->renderShadowMaps(nonIBLLightList, LightType::Directional, objectList, probeCam);
+                this->render(probeCam, objectList, nonIBLLightList, WeakPointer<Material>::nullPtr());
                 probeCam->setRenderTarget(reflectionProbe->getIrridianceMap());
                 this->renderObjectBasic(reflectionProbe->getSkyboxObject(), probeCam, reflectionProbe->getIrridianceRendererMaterial());
                 reflectionProbe->setNeedsUpdate(false);
             }
         }
-        this->setAmbientLighMode(oldAmbientMode);
 
         for (auto camera : cameraList) {
             this->renderShadowMaps(lightList, LightType::Directional, objectList, camera);

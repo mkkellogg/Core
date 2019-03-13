@@ -4,6 +4,7 @@
 #include "../geometry/AttributeArrayGPUStorage.h"
 #include "../geometry/Mesh.h"
 #include "../image/Texture.h"
+#include "../light/AmbientIBLLight.h"
 #include "../light/PointLight.h"
 #include "../light/DirectionalLight.h"
 #include "../material/Material.h"
@@ -113,7 +114,7 @@ namespace Core {
 
         Int32 lightEnabledLoc = material->getShaderLocation(StandardUniform::LightEnabled);
 
-        if (lights.size() > 0) {
+        if (lights.size() > 0 && material->isLit()) {
 
             if (lightEnabledLoc >= 0) {
                 shader->setUniform1i(lightEnabledLoc, 1);
@@ -122,10 +123,10 @@ namespace Core {
             UInt32 renderedCount = 0;
             for (UInt32 i = 0; i < lights.size(); i++) {
 
-                if (!material->isLit() && i > 0) break;
-
                 WeakPointer<Light> light = lights[i];
                 LightType lightType = light->getType();
+                if (lightType == LightType::AmbientIBL && !material->isPhysical()) continue;
+
 
                 if (material->getBlendingMode() == RenderState::BlendingMode::Additive) {
                     if (renderedCount == 0) {
@@ -170,6 +171,15 @@ namespace Core {
                     shader->setUniformMatrix4(lightMatrixLoc, light->getOwner()->getTransform().getConstInverseWorldMatrix());
                 }
 
+                if (lightType == LightType::AmbientIBL) {
+                    Int32 irridianceMapLoc = shader->getUniformLocation(StandardUniform::LightIrridianceMap);
+                    if (irridianceMapLoc >= 0) {
+                        WeakPointer<AmbientIBLLight> ambientIBLLight = WeakPointer<Light>::dynamicPointerCast<AmbientIBLLight>(light);
+                        shader->setTextureCube(currentTextureSlot, irridianceMapLoc, ambientIBLLight->getIBLTexture()->getTextureID());
+                        currentTextureSlot++;
+                    }
+                }
+
                 if (lightType == LightType::Point || lightType == LightType::Directional) {
                     WeakPointer<ShadowLight> shadowLight = WeakPointer<Light>::dynamicPointerCast<ShadowLight>(light);
 
@@ -211,8 +221,7 @@ namespace Core {
 
                     Int32 lightShadowCubeMapLoc = material->getShaderLocation(StandardUniform::LightShadowCubeMap);
                     if (lightShadowCubeMapLoc >= 0 && pointLight->getShadowsEnabled()) {
-                        shader->setTextureCube(currentTextureSlot, pointLight->getShadowMap()->getColorTexture()->getTextureID());
-                        shader->setUniform1i(lightShadowCubeMapLoc, currentTextureSlot);
+                        shader->setTextureCube(currentTextureSlot, lightShadowCubeMapLoc, pointLight->getShadowMap()->getColorTexture()->getTextureID());
                         currentTextureSlot++;
                     }
                 }
@@ -236,8 +245,7 @@ namespace Core {
                     for (UInt32 l = 0; l < cascadeCount; l++) {
                         Int32 shadowMapLoc = material->getShaderLocation(StandardUniform::LightShadowMap, l);
                         if (shadowMapLoc >= 0) {
-                            shader->setTexture2D(currentTextureSlot, directionalLight->getShadowMap(l)->getDepthTexture()->getTextureID());
-                            shader->setUniform1i(shadowMapLoc, currentTextureSlot);
+                            shader->setTexture2D(currentTextureSlot, shadowMapLoc, directionalLight->getShadowMap(l)->getDepthTexture()->getTextureID());
                             currentTextureSlot++;
                         }
 

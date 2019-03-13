@@ -60,9 +60,5 @@ namespace Core {
             Invert = 7
         };
 
-        enum class AmbientLightMode {
-            Basic = 0,
-            ImageBased = 1,
-        };
     };
 }

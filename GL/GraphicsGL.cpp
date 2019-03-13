@@ -630,6 +630,7 @@ namespace Core {
             case RenderStyle::Line:
                 return GL_LINE;
         }
+        return GL_FILL;
     }
 
     GLenum GraphicsGL::getGLStencilFunction(RenderState::StencilFunction function) {
@@ -659,6 +660,7 @@ namespace Core {
                 return GL_ALWAYS;
             break;
         }
+        return GL_NEVER;
     }
 
     GLenum GraphicsGL::getGLStencilAction(RenderState::StencilAction action) {
@@ -688,6 +690,7 @@ namespace Core {
                 return GL_INVERT;
             break;
         }
+        return GL_KEEP;
     }
 
     std::shared_ptr<RendererGL> GraphicsGL::createRenderer() {

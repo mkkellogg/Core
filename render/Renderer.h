@@ -31,7 +31,6 @@ namespace Core {
     public:
         virtual ~Renderer();
         virtual Bool init();
-        void setAmbientLighMode(RenderState::AmbientLightMode mode);
         void renderScene(WeakPointer<Scene> scene, WeakPointer<Material> overrideMaterial = WeakPointer<Material>::nullPtr());
         void renderScene(WeakPointer<Object3D> rootObject, WeakPointer<Material> overrideMaterial = WeakPointer<Material>::nullPtr());
         void renderObjectBasic(WeakPointer<Object3D> rootObject, WeakPointer<Camera> camera, WeakPointer<Material> overrideMaterial = WeakPointer<Material>::nullPtr());
@@ -65,8 +64,6 @@ namespace Core {
         
         static Bool isShadowCastingCapableLight(WeakPointer<Light> light);
         static Bool compareLights (WeakPointer<Light> a, WeakPointer<Light> b);
-
-        RenderState::AmbientLightMode ambientLightMode;
 
         WeakPointer<DepthOnlyMaterial> depthMaterial;
         WeakPointer<DistanceOnlyMaterial> distanceMaterial;

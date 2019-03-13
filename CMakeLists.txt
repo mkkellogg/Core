@@ -112,6 +112,7 @@ set(INCLUDE_FILES
     light/PointLight.h
     light/DirectionalLight.h
     light/AmbientLight.h
+    light/AmbientIBLLight.h
     light/LightType.h
     light/LightCullType.h
     image/ImageLoader.h
@@ -196,6 +197,7 @@ set(SOURCE_FILES
     light/PointLight.cpp
     light/DirectionalLight.cpp
     light/AmbientLight.cpp
+    light/AmbientIBLLight.cpp
     material/Material.cpp
     material/ShaderMaterial.cpp
     material/DepthOnlyMaterial.cpp
