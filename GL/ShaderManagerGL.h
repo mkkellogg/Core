@@ -57,6 +57,9 @@ namespace Core {
         std::string StandardPhysical_vertex;
         std::string StandardPhysical_fragment;
 
+        std::string AmbientPhysical_vertex;
+        std::string AmbientPhysical_fragment;
+
         std::string PhysicalSkybox_vertex;
         std::string PhysicalSkybox_fragment;
 

@@ -190,6 +190,9 @@ namespace Core {
         this->setShader(ShaderType::Vertex, "StandardPhysical", ShaderManagerGL::StandardPhysical_vertex);
         this->setShader(ShaderType::Fragment, "StandardPhysical", ShaderManagerGL::StandardPhysical_fragment);
 
+        this->setShader(ShaderType::Vertex, "AmbientPhysical", ShaderManagerGL::AmbientPhysical_vertex);
+        this->setShader(ShaderType::Fragment, "AmbientPhysical", ShaderManagerGL::AmbientPhysical_fragment);
+
         this->setShader(ShaderType::Vertex, "PhysicalSkybox", ShaderManagerGL::PhysicalSkybox_vertex);
         this->setShader(ShaderType::Fragment, "PhysicalSkybox", ShaderManagerGL::PhysicalSkybox_fragment);
 
@@ -487,7 +490,7 @@ namespace Core {
             "    _core_lightSpacePos[l] = " + LIGHT_VIEW_PROJECTION + "[l] * " + MODEL_MATRIX + " * (localPos); "
             "}"
             "for (int i = 0 ; i < " + LIGHT_COUNT + "; i++) { "
-            "_core_viewSpacePosZ[i] = (viewSpacePos).z;"
+            "_core_viewSpacePosZ[i] = abs(viewSpacePos.z);"
             "}";
 
         this->Lighting_fragment =
@@ -536,6 +539,7 @@ namespace Core {
 
             "vec4 getDirLightColor(vec4 worldPos, float bias, int lightIndex) { \n"
             "    float shadowFactor = 0.0;\n"
+            "    vec3 lightColor = " + LIGHT_COLOR + "[lightIndex].rgb; \n"
             "    for (int i = 0 ; i < " + LIGHT_CASCADE_COUNT + "[lightIndex]; i++) { \n"
             "        int offset = lightIndex * " + MAX_CASCADES + " + i;\n"
             "        if (_core_viewSpacePosZ[lightIndex] <= " + LIGHT_CASCADE_END + "[offset]) { \n"
@@ -543,7 +547,7 @@ namespace Core {
             "            break; \n"
             "        } \n"
             "    } \n"
-            "    return vec4((1.0 - shadowFactor) * " + LIGHT_COLOR + "[lightIndex].rgb, 1.0);\n"      
+            "    return vec4((1.0 - shadowFactor) * lightColor, 1.0);\n"      
             "} \n"
 
             "float getPointLightShadowFactor(vec3 lightLocalPos, float bias, int lightIndex) { \n"
@@ -870,6 +874,86 @@ namespace Core {
             "   } \n"
             "   out_color = litColorPhysical(0, _albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", metallic, roughness, ambientOcclusion);\n"
             "}\n";
+
+        this->AmbientPhysical_vertex =  
+            "#version 330\n"
+            "precision highp float;\n"
+            "#include \"PhysicalLightingSingle\" \n"
+            + POSITION_DEF
+            + TANGENT_DEF
+            + COLOR_DEF
+            + NORMAL_DEF
+            + FACE_NORMAL_DEF
+            + ALBEDO_UV_DEF
+            + NORMAL_UV_DEF
+            + PROJECTION_MATRIX_DEF
+            + VIEW_MATRIX_DEF
+            + MODEL_MATRIX_DEF
+            + MODEL_INVERSE_TRANSPOSE_MATRIX_DEF +
+            "out vec4 vColor;\n"
+            "out vec3 vNormal;\n"
+            "out vec3 vTangent;\n"
+            "out vec3 vFaceNormal;\n"
+            "out vec2 vAlbedoUV;\n"
+            "out vec2 vNormalUV;\n"
+            "out vec4 vWorldPos;\n"
+            "void main() {\n"
+            "    vWorldPos = " +  MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    vec4 viewSpacePos = " + VIEW_MATRIX + " * vWorldPos;\n"
+            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * vWorldPos;\n"
+            "    vAlbedoUV = " + ALBEDO_UV + ";\n"
+            "    vNormalUV = " + NORMAL_UV + ";\n"
+            "    vColor = " + COLOR + ";\n"
+            "    vec4 eNormal = " + NORMAL + ";\n"
+            "    vNormal = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * eNormal);\n"
+            "    vec4 eTangent = " + TANGENT + ";\n"
+            "    vTangent = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * eTangent);\n"
+            "    vFaceNormal = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * " + FACE_NORMAL + ");\n"
+            "    TRANSFER_LIGHTING(" + POSITION + ", gl_Position, viewSpacePos) \n"
+            "}\n";
+
+        this->AmbientPhysical_fragment =   
+            "#version 330\n"
+            "precision highp float;\n"
+            "#include \"PhysicalLightingSingle\"\n"
+            + CAMERA_POSITION_DEF +
+            "uniform int enabledMap; \n"
+            "uniform vec4 albedo; \n"
+            "uniform sampler2D albedoMap; \n"
+            "uniform sampler2D normalMap; \n"
+            "uniform float metallic; \n"
+            "uniform float roughness; \n"
+            "uniform float ambientOcclusion; \n"
+            "in vec4 vColor;\n"
+            "in vec3 vNormal;\n"
+            "in vec3 vTangent;\n"
+            "in vec3 vFaceNormal;\n"
+            "in vec2 vAlbedoUV;\n"
+            "in vec2 vNormalUV;\n"
+            "in vec4 vWorldPos;\n"
+            "out vec4 out_color;\n"
+            "void main() {\n"
+            "   int albedoMapEnabled = enabledMap & 1; \n"
+            "   int normalMapEnabled = enabledMap & 2; \n"
+            "   int roughnessMapEnabled = enabledMap & 4; \n"
+            "   vec4 _albedo; \n"
+            "   if (albedoMapEnabled != 0) { \n"
+            "       _albedo = texture(albedoMap, vAlbedoUV); \n"
+            "   } else { \n"
+            "      _albedo = albedo; \n"
+            "   } \n"
+            "   vec3 _normal; \n"
+            "   if (normalMapEnabled != 0) { \n"
+            "      _normal = calcMappedNormal(texture(normalMap, vNormalUV).xyz, vNormal, vTangent); \n"
+            "   } else { \n"
+            "       _normal = normalize(vNormal); \n"
+            "   } \n"
+            "    if (" + LIGHT_TYPE + "[0] == AMBIENT_IBL_LIGHT) { \n"
+            "       out_color = litColorPhysical(0, texture(albedoMap, vAlbedoUV), vWorldPos, _normal, " + CAMERA_POSITION + ", metallic, roughness, ambientOcclusion);\n"
+            "   } else { \n"
+            "       out_color = litColorBlinnPhong(0, texture(albedoMap, vAlbedoUV), vWorldPos, _normal, " + CAMERA_POSITION + ");\n"
+            "   } \n"
+            "}\n";
         
         this->PhysicalSkybox_vertex =
             "#version 330\n"
@@ -1186,7 +1270,7 @@ namespace Core {
         this->BasicTexturedLit_vertex =  
             "#version 330\n"
             "precision highp float;\n"
-            "#include \"LightingSingle\" \n"
+            "#include \"PhysicalLightingSingle\" \n"
             + POSITION_DEF
             + COLOR_DEF
             + NORMAL_DEF
@@ -1224,7 +1308,7 @@ namespace Core {
         this->BasicTexturedLit_fragment =   
             "#version 330\n"
             "precision highp float;\n"
-            "#include \"LightingSingle\"\n"
+            "#include \"PhysicalLightingSingle\"\n"
             + CAMERA_POSITION_DEF + 
             "uniform int albedoMapEnabled; \n"
             "uniform int normalMapEnabled; \n"

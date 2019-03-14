@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../util/WeakPointer.h"
-#include "Material.h"
+#include "ShaderMaterial.h"
 #include "../common/Constants.h"
 
 namespace Core {
@@ -10,7 +10,7 @@ namespace Core {
     class Engine;
     class Texture;
 
-    class StandardPhysicalMaterial : public Material {
+    class StandardPhysicalMaterial : public ShaderMaterial {
         friend class Engine;
 
     public:
@@ -30,14 +30,16 @@ namespace Core {
         void setNormalMapEnabled(Bool enabled);
         void setRoughnessMapEnabled(Bool enabled);
         virtual UInt32 textureCount() override;
+        virtual void copyTo(WeakPointer<Material> targetMaterial) override;
+        virtual void bindShaderVarLocations() override;
 
     protected:
         const UInt32 ALBEDO_MAP_MASK = 0x1;
         const UInt32 NORMAL_MAP_MASK = 0x1 << 1;
         const UInt32 ROUGHNESS_MAP_MASK = 0x1 << 2;
 
+        StandardPhysicalMaterial(const std::string& vertexShader, const std::string& fragmentShader, WeakPointer<Graphics> graphics);
         StandardPhysicalMaterial(WeakPointer<Graphics> graphics);
-        void bindShaderVarLocations();
         UInt32 getEnabledMapMask();
 
         Real metallic;

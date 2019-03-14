@@ -21,6 +21,7 @@
 #include "material/BasicTexturedMaterial.h"
 #include "material/BasicTexturedLitMaterial.h"
 #include "material/StandardPhysicalMaterial.h"
+#include "material/AmbientPhysicalMaterial.h"
 
 namespace Core {
 
@@ -55,6 +56,7 @@ namespace Core {
         WeakPointer<BasicTexturedMaterial> basicTexturedMaterial = this->createMaterial<BasicTexturedMaterial>();
         WeakPointer<BasicTexturedLitMaterial> basicTexturedLitMaterial = this->createMaterial<BasicTexturedLitMaterial>();
         WeakPointer<StandardPhysicalMaterial> standardPhysicalMaterial = this->createMaterial<StandardPhysicalMaterial>();
+        WeakPointer<StandardPhysicalMaterial> ambientPhysicalMaterial = this->createMaterial<AmbientPhysicalMaterial>();
         WeakPointer<BasicCubeMaterial> basicCubeMaterial = this->createMaterial<BasicCubeMaterial>();
 
         LongMask materialAttributes;
@@ -75,7 +77,7 @@ namespace Core {
         LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::VertexColors);
         LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::NormalMapped);
         LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::Lit);
-        this->materialLibrary.addEntry(materialAttributes, basicTexturedLitMaterial);
+        this->materialLibrary.addEntry(materialAttributes, ambientPhysicalMaterial);
 
         materialAttributes = LongMaskUtil::createMask();
         LongMaskUtil::setBit(&materialAttributes, (Int16)ShaderMaterialCharacteristic::AlbedoMapped);

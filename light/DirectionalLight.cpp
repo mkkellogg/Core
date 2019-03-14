@@ -21,6 +21,7 @@ namespace Core {
         }
         // [cascadeBoundaries] gets 1 extra
         this->cascadeBoundaries.push_back(0.0f);
+        this->shadowMapBoundaryPadding = 300.0f;
     }
 
     DirectionalLight::~DirectionalLight() {
@@ -147,8 +148,8 @@ namespace Core {
                 oProj.left = minX;
                 oProj.bottom = minY;
                 oProj.top = maxY;
-                oProj.far = maxZ + 120;
-                oProj.near = minZ - 120;
+                oProj.far = maxZ + this->shadowMapBoundaryPadding;
+                oProj.near = minZ - this->shadowMapBoundaryPadding;
 
                 Matrix4x4 viewTrans = lightTransformInverse;
                 Matrix4x4& viewProjMat =  this->viewProjectionMatrices[i - 1];

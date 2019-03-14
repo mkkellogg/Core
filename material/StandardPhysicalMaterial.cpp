@@ -9,7 +9,7 @@
 
 namespace Core {
 
-    StandardPhysicalMaterial::StandardPhysicalMaterial(WeakPointer<Graphics> graphics): Material(graphics) {
+    StandardPhysicalMaterial::StandardPhysicalMaterial(const std::string& vertexShader, const std::string& fragmentShader, WeakPointer<Graphics> graphics):  ShaderMaterial(vertexShader, fragmentShader, graphics)  {
         this->albedo.set(1.0f, 1.0f, 1.0f, 1.0f);
         this->metallic = 0.9f;
         this->roughness = 0.35f;
@@ -20,16 +20,12 @@ namespace Core {
         this->roughnessMapEnabled = false;
     }
 
+    StandardPhysicalMaterial::StandardPhysicalMaterial(WeakPointer<Graphics> graphics): StandardPhysicalMaterial("StandardPhysical", "StandardPhysical", graphics) {
+       
+    }
+
     Bool StandardPhysicalMaterial::build() {
-        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-        ShaderManager& shaderDirectory = graphics->getShaderManager();
-        const std::string& vertexSrc = shaderDirectory.getShader(ShaderType::Vertex, "StandardPhysical");
-        const std::string& fragmentSrc = shaderDirectory.getShader(ShaderType::Fragment, "StandardPhysical");
-        Bool ready = this->buildFromSource(vertexSrc, fragmentSrc);
-        if (!ready) {
-            return false;
-        }
-        this->bindShaderVarLocations();
+        ShaderMaterial::build();
         this->setLit(true);
         this->setPhysical(true);
         return true;
@@ -178,57 +174,62 @@ namespace Core {
         this->shader->setUniform1i(this->enabledMapLocation, this->getEnabledMapMask());
     }
 
+    void StandardPhysicalMaterial::copyTo(WeakPointer<Material> target) {
+        WeakPointer<StandardPhysicalMaterial> targetMaterial = WeakPointer<Material>::dynamicPointerCast<StandardPhysicalMaterial>(target);
+        ShaderMaterial::copyTo(targetMaterial);
+        targetMaterial->albedoMap = this->albedoMap;
+        targetMaterial->albedoMapEnabled = this->albedoMapEnabled;
+        targetMaterial->normalMapEnabled = this->normalMapEnabled;
+        targetMaterial->roughnessMapEnabled = this->roughnessMapEnabled;
+        targetMaterial->positionLocation = this->positionLocation;
+        targetMaterial->normalLocation = this->normalLocation;
+        targetMaterial->faceNormalLocation = this->faceNormalLocation;
+        targetMaterial->tangentLocation = this->tangentLocation;
+        targetMaterial->colorLocation = this->colorLocation;
+        targetMaterial->albedoUVLocation = this->albedoUVLocation;
+        targetMaterial->normalUVLocation = this->normalUVLocation;
+        targetMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
+        targetMaterial->viewMatrixLocation = this->viewMatrixLocation;
+        targetMaterial->modelMatrixLocation = this->modelMatrixLocation;
+        targetMaterial->modelInverseTransposeMatrixLocation = this->modelInverseTransposeMatrixLocation;
+        targetMaterial->albedoLocation = this->albedoLocation;
+        targetMaterial->albedoMapLocation = this->albedoMapLocation;
+        targetMaterial->normalMapLocation = this->normalMapLocation;
+        targetMaterial->lightPositionLocation = this->lightPositionLocation;
+        targetMaterial->lightDirectionLocation = this->lightDirectionLocation;
+        targetMaterial->lightRangeLocation = this->lightRangeLocation;
+        targetMaterial->lightTypeLocation = this->lightTypeLocation;
+        targetMaterial->lightIntensityLocation = this->lightIntensityLocation;
+        targetMaterial->lightColorLocation = this->lightColorLocation;
+        targetMaterial->lightEnabledLocation = this->lightEnabledLocation;
+        targetMaterial->lightMatrixLocation = this->lightMatrixLocation;
+        for (UInt32 i =0; i < Constants::MaxDirectionalCascades; i++) {
+            targetMaterial->lightViewProjectionLocations[i] = this->lightViewProjectionLocations[i];
+            targetMaterial->lightShadowMapLocations[i] = this->lightShadowMapLocations[i];
+            targetMaterial->lightCascadeEndLocations[i] = this->lightCascadeEndLocations[i];
+            targetMaterial->lightShadowMapAspectLocations[i] = this->lightShadowMapAspectLocations[i];
+        }
+        targetMaterial->lightCascadeCountLocation = this->lightCascadeCountLocation;
+        targetMaterial->lightShadowCubeMapLocation = this->lightShadowCubeMapLocation;
+        targetMaterial->lightAngularShadowBiasLocation = this->lightAngularShadowBiasLocation;
+        targetMaterial->lightConstantShadowBiasLocation = this->lightConstantShadowBiasLocation;
+        targetMaterial->lightShadowMapSizeLocation = this->lightShadowMapSizeLocation;
+        targetMaterial->lightShadowSoftnessLocation = this->lightShadowSoftnessLocation;
+        targetMaterial->lightNearPlaneLocation = this->lightNearPlaneLocation;
+        targetMaterial->lightCountLocation = this->lightCountLocation;
+        targetMaterial->cameraPositionLocation = this->cameraPositionLocation;
+        targetMaterial->metallicLocation = this->metallicLocation;
+        targetMaterial->roughnessLocation = this->roughnessLocation;
+        targetMaterial->ambientOcclusionLocation = this->ambientOcclusionLocation;
+        targetMaterial->enabledMapLocation = this->enabledMapLocation;
+        targetMaterial->metallic = this->metallic;
+        targetMaterial->roughness = this->roughness;
+        targetMaterial->ambientOcclusion = this->ambientOcclusion;
+    }
+
     WeakPointer<Material> StandardPhysicalMaterial::clone() {
         WeakPointer<StandardPhysicalMaterial> newMaterial = Engine::instance()->createMaterial<StandardPhysicalMaterial>(false);
         this->copyTo(newMaterial);
-        newMaterial->albedoMap = this->albedoMap;
-        newMaterial->albedoMapEnabled = this->albedoMapEnabled;
-        newMaterial->normalMapEnabled = this->normalMapEnabled;
-        newMaterial->roughnessMapEnabled = this->roughnessMapEnabled;
-        newMaterial->positionLocation = this->positionLocation;
-        newMaterial->normalLocation = this->normalLocation;
-        newMaterial->faceNormalLocation = this->faceNormalLocation;
-        newMaterial->tangentLocation = this->tangentLocation;
-        newMaterial->colorLocation = this->colorLocation;
-        newMaterial->albedoUVLocation = this->albedoUVLocation;
-        newMaterial->normalUVLocation = this->normalUVLocation;
-        newMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
-        newMaterial->viewMatrixLocation = this->viewMatrixLocation;
-        newMaterial->modelMatrixLocation = this->modelMatrixLocation;
-        newMaterial->modelInverseTransposeMatrixLocation = this->modelInverseTransposeMatrixLocation;
-        newMaterial->albedoLocation = this->albedoLocation;
-        newMaterial->albedoMapLocation = this->albedoMapLocation;
-        newMaterial->normalMapLocation = this->normalMapLocation;
-        newMaterial->lightPositionLocation = this->lightPositionLocation;
-        newMaterial->lightDirectionLocation = this->lightDirectionLocation;
-        newMaterial->lightRangeLocation = this->lightRangeLocation;
-        newMaterial->lightTypeLocation = this->lightTypeLocation;
-        newMaterial->lightIntensityLocation = this->lightIntensityLocation;
-        newMaterial->lightColorLocation = this->lightColorLocation;
-        newMaterial->lightEnabledLocation = this->lightEnabledLocation;
-        newMaterial->lightMatrixLocation = this->lightMatrixLocation;
-        for (UInt32 i =0; i < Constants::MaxDirectionalCascades; i++) {
-            newMaterial->lightViewProjectionLocations[i] = this->lightViewProjectionLocations[i];
-            newMaterial->lightShadowMapLocations[i] = this->lightShadowMapLocations[i];
-            newMaterial->lightCascadeEndLocations[i] = this->lightCascadeEndLocations[i];
-            newMaterial->lightShadowMapAspectLocations[i] = this->lightShadowMapAspectLocations[i];
-        }
-        newMaterial->lightCascadeCountLocation = this->lightCascadeCountLocation;
-        newMaterial->lightShadowCubeMapLocation = this->lightShadowCubeMapLocation;
-        newMaterial->lightAngularShadowBiasLocation = this->lightAngularShadowBiasLocation;
-        newMaterial->lightConstantShadowBiasLocation = this->lightConstantShadowBiasLocation;
-        newMaterial->lightShadowMapSizeLocation = this->lightShadowMapSizeLocation;
-        newMaterial->lightShadowSoftnessLocation = this->lightShadowSoftnessLocation;
-        newMaterial->lightNearPlaneLocation = this->lightNearPlaneLocation;
-        newMaterial->lightCountLocation = this->lightCountLocation;
-        newMaterial->cameraPositionLocation = this->cameraPositionLocation;
-        newMaterial->metallicLocation = this->metallicLocation;
-        newMaterial->roughnessLocation = this->roughnessLocation;
-        newMaterial->ambientOcclusionLocation = this->ambientOcclusionLocation;
-        newMaterial->enabledMapLocation = this->enabledMapLocation;
-        newMaterial->metallic = this->metallic;
-        newMaterial->roughness = this->roughness;
-        newMaterial->ambientOcclusion = this->ambientOcclusion;
         return newMaterial;
     }
 

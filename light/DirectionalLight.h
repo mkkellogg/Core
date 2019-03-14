@@ -54,6 +54,7 @@ namespace Core {
         std::vector<Matrix4x4> viewProjectionMatrices;
         std::vector<Real> cascadeBoundaries;
         UInt32 cascadeCount;
+        Real shadowMapBoundaryPadding;
     };
 }
 
