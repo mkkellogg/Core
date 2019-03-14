@@ -3,6 +3,7 @@
 #include "../util/PersistentWeakPointer.h"
 #include "../base/BitMask.h"
 #include "../math/Matrix4x4.h"
+#include "ToneMapType.h"
 
 namespace Core {
 
@@ -27,7 +28,8 @@ namespace Core {
         IntMask clearRenderBuffers;
         Skybox* skybox = nullptr;
         Bool indirectHDREnabled = false;
-
+        ToneMapType hdrToneMapType = ToneMapType::Reinhard;
+        Real exposure = 1.0f;
     };
 
 }

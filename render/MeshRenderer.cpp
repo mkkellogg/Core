@@ -20,7 +20,8 @@ namespace Core {
         : ObjectRenderer<Mesh>(graphics, owner), material(material) {
     }
 
-    Bool MeshRenderer::forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh, const std::vector<WeakPointer<Light>>& lights) {
+    Bool MeshRenderer::forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh, const std::vector<WeakPointer<Light>>& lights,
+                                           Bool matchPhysicalPropertiesWithLighting) {
         WeakPointer<Material> material;
         if (viewDescriptor.overrideMaterial.isValid()) {
             material = viewDescriptor.overrideMaterial;
@@ -126,7 +127,9 @@ namespace Core {
                 WeakPointer<Light> light = lights[i];
                 LightType lightType = light->getType();
                 if (lightType == LightType::AmbientIBL && !material->isPhysical()) continue;
-
+                if (matchPhysicalPropertiesWithLighting) {
+                    if (lightType == LightType::Ambient && material->isPhysical()) continue;
+                }
 
                 if (material->getBlendingMode() == RenderState::BlendingMode::Additive) {
                     if (renderedCount == 0) {
@@ -285,12 +288,13 @@ namespace Core {
         return true;
     }
 
-    Bool MeshRenderer::forwardRender(const ViewDescriptor& viewDescriptor, const std::vector<WeakPointer<Light>>& lights) {
+    Bool MeshRenderer::forwardRender(const ViewDescriptor& viewDescriptor, const std::vector<WeakPointer<Light>>& lights,
+                                     Bool matchPhysicalPropertiesWithLighting) {
         std::shared_ptr<RenderableContainer<Mesh>> thisContainer = std::dynamic_pointer_cast<RenderableContainer<Mesh>>(this->owner.lock());
         if (thisContainer) {
             auto renderables = thisContainer->getRenderables();
             for (auto mesh : renderables) {
-                this->forwardRenderObject(viewDescriptor, mesh, lights);
+                this->forwardRenderObject(viewDescriptor, mesh, lights, matchPhysicalPropertiesWithLighting);
             }
         }
 

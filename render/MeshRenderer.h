@@ -21,8 +21,10 @@ namespace Core {
         friend class Engine;
 
     public:
-        virtual Bool forwardRender(const ViewDescriptor& viewDescriptor, const std::vector<WeakPointer<Light>>& lights) override;
-        virtual Bool forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh, const std::vector<WeakPointer<Light>>& lights) override;
+        virtual Bool forwardRender(const ViewDescriptor& viewDescriptor, const std::vector<WeakPointer<Light>>& lights,
+                                   Bool matchPhysicalPropertiesWithLighting) override;
+        virtual Bool forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh,
+                                         const std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting) override;
         virtual Bool supportsRenderPath(RenderPath renderPath) override;
         void setMaterial(WeakPointer<Material> material);
 

@@ -33,25 +33,35 @@ namespace Core {
         virtual Bool init();
         void renderScene(WeakPointer<Scene> scene, WeakPointer<Material> overrideMaterial = WeakPointer<Material>::nullPtr());
         void renderScene(WeakPointer<Object3D> rootObject, WeakPointer<Material> overrideMaterial = WeakPointer<Material>::nullPtr());
-        void renderObjectBasic(WeakPointer<Object3D> rootObject, WeakPointer<Camera> camera, WeakPointer<Material> overrideMaterial = WeakPointer<Material>::nullPtr());
+        void renderObjectBasic(WeakPointer<Object3D> rootObject, WeakPointer<Camera> camera,
+                               WeakPointer<Material> overrideMaterial = WeakPointer<Material>::nullPtr(),
+                               Bool matchPhysicalPropertiesWithLighting = true);
         void renderObjectDirect(WeakPointer<Object3D> object, WeakPointer<Camera> camera,
-                                WeakPointer<Material> overrideMaterial = WeakPointer<Material>::nullPtr());
+                                WeakPointer<Material> overrideMaterial = WeakPointer<Material>::nullPtr(),
+                                Bool matchPhysicalPropertiesWithLighting = true);
         void renderObjectDirect(WeakPointer<Object3D> object, WeakPointer<Camera> camera, std::vector<WeakPointer<Light>>& lightList,
-                                WeakPointer<Material> overrideMaterial = WeakPointer<Material>::nullPtr());
+                                WeakPointer<Material> overrideMaterial = WeakPointer<Material>::nullPtr(),
+                                Bool matchPhysicalPropertiesWithLighting = true);
 
     protected:
         Renderer();
         void renderStandard(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
-                            std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial);
+                            std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial,
+                            Bool matchPhysicalPropertiesWithLighting);
         void renderCube(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
-                        std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial);
+                        std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial,
+                        Bool matchPhysicalPropertiesWithLighting);
         void render(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
-                    WeakPointer<Material> overrideMaterial);
+                    WeakPointer<Material> overrideMaterial,
+                    Bool matchPhysicalPropertiesWithLighting);
         void render(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
-                    std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial);
+                    std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial,
+                    Bool matchPhysicalPropertiesWithLighting);
         void render(ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objectList, 
-                    std::vector<WeakPointer<Light>>& lightList);
-        void renderObjectDirect(WeakPointer<Object3D> object, ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Light>>& lightList);
+                    std::vector<WeakPointer<Light>>& lightList,
+                    Bool matchPhysicalPropertiesWithLighting);
+        void renderObjectDirect(WeakPointer<Object3D> object, ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Light>>& lightList,
+                                Bool matchPhysicalPropertiesWithLighting);
         void renderShadowMaps(std::vector<WeakPointer<Light>>& lights, LightType lightType, 
                               std::vector<WeakPointer<Object3D>>& objects, WeakPointer<Camera> renderCamera = WeakPointer<Camera>());
         void getViewDescriptorForCamera(WeakPointer<Camera> camera, ViewDescriptor& viewDescriptor);

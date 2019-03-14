@@ -63,6 +63,7 @@ namespace Core {
         static std::vector<WeakPointer<Light>> lightList;
         static std::vector<WeakPointer<Light>> nonIBLLightList;
         static std::vector<WeakPointer<ReflectionProbe>> reflectionProbeList;
+        static std::vector<WeakPointer<Object3D>> emptyObjectList;
         objectList.resize(0);
         cameraList.resize(0);
         lightList.resize(0);
@@ -119,8 +120,13 @@ namespace Core {
             if (reflectionProbe->getNeedsUpdate()) {
                 WeakPointer<Camera> probeCam = reflectionProbe->getRenderCamera();
                 probeCam->setRenderTarget(reflectionProbe->getSceneRenderTarget());
-                this->renderShadowMaps(nonIBLLightList, LightType::Directional, objectList, probeCam);
-                this->render(probeCam, objectList, nonIBLLightList, WeakPointer<Material>::nullPtr());
+                if (reflectionProbe->isSkyboxOnly()) {
+                    this->render(probeCam, emptyObjectList, nonIBLLightList, WeakPointer<Material>::nullPtr(), false);
+                }
+                else {
+                    this->renderShadowMaps(nonIBLLightList, LightType::Directional, objectList, probeCam);
+                    this->render(probeCam, objectList, nonIBLLightList, WeakPointer<Material>::nullPtr(), false);
+                }
                 probeCam->setRenderTarget(reflectionProbe->getIrradianceMap());
                 this->renderObjectBasic(reflectionProbe->getSkyboxObject(), probeCam, reflectionProbe->getIrradianceRendererMaterial());
                 reflectionProbe->setNeedsUpdate(false);
@@ -129,11 +135,12 @@ namespace Core {
 
         for (auto camera : cameraList) {
             this->renderShadowMaps(lightList, LightType::Directional, objectList, camera);
-            this->render(camera, objectList, lightList, overrideMaterial);
+            this->render(camera, objectList, lightList, overrideMaterial, true);
         }
     }
 
-    void Renderer::renderObjectBasic(WeakPointer<Object3D> rootObject, WeakPointer<Camera> camera, WeakPointer<Material> overrideMaterial) {
+    void Renderer::renderObjectBasic(WeakPointer<Object3D> rootObject, WeakPointer<Camera> camera,
+                                     WeakPointer<Material> overrideMaterial, Bool matchPhysicalPropertiesWithLighting) {
         static std::vector<WeakPointer<Object3D>> objectList;
         objectList.resize(0);
 
@@ -145,16 +152,17 @@ namespace Core {
             baseTransformation = parentTransform.getWorldMatrix();
         }
         this->processScene(rootObject, baseTransformation, objectList);
-        this->render(camera, objectList, overrideMaterial);
+        this->render(camera, objectList, overrideMaterial, matchPhysicalPropertiesWithLighting);
     }
 
     void Renderer::render(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
-                          WeakPointer<Material> overrideMaterial) {
+                          WeakPointer<Material> overrideMaterial, Bool matchPhysicalPropertiesWithLighting) {
         std::vector<WeakPointer<Light>> lightList;   
-        this->render(camera, objects, lightList, overrideMaterial);                 
+        this->render(camera, objects, lightList, overrideMaterial, matchPhysicalPropertiesWithLighting);                 
     }
 
-    void Renderer::render(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial) {
+    void Renderer::render(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, std::vector<WeakPointer<Light>>& lights,
+                          WeakPointer<Material> overrideMaterial, Bool matchPhysicalPropertiesWithLighting) {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         WeakPointer<RenderTarget> nextRenderTarget = camera->getRenderTarget();
         if (!nextRenderTarget.isValid()) {
@@ -163,23 +171,25 @@ namespace Core {
 
         RenderTargetCube * renderTargetCube = dynamic_cast<RenderTargetCube*>(nextRenderTarget.get());
         if (renderTargetCube != nullptr) {
-            this->renderCube(camera, objects, lights, overrideMaterial);
+            this->renderCube(camera, objects, lights, overrideMaterial, matchPhysicalPropertiesWithLighting);
         }
         else {
-            this->renderStandard(camera, objects, lights, overrideMaterial);
+            this->renderStandard(camera, objects, lights, overrideMaterial, matchPhysicalPropertiesWithLighting);
         }
     }
 
     void Renderer::renderStandard(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects,
-                                  std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial) {
+                                  std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial,
+                                  Bool matchPhysicalPropertiesWithLighting) {
         ViewDescriptor viewDescriptor;
         this->getViewDescriptorForCamera(camera, viewDescriptor);
         viewDescriptor.overrideMaterial = overrideMaterial;
-        render(viewDescriptor, objects, lights);
+        render(viewDescriptor, objects, lights, matchPhysicalPropertiesWithLighting);
     }
 
     void Renderer::renderCube(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects,
-                    std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial) {
+                    std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial,
+                    Bool matchPhysicalPropertiesWithLighting) {
 
         static bool initialized = false;
         static Matrix4x4 forward;
@@ -226,11 +236,12 @@ namespace Core {
                                     camera->getAutoClearRenderBuffers(), viewDescriptor);
             viewDescriptor.overrideMaterial = overrideMaterial;
             viewDescriptor.cubeFace = i;
-            render(viewDescriptor, objects, lights);
+            render(viewDescriptor, objects, lights, matchPhysicalPropertiesWithLighting);
         }
     }
 
-    void Renderer::render(ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objectList, std::vector<WeakPointer<Light>>& lightList) {
+    void Renderer::render(ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objectList, 
+                          std::vector<WeakPointer<Light>>& lightList, Bool matchPhysicalPropertiesWithLighting) {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         WeakPointer<RenderTarget> currentRenderTarget = graphics->getCurrentRenderTarget();
         Vector4u currentViewport = currentRenderTarget->getViewport();
@@ -267,15 +278,17 @@ namespace Core {
                 skyboxView.viewInverseMatrix.invert();
                 skyboxView.viewInverseTransposeMatrix.copy(skyboxView.viewInverseMatrix);
                 skyboxView.viewInverseTransposeMatrix.transpose();
-                objectRenderer->forwardRender(skyboxView, dummyLights);
+                objectRenderer->forwardRender(skyboxView, dummyLights, true);
             }
         }
 
         for (auto object : objectList) {
-            this->renderObjectDirect(object, viewDescriptor, lightList);
+            this->renderObjectDirect(object, viewDescriptor, lightList, matchPhysicalPropertiesWithLighting);
         }
 
         if (viewDescriptor.indirectHDREnabled) {
+            this->tonemapMaterial->setToneMapType(viewDescriptor.hdrToneMapType);
+            this->tonemapMaterial->setExposure(viewDescriptor.exposure);
             graphics->blit(viewDescriptor.hdrRenderTarget, viewDescriptor.renderTarget, viewDescriptor.cubeFace, this->tonemapMaterial, true);
         }
 
@@ -284,27 +297,29 @@ namespace Core {
 
     }
 
-    void Renderer::renderObjectDirect(WeakPointer<Object3D> object, WeakPointer<Camera> camera, WeakPointer<Material> overrideMaterial) {
+    void Renderer::renderObjectDirect(WeakPointer<Object3D> object, WeakPointer<Camera> camera, WeakPointer<Material> overrideMaterial,
+                                      Bool matchPhysicalPropertiesWithLighting) {
         static std::vector<WeakPointer<Light>> lightList;
-        this->renderObjectDirect(object, camera, lightList, overrideMaterial);
+        this->renderObjectDirect(object, camera, lightList, overrideMaterial, matchPhysicalPropertiesWithLighting);
     }
 
     void Renderer::renderObjectDirect(WeakPointer<Object3D> object, WeakPointer<Camera> camera,
-                                     std::vector<WeakPointer<Light>>& lightList, WeakPointer<Material> overrideMaterial) {
+                                     std::vector<WeakPointer<Light>>& lightList, WeakPointer<Material> overrideMaterial,
+                                     Bool matchPhysicalPropertiesWithLighting) {
         ViewDescriptor viewDescriptor;
         this->getViewDescriptorForCamera(camera, viewDescriptor);
         viewDescriptor.overrideMaterial = overrideMaterial;
-        this->renderObjectDirect(object, viewDescriptor, lightList);
+        this->renderObjectDirect(object, viewDescriptor, lightList, matchPhysicalPropertiesWithLighting);
     }
 
     void Renderer::renderObjectDirect(WeakPointer<Object3D> object, ViewDescriptor& viewDescriptor,
-                            std::vector<WeakPointer<Light>>& lightList) {
+                            std::vector<WeakPointer<Light>>& lightList, Bool matchPhysicalPropertiesWithLighting) {
         std::shared_ptr<Object3D> objectShared = object.lock();
         std::shared_ptr<BaseRenderableContainer> containerPtr = std::dynamic_pointer_cast<BaseRenderableContainer>(objectShared);
         if (containerPtr) {
             WeakPointer<BaseObjectRenderer> objectRenderer = containerPtr->getBaseRenderer();
             if (objectRenderer) {
-                objectRenderer->forwardRender(viewDescriptor, lightList);
+                objectRenderer->forwardRender(viewDescriptor, lightList, matchPhysicalPropertiesWithLighting);
             }
         }
     }
@@ -353,7 +368,7 @@ namespace Core {
                             Vector4u renderTargetDimensions = shadowMapRenderTarget->getViewport();
                             perspectiveShadowMapCamera->setRenderTarget(shadowMapRenderTarget);  
                             perspectiveShadowMapCamera->setAspectRatioFromDimensions(renderTargetDimensions.z, renderTargetDimensions.w);                     
-                            this->render(perspectiveShadowMapCamera, toRender, dummyLights, this->distanceMaterial);
+                            this->render(perspectiveShadowMapCamera, toRender, dummyLights, this->distanceMaterial, true);
                         }
                     }
                     break;
@@ -376,7 +391,7 @@ namespace Core {
                                                         orthoShadowMapCamera->getAutoClearRenderBuffers(), viewDesc);
                                 viewDesc.overrideMaterial = this->depthMaterial;
                                 viewDesc.renderTarget = directionalLight->getShadowMap(i);
-                                this->render(viewDesc, toRender, dummyLights);
+                                this->render(viewDesc, toRender, dummyLights, true);
                             }
                         }
                     }
@@ -402,12 +417,14 @@ namespace Core {
             viewDescriptor.renderTarget = cameraRenderTarget;
             viewDescriptor.hdrRenderTarget = camera->getHDRRenderTarget();
             viewDescriptor.indirectHDREnabled = true;
+            viewDescriptor.hdrToneMapType == camera->getHDRToneMapType();
         }
         else {
             viewDescriptor.indirectHDREnabled = false;
             viewDescriptor.hdrRenderTarget = WeakPointer<RenderTarget2D>::nullPtr();
             viewDescriptor.renderTarget = cameraRenderTarget;
         }
+        viewDescriptor.exposure = camera->getExposure();
         viewDescriptor.skybox = camera->isSkyboxEnabled() ? &camera->getSkybox() : nullptr;
         this->getViewDescriptorTransformations(camera->getOwner()->getTransform().getWorldMatrix(),
                                 camera->getProjectionMatrix(), camera->getAutoClearRenderBuffers(), viewDescriptor);

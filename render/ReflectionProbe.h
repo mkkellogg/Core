@@ -24,6 +24,8 @@ namespace Core {
         void setNeedsUpdate(Bool needsUpdate);
         Bool getNeedsUpdate();
         void setSkybox(Skybox& skybox);
+        void setSkyboxOnly(Bool skyboxOnly);
+        Bool isSkyboxOnly();
         WeakPointer<Camera> getRenderCamera();
         WeakPointer<Object3D> getSkyboxObject();
         WeakPointer<RenderTargetCube> getSceneRenderTarget();
@@ -32,6 +34,7 @@ namespace Core {
 
     private:
         Bool needsUpdate;
+        Bool skyboxOnly;
         WeakPointer<RenderTargetCube> sceneRenderTarget;
         WeakPointer<RenderTargetCube> irradianceMap;
         WeakPointer<Object3D> renderCameraObject;

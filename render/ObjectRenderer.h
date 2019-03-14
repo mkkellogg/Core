@@ -15,7 +15,8 @@ namespace Core {
     class ObjectRenderer : public BaseObjectRenderer {
     public:
         ObjectRenderer(WeakPointer<Graphics> graphics, WeakPointer<Object3D> owner) : BaseObjectRenderer(owner), graphics(graphics) {}
-        virtual Bool forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<T> renderable, const std::vector<WeakPointer<Light>>& lights) {
+        virtual Bool forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<T> renderable,
+                                         const std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting) {
             return false;
         }
 

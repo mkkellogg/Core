@@ -9,7 +9,7 @@
 namespace Core {
 
     TonemapMaterial::TonemapMaterial(const std::string& vertShaderName, const std::string& fragShaderName, WeakPointer<Graphics> graphics): ShaderMaterial(vertShaderName, fragShaderName, graphics) {
-
+        this->toneMapType = ToneMapType::Reinhard; 
     }
     
     TonemapMaterial::TonemapMaterial(WeakPointer<Graphics> graphics) : TonemapMaterial("Tonemap", "Tonemap", graphics) {
@@ -51,6 +51,7 @@ namespace Core {
 
     void TonemapMaterial::sendCustomUniformsToShader() {
         this->shader->setUniform1f(this->exposureLocation, this->exposure);
+        this->shader->setUniform1i(this->toneMapTypeLocation, (Int32)this->toneMapType);
     }
 
     void TonemapMaterial::setTexture(WeakPointer<Texture2D> texture) {
@@ -65,6 +66,10 @@ namespace Core {
         this->exposure = exposure;
     }
 
+    void TonemapMaterial::setToneMapType(ToneMapType type) {
+        this->toneMapType = type;
+    }
+
     void TonemapMaterial::copyTo(WeakPointer<Material> target) {
         ShaderMaterial::copyTo(target);
         WeakPointer<TonemapMaterial> _target = WeakPointer<Material>::dynamicPointerCast<TonemapMaterial>(target);
@@ -76,6 +81,11 @@ namespace Core {
         _target->textureLocation = this->textureLocation;
         _target->depthTextureLocation = this->depthTextureLocation;
         _target->exposureLocation = this->exposureLocation;
+        _target->toneMapTypeLocation = this->toneMapTypeLocation;
+        _target->texture = this->texture;
+        _target->depthTexture = this->depthTexture;
+        _target->exposure = this->exposure;
+        _target->toneMapType = this->toneMapType;
     }
 
     WeakPointer<Material> TonemapMaterial::clone() {
@@ -93,6 +103,7 @@ namespace Core {
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
         this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);
         this->exposureLocation = this->shader->getUniformLocation("exposure");
+        this->toneMapTypeLocation = this->shader->getUniformLocation("tonemapType");
     }
 
     UInt32 TonemapMaterial::textureCount() {

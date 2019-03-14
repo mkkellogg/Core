@@ -10,7 +10,8 @@
 namespace Core {
 
     ReflectionProbe::ReflectionProbe(WeakPointer<Object3D> owner) : Object3DComponent(owner) {
-        needsUpdate = false;
+        this->needsUpdate = false;
+        this->skyboxOnly = true;
     }
 
     void ReflectionProbe::init() {
@@ -74,5 +75,13 @@ namespace Core {
     void ReflectionProbe::setSkybox(Skybox& skybox) {
         this->renderCamera->setSkybox(skybox);
         this->renderCamera->setSkyboxEnabled(true);
+    }
+
+    void ReflectionProbe::setSkyboxOnly(Bool skyboxOnly) {
+        this->skyboxOnly = skyboxOnly;
+    }
+
+    Bool ReflectionProbe::isSkyboxOnly() {
+        return this->skyboxOnly;
     }
 }

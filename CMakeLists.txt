@@ -107,6 +107,7 @@ set(INCLUDE_FILES
     render/RenderBuffer.h
     render/MeshOutlinePostProcessor.h
     render/ReflectionProbe.h
+    render/ToneMapType.h
     light/Light.h
     light/ShadowLight.h
     light/PointLight.h

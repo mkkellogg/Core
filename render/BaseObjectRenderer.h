@@ -18,7 +18,8 @@ namespace Core {
     class BaseObjectRenderer : public Object3DComponent {
     public:
         BaseObjectRenderer(WeakPointer<Object3D> owner) : Object3DComponent(owner), castShadows(true) {}
-        virtual Bool forwardRender(const ViewDescriptor& viewDescriptor, const std::vector<WeakPointer<Light>>& lights);
+        virtual Bool forwardRender(const ViewDescriptor& viewDescriptor, const std::vector<WeakPointer<Light>>& lights,
+                                   Bool matchPhysicalPropertiesWithLighting);
         virtual Bool supportsRenderPath(RenderPath renderPath);
         Bool castsShadows();
         void setCastShadows(Bool castShadows);

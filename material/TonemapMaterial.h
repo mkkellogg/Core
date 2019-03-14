@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../util/WeakPointer.h"
+#include "../render/ToneMapType.h"
 #include "ShaderMaterial.h"
 
 namespace Core {
@@ -21,6 +22,7 @@ namespace Core {
         void setExposure(Real exposure);
         void setTexture(WeakPointer<Texture2D> texture);
         void setDepthTexture(WeakPointer<Texture2D> depthTexture);
+        void setToneMapType(ToneMapType type);
         virtual UInt32 textureCount() override;
         
     protected:
@@ -32,6 +34,7 @@ namespace Core {
         Real exposure;
         PersistentWeakPointer<Texture2D> texture;
         PersistentWeakPointer<Texture2D> depthTexture;
+        ToneMapType toneMapType;
 
         Int32 positionLocation;
         Int32 colorLocation;
@@ -41,5 +44,6 @@ namespace Core {
         Int32 textureLocation;
         Int32 depthTextureLocation;
         Int32 exposureLocation;
+        Int32 toneMapTypeLocation;
     };
 }

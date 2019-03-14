@@ -13,7 +13,7 @@ namespace Core {
         this->albedo.set(1.0f, 1.0f, 1.0f, 1.0f);
         this->metallic = 0.9f;
         this->roughness = 0.35f;
-        this->ambientOcclusion = 0.0f;
+        this->ambientOcclusion = 1.0f;
 
         this->albedoMapEnabled = false;
         this->normalMapEnabled = false;
@@ -174,7 +174,7 @@ namespace Core {
         }
         this->shader->setUniform1f(this->metallicLocation, this->metallic);
         this->shader->setUniform1f(this->roughnessLocation, this->roughness);
-        this->shader->setUniform1f(this->ambientOcclusion, this->ambientOcclusion);
+        this->shader->setUniform1f(this->ambientOcclusionLocation, this->ambientOcclusion);
         this->shader->setUniform1i(this->enabledMapLocation, this->getEnabledMapMask());
     }
 
@@ -226,6 +226,9 @@ namespace Core {
         newMaterial->roughnessLocation = this->roughnessLocation;
         newMaterial->ambientOcclusionLocation = this->ambientOcclusionLocation;
         newMaterial->enabledMapLocation = this->enabledMapLocation;
+        newMaterial->metallic = this->metallic;
+        newMaterial->roughness = this->roughness;
+        newMaterial->ambientOcclusion = this->ambientOcclusion;
         return newMaterial;
     }
 

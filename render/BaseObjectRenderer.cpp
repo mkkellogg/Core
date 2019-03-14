@@ -2,7 +2,8 @@
 
 namespace Core {
 
-    Bool BaseObjectRenderer::forwardRender(const ViewDescriptor& viewDescriptor, const std::vector<WeakPointer<Light>>& lights) {
+    Bool BaseObjectRenderer::forwardRender(const ViewDescriptor& viewDescriptor, const std::vector<WeakPointer<Light>>& lights,
+                                           Bool matchPhysicalPropertiesWithLighting) {
         return false;
     }
 

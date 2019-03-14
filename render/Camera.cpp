@@ -21,6 +21,7 @@ namespace Core {
         this->setAutoClearRenderBuffer(RenderBufferType::Color, true);
         this->setAutoClearRenderBuffer(RenderBufferType::Depth, true);
         this->setAutoClearRenderBuffer(RenderBufferType::Stencil, true);
+        this->hdrToneMapType = ToneMapType::Reinhard;
     }
 
     void Camera::setAspectRatio(Real ratio) {
@@ -191,6 +192,26 @@ namespace Core {
 
     Bool Camera::isHDREnabled() {
         return this->hdrEnabled;
+    }
+    
+    void Camera::setHDRToneMapTypeReinhard() {
+        this->hdrToneMapType = ToneMapType::Reinhard;
+    }
+
+    void Camera::setHDRToneMapTypeExposure() {
+        this->hdrToneMapType = ToneMapType::Exposure;;
+    }
+
+    ToneMapType Camera::getHDRToneMapType() {
+        return this->hdrToneMapType;
+    }
+
+    void Camera::setExposure(Real exposure) {
+        this->exposure = exposure;
+    }
+
+    Real Camera::getExposure() {
+        return this->exposure;
     }
 
     void Camera::buildPerspectiveProjectionMatrix(Real fov, Real ratio, Real nearP, Real farP, Matrix4x4& out) {

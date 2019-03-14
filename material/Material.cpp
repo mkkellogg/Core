@@ -226,6 +226,7 @@ namespace Core {
         target->renderStyle = this->renderStyle;
         target->transparent = this->transparent;
         target->lit = this->lit;
+        target->physical = this->physical;
 
         target->stencilTestEnabled = this->stencilTestEnabled;
         target->stencilRef = this->stencilRef;
