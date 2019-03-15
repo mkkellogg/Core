@@ -22,6 +22,8 @@ namespace Core {
         this->setAutoClearRenderBuffer(RenderBufferType::Depth, true);
         this->setAutoClearRenderBuffer(RenderBufferType::Stencil, true);
         this->hdrToneMapType = ToneMapType::Reinhard;
+        this->hdrExposure = 1.0f;
+        this->hdrGamma = 2.2f;
     }
 
     void Camera::setAspectRatio(Real ratio) {
@@ -198,20 +200,25 @@ namespace Core {
         this->hdrToneMapType = ToneMapType::Reinhard;
     }
 
-    void Camera::setHDRToneMapTypeExposure() {
-        this->hdrToneMapType = ToneMapType::Exposure;;
+    void Camera::setHDRToneMapTypeExposure(Real exposure) {
+        this->hdrToneMapType = ToneMapType::Exposure;
+        this->hdrExposure = exposure;
     }
 
     ToneMapType Camera::getHDRToneMapType() {
         return this->hdrToneMapType;
     }
 
-    void Camera::setExposure(Real exposure) {
-        this->exposure = exposure;
+    Real Camera::getHDRExposure() {
+        return this->hdrExposure;
     }
 
-    Real Camera::getExposure() {
-        return this->exposure;
+    void Camera::setHDRGamma(Real gamma) {
+        this->hdrGamma = gamma;
+    }
+
+    Real Camera::getHDRGamma() {
+        return this->hdrGamma;
     }
 
     void Camera::buildPerspectiveProjectionMatrix(Real fov, Real ratio, Real nearP, Real farP, Matrix4x4& out) {

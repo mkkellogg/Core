@@ -20,6 +20,7 @@ namespace Core {
         virtual void sendCustomUniformsToShader() override;
         virtual WeakPointer<Material> clone() override;
         void setExposure(Real exposure);
+        void setGamma(Real gamma);
         void setTexture(WeakPointer<Texture2D> texture);
         void setDepthTexture(WeakPointer<Texture2D> depthTexture);
         void setToneMapType(ToneMapType type);
@@ -32,6 +33,7 @@ namespace Core {
         virtual void bindShaderVarLocations() override;
 
         Real exposure;
+        Real gamma;
         PersistentWeakPointer<Texture2D> texture;
         PersistentWeakPointer<Texture2D> depthTexture;
         ToneMapType toneMapType;
@@ -44,6 +46,7 @@ namespace Core {
         Int32 textureLocation;
         Int32 depthTextureLocation;
         Int32 exposureLocation;
+        Int32 gammaLocation;
         Int32 toneMapTypeLocation;
     };
 }

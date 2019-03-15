@@ -288,7 +288,8 @@ namespace Core {
 
         if (viewDescriptor.indirectHDREnabled) {
             this->tonemapMaterial->setToneMapType(viewDescriptor.hdrToneMapType);
-            this->tonemapMaterial->setExposure(viewDescriptor.exposure);
+            this->tonemapMaterial->setExposure(viewDescriptor.hdrExposure);
+            this->tonemapMaterial->setGamma(viewDescriptor.hdrGamma);
             graphics->blit(viewDescriptor.hdrRenderTarget, viewDescriptor.renderTarget, viewDescriptor.cubeFace, this->tonemapMaterial, true);
         }
 
@@ -417,14 +418,15 @@ namespace Core {
             viewDescriptor.renderTarget = cameraRenderTarget;
             viewDescriptor.hdrRenderTarget = camera->getHDRRenderTarget();
             viewDescriptor.indirectHDREnabled = true;
-            viewDescriptor.hdrToneMapType == camera->getHDRToneMapType();
+            viewDescriptor.hdrToneMapType = camera->getHDRToneMapType();
         }
         else {
             viewDescriptor.indirectHDREnabled = false;
             viewDescriptor.hdrRenderTarget = WeakPointer<RenderTarget2D>::nullPtr();
             viewDescriptor.renderTarget = cameraRenderTarget;
         }
-        viewDescriptor.exposure = camera->getExposure();
+        viewDescriptor.hdrExposure = camera->getHDRExposure();
+        viewDescriptor.hdrGamma = camera->getHDRGamma();
         viewDescriptor.skybox = camera->isSkyboxEnabled() ? &camera->getSkybox() : nullptr;
         this->getViewDescriptorTransformations(camera->getOwner()->getTransform().getWorldMatrix(),
                                 camera->getProjectionMatrix(), camera->getAutoClearRenderBuffers(), viewDescriptor);

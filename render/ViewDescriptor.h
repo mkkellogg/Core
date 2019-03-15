@@ -29,7 +29,8 @@ namespace Core {
         Skybox* skybox = nullptr;
         Bool indirectHDREnabled = false;
         ToneMapType hdrToneMapType = ToneMapType::Reinhard;
-        Real exposure = 1.0f;
+        Real hdrExposure = 1.0f;
+        Real hdrGamma = 2.2f;
     };
 
 }

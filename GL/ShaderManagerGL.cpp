@@ -430,6 +430,7 @@ namespace Core {
             + LIGHT_ENABLED_DEF
             + LIGHT_SHADOW_SOFTNESS_DEF
             + LIGHT_COLOR_DEF
+            + LIGHT_INTENSITY_DEF
             + LIGHT_SHADOW_MAP_SIZE_DEF
             + LIGHT_NEAR_PLANE_DEF
             + LIGHT_IRRADIANCE_MAP_DEF +
@@ -462,6 +463,7 @@ namespace Core {
             + LIGHT_ENABLED_SINGLE_DEF
             + LIGHT_SHADOW_SOFTNESS_SINGLE_DEF
             + LIGHT_COLOR_SINGLE_DEF
+            + LIGHT_INTENSITY_SINGLE_DEF
             + LIGHT_SHADOW_MAP_SIZE_SINGLE_DEF
             + LIGHT_NEAR_PLANE_SINGLE_DEF
             + LIGHT_IRRADIANCE_MAP_SINGLE_DEF +
@@ -547,7 +549,7 @@ namespace Core {
             "            break; \n"
             "        } \n"
             "    } \n"
-            "    return vec4((1.0 - shadowFactor) * lightColor, 1.0);\n"      
+            "    return vec4((1.0 - shadowFactor) * lightColor * " + LIGHT_INTENSITY + "[lightIndex], 1.0);\n"      
             "} \n"
 
             "float getPointLightShadowFactor(vec3 lightLocalPos, float bias, int lightIndex) { \n"
@@ -603,7 +605,7 @@ namespace Core {
             "        shadowFactor += getPointLightShadowFactor(lightLocalPos, bias, lightIndex); \n"
             "    } \n"       
            
-            "   return vec4(" + LIGHT_COLOR + "[lightIndex].rgb * shadowFactor, 1.0);\n"
+            "   return vec4(" + LIGHT_COLOR + "[lightIndex].rgb * shadowFactor * " + LIGHT_INTENSITY + "[lightIndex], 1.0);\n"
             "}\n"
 
             "void getDirLightParameters(in int lightIndex, in vec3 worldNormal, in vec3 toViewer, out vec3 toLight, out vec3 halfwayVec, out float NdotL, out float bias) { \n"
@@ -627,7 +629,7 @@ namespace Core {
             "vec4 litColorBlinnPhong(in int lightIndex, in vec4 albedo, in vec4 worldPos, in vec3 worldNormal, in vec4 cameraPos) {\n"
             "    if (" + LIGHT_ENABLED + "[lightIndex] != 0) {\n"
             "        if (" + LIGHT_TYPE + "[lightIndex] == AMBIENT_LIGHT) {\n"
-            "            return vec4(albedo.rgb * " + LIGHT_COLOR + "[lightIndex].rgb, albedo.a);\n"
+            "            return vec4(albedo.rgb * " + LIGHT_COLOR + "[lightIndex].rgb * " + LIGHT_INTENSITY + "[lightIndex], albedo.a);\n"
             "        }\n"
             "        else { \n"
             "            vec3 radiance; \n"
@@ -680,6 +682,9 @@ namespace Core {
             "}\n"
             "vec3 gammaCorrectBasic(vec3 color) { \n"
             "    return pow(color, vec3(1.0/2.2));\n"
+            "}\n"
+            "vec3 gammaCorrectCustom(vec3 color, float gamma) { \n"
+            "    return pow(color, vec3(1.0 / gamma));\n"
             "}\n";
 
         this->Physical_Lighting_Single_vertex =
@@ -752,7 +757,7 @@ namespace Core {
             "        vec3 F0 = vec3(0.04); \n "
             "        F0 = mix(F0, albedo.rgb, metallic); \n " 
             "        if (" + LIGHT_TYPE + "[lightIndex] == AMBIENT_LIGHT) {\n"
-            "            return vec4(albedo.rgb * " + LIGHT_COLOR + "[lightIndex].rgb, albedo.a);\n"
+            "            return vec4(albedo.rgb * " + LIGHT_COLOR + "[lightIndex].rgb * " + LIGHT_INTENSITY + "[lightIndex], albedo.a);\n"
             "        }\n"
             "        else if (" + LIGHT_TYPE + "[lightIndex] == AMBIENT_IBL_LIGHT) {\n"
             "             vec3 irradiance = texture(" + LIGHT_IRRADIANCE_MAP + "[lightIndex], worldNormal).rgb; \n"
@@ -1006,6 +1011,7 @@ namespace Core {
             "precision highp float;\n"
             + TEXTURE0_DEF +
             "uniform float exposure; \n"
+            "uniform float gamma; \n"
             "uniform int toneMapType; \n"
             "in vec4 localPos;\n"
             "in vec2 vUV; \n"
@@ -1019,7 +1025,7 @@ namespace Core {
             "    else { \n"
             "        color = toneMapReinhard(color); \n"
             "    } \n"
-            "    color = gammaCorrectBasic(color); \n"
+            "    color = gammaCorrectCustom(color, gamma); \n"
             "    out_color = vec4(color, 1.0);\n"
             "}\n";
 

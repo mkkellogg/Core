@@ -62,10 +62,11 @@ namespace Core {
         void setHDREnabled(Bool enabled);
         Bool isHDREnabled();
         void setHDRToneMapTypeReinhard();
-        void setHDRToneMapTypeExposure();
+        void setHDRToneMapTypeExposure(Real exposure);
         ToneMapType getHDRToneMapType();
-        void setExposure(Real exposure);
-        Real getExposure();
+        Real getHDRExposure();
+        void setHDRGamma(Real gamma);
+        Real getHDRGamma();
 
         static void buildPerspectiveProjectionMatrix(Real fov, Real aspectRatio, Real near, Real far, Matrix4x4& out);
         static void buildOrthographicProjectionMatrix(Real top, Real bottom, Real left, Real right, Real near, Real far, Matrix4x4& matrix);
@@ -101,6 +102,7 @@ namespace Core {
 
         Bool hdrEnabled;
         ToneMapType hdrToneMapType;
-        Real exposure;
+        Real hdrExposure;
+        Real hdrGamma;
     };
 }
