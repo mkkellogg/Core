@@ -27,6 +27,7 @@ namespace Core {
                                          const std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting) override;
         virtual Bool supportsRenderPath(RenderPath renderPath) override;
         void setMaterial(WeakPointer<Material> material);
+        WeakPointer<Material> getMaterial();
 
     private:
         MeshRenderer(WeakPointer<Graphics> graphics, WeakPointer<Material> material, WeakPointer<Object3D> owner);

@@ -310,6 +310,10 @@ namespace Core {
         this->material = material;
     }
 
+    WeakPointer<Material> MeshRenderer::getMaterial() {
+        return this->material;
+    }
+
     void MeshRenderer::checkAndSetShaderAttribute(WeakPointer<Mesh> mesh, WeakPointer<Material> material, StandardAttribute attribute,
                                                   WeakPointer<AttributeArrayBase> array) {
         if (mesh->isAttributeEnabled(attribute)) {
