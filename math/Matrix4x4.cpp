@@ -393,7 +393,7 @@ namespace Core {
      * Transform [vector] by this matrix, and store the result in [out]
      */
     void Matrix4x4::transform(const Vector4<Real> &vector, Vector4<Real> &out) const {
-        const Real *vectorData = vector.getConstData();
+        const Real *vectorData = const_cast<Vector4<Real>&>(vector).getData();
         Matrix4x4::multiplyMV(this->data, vectorData, out.getData());
     }
 
