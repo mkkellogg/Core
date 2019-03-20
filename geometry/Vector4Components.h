@@ -25,10 +25,6 @@ namespace Core {
       this->w = w;
     }
 
-    void copy(const Vector4Components<T>& src) {
-      this->set(src.x, src.y, src.z, src.w);
-    }
-
   };
 
   template <typename T>

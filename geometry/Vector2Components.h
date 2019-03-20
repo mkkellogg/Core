@@ -21,10 +21,6 @@ namespace Core {
       this->y = y;
     }
 
-    void copy(const Vector2Components<T>& src) {
-      this->set(src.x, src.y);
-    }
-
   };
 
   template <typename T>

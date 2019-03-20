@@ -578,21 +578,20 @@ namespace Core {
         return mData + i;
     }
 
-    Quaternion Quaternion::getRotation(const Vector3Components<Real>& source, const Vector3Components<Real>& dest) {
+    Quaternion Quaternion::getRotation(const Vector3Components<Real>& source, Vector3Components<Real>& dest) {
         return getRotation(source, dest, Vector3r::Zero);
     }
 
-    Quaternion Quaternion::getRotation(const Vector3Components<Real>& source, const Vector3Components<Real>& dest,
-                                       const Vector3Components<Real>& fallbackAxis) {
+    Quaternion Quaternion::getRotation(const Vector3Components<Real>& source, Vector3Components<Real>& dest, const Vector3Components<Real>& fallbackAxis) {
         // Based on Stan Melax's article in Game Programming Gems
         Quaternion q;
 
         // Copy, since cannot modify local
         Vector3r v0;
-        v0.copy(source);
+        v0.set(source.x, source.y, source.z);
 
         Vector3r v1;
-        v1.copy(dest);
+        v1.set(dest.x, dest.y, dest.z);
 
         v0.normalize();
         v1.normalize();
@@ -600,7 +599,7 @@ namespace Core {
         Real d = Vector3r::dot(v0, v1);
 
         Vector3r fallbackAxisV3;
-        fallbackAxisV3.copy(fallbackAxis);
+        fallbackAxisV3.set(fallbackAxis.x, fallbackAxis.y, fallbackAxis.z);
 
         // If dot == 1, vectors are the same
         if (d >= 1.0f) {

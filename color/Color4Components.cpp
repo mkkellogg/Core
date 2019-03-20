@@ -15,8 +15,4 @@ namespace Core {
         this->b = b;
         this->a = a;
     }
-
-    void Color4Components::copy(const Color4Components& src) {
-        this->set(src.r, src.g, src.b, src.a);
-    }
 }

@@ -15,6 +15,5 @@ namespace Core {
         virtual ~Color4Components() = 0;
 
         void set(const Real& r, const Real& g, const Real& b, const Real& a);
-        void copy(const Color4Components& src);
     };
 }

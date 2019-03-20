@@ -7,11 +7,6 @@
 
 namespace Core {
 
-    Ray::Ray(const Vector3Components<Real>& origin, const Vector3Components<Real>& direction) {
-        this->Origin.copy(origin);
-        this->Direction.copy(direction);
-    }
-
     Bool Ray::intersectMesh(WeakPointer<Mesh> mesh, std::vector<Hit>& hits) const {
         WeakPointer<AttributeArray<Point3rs>> vertexArray = mesh->getVertexPositions();
         Point3rs * vertices = vertexArray->getAttributes();
@@ -98,23 +93,23 @@ namespace Core {
     }
 
     Bool Ray::intersectTriangle(const Vector3Components<Real>* p0, const Vector3Components<Real>* p1,
-                                const Vector3Components<Real>* p2, Hit& hit, const Vector3Components<Real>* normal) const {
-        this->intersectTriangle(*p0, *p1, *p2, hit, normal);                             
+                               const Vector3Components<Real>* p2, Hit& hit, const Vector3Components<Real>* normal) const {
+        this->intersectTriangle(*p0, *p1, *p2, hit, normal); 
     }
 
     Bool Ray::intersectTriangle(const Vector3Components<Real>& p0, const Vector3Components<Real>& p1,
                                 const Vector3Components<Real>& p2, Hit& hit, const Vector3Components<Real>* normal) const {
         Point3r _p0, _p1, _p2;
-        _p0.copy(p0); 
-        _p1.copy(p1); 
-        _p2.copy(p2);
+        _p0.set(p0.x, p0.y, p0.z); 
+        _p1.set(p1.x, p1.y, p1.z); 
+        _p2.set(p2.x, p2.y, p2.z);
 
         Vector3r q1 = _p2 - _p0;
         Vector3r q2 = _p1 - _p0;
         Vector3r _normal;
 
         if (normal != nullptr) {
-            _normal.copy(*normal);
+            _normal.set(normal->x, normal->y, normal->z);
         }
         else {
             Vector3r::cross(q1, q2, _normal);
@@ -123,7 +118,7 @@ namespace Core {
 
         if (Vector3r::dot(_normal, this->Direction) >= 0) return false;
 
-        Real d = -Vector3r::dot(p0, _normal);
+        Real d = -Vector3r::dot(_p0, _normal);
         Vector4r planeEq(_normal.x, _normal.y, _normal.z, d);
         
         Hit planeHit;

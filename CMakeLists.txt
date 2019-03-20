@@ -152,6 +152,7 @@ set(INCLUDE_FILES
 
 set(SOURCE_FILES
     base/CoreObject.cpp
+    base/BaseVector.cpp
     common/Debug.cpp
     common/Constants.cpp
     asset/AssetLoader.cpp

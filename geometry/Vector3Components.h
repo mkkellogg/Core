@@ -30,10 +30,6 @@ namespace Core {
             this->z = z;
         }
 
-        virtual void copy(const Vector3Components<T>& src) {
-            this->set(src.x, src.y, src.z);
-        }
-
         Vector3Components& operator=(const Vector3Components& other) {
             if (this == &other) return *this;
             this->copy(other);

@@ -54,8 +54,9 @@ namespace Core {
         static Quaternion slerp(const Quaternion& Qa, const Quaternion& Qb, const Real t);
         Real* row(UInt32 i);
         const Real* row(UInt32 i) const;
-        static Quaternion getRotation(const Vector3Components<Real>& source, const Vector3Components<Real>& dest);
-        static Quaternion getRotation(const Vector3Components<Real>& source, const Vector3Components<Real>& dest, const Vector3Components<Real>& fallbackAxis);
+
+        static Quaternion getRotation(const Vector3Components<Real>& source, Vector3Components<Real>& dest);
+        static Quaternion getRotation(const Vector3Components<Real>& source, Vector3Components<Real>& dest, const Vector3Components<Real>& fallbackAxis);
     };
 
     // Global operator allowing left-multiply by scalar.

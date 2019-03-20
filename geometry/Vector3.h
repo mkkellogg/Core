@@ -48,14 +48,6 @@ namespace Core {
             return n;
         }
 
-        virtual void copy(const Vector3Base& src) {
-            Vector3Components<T>::copy(src);
-        }
-
-        virtual void copy(const Vector3Components<T>& src) override {
-            Vector3Components<T>::copy(src);
-        }
-
         void invert() {
             this->scale(-1.0);
         }
