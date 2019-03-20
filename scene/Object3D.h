@@ -42,6 +42,8 @@ namespace Core {
         void setActive(Bool active);
         void setName(const std::string& name);
         const std::string& getName() const;
+        UInt32 childCount();
+        WeakPointer<Object3D> getChild(UInt32 index);
 
     protected:
         Object3D();

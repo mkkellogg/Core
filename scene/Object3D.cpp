@@ -108,4 +108,12 @@ namespace Core {
     const std::string& Object3D::getName() const {
         return this->name;
     }
+
+    UInt32 Object3D::childCount() {
+        return this->children.size();
+    }
+
+    WeakPointer<Object3D> Object3D::getChild(UInt32 index) {
+        return this->children[index];
+    }
 }
