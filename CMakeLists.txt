@@ -75,6 +75,7 @@ set(INCLUDE_FILES
     material/SkyboxMaterial.h
     material/PhysicalSkyboxMaterial.h
     material/IrradianceRendererMaterial.h
+    material/SpecularIBLRendererMaterial.h
     material/EquirectangularMaterial.h
     material/StandardPhysicalMaterial.h
     material/AmbientPhysicalMaterial.h
@@ -216,6 +217,7 @@ set(SOURCE_FILES
     material/SkyboxMaterial.cpp
     material/PhysicalSkyboxMaterial.cpp
     material/IrradianceRendererMaterial.cpp
+    material/SpecularIBLRendererMaterial.cpp
     material/EquirectangularMaterial.cpp
     material/StandardPhysicalMaterial.cpp
     material/AmbientPhysicalMaterial.cpp

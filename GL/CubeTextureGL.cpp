@@ -49,8 +49,6 @@ namespace Core {
     void CubeTextureGL::setupTexture(UInt32 width, UInt32 height, Byte* front, Byte* back, Byte* top, Byte* bottom, Byte* left, Byte* right) {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         WeakPointer<GraphicsGL> graphicsGL =  WeakPointer<Graphics>::dynamicPointerCast<GraphicsGL>(graphics);
-        
-        glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
         GLuint tex;
 
@@ -90,11 +88,36 @@ namespace Core {
         }
 
         // set the relevant texture properties
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        
+        // set the filter mode. if bi-linear or tri-linear filtering is used,
+        // we will be using mip-maps
+        if (this->attributes.FilterMode == TextureFilter::Linear) {
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        }
+        else if (this->attributes.FilterMode == TextureFilter::BiLinear) {
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        }
+        else if (this->attributes.FilterMode == TextureFilter::TriLinear) {
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        }
+        else {
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        }
+
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+         // we only generate mip-maps if bi-linear or tri-linear filtering is used
+        if (this->attributes.FilterMode == TextureFilter::TriLinear || attributes.FilterMode == TextureFilter::BiLinear) {
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, attributes.MipMapLevel);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_ANISOTROPY_EXT, attributes.MipMapLevel);
+            glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+        }
 
         glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 

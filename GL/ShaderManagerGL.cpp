@@ -202,6 +202,9 @@ namespace Core {
         this->setShader(ShaderType::Vertex, "IrradianceRenderer", ShaderManagerGL::IrradianceRenderer_vertex);
         this->setShader(ShaderType::Fragment, "IrradianceRenderer", ShaderManagerGL::IrradianceRenderer_fragment);
 
+        this->setShader(ShaderType::Vertex, "SpecularIBLRenderer", ShaderManagerGL::SpecularIBLRenderer_vertex);
+        this->setShader(ShaderType::Fragment, "SpecularIBLRenderer", ShaderManagerGL::SpecularIBLRenderer_fragment);
+
         this->setShader(ShaderType::Vertex, "Depth", ShaderManagerGL::Depth_vertex);
         this->setShader(ShaderType::Fragment, "Depth", ShaderManagerGL::Depth_fragment);
 
@@ -759,6 +762,44 @@ namespace Core {
             "    return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0); \n "
             "}  \n "
 
+            "float radicalInverse_VdC(uint bits) \n"
+            "{ \n"
+            "    bits = (bits << 16u) | (bits >> 16u); \n"
+            "    bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u); \n"
+            "    bits = ((bits & 0x33333333u) << 2u) | ((bits & 0xCCCCCCCCu) >> 2u); \n"
+            "    bits = ((bits & 0x0F0F0F0Fu) << 4u) | ((bits & 0xF0F0F0F0u) >> 4u); \n"
+            "    bits = ((bits & 0x00FF00FFu) << 8u) | ((bits & 0xFF00FF00u) >> 8u); \n"
+            "    return float(bits) * 2.3283064365386963e-10; \n"
+            "} \n"
+            
+            "vec2 hammersley(uint i, uint N) \n"
+            "{ \n"
+            "    return vec2(float(i)/float(N), radicalInverse_VdC(i)); \n"
+            "} \n"
+
+            "vec3 importanceSampleGGX(vec2 Xi, vec3 N, float roughness) \n"
+            "{ \n"
+            "    float a = roughness*roughness; \n"
+                
+            "    float phi = 2.0 * PI * Xi.x; \n"
+            "    float cosTheta = sqrt((1.0 - Xi.y) / (1.0 + (a*a - 1.0) * Xi.y)); \n"
+            "    float sinTheta = sqrt(1.0 - cosTheta*cosTheta); \n"
+                
+            // from spherical coordinates to cartesian coordinates
+            "    vec3 H; \n"
+            "    H.x = cos(phi) * sinTheta; \n"
+            "    H.y = sin(phi) * sinTheta; \n"
+            "    H.z = cosTheta; \n"
+                
+            // from tangent-space vector to world-space sample vector
+            "    vec3 up        = abs(N.z) < 0.999 ? vec3(0.0, 0.0, 1.0) : vec3(1.0, 0.0, 0.0); \n"
+            "    vec3 tangent   = normalize(cross(up, N)); \n"
+            "    vec3 bitangent = cross(N, tangent); \n"
+                
+            "    vec3 sampleVec = tangent * H.x + bitangent * H.y + N * H.z; \n"
+            "    return normalize(sampleVec); \n"
+            "} \n"
+
             "vec4 litColorPhysical(in int lightIndex, in vec4 albedo, in vec4 worldPos, in vec3 worldNormal, in vec4 cameraPos, in float metallic, in float roughness, in float ao) {\n"
             "    if (" + LIGHT_ENABLED + "[lightIndex] != 0) {\n"
             "        vec3 V = normalize(vec3(cameraPos - worldPos)); \n "
@@ -1090,6 +1131,56 @@ namespace Core {
             "    irradiance = PI * irradiance * (1.0 / samplesTaken);\n"
             "    FragColor = vec4(irradiance, 1.0);\n"
             "}\n";
+
+        this->SpecularIBLRenderer_vertex =
+            "#version 330\n"
+            "precision highp float;\n"
+            "layout (location = 0 ) " + POSITION_DEF
+            + PROJECTION_MATRIX_DEF
+            + VIEW_MATRIX_DEF + 
+            "out vec4 localPos;\n"
+            "void main()\n"
+            "{\n"
+            "    localPos = " + POSITION + ";\n"
+            "    vec4 vWorldPos = mat4(mat3(" + VIEW_MATRIX + ")) * " + POSITION + ";\n"
+            "    gl_Position = (" + PROJECTION_MATRIX + " * vWorldPos).xyww;\n"
+            "}\n";
+
+        this->SpecularIBLRenderer_fragment =  
+            "#version 330\n"
+            "precision highp float;\n"
+            "#include \"PhysicalLightingSingle\" \n"
+            "out vec4 out_color; \n"
+            "in vec4 localPos; \n"
+
+            "uniform samplerCube cubeTexture; \n"
+            "uniform float roughness; \n"
+
+            "void main() \n"
+            "{  \n"		
+            "    vec3 N = normalize(localPos.xyz); \n"    
+            "    vec3 R = N; \n"
+            "    vec3 V = R; \n"
+
+            "    const uint SAMPLE_COUNT = 1024u; \n"
+            "    float totalWeight = 0.0; \n"
+            "    vec3 prefilteredColor = vec3(0.0); \n"     
+            "    for(uint i = 0u; i < SAMPLE_COUNT; ++i) \n"
+            "    {  \n"
+            "        vec2 Xi = hammersley(i, SAMPLE_COUNT);  \n"
+            "        vec3 H  = importanceSampleGGX(Xi, N, roughness); \n"
+            "        vec3 L  = normalize(2.0 * dot(V, H) * H - V); \n"
+
+            "        float NdotL = max(dot(N, L), 0.0); \n"
+            "        if(NdotL > 0.0) \n"
+            "        { \n"
+            "            prefilteredColor += texture(cubeTexture, L).rgb * NdotL; \n"
+            "            totalWeight      += NdotL; \n"
+            "        } \n"
+            "    } \n"
+            "    prefilteredColor = prefilteredColor / totalWeight; \n"
+            "    out_color = vec4(prefilteredColor, 1.0); \n"
+            "} \n";
 
         this->Depth_vertex =
             "#version 330\n"

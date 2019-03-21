@@ -26,12 +26,12 @@ namespace Core {
         SkyboxMaterial::copyTo(target);
         WeakPointer<PhysicalSkyboxMaterial> _target = WeakPointer<Material>::dynamicPointerCast<PhysicalSkyboxMaterial>(target);
         _target->exposureLocation = this->exposureLocation;
+        _target->exposure = this->exposure;
     }
 
     WeakPointer<Material> PhysicalSkyboxMaterial::clone() {
         WeakPointer<PhysicalSkyboxMaterial> newMaterial = Engine::instance()->createMaterial<PhysicalSkyboxMaterial>(false);
         this->copyTo(newMaterial);
-        newMaterial->exposureLocation = this->exposureLocation;
         return newMaterial;
     }
 

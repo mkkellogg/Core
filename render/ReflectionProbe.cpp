@@ -4,6 +4,7 @@
 #include "../render/Camera.h"
 #include "../render/RenderTargetCube.h"
 #include "../material/IrradianceRendererMaterial.h"
+#include "../material/SpecularIBLRendererMaterial.h"
 #include "../geometry/GeometryUtils.h"
 #include "../scene/Object3D.h"
 
@@ -16,16 +17,28 @@ namespace Core {
 
     void ReflectionProbe::init() {
         Vector2u size(512, 512);
+
         Core::TextureAttributes colorAttributesScene;
         colorAttributesScene.Format = Core::TextureFormat::RGBA16F;
         colorAttributesScene.FilterMode = Core::TextureFilter::Linear;
+        colorAttributesScene.MipMapLevel = 1;
+
         Core::TextureAttributes colorAttributesIrradiance;
         colorAttributesIrradiance.Format = Core::TextureFormat::RGBA16F;
         colorAttributesIrradiance.FilterMode = Core::TextureFilter::Linear;
+        colorAttributesIrradiance.MipMapLevel = 1;
+
+        Core::TextureAttributes colorAttributesSpecularIBL;
+        colorAttributesSpecularIBL.Format = Core::TextureFormat::RGBA16F;
+        colorAttributesSpecularIBL.FilterMode = Core::TextureFilter::TriLinear;
+        colorAttributesSpecularIBL.MipMapLevel = 5;
+
         Core::TextureAttributes depthAttributes;
         depthAttributes.IsDepthTexture = true;
+
         this->sceneRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorAttributesScene, depthAttributes, size);
         this->irradianceMap = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorAttributesIrradiance, depthAttributes, size);
+        this->specularIBLMap = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorAttributesSpecularIBL, depthAttributes, size);
 
         this->renderCamera = Engine::instance()->createPerspectiveCamera(this->getOwner(), Core::Math::PI / 2.0f, 1.0, 0.1f, 100.0f);
         this->renderCamera->setRenderTarget(this->sceneRenderTarget);
@@ -34,10 +47,15 @@ namespace Core {
         this->renderCamera->setActive(false);
         this->renderCamera->setHDREnabled(false);
 
-        this->irradianceRendererMaterial = Engine::instance()->createMaterial<IrradianceRendererMaterial>();
         Core::WeakPointer<Core::CubeTexture> sceneCubeTexture = Core::WeakPointer<Core::Texture>::dynamicPointerCast<Core::CubeTexture>(this->sceneRenderTarget->getColorTexture());
+        
+        this->irradianceRendererMaterial = Engine::instance()->createMaterial<IrradianceRendererMaterial>();
         this->irradianceRendererMaterial->setTexture(sceneCubeTexture);
         this->irradianceRendererMaterial->setFaceCullingEnabled(false);
+
+        this->specularIBLRendererMaterial = Engine::instance()->createMaterial<SpecularIBLRendererMaterial>();
+        this->specularIBLRendererMaterial->setTexture(sceneCubeTexture);
+        this->specularIBLRendererMaterial->setFaceCullingEnabled(false);
 
         Color cubeColor(1.0f, 1.0f, 1.0f, 1.0f);
         WeakPointer<Mesh> cubeMesh = GeometryUtils::buildBoxMesh(1.0, 1.0, 1.0, cubeColor);

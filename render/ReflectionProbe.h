@@ -15,6 +15,7 @@ namespace Core {
     class Light;
     class RenderTargetCube;
     class IrradianceRendererMaterial;
+    class SpecularIBLRendererMaterial;
     class Skybox;
 
     class ReflectionProbe : public Object3DComponent {
@@ -37,9 +38,11 @@ namespace Core {
         Bool skyboxOnly;
         PersistentWeakPointer<RenderTargetCube> sceneRenderTarget;
         PersistentWeakPointer<RenderTargetCube> irradianceMap;
+        PersistentWeakPointer<RenderTargetCube> specularIBLMap;
         PersistentWeakPointer<Object3D> renderCameraObject;
         PersistentWeakPointer<Camera> renderCamera;
         PersistentWeakPointer<IrradianceRendererMaterial> irradianceRendererMaterial;
+        PersistentWeakPointer<SpecularIBLRendererMaterial> specularIBLRendererMaterial;
         PersistentWeakPointer<Object3D> skyboxCube;
     };
 

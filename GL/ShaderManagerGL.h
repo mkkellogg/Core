@@ -69,6 +69,9 @@ namespace Core {
         std::string IrradianceRenderer_vertex;
         std::string IrradianceRenderer_fragment;
 
+        std::string SpecularIBLRenderer_vertex;
+        std::string SpecularIBLRenderer_fragment;
+
         std::string Depth_vertex;
         std::string Depth_fragment;
 

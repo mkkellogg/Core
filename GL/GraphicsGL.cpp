@@ -42,6 +42,7 @@ namespace Core {
             this->setupRenderState();
         }
         
+        glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     }
 
     WeakPointer<Renderer> GraphicsGL::getRenderer() {
