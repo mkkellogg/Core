@@ -88,7 +88,7 @@ namespace Core {
                                                 Bool castShadows, Bool receiveShadows, Bool preferPhysicalMaterial) const;
         Bool processMaterials(const std::string& modelPath, const aiScene& scene,
                              std::vector<MaterialImportDescriptor>& materialImportDescriptors, Bool preferPhysicalMaterial) const;
-        WeakPointer<Texture> loadAITexture(aiMaterial& assimpMaterial, aiTextureType textureType, const std::string& modelPath, TextureFilter filter, UInt32 mipMapLevel) const;
+        WeakPointer<Texture> loadAITexture(aiMaterial& assimpMaterial, aiTextureType textureType, const std::string& modelPath, TextureFilter filter, UInt32 mipLevel) const;
         void getImportDetails(const aiMaterial* mtl, MaterialImportDescriptor& materialImportDesc, const aiScene& scene, Bool preferPhysicalMaterial) const;
         Bool setupMeshSpecificMaterialWithTextures(const aiMaterial& assimpMaterial, WeakPointer<Texture> diffuseTexture,
                                                   WeakPointer<Texture> normalsTexture, UInt32 meshIndex,

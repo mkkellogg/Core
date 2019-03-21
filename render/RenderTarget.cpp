@@ -17,8 +17,10 @@ namespace Core {
         this->depthTextureAttributes.WrapMode = TextureWrap::Clamp;
         this->depthTextureAttributes.IsDepthTexture = true;
 
-        depthBufferIsTexture = false;
-        colorBufferIsTexture = false;
+        this->mipLevel = 0;
+
+        this->depthBufferIsTexture = false;
+        this->colorBufferIsTexture = false;
 
         // TODO: For now we are only supporting textures for the color attachment
         if (this->hasColorBuffer) {
@@ -85,6 +87,31 @@ namespace Core {
 
     Bool RenderTarget::isHDRCapable() const {
         return this->colorTextureAttributes.Format == TextureFormat::RGBA16F || this->colorTextureAttributes.Format == TextureFormat::RGBA32F;
+    }
+
+    UInt32 RenderTarget::getMaxMipLevel() const {
+        return this->colorTextureAttributes.MipLevel;
+    }
+
+    UInt32 RenderTarget::getMipLevel() const {
+        return this->mipLevel;
+    }
+
+    void RenderTarget::setMipLevel(UInt32 level) {
+        this->mipLevel = level;
+    }
+
+    Vector4u RenderTarget::getViewportForMipLevel(UInt32 mipLevel) {
+        Real mipDimModifier = 1.0f / (Real)(1 << mipLevel);
+       
+        Vector4u mipLevelScaledViewport;
+        mipLevelScaledViewport.x = (UInt32)((Real)this->viewport.x * mipDimModifier);
+        mipLevelScaledViewport.y = (UInt32)((Real)this->viewport.y * mipDimModifier);
+        mipLevelScaledViewport.z = (UInt32)((Real)this->viewport.z * mipDimModifier);
+        mipLevelScaledViewport.w = (UInt32)((Real)this->viewport.w * mipDimModifier);
+
+        return mipLevelScaledViewport;
+
     }
 
     Bool RenderTarget::buildAndVerifyTexture(WeakPointer<Texture> texture) {

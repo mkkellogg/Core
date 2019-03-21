@@ -25,6 +25,7 @@ namespace Core {
         PersistentWeakPointer<RenderTarget> renderTarget;
         PersistentWeakPointer<RenderTarget2D> hdrRenderTarget;
         Int32 cubeFace = -1;
+        Int32 mipLevel = 0;
         IntMask clearRenderBuffers;
         Skybox* skybox = nullptr;
         Bool indirectHDREnabled = false;

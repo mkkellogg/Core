@@ -21,17 +21,17 @@ namespace Core {
         Core::TextureAttributes colorAttributesScene;
         colorAttributesScene.Format = Core::TextureFormat::RGBA16F;
         colorAttributesScene.FilterMode = Core::TextureFilter::Linear;
-        colorAttributesScene.MipMapLevel = 1;
+        colorAttributesScene.MipLevel = 0;
 
         Core::TextureAttributes colorAttributesIrradiance;
         colorAttributesIrradiance.Format = Core::TextureFormat::RGBA16F;
         colorAttributesIrradiance.FilterMode = Core::TextureFilter::Linear;
-        colorAttributesIrradiance.MipMapLevel = 1;
+        colorAttributesIrradiance.MipLevel = 0;
 
         Core::TextureAttributes colorAttributesSpecularIBL;
         colorAttributesSpecularIBL.Format = Core::TextureFormat::RGBA16F;
         colorAttributesSpecularIBL.FilterMode = Core::TextureFilter::TriLinear;
-        colorAttributesSpecularIBL.MipMapLevel = 5;
+        colorAttributesSpecularIBL.MipLevel = 5;
 
         Core::TextureAttributes depthAttributes;
         depthAttributes.IsDepthTexture = true;
@@ -48,7 +48,7 @@ namespace Core {
         this->renderCamera->setHDREnabled(false);
 
         Core::WeakPointer<Core::CubeTexture> sceneCubeTexture = Core::WeakPointer<Core::Texture>::dynamicPointerCast<Core::CubeTexture>(this->sceneRenderTarget->getColorTexture());
-        
+
         this->irradianceRendererMaterial = Engine::instance()->createMaterial<IrradianceRendererMaterial>();
         this->irradianceRendererMaterial->setTexture(sceneCubeTexture);
         this->irradianceRendererMaterial->setFaceCullingEnabled(false);

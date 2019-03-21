@@ -318,7 +318,30 @@ namespace Core {
         return true;
     }
 
-    Bool GraphicsGL::activateCubeRenderTargetSide(CubeTextureSide side) {
+    Bool GraphicsGL::activateRenderTarget2DMipLevel(UInt32 mipLevel) {
+        if (this->currentRenderTarget.isValid()) {
+            RenderTarget2DGL * currentTarget2DGL = dynamic_cast<RenderTarget2DGL *>(this->currentRenderTarget.get());
+            if (currentTarget2DGL == nullptr) {
+                throw Exception("GraphicsGL::activateRenderTarget2DMipLevel -> Current render target is not a valid OpenGL render target.");
+            }
+
+            WeakPointer<Texture> colorTexture = currentTarget2DGL->getColorTexture();
+            if (colorTexture.isValid()) {
+                Texture2DGL * texGL = dynamic_cast<Texture2DGL*>(colorTexture.get());
+                if (texGL == nullptr) {
+                    throw InvalidArgumentException("GraphicsGL::activateRenderTarget2DMipLevel -> Render target texture is not a valid OpenGL texture.");
+                }
+
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texGL->getTextureID(), mipLevel);
+                return true;
+            }
+            return false;            
+        }
+
+        return false;
+    }
+
+    Bool GraphicsGL::activateCubeRenderTargetSide(CubeTextureSide side, UInt32 mipLevel) {
         if (this->currentRenderTarget.isValid()) {
             RenderTargetCubeGL * currentTargetCubeGL = dynamic_cast<RenderTargetCubeGL *>(this->currentRenderTarget.get());
             if (currentTargetCubeGL == nullptr) {
@@ -330,7 +353,7 @@ namespace Core {
                 throw InvalidArgumentException("GraphicsGL::activateCubeRenderTargetSide -> Render target texture is not a valid OpenGL texture.");
             }
 
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, getGLCubeTarget(side), texGL->getTextureID(), 0);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, getGLCubeTarget(side), texGL->getTextureID(), mipLevel);
 
             return true;
         }

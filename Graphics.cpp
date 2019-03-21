@@ -86,10 +86,18 @@ namespace Core {
         renderCamera->setAutoClearRenderBuffer(RenderBufferType::Depth, false);
         renderCamera->setAutoClearRenderBuffer(RenderBufferType::Stencil, false);
 
+        UInt32 targetMipLevel = destination->getMipLevel();
         Engine::instance()->getGraphicsSystem()->activateRenderTarget(destination);
         if (cubeFace >= 0) {
-            Engine::instance()->getGraphicsSystem()->activateCubeRenderTargetSide((CubeTextureSide)cubeFace);
+            Engine::instance()->getGraphicsSystem()->activateCubeRenderTargetSide((CubeTextureSide)cubeFace, targetMipLevel);
         }
+        else {
+            Engine::instance()->getGraphicsSystem()->activateRenderTarget2DMipLevel(targetMipLevel);
+        }
+
+        Vector4u mipLevelScaledViewport = destination->getViewportForMipLevel(targetMipLevel);
+        this->setViewport(mipLevelScaledViewport.x, mipLevelScaledViewport.y, mipLevelScaledViewport.z, mipLevelScaledViewport.w);
+
         this->getRenderer()->renderObjectDirect(fullScreenQuadObject, renderCamera, material);
 
         material->setFaceCullingEnabled(faceCullingEnabled);

@@ -79,7 +79,8 @@ namespace Core {
         void updateDefaultRenderTargetSize(Vector2u size) override;
         void updateDefaultRenderTargetViewport(Vector4u viewport) override;
         Bool activateRenderTarget(WeakPointer<RenderTarget> target) override;
-        Bool activateCubeRenderTargetSide(CubeTextureSide side) override;
+        Bool activateRenderTarget2DMipLevel(UInt32 mipLevel) override;
+        Bool activateCubeRenderTargetSide(CubeTextureSide side, UInt32 mipLevel) override;
         void setRenderStyle(RenderStyle style) override;
 
         void setDepthWriteEnabled(Bool enabled) override;

@@ -247,20 +247,27 @@ namespace Core {
         Vector4u currentViewport = currentRenderTarget->getViewport();
 
         WeakPointer<RenderTarget> nextRenderTarget;
+        UInt32 targetMipLevel = viewDescriptor.renderTarget->getMipLevel();
         if (viewDescriptor.indirectHDREnabled) {
             nextRenderTarget = viewDescriptor.hdrRenderTarget;
+            targetMipLevel = 0;
         }
         else {
             nextRenderTarget = viewDescriptor.renderTarget; 
         }
 
         graphics->activateRenderTarget(nextRenderTarget);
-        if (viewDescriptor.cubeFace >= 0 && !viewDescriptor.indirectHDREnabled) {
-            graphics->activateCubeRenderTargetSide((CubeTextureSide)viewDescriptor.cubeFace);
-        }
         Vector2u renderTargetSize = nextRenderTarget->getSize();
-        Vector4u viewport = nextRenderTarget->getViewport();
-        graphics->setViewport(viewport.x, viewport.y, viewport.z, viewport.w);
+
+        if (!viewDescriptor.indirectHDREnabled && viewDescriptor.cubeFace >= 0) {
+            graphics->activateCubeRenderTargetSide((CubeTextureSide)viewDescriptor.cubeFace, targetMipLevel);
+        }
+        else {
+            graphics->activateRenderTarget2DMipLevel(targetMipLevel);
+        }
+        
+        Vector4u mipLevelScaledViewport = nextRenderTarget->getViewportForMipLevel(targetMipLevel);
+        graphics->setViewport(mipLevelScaledViewport.x, mipLevelScaledViewport.y, mipLevelScaledViewport.z, mipLevelScaledViewport.w);
 
         Bool clearColorBuffer = IntMaskUtil::isBitSetForMask(viewDescriptor.clearRenderBuffers, (UInt32)RenderBufferType::Color);
         Bool clearDepthBuffer = IntMaskUtil::isBitSetForMask(viewDescriptor.clearRenderBuffers, (UInt32)RenderBufferType::Depth);

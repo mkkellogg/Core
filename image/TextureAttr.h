@@ -43,7 +43,7 @@ namespace Core {
     class TextureAttributes {
     public:
 
-        UInt32 MipMapLevel;
+        UInt32 MipLevel;
         Bool IsDepthTexture;
         Bool UseAlpha;
         TextureFilter FilterMode;

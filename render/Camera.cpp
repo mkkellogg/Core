@@ -288,7 +288,7 @@ namespace Core {
         TextureAttributes hdrColorAttributes;
         hdrColorAttributes.Format = TextureFormat::RGBA16F;
         hdrColorAttributes.FilterMode = TextureFilter::Point;
-        hdrColorAttributes.MipMapLevel = 0;
+        hdrColorAttributes.MipLevel = 0;
         hdrColorAttributes.WrapMode = TextureWrap::Clamp;
         TextureAttributes hdrDepthAttributes;
         hdrDepthAttributes.IsDepthTexture = true;

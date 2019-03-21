@@ -548,15 +548,17 @@ namespace Core {
             WeakPointer<Texture> normalTexture;
             //	TextureRef specularTexture;
 
+            UInt32 defaultMipLevel = 4;
+
             // get diffuse texture (for now support only 1)
             texFound = assimpMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &aiTexturePath);
             if (texFound == AI_SUCCESS) {
-                diffuseTexture = this->loadAITexture(*assimpMaterial, aiTextureType_DIFFUSE, fixedModelPath, TextureFilter::TriLinear, 4);
+                diffuseTexture = this->loadAITexture(*assimpMaterial, aiTextureType_DIFFUSE, fixedModelPath, TextureFilter::TriLinear, defaultMipLevel);
             }
 
             texFound = assimpMaterial->GetTexture(aiTextureType_NORMALS, 0, &aiTexturePath);
             if (texFound == AI_SUCCESS) {
-                normalTexture = this->loadAITexture(*assimpMaterial, aiTextureType_NORMALS, fixedModelPath, TextureFilter::TriLinear, 4);
+                normalTexture = this->loadAITexture(*assimpMaterial, aiTextureType_NORMALS, fixedModelPath, TextureFilter::TriLinear, defaultMipLevel);
             }
 
             MaterialLibrary& materialLibrary = Engine::instance()->getMaterialLibrary();
@@ -699,7 +701,7 @@ namespace Core {
      * [assimpMaterial] - The Assimp material.
      * [textureType] - The type of texture to look for (diffuse, specular, normal map, etc...)
      */
-    WeakPointer<Texture> ModelLoader::loadAITexture(aiMaterial& assimpMaterial, aiTextureType textureType, const std::string& modelPath, TextureFilter filter, UInt32 mipMapLevel) const {
+    WeakPointer<Texture> ModelLoader::loadAITexture(aiMaterial& assimpMaterial, aiTextureType textureType, const std::string& modelPath, TextureFilter filter, UInt32 mipLevel) const {
         // temp variables
         WeakPointer<Texture2D> texture;
         aiString aiTexturePath;
@@ -723,7 +725,7 @@ namespace Core {
 
         TextureAttributes texAttributes;
         texAttributes.FilterMode = filter;
-        texAttributes.MipMapLevel = mipMapLevel;
+        texAttributes.MipLevel = mipLevel;
         texAttributes.WrapMode = TextureWrap::Clamp;
         texAttributes.Format = TextureFormat::RGBA8;
 

@@ -89,7 +89,8 @@ namespace Core {
         virtual void updateDefaultRenderTargetSize(Vector2u size) = 0;
         virtual void updateDefaultRenderTargetViewport(Vector4u viewport) = 0;
         virtual Bool activateRenderTarget(WeakPointer<RenderTarget> target) = 0;
-        virtual Bool activateCubeRenderTargetSide(CubeTextureSide side) = 0;
+        virtual Bool activateRenderTarget2DMipLevel(UInt32 mipLevel) = 0;
+        virtual Bool activateCubeRenderTargetSide(CubeTextureSide side, UInt32 mipLevel) = 0;
         virtual void setRenderStyle(RenderStyle style) = 0;
 
         virtual void setDepthWriteEnabled(Bool enabled) = 0;

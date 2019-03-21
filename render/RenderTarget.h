@@ -28,8 +28,12 @@ namespace Core {
         Bool isColorBufferTexture() const;
         Bool isDepthBufferTexture() const;
         Bool isHDRCapable() const;
+        UInt32 getMaxMipLevel() const;
+        UInt32 getMipLevel() const;
+        void setMipLevel(UInt32 level);
         virtual void destroyColorBuffer() = 0;
         virtual void destroyDepthBuffer() = 0;
+        Vector4u getViewportForMipLevel(UInt32 mipLevel);
 
      protected:
 
@@ -54,6 +58,8 @@ namespace Core {
         // texture attributes of [colorTexture]
         TextureAttributes colorTextureAttributes;
         TextureAttributes depthTextureAttributes;
+
+        UInt32 mipLevel;
 
         RenderTarget(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer, const TextureAttributes& colorTextureAttributes,
                      const TextureAttributes& depthTextureAttributes, Vector2u size);
