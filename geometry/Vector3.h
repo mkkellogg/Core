@@ -36,12 +36,6 @@ namespace Core {
             return this->w;
         }
 
-        Vector3Base& operator=(const Vector3Base& other) {
-            if (this == &other) return *this;
-            this->copy(other);
-            return *this;
-        }
-
         operator Vector3Base<T, true>() {
             Vector3Base<T, true> n(this->x, this->y, this->z); 
             n->w = this->w;
@@ -87,12 +81,6 @@ namespace Core {
             return a.x * b.x + a.y * b.y + a.z * b.z;
         }
 
-        const Vector3Base operator*(const T& scale) const {
-            Vector3Base<T, customStorage> vec = *this;
-            vec.scale(scale);
-            return vec;
-        }
-
         // TODO: optimize this hashing function (implement correctly)
         typedef struct {
             Int32 operator()(const Vector3Base& p) const {
@@ -111,20 +99,31 @@ namespace Core {
     protected:
         T& w = this->data[3];
 
-        const Vector3Base operator-(const Vector3Base<T, customStorage>& other) const {
-            Vector3Base<T, customStorage> vec = *this;
-            vec.x -= other.x;
-            vec.y -= other.y;
-            vec.z -= other.z;
+        template <Bool otherCustomStorage>
+        Bool operator==(const Vector3Base<T, otherCustomStorage>& other) {
+            if (this == &other) return true;
+            Real epsilon = .005f;
+            return Math::abs(other.x - this->x) < epsilon && Math::abs(other.y - this->y) < epsilon && Math::abs(other.z - this->z) < epsilon;
+        }
+
+        const Vector3Base<T, false> operator*(Real scale) const {
+            Vector3Base<T, false> vec = *this;
+            vec.scale(scale);
             return vec;
         }
 
-        const Vector3Base operator+(const Vector3Base<T, customStorage>& other) const {
-            Vector3Base<T, customStorage> vec = *this;
-            vec.x += other.x;
-            vec.y += other.y;
-            vec.z += other.z;
-            return vec;
+        template <Bool otherCustomStorage>
+        void subtract(const Vector3Base<T, otherCustomStorage>& other) {
+            this->x -= other.x;
+            this->y -= other.y;
+            this->z -= other.z;
+        }
+
+        template <Bool otherCustomStorage>
+        void add(const Vector3Base<T, otherCustomStorage>& other) {
+            this->x += other.x;
+            this->y += other.y;
+            this->z += other.z;
         }
     };
 
@@ -157,9 +156,41 @@ namespace Core {
             _set(x, y, z);
         }
 
-        void _set(const T& x, const T& y, const T& z) {
-            Vector3Components<T>::set(x, y, z);
-            this->w = 0.0;
+        Vector3& operator=(const Vector3& other) {
+            if (this == &other) return *this;
+            this->copy(other);
+            return *this;
+        }
+
+        template <Bool otherCustomStorage>
+        Vector3& operator=(const Vector3<T, otherCustomStorage>& other) {
+            this->copy(other);
+            return *this;
+        }
+
+        template <Bool otherCustomStorage>
+        Bool operator==(const Vector3<T, otherCustomStorage>& other) {
+            return Vector3Base<T, customStorage>::operator==(other);
+        }
+
+        template <Bool otherCustomStorage>
+        Vector3<T, false> operator-(const Vector3<T, otherCustomStorage>& other) const {
+            Vector3<T, false> temp(this->x, this->y, this->z);
+            temp.subtract(other);
+            return temp;
+        }
+
+        template <Bool otherCustomStorage>
+        Vector3<T, false> operator+(const Vector3<T, otherCustomStorage>& other) const {
+            Vector3<T, false> temp(this->x, this->y, this->z);
+            temp.add(other);
+            return temp;
+        }
+
+        const Vector3<T, false> operator*(const T& scale) const {
+            Vector3<T, false> vec = *this;
+            vec.scale(scale);
+            return vec;
         }
 
         static void cross(const Vector3& a, const Vector3& b, Vector3& result) {
@@ -167,20 +198,12 @@ namespace Core {
             result.y = (a.z * b.x) - (a.x * b.z);
             result.z = (a.x * b.y) - (a.y * b.x);
         }
+    
+    private:
 
-        Vector3 operator*(const T& scale) const {
-            Vector3Base<T, customStorage> temp = Vector3Base<T, customStorage>::operator*(scale);
-            return Vector3(temp.x, temp.y, temp.z);
-        }
-
-        Vector3 operator-(const Vector3<T, customStorage>& other) const {
-            Vector3Base<T, customStorage> temp = Vector3Base<T, customStorage>::operator-(other);
-            return Vector3(temp.x, temp.y, temp.z);
-        }
-
-        Vector3 operator+(const Vector3<T, customStorage>& other) const {
-            Vector3Base<T, customStorage> temp = Vector3Base<T, customStorage>::operator+(other);
-            return Vector3(temp.x, temp.y, temp.z);
+        void _set(const T& x, const T& y, const T& z) {
+            Vector3Components<T>::set(x, y, z);
+            this->w = 0.0;
         }
     };
 
@@ -208,24 +231,47 @@ namespace Core {
             this->w = 1.0;
         }
 
-        Point3 operator*(const T& scale) const {
-            Vector3Base<T, customStorage> temp = Vector3Base<T, customStorage>::operator*(scale);
-            return Point3(temp.x, temp.y, temp.z);
+        Point3& operator=(const Point3& other) {
+            if (this == &other) return *this;
+            this->copy(other);
+            return *this;
         }
 
-        Point3 operator-(const Vector3<T, customStorage>& other) const {
-            Vector3Base<T, customStorage> temp = Vector3Base<T, customStorage>::operator-(other);
-            return Point3(temp.x, temp.y, temp.z);
+        template <Bool otherCustomStorage>
+        Point3& operator=(const Point3<T, otherCustomStorage>& other) {
+            this->copy(other);
+            return *this;
         }
 
-        Vector3<T, customStorage> operator-(const Point3<T, customStorage>& other) const {
-            Vector3Base<T, customStorage> temp = Vector3Base<T, customStorage>::operator-(other);
-            return Vector3<T, customStorage>(temp.x, temp.y, temp.z);
+        template <Bool otherCustomStorage>
+        Bool operator==(const Point3<T, otherCustomStorage>& other) {
+            return Vector3Base<T, customStorage>::operator==(other);
         }
 
-        Point3 operator+(const Vector3<T, customStorage>& other) const {
-            Vector3Base<T, customStorage> temp = Vector3Base<T, customStorage>::operator+(other);
-            return Point3(temp.x, temp.y, temp.z);
+        Point3<T, false> operator*(const T& scale) const {
+            Vector3Base<T, false> temp = Vector3Base<T, customStorage>::operator*(scale);
+            return Point3<T, false>(temp.x, temp.y, temp.z);
+        }
+
+        template <Bool otherCustomStorage>
+        Point3<T, false> operator-(const Vector3<T, otherCustomStorage>& other) const {
+            Point3<T, false> temp(this->x, this->y, this->z);
+            temp.subtract(other);
+            return temp;
+        }
+
+        template <Bool otherCustomStorage>
+        Vector3<T, false> operator-(const Point3<T, otherCustomStorage>& other) const {
+            Vector3<T, false> temp(this->x, this->y, this->z);
+            Vector3<T, false> othertemp(other.x, other.y, other.z);
+            return temp - othertemp;
+        }
+
+        template <Bool otherCustomStorage>
+        Point3<T, false> operator+(const Vector3<T, otherCustomStorage>& other) const {
+            Point3<T, false> temp(this->x, this->y, this->z);
+            temp.add(other);
+            return temp;
         }
     };
 

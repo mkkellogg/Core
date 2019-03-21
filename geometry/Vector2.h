@@ -27,6 +27,12 @@ namespace Core {
             this->copy(other);
             return *this;
         }
+
+        template <Bool otherCustomStorage>
+        Vector2& operator=(const Vector2<T, otherCustomStorage>& other) {
+            this->copy(other);
+            return *this;
+        }
     };
 
     typedef Vector2<Real, false> Vector2r;

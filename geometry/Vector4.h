@@ -28,6 +28,12 @@ namespace Core {
             return *this;
         }
 
+        template <Bool otherCustomStorage>
+        Vector4& operator=(const Vector4<T, otherCustomStorage>& other) {
+            this->copy(other);
+            return *this;
+        }
+
         static Real dot(const Vector4Components<T>& a, Vector4Components<T>& b) {
             return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
         }

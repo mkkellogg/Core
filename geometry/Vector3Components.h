@@ -18,21 +18,10 @@ namespace Core {
 
         virtual ~Vector3Components() = 0;
 
-        Bool operator==(const Vector3Components<T>& other) {
-            if (this == &other) return true;
-            Real epsilon = .005f;
-            return Math::abs(other.x - this->x) < epsilon && Math::abs(other.y - this->y) < epsilon && Math::abs(other.z - this->z) < epsilon;
-        }
-
         virtual void set(const T& x, const T& y, const T& z) {
             this->x = x;
             this->y = y;
             this->z = z;
-        }
-
-        Vector3Components& operator=(const Vector3Components& other) {
-            if (this == &other) return *this;
-            this->copy(other);
         }
     };
 
