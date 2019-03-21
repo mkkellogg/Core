@@ -102,13 +102,12 @@ namespace Core {
 
         template<typename U> 
         static WeakPointer<U> dynamicPointerCast(const WeakPointer<T>& src) {
-            WeakPointer<T> _src = src;
-            std::shared_ptr<T> _src_shared = _src.lock();
+            std::shared_ptr<T> _src_shared = src.lock();
             if (_src_shared) {
                 std::shared_ptr<U> u_shared = std::dynamic_pointer_cast<U>(_src_shared);
                 if (u_shared) {
                     WeakPointer<U> t(u_shared);
-                    t._ptr = const_cast<U*>(u_shared.get());
+                    t._ptr = u_shared.get();
                     t._cacheShared = src._cacheShared;
                     t._cachedSharedSet = src._cachedSharedSet;
                     if (t._cachedSharedSet) t._cachedShared = u_shared;
