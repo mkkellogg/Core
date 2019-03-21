@@ -35,12 +35,12 @@ namespace Core {
     private:
         Bool needsUpdate;
         Bool skyboxOnly;
-        WeakPointer<RenderTargetCube> sceneRenderTarget;
-        WeakPointer<RenderTargetCube> irradianceMap;
-        WeakPointer<Object3D> renderCameraObject;
-        WeakPointer<Camera> renderCamera;
-        WeakPointer<IrradianceRendererMaterial> irradianceRendererMaterial;
-        WeakPointer<Object3D> skyboxCube;
+        PersistentWeakPointer<RenderTargetCube> sceneRenderTarget;
+        PersistentWeakPointer<RenderTargetCube> irradianceMap;
+        PersistentWeakPointer<Object3D> renderCameraObject;
+        PersistentWeakPointer<Camera> renderCamera;
+        PersistentWeakPointer<IrradianceRendererMaterial> irradianceRendererMaterial;
+        PersistentWeakPointer<Object3D> skyboxCube;
     };
 
 }

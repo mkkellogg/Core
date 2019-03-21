@@ -28,7 +28,7 @@ namespace Core {
             renderables.push_back(renderable);
         }
 
-        const std::vector<WeakPointer<T>> getRenderables() {
+        const std::vector<PersistentWeakPointer<T>>& getRenderables() {
             return renderables;
         }
 
@@ -53,7 +53,7 @@ namespace Core {
             this->localRendererRef = renderer;
         }
 
-        WeakPointer<ObjectRenderer<T>> localRendererRef;
-        std::vector<WeakPointer<T>> renderables;
+        PersistentWeakPointer<ObjectRenderer<T>> localRendererRef;
+        std::vector<PersistentWeakPointer<T>> renderables;
     };
 }

@@ -14,7 +14,7 @@ namespace Core {
         void build(WeakPointer<CubeTexture> skyboxTexture, Bool isPhysical = false, Real exposure = 1.0f);
         WeakPointer<RenderableContainer<Mesh>> getSkyboxObject();
     private:
-        WeakPointer<Core::RenderableContainer<Mesh>> skyboxObj;
+        PersistentWeakPointer<Core::RenderableContainer<Mesh>> skyboxObj;
     };
 
 }

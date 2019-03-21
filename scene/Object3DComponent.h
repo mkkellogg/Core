@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "../util/WeakPointer.h"
+#include "../util/PersistentWeakPointer.h"
 #include "../base/CoreObject.h"
 
 namespace Core {
@@ -22,7 +22,7 @@ namespace Core {
         Bool isActive();
 
     protected:
-        WeakPointer<Object3D> owner;
+        PersistentWeakPointer<Object3D> owner;
         Bool active;
     };
 }

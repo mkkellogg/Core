@@ -22,6 +22,6 @@ namespace Core {
     protected:
         AmbientIBLLight(WeakPointer<Object3D> owner);
 
-        WeakPointer<CubeTexture> iblTexture;
+        PersistentWeakPointer<CubeTexture> iblTexture;
     };
 }

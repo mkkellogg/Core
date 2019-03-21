@@ -169,6 +169,11 @@ namespace Core {
         }
 
         template <Bool otherCustomStorage>
+        void copy(const Vector3<T, otherCustomStorage>& other) {
+            BaseVector<T, VECTOR3_COMPONENT_COUNT>::copy(other);
+        }
+
+        template <Bool otherCustomStorage>
         Bool operator==(const Vector3<T, otherCustomStorage>& other) {
             return Vector3Base<T, customStorage>::operator==(other);
         }
@@ -241,6 +246,11 @@ namespace Core {
         Point3& operator=(const Point3<T, otherCustomStorage>& other) {
             this->copy(other);
             return *this;
+        }
+
+        template <Bool otherCustomStorage>
+        void copy(const Point3<T, otherCustomStorage>& other) {
+            BaseVector<T, VECTOR3_COMPONENT_COUNT>::copy(other);
         }
 
         template <Bool otherCustomStorage>

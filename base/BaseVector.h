@@ -16,9 +16,9 @@ namespace Core {
             return this->data; 
         }
 
+    protected:
         void copy(const BaseVector<T, componentCount>& other);
 
-    protected:
         T* data;
     };
 

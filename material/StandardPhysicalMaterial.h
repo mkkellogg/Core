@@ -46,9 +46,9 @@ namespace Core {
         Real roughness;
         Real ambientOcclusion;
         Color albedo;
-        WeakPointer<Texture> albedoMap;
-        WeakPointer<Texture> normalMap;
-        WeakPointer<Texture> roughnessMap;
+        PersistentWeakPointer<Texture> albedoMap;
+        PersistentWeakPointer<Texture> normalMap;
+        PersistentWeakPointer<Texture> roughnessMap;
 
         Bool albedoMapEnabled;
         Bool normalMapEnabled;

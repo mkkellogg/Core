@@ -24,7 +24,7 @@ namespace Core {
         BasicTexturedMaterial(WeakPointer<Graphics> graphics);
         void bindShaderVarLocations();
 
-        WeakPointer<Texture> texture;
+        PersistentWeakPointer<Texture> texture;
         Int32 positionLocation;
         Int32 normalLocation;
         Int32 colorLocation;

@@ -30,8 +30,8 @@ namespace Core {
         void bindShaderVarLocations();
 
         Color albedo;
-        WeakPointer<Texture> albedoMap;
-        WeakPointer<Texture> normalMap;
+        PersistentWeakPointer<Texture> albedoMap;
+        PersistentWeakPointer<Texture> normalMap;
         Bool albedoMapEnabled;
         Bool normalMapEnabled;
 

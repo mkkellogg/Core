@@ -75,9 +75,9 @@ namespace Core {
         static Bool isShadowCastingCapableLight(WeakPointer<Light> light);
         static Bool compareLights (WeakPointer<Light> a, WeakPointer<Light> b);
 
-        WeakPointer<DepthOnlyMaterial> depthMaterial;
-        WeakPointer<DistanceOnlyMaterial> distanceMaterial;
-        WeakPointer<Object3D> reflectionProbeObject;
-        WeakPointer<TonemapMaterial> tonemapMaterial;
+        PersistentWeakPointer<DepthOnlyMaterial> depthMaterial;
+        PersistentWeakPointer<DistanceOnlyMaterial> distanceMaterial;
+        PersistentWeakPointer<Object3D> reflectionProbeObject;
+        PersistentWeakPointer<TonemapMaterial> tonemapMaterial;
     };
 }

@@ -22,6 +22,12 @@ namespace Core {
             this->copy(other);
             return *this;
         }
+
+        template <Bool otherCustomStorage>
+        Color4& operator =(const Color4<otherCustomStorage>& other) {
+            this->copy(other);
+            return *this;
+        }
     };
 
     typedef Color4<false> Color;
