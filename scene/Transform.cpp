@@ -84,7 +84,7 @@ namespace Core {
     }
 
     void Transform::getAncestorWorldTransformation(Matrix4x4& result) {
-        Transform::getWorldTransformation(const_cast<Object3D&>(this->target).getParent(), result);
+        Transform::getWorldTransformation(this->target.getParent(), result);
     }
 
     void Transform::updateWorldMatrix() {
@@ -148,7 +148,7 @@ namespace Core {
         Matrix4x4 temp;
         temp.lookAt(src, target, vUp);
 
-        WeakPointer<Object3D> parent = const_cast<Object3D&>(this->target).getParent();
+        WeakPointer<Object3D> parent = this->target.getParent();
 
         if (parent.isValid()) {
             parent->getTransform().updateWorldMatrix();
