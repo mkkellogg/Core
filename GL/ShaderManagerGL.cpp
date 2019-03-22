@@ -49,6 +49,8 @@ const std::string LIGHT_SHADOW_MAP_SIZE = _un(Core::StandardUniform::LightShadow
 const std::string LIGHT_SHADOW_SOFTNESS = _un(Core::StandardUniform::LightShadowSoftness);
 const std::string LIGHT_NEAR_PLANE = _un(Core::StandardUniform::LightNearPlane);
 const std::string LIGHT_IRRADIANCE_MAP = _un(Core::StandardUniform::LightIrradianceMap);
+const std::string LIGHT_SPECULAR_IBL_PREFILTERED_MAP = _un(Core::StandardUniform::LightSpecularIBLPreFilteredMap);
+const std::string LIGHT_SPECULAR_IBL_BRDF_MAP = _un(Core::StandardUniform::LightSpecularIBLBRDFMap);
 const std::string AMBIENT_LIGHT_COUNT = _un(Core::StandardUniform::AmbientLightCount);
 const std::string AMBIENT_IBL_LIGHT_COUNT = _un(Core::StandardUniform::AmbientIBLLightCount);
 const std::string POINT_LIGHT_COUNT = _un(Core::StandardUniform::PointLightCount);
@@ -87,6 +89,8 @@ const std::string LIGHT_SHADOW_MAP_SIZE_SINGLE_DEF = "uniform float " + LIGHT_SH
 const std::string LIGHT_SHADOW_SOFTNESS_SINGLE_DEF = "uniform int " + LIGHT_SHADOW_SOFTNESS + "[1];\n";
 // Single-pass ambient IBL light parameters
 const std::string LIGHT_IRRADIANCE_MAP_SINGLE_DEF = "uniform samplerCube " + LIGHT_IRRADIANCE_MAP + "[1];\n";
+const std::string LIGHT_SPECULAR_IBL_PREFILTERED_MAP_SINGLE_DEF = "uniform samplerCube " + LIGHT_SPECULAR_IBL_PREFILTERED_MAP + "[1];\n";
+const std::string LIGHT_SPECULAR_IBL_BRDF_MAP_SINGLE_DEF = "uniform sampler2D " + LIGHT_SPECULAR_IBL_BRDF_MAP + "[1];\n";
 // Single-pass point light parameters
 const std::string LIGHT_POSITION_SINGLE_DEF = "uniform vec4 " + LIGHT_POSITION + "[1];\n";
 const std::string LIGHT_ATTENUATION_SINGLE_DEF = "uniform float " + LIGHT_ATTENUATION + "[1];\n";
@@ -115,6 +119,8 @@ const std::string AMBIENTL_IBL_LIGHT_DEF = "unfirm int " + AMBIENT_IBL_LIGHT_COU
 const std::string LIGHT_COUNT_DEF = "uniform int " + LIGHT_COUNT + ";\n";
 // Single-pass ambient IBL light parameters
 const std::string LIGHT_IRRADIANCE_MAP_DEF = "uniform samplerCube " + LIGHT_IRRADIANCE_MAP + "[" + MAX_LIGHTS + "];\n";
+const std::string LIGHT_SPECULAR_IBL_PREFILTERED_MAP_DEF = "uniform samplerCube " + LIGHT_SPECULAR_IBL_PREFILTERED_MAP + "[" + MAX_LIGHTS + "];\n";
+const std::string LIGHT_SPECULAR_IBL_BRDF_MAP_DEF = "uniform sampler2D " + LIGHT_SPECULAR_IBL_BRDF_MAP + "[" + MAX_LIGHTS + "];\n";
 // Common multi-pass light parameters
 const std::string LIGHT_COLOR_DEF = "uniform vec4 " + LIGHT_COLOR + "[" + MAX_LIGHTS + "];\n";
 const std::string LIGHT_INTENSITY_DEF = "uniform float " + LIGHT_INTENSITY + "[" + MAX_LIGHTS + "];\n";
@@ -447,7 +453,9 @@ namespace Core {
             + LIGHT_INTENSITY_DEF
             + LIGHT_SHADOW_MAP_SIZE_DEF
             + LIGHT_NEAR_PLANE_DEF
-            + LIGHT_IRRADIANCE_MAP_DEF +
+            + LIGHT_IRRADIANCE_MAP_DEF
+            + LIGHT_SPECULAR_IBL_PREFILTERED_MAP_DEF
+            + LIGHT_SPECULAR_IBL_BRDF_MAP_DEF +
             "in float _core_viewSpacePosZ[" + MAX_LIGHTS + "];\n"
             "in vec4 _core_lightSpacePos[" + MAX_CASCADES_LIGHTS + "];\n";
 
@@ -480,7 +488,9 @@ namespace Core {
             + LIGHT_INTENSITY_SINGLE_DEF
             + LIGHT_SHADOW_MAP_SIZE_SINGLE_DEF
             + LIGHT_NEAR_PLANE_SINGLE_DEF
-            + LIGHT_IRRADIANCE_MAP_SINGLE_DEF +
+            + LIGHT_IRRADIANCE_MAP_SINGLE_DEF
+            + LIGHT_SPECULAR_IBL_PREFILTERED_MAP_SINGLE_DEF
+            + LIGHT_SPECULAR_IBL_BRDF_MAP_SINGLE_DEF +
             "in float _core_viewSpacePosZ[1];\n"
             "in vec4 _core_lightSpacePos[" + MAX_CASCADES + "];\n";
 
@@ -724,6 +734,7 @@ namespace Core {
 
         this->Physical_Lighting_fragment =
             "#include \"PhysicalCommon\" \n"
+            "const float MAX_REFLECTION_LOD = 4.0; \n"
             "float distributionGGX(vec3 N, vec3 H, float roughness) { \n"
             "    float a      = roughness*roughness; \n"
             "    float a2     = a*a; \n"
@@ -813,11 +824,20 @@ namespace Core {
             "        }\n"
             "        else if (" + LIGHT_TYPE + "[lightIndex] == AMBIENT_IBL_LIGHT) {\n"
             "             vec3 irradiance = texture(" + LIGHT_IRRADIANCE_MAP + "[lightIndex], worldNormal).rgb; \n"
-            "             vec3 kS = fresnelSchlickRoughness(max(dot(worldNormal, V), 0.0), F0, roughness);  \n"
+            "             vec3 F = fresnelSchlickRoughness(max(dot(worldNormal, V), 0.0), F0, roughness);  \n"
+            "             vec3 kS = F; \n"
             "             vec3 kD = 1.0 - kS;  \n"
-            "             vec3 diffuse    = irradiance * albedo.rgb;  \n"
-            "             vec3 ambient    = (kD * diffuse) * ao;  \n"
+            "             vec3 diffuseIBL  = irradiance * albedo.rgb;  \n"
+            
+            "             vec3 R = reflect(-V, worldNormal); \n"
+            "             kD *= 1.0 - metallic; \n"
+        
+            "             vec3 prefilteredColor = textureLod(" + LIGHT_SPECULAR_IBL_PREFILTERED_MAP + "[lightIndex], R,  roughness * MAX_REFLECTION_LOD).rgb; \n"   
+            "             vec2 envBRDF  = texture(" + LIGHT_SPECULAR_IBL_BRDF_MAP + "[lightIndex], vec2(max(dot(worldNormal, V), 0.0), roughness)).rg; \n"
+            "             vec3 specularIBL = prefilteredColor * F; \n " //* (envBRDF.x + envBRDF.y); \n"
+            "             vec3 ambient = (kD * diffuseIBL + specularIBL) * ao; \n"
             "             return vec4(ambient, 1.0); \n"
+
             "        }\n"
             "        else { \n"
             "            vec3 lightLocalPos, toLight, halfwayVec, radiance; \n"

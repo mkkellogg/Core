@@ -15,6 +15,7 @@
 #include "../scene/Skybox.h"
 #include "../image/TextureAttr.h"
 #include "../image/Texture.h"
+#include "../image/Texture2D.h"
 #include "../material/DepthOnlyMaterial.h"
 #include "../material/BasicColoredMaterial.h"
 #include "../material/DistanceOnlyMaterial.h"
@@ -100,8 +101,15 @@ namespace Core {
                     if (light->getType() == LightType::AmbientIBL) {
                         if (objectReflectionProbe) {
                             WeakPointer<AmbientIBLLight> ambientIBLlight = WeakPointer<Object3DComponent>::dynamicPointerCast<AmbientIBLLight>(comp);
-                            WeakPointer<CubeTexture> iblMap = WeakPointer<Texture>::dynamicPointerCast<CubeTexture>(objectReflectionProbe->getIrradianceMap()->getColorTexture());
-                            ambientIBLlight->setIBLTexture(iblMap);
+                            
+                            WeakPointer<CubeTexture> irradianceMap = WeakPointer<Texture>::dynamicPointerCast<CubeTexture>(objectReflectionProbe->getIrradianceMap()->getColorTexture());
+                            ambientIBLlight->setIrradianceMap(irradianceMap);
+                            
+                            WeakPointer<CubeTexture> specularIBLPreFilteredMap = WeakPointer<Texture>::dynamicPointerCast<CubeTexture>(objectReflectionProbe->getSpecularIBLPreFilteredMap()->getColorTexture());
+                            ambientIBLlight->setSpecularIBLPreFilteredMap(specularIBLPreFilteredMap);
+                            
+                            WeakPointer<Texture2D> specularIBLBRDFMap = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(objectReflectionProbe->getSpecularIBLBRDFMap()->getColorTexture());
+                            ambientIBLlight->setSpecularIBLBRDFMap(specularIBLBRDFMap);
                         }
                         else continue;
                     }

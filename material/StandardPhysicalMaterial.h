@@ -88,6 +88,9 @@ namespace Core {
         Int32 lightShadowMapSizeLocation;
         Int32 lightShadowSoftnessLocation;
         Int32 lightNearPlaneLocation;
+        Int32 lightIrradianceMapLocation;
+        Int32 lightSpecularIBLPreFilteredMapLocation;
+        Int32 lightSpecularIBLBRDFMapLocation;
         Int32 lightCountLocation;
         Int32 cameraPositionLocation;
         Int32 metallicLocation;

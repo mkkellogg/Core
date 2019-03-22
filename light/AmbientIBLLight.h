@@ -9,6 +9,7 @@ namespace Core {
     // forward declarations
     class Engine;
     class CubeTexture;
+    class Texture2D;
 
     class AmbientIBLLight final : public Light {
         friend class Engine;
@@ -16,12 +17,18 @@ namespace Core {
     public:
         ~AmbientIBLLight();
         void init() override;
-        void setIBLTexture(WeakPointer<CubeTexture> texture);
-        WeakPointer<CubeTexture> getIBLTexture();
+        void setIrradianceMap(WeakPointer<CubeTexture> irradianceMap);
+        WeakPointer<CubeTexture> getIrradianceMap();
+        void setSpecularIBLPreFilteredMap(WeakPointer<CubeTexture> specularIBLPreFilteredMap);
+        WeakPointer<CubeTexture> getSpecularIBLPreFilteredMap();
+        void setSpecularIBLBRDFMap(WeakPointer<Texture2D> specularIBLBRDFMap);
+        WeakPointer<Texture2D> getSpecularIBLBRDFMap();
               
     protected:
         AmbientIBLLight(WeakPointer<Object3D> owner);
 
-        PersistentWeakPointer<CubeTexture> iblTexture;
+        PersistentWeakPointer<CubeTexture> irradianceMap;
+        PersistentWeakPointer<CubeTexture> specularIBLPreFilteredMap;
+        PersistentWeakPointer<Texture2D> specularIBLBRDFMap;
     };
 }

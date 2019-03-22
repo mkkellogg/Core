@@ -104,6 +104,12 @@ namespace Core {
                 return this->lightShadowSoftnessLocation;
             case StandardUniform::LightNearPlane:
                 return this->lightNearPlaneLocation;
+            case StandardUniform::LightIrradianceMap:
+                return this->lightIrradianceMapLocation;
+            case StandardUniform::LightSpecularIBLPreFilteredMap:
+                return this->lightSpecularIBLPreFilteredMapLocation;
+            case StandardUniform::LightSpecularIBLBRDFMap:
+                return this->lightSpecularIBLBRDFMapLocation;
             case StandardUniform::LightCount:
                 return this->lightCountLocation;
             case StandardUniform::CameraPosition:
@@ -216,6 +222,9 @@ namespace Core {
         targetMaterial->lightShadowMapSizeLocation = this->lightShadowMapSizeLocation;
         targetMaterial->lightShadowSoftnessLocation = this->lightShadowSoftnessLocation;
         targetMaterial->lightNearPlaneLocation = this->lightNearPlaneLocation;
+        targetMaterial->lightIrradianceMapLocation = this->lightIrradianceMapLocation;
+        targetMaterial->lightSpecularIBLPreFilteredMapLocation = this->lightSpecularIBLPreFilteredMapLocation;
+        targetMaterial->lightSpecularIBLBRDFMapLocation = this->lightSpecularIBLBRDFMapLocation;
         targetMaterial->lightCountLocation = this->lightCountLocation;
         targetMaterial->cameraPositionLocation = this->cameraPositionLocation;
         targetMaterial->metallicLocation = this->metallicLocation;
@@ -269,6 +278,11 @@ namespace Core {
         this->lightShadowMapSizeLocation = this->shader->getUniformLocation(StandardUniform::LightShadowMapSize);
         this->lightShadowSoftnessLocation = this->shader->getUniformLocation(StandardUniform::LightShadowSoftness);
         this->lightNearPlaneLocation = this->shader->getUniformLocation(StandardUniform::LightNearPlane);
+
+        this->lightIrradianceMapLocation = this->shader->getUniformLocation(StandardUniform::LightIrradianceMap);
+        this->lightSpecularIBLPreFilteredMapLocation = this->shader->getUniformLocation(StandardUniform::LightSpecularIBLPreFilteredMap);
+        this->lightSpecularIBLBRDFMapLocation = this->shader->getUniformLocation(StandardUniform::LightSpecularIBLBRDFMap);
+
         this->lightCountLocation = this->shader->getUniformLocation(StandardUniform::LightCount);
 
         this->cameraPositionLocation = this->shader->getUniformLocation(StandardUniform::CameraPosition);

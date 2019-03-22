@@ -4,6 +4,7 @@
 #include "../geometry/AttributeArrayGPUStorage.h"
 #include "../geometry/Mesh.h"
 #include "../image/Texture.h"
+#include "../image/Texture2D.h"
 #include "../light/AmbientIBLLight.h"
 #include "../light/PointLight.h"
 #include "../light/DirectionalLight.h"
@@ -79,7 +80,6 @@ namespace Core {
         Int32 viewInverseTransposeMatrixLoc = material->getShaderLocation(StandardUniform::ViewInverseTransposeMatrix);
 
         if (cameraPositionLoc >= 0) {
-            const Matrix4x4& projMatrix = viewDescriptor.projectionMatrix;
             shader->setUniform4f(cameraPositionLoc, viewDescriptor.cameraPosition.x, viewDescriptor.cameraPosition.y,
                                  viewDescriptor.cameraPosition.z, 1.0f);
         }
@@ -175,10 +175,24 @@ namespace Core {
                 }
 
                 if (lightType == LightType::AmbientIBL) {
-                    Int32 irradianceMapLoc = shader->getUniformLocation(StandardUniform::LightIrradianceMap);
+                    Int32 irradianceMapLoc = material->getShaderLocation(StandardUniform::LightIrradianceMap);
+                    Int32 specularIBLPreFilteredMapLoc = material->getShaderLocation(StandardUniform::LightSpecularIBLPreFilteredMap);
+                    Int32 specularIBLBRDFMapLoc = material->getShaderLocation(StandardUniform::LightSpecularIBLBRDFMap);
+
+                    WeakPointer<AmbientIBLLight> ambientIBLLight = WeakPointer<Light>::dynamicPointerCast<AmbientIBLLight>(light);
+
                     if (irradianceMapLoc >= 0) {
-                        WeakPointer<AmbientIBLLight> ambientIBLLight = WeakPointer<Light>::dynamicPointerCast<AmbientIBLLight>(light);
-                        shader->setTextureCube(currentTextureSlot, irradianceMapLoc, ambientIBLLight->getIBLTexture()->getTextureID());
+                        shader->setTextureCube(currentTextureSlot, irradianceMapLoc, ambientIBLLight->getIrradianceMap()->getTextureID());
+                        currentTextureSlot++;
+                    }
+                    
+                    if (specularIBLPreFilteredMapLoc >= 0) {
+                        shader->setTextureCube(currentTextureSlot, specularIBLPreFilteredMapLoc, ambientIBLLight->getSpecularIBLPreFilteredMap()->getTextureID());
+                        currentTextureSlot++;
+                    }
+                    
+                    if (specularIBLBRDFMapLoc >= 0) {
+                        shader->setTextureCube(currentTextureSlot, specularIBLBRDFMapLoc, ambientIBLLight->getSpecularIBLBRDFMap()->getTextureID());
                         currentTextureSlot++;
                     }
                 }
