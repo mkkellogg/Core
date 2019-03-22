@@ -46,6 +46,12 @@ namespace Core {
         this->setupTexture(width, height, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
     }
 
+    void CubeTextureGL::updateMipMaps() {
+        glBindTexture(GL_TEXTURE_CUBE_MAP, this->getTextureID());
+        glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+    }
+
     void CubeTextureGL::setupTexture(UInt32 width, UInt32 height, Byte* front, Byte* back, Byte* top, Byte* bottom, Byte* left, Byte* right) {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         WeakPointer<GraphicsGL> graphicsGL =  WeakPointer<Graphics>::dynamicPointerCast<GraphicsGL>(graphics);
@@ -114,8 +120,8 @@ namespace Core {
 
          // we only generate mip-maps if bi-linear or tri-linear filtering is used
         if (this->attributes.FilterMode == TextureFilter::TriLinear || attributes.FilterMode == TextureFilter::BiLinear) {
-            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, attributes.MipLevel);
-            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_ANISOTROPY_EXT, attributes.MipLevel);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, Math::max(attributes.MipLevels - 1, 0u));
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_ANISOTROPY_EXT,  Math::max(attributes.MipLevels - 1, 0u));
             glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
         }
 

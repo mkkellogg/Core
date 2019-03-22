@@ -202,8 +202,11 @@ namespace Core {
         this->setShader(ShaderType::Vertex, "IrradianceRenderer", ShaderManagerGL::IrradianceRenderer_vertex);
         this->setShader(ShaderType::Fragment, "IrradianceRenderer", ShaderManagerGL::IrradianceRenderer_fragment);
 
-        this->setShader(ShaderType::Vertex, "SpecularIBLRenderer", ShaderManagerGL::SpecularIBLRenderer_vertex);
-        this->setShader(ShaderType::Fragment, "SpecularIBLRenderer", ShaderManagerGL::SpecularIBLRenderer_fragment);
+        this->setShader(ShaderType::Vertex, "SpecularIBLPreFilteredRenderer", ShaderManagerGL::SpecularIBLPreFilteredRenderer_vertex);
+        this->setShader(ShaderType::Fragment, "SpecularIBLPreFilteredRenderer", ShaderManagerGL::SpecularIBLPreFilteredRenderer_fragment);
+
+        this->setShader(ShaderType::Vertex, "SpecularIBLBRDFRenderer", ShaderManagerGL::SpecularIBLBRDFRenderer_vertex);
+        this->setShader(ShaderType::Fragment, "SpecularIBLBRDFRenderer", ShaderManagerGL::SpecularIBLBRDFRenderer_fragment);
 
         this->setShader(ShaderType::Vertex, "Depth", ShaderManagerGL::Depth_vertex);
         this->setShader(ShaderType::Fragment, "Depth", ShaderManagerGL::Depth_fragment);
@@ -1122,7 +1125,7 @@ namespace Core {
             "            vec3 tangentSample = vec3(sin(theta) * cos(phi),  sin(theta) * sin(phi), cos(theta));\n"
                          // tangent space to world
             "            vec3 sampleVec = tangentSample.x * right + tangentSample.y * up + tangentSample.z * normal;\n" 
-            "            vec3 texColor = texture(cubeTexture, sampleVec).rgb; \n"
+            "            vec3 texColor = textureLod(cubeTexture, sampleVec, 0.0).rgb; \n"
             "            texColor = clamp(texColor, 0.0, 128.0); \n"
             "            irradiance += texColor * cos(theta) * sin(theta);\n"
             "            samplesTaken++;\n"
@@ -1132,7 +1135,7 @@ namespace Core {
             "    FragColor = vec4(irradiance, 1.0);\n"
             "}\n";
 
-        this->SpecularIBLRenderer_vertex =
+        this->SpecularIBLPreFilteredRenderer_vertex =
             "#version 330\n"
             "precision highp float;\n"
             "layout (location = 0 ) " + POSITION_DEF
@@ -1146,7 +1149,7 @@ namespace Core {
             "    gl_Position = (" + PROJECTION_MATRIX + " * vWorldPos).xyww;\n"
             "}\n";
 
-        this->SpecularIBLRenderer_fragment =  
+        this->SpecularIBLPreFilteredRenderer_fragment =  
             "#version 330\n"
             "precision highp float;\n"
             "#include \"PhysicalLightingSingle\" \n"
@@ -1154,6 +1157,7 @@ namespace Core {
             "in vec4 localPos; \n"
 
             "uniform samplerCube cubeTexture; \n"
+            "uniform int cubeTextureResolution; \n"
             "uniform float roughness; \n"
 
             "void main() \n"
@@ -1164,22 +1168,118 @@ namespace Core {
 
             "    const uint SAMPLE_COUNT = 1024u; \n"
             "    float totalWeight = 0.0; \n"
-            "    vec3 prefilteredColor = vec3(0.0); \n"     
+            "    vec3 prefilteredColor = vec3(0.0); \n"   
+
             "    for(uint i = 0u; i < SAMPLE_COUNT; ++i) \n"
             "    {  \n"
             "        vec2 Xi = hammersley(i, SAMPLE_COUNT);  \n"
             "        vec3 H  = importanceSampleGGX(Xi, N, roughness); \n"
             "        vec3 L  = normalize(2.0 * dot(V, H) * H - V); \n"
 
+            "        float NdotH = dot(N, H); \n"
+            "        float HdotV = dot(H, V); \n"
+            "        float D   = distributionGGX(N, H, roughness); \n"
+            "        float pdf = (D * NdotH / (4.0 * HdotV)) + 0.0001; \n"
+            "        float saTexel  = 4.0 * PI / (6.0 * cubeTextureResolution * cubeTextureResolution); \n"
+            "        float saSample = 1.0 / (float(SAMPLE_COUNT) * pdf + 0.0001); \n"
+            "        float mipLevel = roughness == 0.0 ? 0.0 : 0.5 * log2(saSample / saTexel); \n"
+
             "        float NdotL = max(dot(N, L), 0.0); \n"
             "        if(NdotL > 0.0) \n"
             "        { \n"
-            "            prefilteredColor += texture(cubeTexture, L).rgb * NdotL; \n"
+            "            vec3 texColor = textureLod(cubeTexture, L, mipLevel).rgb * NdotL; \n"
+            "            texColor = clamp(texColor, 0.0, 128.0); \n"
+            "            prefilteredColor += texColor; \n"
             "            totalWeight      += NdotL; \n"
             "        } \n"
             "    } \n"
             "    prefilteredColor = prefilteredColor / totalWeight; \n"
             "    out_color = vec4(prefilteredColor, 1.0); \n"
+            "} \n";
+
+          this->SpecularIBLBRDFRenderer_vertex =
+            "#version 330\n"
+            "precision highp float;\n"
+            "layout (location = 0 ) " + POSITION_DEF
+            + PROJECTION_MATRIX_DEF
+            + VIEW_MATRIX_DEF + 
+            "out vec4 localPos;\n"
+            "out vec2 vUV; \n"
+            "void main()\n"
+            "{\n"
+            "    localPos = " + POSITION + ";\n"
+            "    vUV = localPos.xy / 2.0 + 0.5; \n"
+            "    vec4 vWorldPos = mat4(mat3(" + VIEW_MATRIX + ")) * " + POSITION + ";\n"
+            "    gl_Position = (" + PROJECTION_MATRIX + " * vWorldPos).xyww;\n"
+            "}\n";
+
+        this->SpecularIBLBRDFRenderer_fragment =  
+            "#version 330\n"
+            "precision highp float;\n"
+            "#include \"PhysicalLightingSingle\" \n"
+            "out vec2 out_color; \n"
+            "in vec2 vUV; \n"
+
+            "float geometrySchlickGGXSpecularIBL(float NdotV, float roughness) \n"
+            "{ \n"
+            "    float a = roughness; \n"
+            "    float k = (a * a) / 2.0; \n"
+            "    float nom   = NdotV; \n"
+            "    float denom = NdotV * (1.0 - k) + k; \n"
+            "    return nom / denom; \n"
+            "} \n"
+
+            "float geometrySmithSpecularIBL(vec3 N, vec3 V, vec3 L, float roughness) \n"
+            "{ \n"
+            "    float NdotV = max(dot(N, V), 0.0); \n"
+            "    float NdotL = max(dot(N, L), 0.0); \n"
+            "    float ggx2 = geometrySchlickGGXSpecularIBL(NdotV, roughness); \n"
+            "    float ggx1 = geometrySchlickGGXSpecularIBL(NdotL, roughness); \n"
+            "    return ggx1 * ggx2; \n"
+            "} \n"
+
+            "vec2 integrateBRDF(float NdotV, float roughness) \n"
+            "{ \n"
+            "    vec3 V; \n"
+            "    V.x = sqrt(1.0 - NdotV*NdotV); \n"
+            "    V.y = 0.0; \n"
+            "    V.z = NdotV; \n"
+
+            "    float A = 0.0; \n"
+            "    float B = 0.0; \n"
+
+            "    vec3 N = vec3(0.0, 0.0, 1.0); \n"
+
+            "    const uint SAMPLE_COUNT = 1024u; \n"
+            "    for(uint i = 0u; i < SAMPLE_COUNT; ++i) \n"
+            "    { \n"
+            "        vec2 Xi = hammersley(i, SAMPLE_COUNT); \n"
+            "        vec3 H  = importanceSampleGGX(Xi, N, roughness); \n"
+            "        vec3 L  = normalize(2.0 * dot(V, H) * H - V); \n"
+
+            "        float NdotL = max(L.z, 0.0); \n"
+            "        float NdotH = max(H.z, 0.0); \n"
+            "        float VdotH = max(dot(V, H), 0.0); \n"
+
+            "        if(NdotL > 0.0) \n"
+            "        { \n"
+            "            float G = geometrySmithSpecularIBL(N, V, L, roughness); \n"
+            "            float G_Vis = (G * VdotH) / (NdotH * NdotV); \n"
+            "            float Fc = pow(1.0 - VdotH, 5.0); \n"
+
+            "            A += (1.0 - Fc) * G_Vis; \n"
+            "            B += Fc * G_Vis; \n"
+            "        } \n"
+            "    } \n"
+            "    A /= float(SAMPLE_COUNT); \n"
+            "    B /= float(SAMPLE_COUNT); \n"
+            "    return vec2(A, B); \n"
+            "} \n"
+
+            "void main()  \n"
+            "{ \n"
+            "    vec2 integratedBRDF = integrateBRDF(vUV.x, vUV.y); \n"
+            "    out_color = integratedBRDF; \n"
             "} \n";
 
         this->Depth_vertex =

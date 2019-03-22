@@ -597,6 +597,8 @@ namespace Core {
                 return GL_RGBA16F;
             case TextureFormat::RGBA32F:
                 return GL_RGBA32F;
+            case TextureFormat::RG16F:
+                return GL_RG16F;
             case TextureFormat::DEPTH16:
                 return GL_DEPTH_COMPONENT16;
             case TextureFormat::DEPTH24:
@@ -622,6 +624,8 @@ namespace Core {
                 return GL_RGBA;
             case TextureFormat::RGBA32F:
                 return GL_RGBA;
+            case TextureFormat::RG16F:
+                return GL_RG;
             case TextureFormat::DEPTH:
                 return GL_DEPTH_COMPONENT;
 

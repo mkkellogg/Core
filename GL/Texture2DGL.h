@@ -19,6 +19,7 @@ namespace Core {
         void buildFromImage(WeakPointer<StandardImage> imageData) override;
         void buildFromImage(WeakPointer<HDRImage> imageData) override;
         void buildEmpty(UInt32 width, UInt32 height) override;
+        void updateMipMaps() override;
 
     protected:
         Texture2DGL(const TextureAttributes& attributes);

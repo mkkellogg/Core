@@ -34,16 +34,17 @@ namespace Core {
         RGBA16F = 2,
         RGBA32F = 3,
         R32F = 4,
-        DEPTH = 5,
-        DEPTH16 = 6,
-        DEPTH24 = 7,
-        DEPTH32 = 8,
+        RG16F = 5,
+        DEPTH = 6,
+        DEPTH16 = 7,
+        DEPTH24 = 8,
+        DEPTH32 = 9,
     };
 
     class TextureAttributes {
     public:
 
-        UInt32 MipLevel;
+        UInt32 MipLevels;
         Bool IsDepthTexture;
         Bool UseAlpha;
         TextureFilter FilterMode;

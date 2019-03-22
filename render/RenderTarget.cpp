@@ -1,6 +1,7 @@
 #include "RenderTarget.h"
 #include "../base/BitMask.h"
 #include "../image/Texture.h"
+#include "../math/Math.h"
 
 namespace Core {
 
@@ -90,7 +91,7 @@ namespace Core {
     }
 
     UInt32 RenderTarget::getMaxMipLevel() const {
-        return this->colorTextureAttributes.MipLevel;
+        return Math::max(this->colorTextureAttributes.MipLevels - 1, 0u);
     }
 
     UInt32 RenderTarget::getMipLevel() const {

@@ -725,7 +725,7 @@ namespace Core {
 
         TextureAttributes texAttributes;
         texAttributes.FilterMode = filter;
-        texAttributes.MipLevel = mipLevel;
+        texAttributes.MipLevels = mipLevel;
         texAttributes.WrapMode = TextureWrap::Clamp;
         texAttributes.Format = TextureFormat::RGBA8;
 

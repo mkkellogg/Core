@@ -8,19 +8,22 @@ namespace Core {
     // forward declarations
     class Engine;
 
-    class SpecularIBLRendererMaterial : public SkyboxMaterial {
+    class SpecularIBLPreFilteredRendererMaterial : public SkyboxMaterial {
         friend class Engine;
     public:
         virtual void sendCustomUniformsToShader() override;
         virtual WeakPointer<Material> clone() override;
         void setRoughness(Real roughness);
+        void setTextureResolution(UInt32 resolution);
 
     protected:
-        SpecularIBLRendererMaterial(WeakPointer<Graphics> graphics);
+        SpecularIBLPreFilteredRendererMaterial(WeakPointer<Graphics> graphics);
         virtual void copyTo(WeakPointer<Material> target) override;
         virtual void bindShaderVarLocations() override;
 
         Real roughness;
+        UInt32 textureResolution;
         Int32 roughnessLocation;
+        Int32 textureResolutionLocation;
     };
 }

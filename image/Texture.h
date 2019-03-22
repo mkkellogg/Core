@@ -21,6 +21,7 @@ namespace Core {
         Int32 getTextureID() const;
         Bool isBuilt() const;
         virtual void buildEmpty(UInt32 width, UInt32 height) = 0;
+        virtual void updateMipMaps() = 0;
 
     protected:
         Texture(const TextureAttributes& attribute);

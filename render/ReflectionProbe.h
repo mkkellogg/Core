@@ -14,8 +14,10 @@ namespace Core {
     class Camera;
     class Light;
     class RenderTargetCube;
+    class RenderTarget2D;
     class IrradianceRendererMaterial;
-    class SpecularIBLRendererMaterial;
+    class SpecularIBLPreFilteredRendererMaterial;
+    class SpecularIBLBRDFRendererMaterial;
     class Skybox;
 
     class ReflectionProbe : public Object3DComponent {
@@ -31,18 +33,24 @@ namespace Core {
         WeakPointer<Object3D> getSkyboxObject();
         WeakPointer<RenderTargetCube> getSceneRenderTarget();
         WeakPointer<RenderTargetCube> getIrradianceMap();
+        WeakPointer<RenderTargetCube> getSpecularIBLPreFilteredMap();
+        WeakPointer<RenderTarget2D> getSpecularIBLBRDFMap();
         WeakPointer<IrradianceRendererMaterial> getIrradianceRendererMaterial();
+        WeakPointer<SpecularIBLPreFilteredRendererMaterial> getSpecularIBLPreFilteredRendererMaterial();
+        WeakPointer<SpecularIBLBRDFRendererMaterial> getSpecularIBLBRDFRendererMaterial();
 
     private:
         Bool needsUpdate;
         Bool skyboxOnly;
         PersistentWeakPointer<RenderTargetCube> sceneRenderTarget;
         PersistentWeakPointer<RenderTargetCube> irradianceMap;
-        PersistentWeakPointer<RenderTargetCube> specularIBLMap;
+        PersistentWeakPointer<RenderTargetCube> specularIBLPreFilteredMap;
+        PersistentWeakPointer<RenderTarget2D> specularIBLBRDFMap;
         PersistentWeakPointer<Object3D> renderCameraObject;
         PersistentWeakPointer<Camera> renderCamera;
         PersistentWeakPointer<IrradianceRendererMaterial> irradianceRendererMaterial;
-        PersistentWeakPointer<SpecularIBLRendererMaterial> specularIBLRendererMaterial;
+        PersistentWeakPointer<SpecularIBLPreFilteredRendererMaterial> specularIBLPreFilteredRendererMaterial;
+        PersistentWeakPointer<SpecularIBLBRDFRendererMaterial> specularIBLBRDFRendererMaterial;
         PersistentWeakPointer<Object3D> skyboxCube;
     };
 

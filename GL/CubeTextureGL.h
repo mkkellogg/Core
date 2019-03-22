@@ -20,6 +20,7 @@ namespace Core {
                              WeakPointer<HDRImage> topData,WeakPointer<HDRImage> bottomData, 
                              WeakPointer<HDRImage> leftData, WeakPointer<HDRImage> rightData) override;
         void buildEmpty(UInt32 width, UInt32 height) override;
+        void updateMipMaps() override;
 
     private:
         CubeTextureGL(const TextureAttributes& attributes);

@@ -20,6 +20,8 @@
 #include "../material/DistanceOnlyMaterial.h"
 #include "../material/TonemapMaterial.h"
 #include "../material/IrradianceRendererMaterial.h"
+#include "../material/SpecularIBLPreFilteredRendererMaterial.h"
+#include "../material/SpecularIBLBRDFRendererMaterial.h"
 #include "../math/Matrix4x4.h"
 #include "../math/Quaternion.h"
 #include "../light/PointLight.h"
@@ -127,8 +129,25 @@ namespace Core {
                     this->renderShadowMaps(nonIBLLightList, LightType::Directional, objectList, probeCam);
                     this->render(probeCam, objectList, nonIBLLightList, WeakPointer<Material>::nullPtr(), false);
                 }
+                reflectionProbe->getSceneRenderTarget()->getColorTexture()->updateMipMaps();
+
                 probeCam->setRenderTarget(reflectionProbe->getIrradianceMap());
                 this->renderObjectBasic(reflectionProbe->getSkyboxObject(), probeCam, reflectionProbe->getIrradianceRendererMaterial());
+                
+                WeakPointer<RenderTargetCube> specularIBLPreFilteredMap = reflectionProbe->getSpecularIBLPreFilteredMap();
+                probeCam->setRenderTarget(specularIBLPreFilteredMap);
+                WeakPointer<SpecularIBLPreFilteredRendererMaterial> specularIBLPreFilteredRendererMaterial = reflectionProbe->getSpecularIBLPreFilteredRendererMaterial();
+                specularIBLPreFilteredRendererMaterial->setTextureResolution(specularIBLPreFilteredMap->getSize().x);
+                for(UInt32 i = 0; i <= specularIBLPreFilteredMap->getMaxMipLevel(); i++) {
+                    specularIBLPreFilteredMap->setMipLevel(i);
+                    Real roughness = (Real)i / (Real)(specularIBLPreFilteredMap->getMaxMipLevel());
+                    specularIBLPreFilteredRendererMaterial->setRoughness(roughness);
+                    this->renderObjectBasic(reflectionProbe->getSkyboxObject(), probeCam, specularIBLPreFilteredRendererMaterial);
+                }
+
+                WeakPointer<RenderTarget2D> specularIBLBRDFMap = reflectionProbe->getSpecularIBLBRDFMap();
+                graphics->renderFullScreenQuad(specularIBLBRDFMap, -1, reflectionProbe->getSpecularIBLBRDFRendererMaterial());
+                
                 reflectionProbe->setNeedsUpdate(false);
             }
         }

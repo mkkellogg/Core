@@ -79,6 +79,7 @@ namespace Core {
         virtual void destroyRenderTargetCube(WeakPointer<RenderTargetCube> renderTarget, Bool destroyColor, Bool destroyDepth) = 0;
         void blit(WeakPointer<RenderTarget2D> source, WeakPointer<RenderTarget> destination, Int16 cubeFace, WeakPointer<Material> material, Bool includeDepth);
         virtual void lowLevelBlit(WeakPointer<RenderTarget2D> source, WeakPointer<RenderTarget> destination, Int16 cubeFace, Bool includeColor, Bool includeDepth) = 0;
+        void renderFullScreenQuad(WeakPointer<RenderTarget> destination, Int16 cubeFace, WeakPointer<Material> material);
 
         virtual void setColorWriteEnabled(Bool enabled) = 0;                                                               
         virtual void setClearColor(Color color) = 0;

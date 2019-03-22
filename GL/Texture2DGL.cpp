@@ -34,6 +34,13 @@ namespace Core {
         this->setupTexture(width, height, nullptr);
     }
 
+    void Texture2DGL::updateMipMaps() {
+        glBindTexture(GL_TEXTURE_2D, this->getTextureID());
+        glGenerateMipmap(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+
     void Texture2DGL::setupTexture(UInt32 width, UInt32 height, Byte* data) {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         WeakPointer<GraphicsGL> graphicsGL =  WeakPointer<Graphics>::dynamicPointerCast<GraphicsGL>(graphics);
@@ -106,8 +113,8 @@ namespace Core {
         // we only generate mip-maps if bi-linear or tri-linear filtering is used
         if (this->attributes.FilterMode == TextureFilter::TriLinear || attributes.FilterMode == TextureFilter::BiLinear) {
             //glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, attributes.MipLevel);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, attributes.MipLevel);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, Math::max(attributes.MipLevels - 1, 0u));
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, Math::max(attributes.MipLevels - 1, 0u));
             glGenerateMipmap(GL_TEXTURE_2D);
         }
        

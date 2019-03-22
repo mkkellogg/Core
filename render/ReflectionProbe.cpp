@@ -4,7 +4,8 @@
 #include "../render/Camera.h"
 #include "../render/RenderTargetCube.h"
 #include "../material/IrradianceRendererMaterial.h"
-#include "../material/SpecularIBLRendererMaterial.h"
+#include "../material/SpecularIBLPreFilteredRendererMaterial.h"
+#include "../material/SpecularIBLBRDFRendererMaterial.h"
 #include "../geometry/GeometryUtils.h"
 #include "../scene/Object3D.h"
 
@@ -20,25 +21,32 @@ namespace Core {
 
         Core::TextureAttributes colorAttributesScene;
         colorAttributesScene.Format = Core::TextureFormat::RGBA16F;
-        colorAttributesScene.FilterMode = Core::TextureFilter::Linear;
-        colorAttributesScene.MipLevel = 0;
+        colorAttributesScene.FilterMode = Core::TextureFilter::TriLinear;
+        colorAttributesScene.MipLevels = 5;
 
         Core::TextureAttributes colorAttributesIrradiance;
         colorAttributesIrradiance.Format = Core::TextureFormat::RGBA16F;
         colorAttributesIrradiance.FilterMode = Core::TextureFilter::Linear;
-        colorAttributesIrradiance.MipLevel = 0;
+        colorAttributesIrradiance.MipLevels = 0;
 
-        Core::TextureAttributes colorAttributesSpecularIBL;
-        colorAttributesSpecularIBL.Format = Core::TextureFormat::RGBA16F;
-        colorAttributesSpecularIBL.FilterMode = Core::TextureFilter::TriLinear;
-        colorAttributesSpecularIBL.MipLevel = 5;
+        Core::TextureAttributes colorAttributesSpecularIBLPreFiltered;
+        colorAttributesSpecularIBLPreFiltered.Format = Core::TextureFormat::RGBA16F;
+        colorAttributesSpecularIBLPreFiltered.FilterMode = Core::TextureFilter::TriLinear;
+        colorAttributesSpecularIBLPreFiltered.MipLevels = 5;
+
+         Core::TextureAttributes colorAttributesSpecularIBLBRDF;
+        colorAttributesSpecularIBLBRDF.Format = Core::TextureFormat::RG16F;
+        colorAttributesSpecularIBLBRDF.FilterMode = Core::TextureFilter::Linear;
+        colorAttributesSpecularIBLBRDF.MipLevels = 0;
 
         Core::TextureAttributes depthAttributes;
         depthAttributes.IsDepthTexture = true;
 
         this->sceneRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorAttributesScene, depthAttributes, size);
+        this->sceneRenderTarget->setMipLevel(0);
         this->irradianceMap = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorAttributesIrradiance, depthAttributes, size);
-        this->specularIBLMap = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorAttributesSpecularIBL, depthAttributes, size);
+        this->specularIBLPreFilteredMap = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorAttributesSpecularIBLPreFiltered, depthAttributes, size);
+        this->specularIBLBRDFMap = Engine::instance()->getGraphicsSystem()->createRenderTarget2D(true, true, false, colorAttributesSpecularIBLBRDF, depthAttributes, size);
 
         this->renderCamera = Engine::instance()->createPerspectiveCamera(this->getOwner(), Core::Math::PI / 2.0f, 1.0, 0.1f, 100.0f);
         this->renderCamera->setRenderTarget(this->sceneRenderTarget);
@@ -53,9 +61,12 @@ namespace Core {
         this->irradianceRendererMaterial->setTexture(sceneCubeTexture);
         this->irradianceRendererMaterial->setFaceCullingEnabled(false);
 
-        this->specularIBLRendererMaterial = Engine::instance()->createMaterial<SpecularIBLRendererMaterial>();
-        this->specularIBLRendererMaterial->setTexture(sceneCubeTexture);
-        this->specularIBLRendererMaterial->setFaceCullingEnabled(false);
+        this->specularIBLPreFilteredRendererMaterial = Engine::instance()->createMaterial<SpecularIBLPreFilteredRendererMaterial>();
+        this->specularIBLPreFilteredRendererMaterial->setTexture(sceneCubeTexture);
+        this->specularIBLPreFilteredRendererMaterial->setFaceCullingEnabled(false);
+
+        this->specularIBLBRDFRendererMaterial = Engine::instance()->createMaterial<SpecularIBLBRDFRendererMaterial>();
+        this->specularIBLBRDFRendererMaterial->setFaceCullingEnabled(false);
 
         Color cubeColor(1.0f, 1.0f, 1.0f, 1.0f);
         WeakPointer<Mesh> cubeMesh = GeometryUtils::buildBoxMesh(1.0, 1.0, 1.0, cubeColor);
@@ -86,8 +97,24 @@ namespace Core {
         return this->irradianceMap;
     }
 
+    WeakPointer<RenderTargetCube> ReflectionProbe::getSpecularIBLPreFilteredMap() {
+        return this->specularIBLPreFilteredMap;
+    }
+
+    WeakPointer<RenderTarget2D> ReflectionProbe::getSpecularIBLBRDFMap() {
+        return this->specularIBLBRDFMap;
+    }
+
     WeakPointer<IrradianceRendererMaterial> ReflectionProbe::getIrradianceRendererMaterial() {
         return this->irradianceRendererMaterial;
+    }
+
+    WeakPointer<SpecularIBLPreFilteredRendererMaterial> ReflectionProbe::getSpecularIBLPreFilteredRendererMaterial() {
+        return this->specularIBLPreFilteredRendererMaterial;
+    }
+
+    WeakPointer<SpecularIBLBRDFRendererMaterial> ReflectionProbe::getSpecularIBLBRDFRendererMaterial() {
+        return this->specularIBLBRDFRendererMaterial;
     }
 
     void ReflectionProbe::setSkybox(Skybox& skybox) {

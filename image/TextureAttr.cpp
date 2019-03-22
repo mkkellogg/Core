@@ -6,7 +6,7 @@ namespace Core {
         UseAlpha = false;
         WrapMode = TextureWrap::Repeat;
         FilterMode = TextureFilter::Point;
-        MipLevel = 0;
+        MipLevels = 0;
         IsDepthTexture = false;
         Format = TextureFormat::RGBA8;
     }
