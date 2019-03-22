@@ -86,13 +86,16 @@ namespace Core {
         renderCamera->setAutoClearRenderBuffer(RenderBufferType::Depth, false);
         renderCamera->setAutoClearRenderBuffer(RenderBufferType::Stencil, false);
 
+        WeakPointer<RenderTarget> currentRenderTarget = this->getCurrentRenderTarget();
+        Vector4u currentViewport = currentRenderTarget->getViewport();
+
         UInt32 targetMipLevel = destination->getMipLevel();
-        Engine::instance()->getGraphicsSystem()->activateRenderTarget(destination);
+        this->activateRenderTarget(destination);
         if (cubeFace >= 0) {
-            Engine::instance()->getGraphicsSystem()->activateCubeRenderTargetSide((CubeTextureSide)cubeFace, targetMipLevel);
+            this->activateCubeRenderTargetSide((CubeTextureSide)cubeFace, targetMipLevel);
         }
         else {
-            Engine::instance()->getGraphicsSystem()->activateRenderTarget2DMipLevel(targetMipLevel);
+            this->activateRenderTarget2DMipLevel(targetMipLevel);
         }
 
         Vector4u mipLevelScaledViewport = destination->getViewportForMipLevel(targetMipLevel);
@@ -106,6 +109,9 @@ namespace Core {
         if (includeDepth) {
             this->lowLevelBlit(source, destination, -1, false, true);
         }
+
+        this->activateRenderTarget(currentRenderTarget);
+        this->setViewport(currentViewport.x, currentViewport.y, currentViewport.z, currentViewport.w);
     }
 
     void Graphics::renderFullScreenQuad(WeakPointer<RenderTarget> destination, Int16 cubeFace, WeakPointer<Material> material) {
@@ -131,19 +137,19 @@ namespace Core {
         material->setDepthTestEnabled(false);
         material->setFaceCullingEnabled(false);
         renderCamera->setRenderTarget(destination);
-        renderCamera->setAutoClearRenderBuffer(RenderBufferType::Color, true);
-        renderCamera->setAutoClearRenderBuffer(RenderBufferType::Depth, false);
-        renderCamera->setAutoClearRenderBuffer(RenderBufferType::Stencil, false);
+        
+        WeakPointer<RenderTarget> currentRenderTarget = this->getCurrentRenderTarget();
+        Vector4u currentViewport = currentRenderTarget->getViewport();
 
         UInt32 targetMipLevel = destination->getMipLevel();
-        Engine::instance()->getGraphicsSystem()->activateRenderTarget(destination);
+        this->activateRenderTarget(destination);
         if (cubeFace >= 0) {
-            Engine::instance()->getGraphicsSystem()->activateCubeRenderTargetSide((CubeTextureSide)cubeFace, targetMipLevel);
+            this->activateCubeRenderTargetSide((CubeTextureSide)cubeFace, targetMipLevel);
         }
         else {
-            Engine::instance()->getGraphicsSystem()->activateRenderTarget2DMipLevel(targetMipLevel);
+            this->activateRenderTarget2DMipLevel(targetMipLevel);
         }
-
+        
         Vector4u mipLevelScaledViewport = destination->getViewportForMipLevel(targetMipLevel);
         this->setViewport(mipLevelScaledViewport.x, mipLevelScaledViewport.y, mipLevelScaledViewport.z, mipLevelScaledViewport.w);
 
@@ -151,5 +157,8 @@ namespace Core {
 
         material->setFaceCullingEnabled(faceCullingEnabled);
         material->setDepthTestEnabled(depthTestEnabled);
+
+        this->activateRenderTarget(currentRenderTarget);
+        this->setViewport(currentViewport.x, currentViewport.y, currentViewport.z, currentViewport.w);
     }
 }

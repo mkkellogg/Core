@@ -192,7 +192,7 @@ namespace Core {
                     }
                     
                     if (specularIBLBRDFMapLoc >= 0) {
-                        shader->setTextureCube(currentTextureSlot, specularIBLBRDFMapLoc, ambientIBLLight->getSpecularIBLBRDFMap()->getTextureID());
+                        shader->setTexture2D(currentTextureSlot, specularIBLBRDFMapLoc, ambientIBLLight->getSpecularIBLBRDFMap()->getTextureID());
                         currentTextureSlot++;
                     }
                 }

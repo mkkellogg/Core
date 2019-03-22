@@ -647,7 +647,8 @@ namespace Core {
                 return GL_FLOAT;
             case TextureFormat::RGBA32F:
                 return GL_FLOAT;
-
+            case TextureFormat::RG16F:
+                return GL_FLOAT;
         }
 
         return GL_UNSIGNED_BYTE;

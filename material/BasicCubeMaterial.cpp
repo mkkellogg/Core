@@ -5,6 +5,7 @@
 #include "StandardUniforms.h"
 #include "../Engine.h"
 #include "../image/CubeTexture.h"
+#include "../image/Texture2D.h"
 #include "../material/ShaderManager.h"
 
 namespace Core {
@@ -49,13 +50,20 @@ namespace Core {
         }
     }
 
-    void BasicCubeMaterial::setTexture(WeakPointer<CubeTexture> texture) {
-        this->texture = texture;
+    void BasicCubeMaterial::setCubeTexture(WeakPointer<CubeTexture> texture) {
+        this->cubeTexture = texture;
+    }
+
+    void BasicCubeMaterial::setRectTexture(WeakPointer<Texture2D> texture) {
+        this->rectTexture = texture;
     }
 
     void BasicCubeMaterial::sendCustomUniformsToShader() {
-        this->shader->setTextureCube(0, this->texture->getTextureID());
+        this->shader->setTextureCube(0, this->cubeTexture->getTextureID());
         this->shader->setUniform1i(this->cubeTextureLocation, 0);
+
+        this->shader->setTexture2D(1, this->rectTexture->getTextureID());
+        this->shader->setUniform1i(this->rectTextureLocation, 1);
     }
 
     WeakPointer<Material> BasicCubeMaterial::clone() {
@@ -67,6 +75,9 @@ namespace Core {
         newMaterial->viewMatrixLocation = this->viewMatrixLocation;
         newMaterial->modelMatrixLocation = this->modelMatrixLocation;
         newMaterial->cubeTextureLocation = this->cubeTextureLocation;
+        newMaterial->rectTextureLocation = this->rectTextureLocation;
+        newMaterial->rectTexture = this->rectTexture;
+        newMaterial->cubeTexture = this->cubeTexture;
         return newMaterial;
     }
 
@@ -74,6 +85,7 @@ namespace Core {
         this->positionLocation = this->shader->getAttributeLocation(StandardAttribute::Position);
         this->colorLocation = this->shader->getAttributeLocation(StandardAttribute::Color);
         this->cubeTextureLocation = this->shader->getUniformLocation("cubeTexture");
+        this->rectTextureLocation = this->shader->getUniformLocation("rectTexture");
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
         this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);

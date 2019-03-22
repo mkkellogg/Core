@@ -8,6 +8,7 @@ namespace Core {
     // forward declarations
     class Engine;
     class CubeTexture;
+    class Texture2D;
 
     class BasicCubeMaterial : public Material {
         friend class Engine;
@@ -18,7 +19,8 @@ namespace Core {
         virtual Int32 getShaderLocation(StandardUniform uniform, UInt32 offset = 0) override;
         virtual void sendCustomUniformsToShader() override;
         virtual WeakPointer<Material> clone() override;
-        void setTexture(WeakPointer<CubeTexture> texture);
+        void setCubeTexture(WeakPointer<CubeTexture> texture);
+        void setRectTexture(WeakPointer<Texture2D> texture);
         virtual UInt32 textureCount() override;
 
     private:
@@ -31,6 +33,8 @@ namespace Core {
         Int32 viewMatrixLocation;
         Int32 modelMatrixLocation;
         Int32 cubeTextureLocation;
-        PersistentWeakPointer<CubeTexture> texture;
+        Int32 rectTextureLocation;
+        PersistentWeakPointer<CubeTexture> cubeTexture;
+        PersistentWeakPointer<Texture2D> rectTexture;
     };
 }

@@ -834,7 +834,7 @@ namespace Core {
         
             "             vec3 prefilteredColor = textureLod(" + LIGHT_SPECULAR_IBL_PREFILTERED_MAP + "[lightIndex], R,  roughness * MAX_REFLECTION_LOD).rgb; \n"   
             "             vec2 envBRDF  = texture(" + LIGHT_SPECULAR_IBL_BRDF_MAP + "[lightIndex], vec2(max(dot(worldNormal, V), 0.0), roughness)).rg; \n"
-            "             vec3 specularIBL = prefilteredColor * F; \n " //* (envBRDF.x + envBRDF.y); \n"
+            "             vec3 specularIBL = prefilteredColor * F * (envBRDF.x + envBRDF.y); \n"
             "             vec3 ambient = (kD * diffuseIBL + specularIBL) * ao; \n"
             "             return vec4(ambient, 1.0); \n"
 
@@ -1584,14 +1584,17 @@ namespace Core {
             "precision mediump float;\n"
             "#include \"PhysicalCommon\" \n"
             "uniform samplerCube cubeTexture; \n"
+            "uniform sampler2D rectTexture; \n"
             "in vec4 vColor;\n"
             "in vec3 vUV;\n"
             "out vec4 out_color;\n"
             "void main() {\n"
             "    vec3 textureColor = texture(cubeTexture, vUV).rgb;\n"
+            //"    vec2 textureColor = texture(rectTexture, vUV.xy).rg;\n"
            // "    textureColor = toneMapReinhard(textureColor); \n"
            // "    textureColor = gammaCorrectBasic(textureColor); \n"
             "    out_color = vec4(textureColor, 1.0);\n"
+            //"    out_color = textureColor;\n"
             "}\n";
     }
 
