@@ -15,6 +15,8 @@ Light-weight, C/C++ based, 3D rendering library built on OpenGL.
   - Image-based ambient lighting for global illumination approximation
   - HDR support
   - Gamma correction support
+* Scene-graph API
+* Render-to-texture capability
 
 ## External dependencies:
 
