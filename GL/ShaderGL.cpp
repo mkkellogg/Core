@@ -75,7 +75,7 @@ namespace Core {
 
 
     void ShaderGL::setTexture2D(UInt32 slot, UInt32 textureID) {
-        static UInt32 slots[] = {GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2, GL_TEXTURE3, GL_TEXTURE4, GL_TEXTURE5};
+        static UInt32 slots[] = {GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2, GL_TEXTURE3, GL_TEXTURE4, GL_TEXTURE5, GL_TEXTURE6, GL_TEXTURE7};
 
         if (slot >= 8) {
             std::cerr << "slot: " << slot << std::endl;

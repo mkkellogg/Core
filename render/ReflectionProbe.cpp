@@ -32,9 +32,9 @@ namespace Core {
         Core::TextureAttributes colorAttributesSpecularIBLPreFiltered;
         colorAttributesSpecularIBLPreFiltered.Format = Core::TextureFormat::RGBA16F;
         colorAttributesSpecularIBLPreFiltered.FilterMode = Core::TextureFilter::TriLinear;
-        colorAttributesSpecularIBLPreFiltered.MipLevels = 5;
+        colorAttributesSpecularIBLPreFiltered.MipLevels = Core::Constants::MaxIBLLODLevels;
 
-         Core::TextureAttributes colorAttributesSpecularIBLBRDF;
+        Core::TextureAttributes colorAttributesSpecularIBLBRDF;
         colorAttributesSpecularIBLBRDF.Format = Core::TextureFormat::RG16F;
         colorAttributesSpecularIBLBRDF.FilterMode = Core::TextureFilter::Linear;
         colorAttributesSpecularIBLBRDF.MipLevels = 0;

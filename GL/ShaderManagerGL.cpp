@@ -55,6 +55,7 @@ const std::string AMBIENT_LIGHT_COUNT = _un(Core::StandardUniform::AmbientLightC
 const std::string AMBIENT_IBL_LIGHT_COUNT = _un(Core::StandardUniform::AmbientIBLLightCount);
 const std::string POINT_LIGHT_COUNT = _un(Core::StandardUniform::PointLightCount);
 const std::string DIRECTIONAL_LIGHT_COUNT = _un(Core::StandardUniform::DirectionalLightCount);
+const std::string MAX_IBL_LOD_LEVELS = std::to_string(Core::Constants::MaxIBLLODLevels);
 
 const std::string POSITION_DEF = "in vec4 " +  POSITION + ";\n";
 const std::string NORMAL_DEF = "in vec4 " +  NORMAL + ";\n";
@@ -734,7 +735,7 @@ namespace Core {
 
         this->Physical_Lighting_fragment =
             "#include \"PhysicalCommon\" \n"
-            "const float MAX_REFLECTION_LOD = 4.0; \n"
+            "const float MAX_REFLECTION_LOD = " + MAX_IBL_LOD_LEVELS + "; \n"
             "float distributionGGX(vec3 N, vec3 H, float roughness) { \n"
             "    float a      = roughness*roughness; \n"
             "    float a2     = a*a; \n"
@@ -836,7 +837,7 @@ namespace Core {
             "             vec2 envBRDF  = texture(" + LIGHT_SPECULAR_IBL_BRDF_MAP + "[lightIndex], vec2(max(dot(worldNormal, V), 0.0), roughness)).rg; \n"
             "             vec3 specularIBL = prefilteredColor * F * (envBRDF.x + envBRDF.y); \n"
             "             vec3 ambient = (kD * diffuseIBL + specularIBL) * ao; \n"
-            "             return vec4(ambient, 1.0); \n"
+            "             return vec4(max(ambient, 0.0), 1.0); \n"
 
             "        }\n"
             "        else { \n"

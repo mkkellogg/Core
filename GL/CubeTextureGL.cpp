@@ -118,10 +118,9 @@ namespace Core {
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-         // we only generate mip-maps if bi-linear or tri-linear filtering is used
-        if (this->attributes.FilterMode == TextureFilter::TriLinear || attributes.FilterMode == TextureFilter::BiLinear) {
-            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, Math::max(attributes.MipLevels - 1, 0u));
-            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_ANISOTROPY_EXT,  Math::max(attributes.MipLevels - 1, 0u));
+        if (this->attributes.MipLevels > 1) {
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, attributes.MipLevels - 1);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_ANISOTROPY_EXT,  attributes.MipLevels - 1);
             glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
         }
 

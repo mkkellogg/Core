@@ -110,11 +110,9 @@ namespace Core {
             glTexImage2D(GL_TEXTURE_2D, 0, textureFormat, width, height, 0, pixelFormat, pixelType, data);
         }
 
-        // we only generate mip-maps if bi-linear or tri-linear filtering is used
-        if (this->attributes.FilterMode == TextureFilter::TriLinear || attributes.FilterMode == TextureFilter::BiLinear) {
-            //glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, Math::max(attributes.MipLevels - 1, 0u));
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, Math::max(attributes.MipLevels - 1, 0u));
+        if (attributes.MipLevels > 1) {
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, attributes.MipLevels - 1);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, attributes.MipLevels - 1);
             glGenerateMipmap(GL_TEXTURE_2D);
         }
        
