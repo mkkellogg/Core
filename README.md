@@ -3,18 +3,14 @@ Light-weight, C/C++ based, 3D rendering library built on OpenGL.
 
 ## Current features:
 
-- Multi-pass and single-pass forward rendering
-
-- Model import: Support for many industry standard formats via the Assimp library
-
-- Image import: Support for many industry standard formats via the DevIL library
-
-- Dynamic shadows via shadow maps
+* Multi-pass and single-pass forward rendering
+* Model import: Support for many industry standard formats via the Assimp library
+* Image import: Support for many industry standard formats via the DevIL library
+* Dynamic shadows via shadow maps
   - Support for directional and point lights (2D and cube shadow maps)
   - Multiple cascade levels for directional lights
   - Soft edges through PCF
-  
-- Physically-based rendering
+* Physically-based rendering
   - Cook-Torrance BRDF
   - Image-based ambient lighting for global illumination approximation
   - HDR support
