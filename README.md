@@ -1,5 +1,5 @@
 # Core
-Light-weight, C/C++ based, 3D rendering library built on OpenGL.
+Light-weight, C/C++ based, 3D rendering library built on OpenGL. Ultimately intended to be the successor to/replacement for my older gaming engine, GTE.
 
 ## Current features:
 
