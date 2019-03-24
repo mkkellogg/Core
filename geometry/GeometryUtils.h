@@ -20,6 +20,9 @@ namespace Core {
         static WeakPointer<Mesh> buildArrowMesh(Real baseLength, Real baseRadius,
                                                 Real coneLength, Real coneRadius,
                                                 UInt32 subdivisions, Color color);
+
+        static WeakPointer<Mesh> buildSphereMesh(Real radius, UInt32 subdivisions, Color color);
+
         static WeakPointer<RenderableContainer<Mesh>> buildMeshContainer(WeakPointer<Mesh> mesh,
                                                                     WeakPointer<Material> material,
                                                                     const std::string& name);

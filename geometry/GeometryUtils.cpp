@@ -169,7 +169,7 @@ namespace Core {
 
         WeakPointer<Engine> engine = Engine::instance();
 
-        WeakPointer<Mesh> boxMesh(engine->createMesh(36, false));
+        WeakPointer<Mesh> boxMesh(engine->createMesh(36, 0));
         boxMesh->init();
         boxMesh->enableAttribute(StandardAttribute::Position);
         Bool positionInited = boxMesh->initVertexPositions();
@@ -229,14 +229,10 @@ namespace Core {
             Real coneX = x * coneRadius;
             Real coneY = y * coneRadius;
 
-
             if (s >= 1) {
                 UInt32 index = (s - 1) * componentsPerSide;
 
                 // bottom of base
-                // Vector3r botA(baseX, 0.0, baseY);
-                // Vector3r botB(lastBaseX, 0.0, lastBaseY);
-                // Vector3r botC(0.0, 0.0, 0.0);
                 vertices[index] = baseX;
                 vertices[index + 1] = -halfLength;
                 vertices[index + 2] = baseY;
@@ -251,12 +247,6 @@ namespace Core {
                 vertices[index + 11] = 1.0;
 
                 // side of base
-                //Vector3r sideA(lastBaseX, 0.0, lastBaseY);
-                //Vector3r sideB(baseX, 0.0, baseY);
-                //Vector3r sideC(baseX, baseLength, baseY);
-                //Vector3r sideD(baseX, baseLength, baseY);
-                //Vector3r sideE(lastBaseX, baseLength, lastBaseY);
-                //Vector3r sideF(lastBaseX, 0.0, lastBaseY);
                 vertices[index + 12] = lastBaseX;
                 vertices[index + 13] = -halfLength;
                 vertices[index + 14] = lastBaseY;
@@ -283,15 +273,7 @@ namespace Core {
                 vertices[index + 34] = lastBaseY;
                 vertices[index + 35] = 1.0;
 
-
                 // bottom of cone
-                //Vector3r botConeA(lastBaseX, baseLength, lastBaseY);
-                //Vector3r botConeB(baseX, baseLength, baseY);
-                //Vector3r botConeC(coneX, baseLength, coneY);
-                //Vector3r botConeD(coneX, baseLength, coneY);
-                //Vector3r botConeE(lastConeX, baseLength, lastConeY);
-                //Vector3r botConeF(lastBaseX, baseLength, lastBaseY);
-
                 vertices[index + 36] = lastBaseX;
                 vertices[index + 37] = baseLength - halfLength;
                 vertices[index + 38] = lastBaseY;
@@ -319,9 +301,6 @@ namespace Core {
                 vertices[index + 59] = 1.0;
 
                 // cone face
-                //Vector3r coneA(lastConeX, baseLength, lastConeY);
-                //Vector3r coneB(coneX, baseLength, coneY);
-                //Vector3r coneC(0.0, baseLength + coneLength, 0.0);
                 vertices[index + 60] = lastConeX;
                 vertices[index + 61] = baseLength - halfLength;
                 vertices[index + 62] = lastConeY;
@@ -352,7 +331,7 @@ namespace Core {
 
         WeakPointer<Engine> engine = Engine::instance();
 
-        WeakPointer<Mesh> arrowMesh(engine->createMesh(vertexCount, false));
+        WeakPointer<Mesh> arrowMesh(engine->createMesh(vertexCount, 0));
         arrowMesh->init();
         arrowMesh->enableAttribute(StandardAttribute::Position);
         Bool positionInited = arrowMesh->initVertexPositions();
@@ -375,6 +354,185 @@ namespace Core {
         arrowMesh->calculateNormals(75.0f);
 
         return arrowMesh;
+    }
+
+    WeakPointer<Mesh> GeometryUtils::buildSphereMesh(Real radius, UInt32 subdivisions, Color color) {
+        UInt32 hSubdivisions = subdivisions;
+        UInt32 vSubdivisions = subdivisions / 4;
+
+        std::vector<Real> positions;
+        std::vector<Real> normals;
+        std::vector<Real> colors;
+
+        Real halfPI = Math::PI / 2.0f;
+        Real deltaTheta = Math::TwoPI / (Real)hSubdivisions;
+        Real deltaPhi = halfPI / (Real)vSubdivisions;
+
+        for (UInt32 i = 0; i < hSubdivisions; i++) {
+            for (UInt32 j = 0; j < vSubdivisions; j++) {
+                Real theta = (Real)i * deltaTheta;
+                Real nextTheta = theta + deltaTheta;
+                Real phi = (Real)j * deltaPhi;
+                Real nextPhi = phi + deltaPhi;
+
+                Real bottomY = Math::sin(phi) * radius;
+                Real topY = Math::sin(nextPhi) * radius;
+
+                Real projectedRadius = radius * Math::sin(halfPI - phi);
+                Real nextProjectedRadius = radius * Math::sin(halfPI - nextPhi);
+
+                Real bottomStartX = Math::cos(theta) * projectedRadius;
+                Real bottomEndX = Math::cos(nextTheta) * projectedRadius;
+                Real bottomStartZ = Math::sin(theta) * projectedRadius;
+                Real bottomEndZ = Math::sin(nextTheta) * projectedRadius;
+
+                if (j == vSubdivisions - 1) {
+                    positions.push_back(bottomStartX);  
+                    positions.push_back(bottomY);  
+                    positions.push_back(bottomStartZ);
+                    positions.push_back(1.0f); 
+
+                    positions.push_back(0);  
+                    positions.push_back(radius);  
+                    positions.push_back(0);
+                    positions.push_back(1.0f);
+
+                    positions.push_back(bottomEndX);  
+                    positions.push_back(bottomY);  
+                    positions.push_back(bottomEndZ);  
+                    positions.push_back(1.0f); 
+
+
+                    positions.push_back(bottomStartX);  
+                    positions.push_back(-bottomY);  
+                    positions.push_back(bottomStartZ); 
+                    positions.push_back(1.0f);
+
+                    positions.push_back(bottomEndX);  
+                    positions.push_back(-bottomY);  
+                    positions.push_back(bottomEndZ);   
+                    positions.push_back(1.0f);
+
+                    positions.push_back(0);  
+                    positions.push_back(-radius);  
+                    positions.push_back(0);   
+                    positions.push_back(1.0f);
+                }
+                else {
+                    Real topStartX = Math::cos(theta) * nextProjectedRadius;
+                    Real topEndX = Math::cos(nextTheta) * nextProjectedRadius;
+                    Real topStartZ = Math::sin(theta) * nextProjectedRadius;
+                    Real topEndZ = Math::sin(nextTheta) * nextProjectedRadius;
+
+                    positions.push_back(bottomStartX);  
+                    positions.push_back(bottomY);  
+                    positions.push_back(bottomStartZ); 
+                    positions.push_back(1.0f);
+
+                    positions.push_back(topStartX);  
+                    positions.push_back(topY);  
+                    positions.push_back(topStartZ); 
+                    positions.push_back(1.0f);
+
+                    positions.push_back(bottomEndX);  
+                    positions.push_back(bottomY);  
+                    positions.push_back(bottomEndZ); 
+                    positions.push_back(1.0f);  
+
+                    positions.push_back(topStartX);  
+                    positions.push_back(topY);  
+                    positions.push_back(topStartZ);
+                    positions.push_back(1.0f);  
+
+                    positions.push_back(topEndX);  
+                    positions.push_back(topY);  
+                    positions.push_back(topEndZ); 
+                    positions.push_back(1.0f);
+
+                    positions.push_back(bottomEndX);  
+                    positions.push_back(bottomY);  
+                    positions.push_back(bottomEndZ);
+                    positions.push_back(1.0f);  
+
+
+
+
+                    positions.push_back(bottomStartX);  
+                    positions.push_back(-bottomY);  
+                    positions.push_back(bottomStartZ); 
+                    positions.push_back(1.0f);
+
+                    positions.push_back(bottomEndX);  
+                    positions.push_back(-bottomY);  
+                    positions.push_back(bottomEndZ); 
+                    positions.push_back(1.0f); 
+
+                    positions.push_back(topStartX);  
+                    positions.push_back(-topY);  
+                    positions.push_back(topStartZ); 
+                    positions.push_back(1.0f);
+ 
+                    positions.push_back(topStartX);  
+                    positions.push_back(-topY);  
+                    positions.push_back(topStartZ);  
+                    positions.push_back(1.0f);
+
+                    positions.push_back(bottomEndX);  
+                    positions.push_back(-bottomY);  
+                    positions.push_back(bottomEndZ);
+                    positions.push_back(1.0f);
+
+                    positions.push_back(topEndX);  
+                    positions.push_back(-topY);  
+                    positions.push_back(topEndZ); 
+                    positions.push_back(1.0f);   
+                }       
+            }
+        }
+
+        for (UInt32 i = 0; i < positions.size(); i+=4) {
+            Real x = positions[i];
+            Real y = positions[i + 1];
+            Real z = positions[i + 2];
+            Vector3r normal(x, y, z);
+            normal.normalize();
+            normals.push_back(normal.x);
+            normals.push_back(normal.y);
+            normals.push_back(normal.z);
+            normals.push_back(0.0f);
+            colors.push_back(color.r);
+            colors.push_back(color.g);
+            colors.push_back(color.b);
+            colors.push_back(color.a);
+        }
+
+        WeakPointer<Engine> engine = Engine::instance();
+
+        UInt32 vertexCount = positions.size() / 4;
+
+        WeakPointer<Mesh> sphereMesh(engine->createMesh(vertexCount, 0));
+        sphereMesh->init();
+        sphereMesh->enableAttribute(StandardAttribute::Position);
+        Bool positionInited = sphereMesh->initVertexPositions();
+        ASSERT(positionInited, "Unable to initialize sphere mesh vertex positions.");
+        sphereMesh->getVertexPositions()->store(positions.data());
+
+        sphereMesh->enableAttribute(StandardAttribute::Color);
+        Bool colorInited = sphereMesh->initVertexColors();
+        ASSERT(colorInited, "Unable to initialize sphere mesh colors.");
+        sphereMesh->getVertexColors()->store(colors.data());
+
+        sphereMesh->enableAttribute(StandardAttribute::Normal);
+        Bool normalInited = sphereMesh->initVertexNormals();
+        ASSERT(normalInited, "Unable to initialize sphere vertex normals.");
+
+        sphereMesh->enableAttribute(StandardAttribute::FaceNormal);
+        Bool faceNormalInited = sphereMesh->initVertexFaceNormals();
+
+        sphereMesh->calculateBoundingBox();
+        sphereMesh->calculateNormals(75.0f);
+
+        return sphereMesh;
     }
 
     WeakPointer<RenderableContainer<Mesh>> GeometryUtils::buildMeshContainer(WeakPointer<Mesh> mesh,

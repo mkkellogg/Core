@@ -13,7 +13,7 @@ namespace Core {
     }
 
     void Skybox::build(WeakPointer<CubeTexture> skyboxTexture, Bool isPhysical, Real exposure) {
-        WeakPointer<Mesh> skyboxMesh(Engine::instance()->createMesh(36, false));
+        WeakPointer<Mesh> skyboxMesh(Engine::instance()->createMesh(36, 0));
         skyboxMesh->init();
 
         Core::Real vertexPositions[] = {
