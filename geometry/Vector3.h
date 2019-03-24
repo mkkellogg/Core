@@ -101,7 +101,11 @@ namespace Core {
         }Hasher;
 
         typedef struct {
-            Bool operator() (const Vector3Base& a, const Vector3Base& b) const { return a.x == b.x && a.y == b.y && a.z == b.z; }
+            Bool operator() (const Vector3Base& a, const Vector3Base& b) const { 
+                Real epsilon = .005f;
+                return Math::abs(a.x - b.x) < epsilon && Math::abs(a.y - b.y) < epsilon && Math::abs(a.z - b.z) < epsilon;
+    
+            }
         }Eq;
 
     protected:
@@ -291,6 +295,7 @@ namespace Core {
             temp.add(other);
             return temp;
         }
+
     };
 
     typedef Vector3<Real, false> Vector3r;
