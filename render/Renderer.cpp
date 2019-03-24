@@ -74,9 +74,7 @@ namespace Core {
         reflectionProbeList.resize(0);
 
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-
-        Matrix4x4 curTransform;
-        this->processScene(rootObject, curTransform, objectList);
+        this->processScene(rootObject, objectList);
 
         for (WeakPointer<Object3D> object : objectList) {
             WeakPointer<ReflectionProbe> objectReflectionProbe;
@@ -127,36 +125,11 @@ namespace Core {
         this->renderShadowMaps(lightList, LightType::Point, objectList);
 
         for (auto reflectionProbe : reflectionProbeList) {
-            if (reflectionProbe->getNeedsUpdate()) {
-                WeakPointer<Camera> probeCam = reflectionProbe->getRenderCamera();
-                probeCam->setRenderTarget(reflectionProbe->getSceneRenderTarget());
-                if (reflectionProbe->isSkyboxOnly()) {
-                    this->render(probeCam, emptyObjectList, nonIBLLightList, WeakPointer<Material>::nullPtr(), false);
-                }
-                else {
-                    this->renderShadowMaps(nonIBLLightList, LightType::Directional, objectList, probeCam);
-                    this->render(probeCam, objectList, nonIBLLightList, WeakPointer<Material>::nullPtr(), false);
-                }
-                reflectionProbe->getSceneRenderTarget()->getColorTexture()->updateMipMaps();
-
-                probeCam->setRenderTarget(reflectionProbe->getIrradianceMap());
-                this->renderObjectBasic(reflectionProbe->getSkyboxObject(), probeCam, reflectionProbe->getIrradianceRendererMaterial());
-                
-                WeakPointer<RenderTargetCube> specularIBLPreFilteredMap = reflectionProbe->getSpecularIBLPreFilteredMap();
-                probeCam->setRenderTarget(specularIBLPreFilteredMap);
-                WeakPointer<SpecularIBLPreFilteredRendererMaterial> specularIBLPreFilteredRendererMaterial = reflectionProbe->getSpecularIBLPreFilteredRendererMaterial();
-                specularIBLPreFilteredRendererMaterial->setTextureResolution(specularIBLPreFilteredMap->getSize().x);
-                for(UInt32 i = 0; i <= specularIBLPreFilteredMap->getMaxMipLevel(); i++) {
-                    specularIBLPreFilteredMap->setMipLevel(i);
-                    Real roughness = (Real)i / (Real)(specularIBLPreFilteredMap->getMaxMipLevel());
-                    specularIBLPreFilteredRendererMaterial->setRoughness(roughness);
-                    this->renderObjectBasic(reflectionProbe->getSkyboxObject(), probeCam, specularIBLPreFilteredRendererMaterial);
-                }
-
-                WeakPointer<RenderTarget2D> specularIBLBRDFMap = reflectionProbe->getSpecularIBLBRDFMap();
-                graphics->renderFullScreenQuad(specularIBLBRDFMap, -1, reflectionProbe->getSpecularIBLBRDFRendererMaterial());
-                
-                reflectionProbe->setNeedsUpdate(false);
+            if (reflectionProbe->getNeedsFullUpdate() || reflectionProbe->getNeedsSpecularUpdate()) {
+                Bool specularOnly = !reflectionProbe->getNeedsFullUpdate();
+                this->renderReflectionProbe(reflectionProbe, specularOnly, objectList, nonIBLLightList);
+                if (specularOnly) reflectionProbe->setNeedsSpecularUpdate(false);
+                else reflectionProbe->setNeedsFullUpdate(false);
             }
         }
 
@@ -178,7 +151,7 @@ namespace Core {
             parentTransform.updateWorldMatrix();
             baseTransformation = parentTransform.getWorldMatrix();
         }
-        this->processScene(rootObject, baseTransformation, objectList);
+        this->processScene(rootObject, objectList, baseTransformation);
         this->render(camera, objectList, overrideMaterial, matchPhysicalPropertiesWithLighting);
     }
 
@@ -228,27 +201,17 @@ namespace Core {
         static std::vector<Matrix4x4> orientations;
         if (!initialized) {
             initialized = true;
-            Vector3r vup(0.0, 1.0, 0.0);
-            Vector3r vbackward(0.0, 0.0, -1.0);
-            Vector3r vfront(0.0, 0.0, 1.0);
-            Vector3r vdown(0.0, -1.0, 0.0);
-            Vector3r origin(0.0, 0.0, 0.0);
-            forward.lookAt(origin, Vector3r(0.0f, 0.0f, 1.0f), vdown);
+            forward.lookAt(Vector3r::Zero, Vector3r::Backward, Vector3r::Down);
+            backward.lookAt(Vector3r::Zero, Vector3r::Forward, Vector3r::Down);
+            up.lookAt(Vector3r::Zero, Vector3r::Up, Vector3r::Backward);
+            down.lookAt(Vector3r::Zero, Vector3r::Down, Vector3r::Forward);
+            left.lookAt(Vector3r::Zero, Vector3r::Left, Vector3r::Down);
+            right.lookAt(Vector3r::Zero, Vector3r::Right, Vector3r::Down);
             orientations.push_back(forward);
-
-            backward.lookAt(origin, Vector3r(0.0f, 0.0f, -1.0f), vdown);
             orientations.push_back(backward);
-
-            up.lookAt(origin, Vector3r(0.0f, 1.0f, 0.0f), Vector3r(0.0, 0.0, 1.0f));
             orientations.push_back(up);
-
-            down.lookAt(origin, Vector3r(0.0f, -1.0f, 0.0f), Vector3r(0.0, 0.0, -1.0f));
             orientations.push_back(down);
-       
-            left.lookAt(origin, Vector3r(-1.0f, 0.0f, 0.0f), vdown);
             orientations.push_back(left);
-
-            right.lookAt(origin, Vector3r(1.0f, 0.0f, 0.0f), vdown);
             orientations.push_back(right);
         }
 
@@ -481,15 +444,16 @@ namespace Core {
         viewDescriptor.clearRenderBuffers = clearBuffers;
     }
 
-    void Renderer::processScene(WeakPointer<Scene> scene, 
-                                std::vector<WeakPointer<Object3D>>& outObjects) {
-        Matrix4x4 rootTransform;
-        processScene(scene->getRoot(), rootTransform, outObjects);
+    void Renderer::processScene(WeakPointer<Scene> scene, std::vector<WeakPointer<Object3D>>& outObjects) {
+        processScene(scene->getRoot(), outObjects);
     }
 
-    void Renderer::processScene(WeakPointer<Object3D> object, 
-                                const Matrix4x4& curTransform, 
-                                std::vector<WeakPointer<Object3D>>& outObjects) {
+    void Renderer::processScene(WeakPointer<Object3D> object, std::vector<WeakPointer<Object3D>>& outObjects) {
+        Matrix4x4 rootTransform;
+        processScene(object, outObjects, rootTransform);
+    }
+
+    void Renderer::processScene(WeakPointer<Object3D> object, std::vector<WeakPointer<Object3D>>& outObjects, const Matrix4x4& curTransform) {
 
         Matrix4x4 nextTransform = curTransform;
         Transform& objTransform = object->getTransform();
@@ -502,8 +466,45 @@ namespace Core {
 
         for (SceneObjectIterator<Object3D> itr = object->beginIterateChildren(); itr != object->endIterateChildren(); ++itr) {
             WeakPointer<Object3D> obj = *itr;
-            this->processScene(obj, nextTransform, outObjects);
+            this->processScene(obj, outObjects, nextTransform);
         }
+    }
+
+    void Renderer::renderReflectionProbe(WeakPointer<ReflectionProbe> reflectionProbe, Bool specularOnly,
+                                         std::vector<WeakPointer<Object3D>>& renderObjects, std::vector<WeakPointer<Light>>& renderLights) {
+        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
+        WeakPointer<Camera> probeCam = reflectionProbe->getRenderCamera();
+        std::vector<WeakPointer<Object3D>> emptyObjectList;
+
+        probeCam->setRenderTarget(reflectionProbe->getSceneRenderTarget());
+        if (reflectionProbe->isSkyboxOnly()) {
+            this->render(probeCam, emptyObjectList, renderLights, WeakPointer<Material>::nullPtr(), false);
+        }
+        else {
+            this->render(probeCam, renderObjects, renderLights, WeakPointer<Material>::nullPtr(), false);
+        }
+        reflectionProbe->getSceneRenderTarget()->getColorTexture()->updateMipMaps();
+
+        if(!specularOnly) {
+            probeCam->setRenderTarget(reflectionProbe->getIrradianceMap());
+            this->renderObjectBasic(reflectionProbe->getSkyboxObject(), probeCam, reflectionProbe->getIrradianceRendererMaterial());
+        }
+        
+        WeakPointer<RenderTargetCube> specularIBLPreFilteredMap = reflectionProbe->getSpecularIBLPreFilteredMap();
+        probeCam->setRenderTarget(specularIBLPreFilteredMap);
+        WeakPointer<SpecularIBLPreFilteredRendererMaterial> specularIBLPreFilteredRendererMaterial = reflectionProbe->getSpecularIBLPreFilteredRendererMaterial();
+        specularIBLPreFilteredRendererMaterial->setTextureResolution(specularIBLPreFilteredMap->getSize().x);
+        for(UInt32 i = 0; i <= specularIBLPreFilteredMap->getMaxMipLevel(); i++) {
+            specularIBLPreFilteredMap->setMipLevel(i);
+            Real roughness = (Real)i / (Real)(specularIBLPreFilteredMap->getMaxMipLevel());
+            specularIBLPreFilteredRendererMaterial->setRoughness(roughness);
+            this->renderObjectBasic(reflectionProbe->getSkyboxObject(), probeCam, specularIBLPreFilteredRendererMaterial);
+        }
+
+        WeakPointer<RenderTarget2D> specularIBLBRDFMap = reflectionProbe->getSpecularIBLBRDFMap();
+        graphics->renderFullScreenQuad(specularIBLBRDFMap, -1, reflectionProbe->getSpecularIBLBRDFRendererMaterial());
+        
+        reflectionProbe->setNeedsFullUpdate(false);
     }
 
     Bool Renderer::isShadowCastingCapableLight(WeakPointer<Light> light) {

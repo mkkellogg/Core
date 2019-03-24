@@ -24,8 +24,10 @@ namespace Core {
     public:
         ReflectionProbe(WeakPointer<Object3D> owner);
         void init();
-        void setNeedsUpdate(Bool needsUpdate);
-        Bool getNeedsUpdate();
+        void setNeedsFullUpdate(Bool needsUpdate);
+        Bool getNeedsFullUpdate();
+        void setNeedsSpecularUpdate(Bool needsUpdate);
+        Bool getNeedsSpecularUpdate();
         void setSkybox(Skybox& skybox);
         void setSkyboxOnly(Bool skyboxOnly);
         Bool isSkyboxOnly();
@@ -40,7 +42,8 @@ namespace Core {
         WeakPointer<SpecularIBLBRDFRendererMaterial> getSpecularIBLBRDFRendererMaterial();
 
     private:
-        Bool needsUpdate;
+        Bool needsFullUpdate;
+        Bool needsSpecularUpdate;
         Bool skyboxOnly;
         PersistentWeakPointer<RenderTargetCube> sceneRenderTarget;
         PersistentWeakPointer<RenderTargetCube> irradianceMap;

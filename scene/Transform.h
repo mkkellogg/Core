@@ -30,6 +30,7 @@ namespace Core {
         void applyTransformationTo(Vector3Base<Real>& vector);
 
         void lookAt(const Point3r& target);
+        void lookAt(const Point3r& target, const Vector3r& up);
 
         void transformBy(const Matrix4x4& mat, TransformationSpace transformationSpace = TransformationSpace::Local);
 

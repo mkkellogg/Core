@@ -548,7 +548,7 @@ namespace Core {
             WeakPointer<Texture> normalTexture;
             //	TextureRef specularTexture;
 
-            UInt32 defaultMipLevel = 6;
+            UInt32 defaultMipLevel = Core::Constants::DefaultMaxMipLevels;
 
             // get diffuse texture (for now support only 1)
             texFound = assimpMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &aiTexturePath);

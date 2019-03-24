@@ -25,6 +25,7 @@ namespace Core {
     class Material;
     class RenderTarget;
     class RenderTarget2D;
+    class ReflectionProbe;
     class Skybox;
 
     class Renderer {
@@ -68,8 +69,10 @@ namespace Core {
         void getViewDescriptorTransformations(const Matrix4x4& worldMatrix, const Matrix4x4& projectionMatrix,
                                IntMask clearBuffers, ViewDescriptor& viewDescriptor);
         void processScene(WeakPointer<Scene> scene, std::vector<WeakPointer<Object3D>>& outObjects);
-        void processScene(WeakPointer<Object3D> object, const Matrix4x4& curTransform,
-                          std::vector<WeakPointer<Object3D>>& outObjects);
+        void processScene(WeakPointer<Object3D> object, std::vector<WeakPointer<Object3D>>& outObjects);
+        void processScene(WeakPointer<Object3D> object, std::vector<WeakPointer<Object3D>>& outObjects, const Matrix4x4& curTransform);
+        void renderReflectionProbe(WeakPointer<ReflectionProbe> reflectionProbe, Bool specularOnly,
+                                   std::vector<WeakPointer<Object3D>>& renderObjects, std::vector<WeakPointer<Light>>& renderLights);
         void buildHDRRenderTarget(const Vector2u& size);
         
         static Bool isShadowCastingCapableLight(WeakPointer<Light> light);

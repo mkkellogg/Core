@@ -59,12 +59,20 @@ namespace Core {
             this->z *= magnitude;
         }
 
-        Real magnitude() const {
+        T magnitude() const {
             return Vector3Base<T, customStorage>::magnitude(this->x, this->y, this->z);
         }
 
-        static Real magnitude(const T& x, const T& y, const T& z) {
-            return (Real)Math::squareRoot(x * x + y * y + z * z);
+        static T magnitude(const T& x, const T& y, const T& z) {
+            return Math::squareRoot(x * x + y * y + z * z);
+        };
+
+        Real squareMagnitude() const {
+            return Vector3Base<T, customStorage>::squareMagnitude(this->x, this->y, this->z);
+        }
+
+        static T squareMagnitude(const T& x, const T& y, const T& z) {
+            return x * x + y * y + z * z;
         };
 
         Bool isZeroLength() const {

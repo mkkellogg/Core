@@ -43,8 +43,12 @@ namespace Core {
         Matrix4x4 rotationMatrix() const;
         void rotationMatrix(Matrix4x4& out) const;
         void fromMatrix(const Matrix4x4& matrix);
-        void fromAngleAxis(const Real rfAngle, const Vector3Components<Real>& rkAxis);
-        void fromAngleAxis(Real angle, Real x, Real y, Real z);
+        void setFromAngleAxis(const Real rfAngle, const Vector3Components<Real>& rkAxis);
+        void setFromAngleAxis(Real angle, Real x, Real y, Real z);
+
+        static Quaternion fromAngleAxis(const Real rfAngle, const Vector3Components<Real>& rkAxis);
+        static Quaternion fromAngleAxis(Real angle, Real x, Real y, Real z);
+
         // void scaledAxis(const Vector3Components<Real>& w);
         Vector3r rotatedVector(const Vector3Components<Real>& v) const;
         void euler(const Vector3Components<Real>& euler);

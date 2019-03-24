@@ -139,14 +139,17 @@ namespace Core {
     }
 
     void Transform::lookAt(const Point3r& target) {
+        this->lookAt(target, Vector3r(0.0f, 1.0f, 0.0f));
+    }
+
+    void Transform::lookAt(const Point3r& target, const Vector3r& up) {
 
         Point3r src;
         this->updateWorldMatrix();
         this->worldMatrix.transform(src);
 
-        Vector3r vUp(0, 1, 0);
         Matrix4x4 temp;
-        temp.lookAt(src, target, vUp);
+        temp.lookAt(src, target, up);
 
         WeakPointer<Object3D> parent = this->target.getParent();
 

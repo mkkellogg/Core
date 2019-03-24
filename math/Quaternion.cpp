@@ -352,7 +352,7 @@ namespace Core {
         }
     }
 
-    void Quaternion::fromAngleAxis(const Real rfAngle, const Vector3Components<Real>& rkAxis) {
+    void Quaternion::setFromAngleAxis(const Real rfAngle, const Vector3Components<Real>& rkAxis) {
         // assert:  axis[] is unit length
         //
         // The quaternion representing the rotation is
@@ -366,7 +366,7 @@ namespace Core {
         mData[2] = fSin * rkAxis.z;
     }
 
-    void Quaternion::fromAngleAxis(Real angle, Real x, Real y, Real z) {
+    void Quaternion::setFromAngleAxis(Real angle, Real x, Real y, Real z) {
         // assert:  axis[] is unit length
         //
         // The quaternion representing the rotation is
@@ -378,6 +378,18 @@ namespace Core {
         mData[0] = fSin * x;
         mData[1] = fSin * y;
         mData[2] = fSin * z;
+    }
+
+    Quaternion Quaternion::fromAngleAxis(const Real rfAngle, const Vector3Components<Real>& rkAxis) {
+        Quaternion r;
+        r.setFromAngleAxis(rfAngle, rkAxis);
+        return r;
+    }
+
+    Quaternion Quaternion::fromAngleAxis(Real angle, Real x, Real y, Real z) {
+        Quaternion r;
+        r.setFromAngleAxis(angle, x, y, z);
+        return r;
     }
 
     /**

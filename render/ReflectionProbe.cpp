@@ -12,7 +12,8 @@
 namespace Core {
 
     ReflectionProbe::ReflectionProbe(WeakPointer<Object3D> owner) : Object3DComponent(owner) {
-        this->needsUpdate = false;
+        this->needsFullUpdate = false;
+        this->needsSpecularUpdate = false;
         this->skyboxOnly = true;
     }
 
@@ -21,8 +22,8 @@ namespace Core {
 
         Core::TextureAttributes colorAttributesScene;
         colorAttributesScene.Format = Core::TextureFormat::RGBA16F;
-        colorAttributesScene.FilterMode = Core::TextureFilter::TriLinear;
-        colorAttributesScene.MipLevels = 5;
+        colorAttributesScene.FilterMode = Core::TextureFilter::Linear;
+        colorAttributesScene.MipLevels = 0;
 
         Core::TextureAttributes colorAttributesIrradiance;
         colorAttributesIrradiance.Format = Core::TextureFormat::RGBA16F;
@@ -73,13 +74,22 @@ namespace Core {
         this->skyboxCube = GeometryUtils::buildMeshContainer(cubeMesh, this->irradianceRendererMaterial, "irradianceCube");
     }
 
-    void ReflectionProbe::setNeedsUpdate(Bool needsUpdate) {
-        this->needsUpdate = needsUpdate;
+    void ReflectionProbe::setNeedsFullUpdate(Bool needsUpdate) {
+        this->needsFullUpdate = needsUpdate;
     }
 
-    Bool ReflectionProbe::getNeedsUpdate() {
-        return this->needsUpdate;
+    Bool ReflectionProbe::getNeedsFullUpdate() {
+        return this->needsFullUpdate;
     }
+
+    void ReflectionProbe::setNeedsSpecularUpdate(Bool needsUpdate) {
+        this->needsSpecularUpdate = needsUpdate;
+    }
+
+    Bool ReflectionProbe::getNeedsSpecularUpdate() {
+        return this->needsSpecularUpdate;
+    }
+
 
     WeakPointer<Camera> ReflectionProbe::getRenderCamera() {
         return this->renderCamera;
