@@ -490,6 +490,23 @@ namespace Core {
             }
         }
 
+        for (UInt32 i = 0; i < positions.size(); i+=12) {
+            Real tx = positions[i + 4];
+            Real ty = positions[i + 5];
+            Real tz = positions[i + 6];
+            Real tw = positions[i + 7];
+
+            positions[i + 4] = positions[i + 8];
+            positions[i + 5] = positions[i + 9];
+            positions[i + 6] = positions[i + 10];
+            positions[i + 7] = positions[i + 11];
+
+            positions[i + 8] = tx;
+            positions[i + 9] = ty;
+            positions[i + 10] = tz;
+            positions[i + 11] = tw;
+        }
+
         for (UInt32 i = 0; i < positions.size(); i+=4) {
             Real x = positions[i];
             Real y = positions[i + 1];
@@ -530,7 +547,9 @@ namespace Core {
         Bool faceNormalInited = sphereMesh->initVertexFaceNormals();
 
         sphereMesh->calculateBoundingBox();
-        sphereMesh->calculateNormals(75.0f);
+        sphereMesh->calculateNormals(85.0f);
+
+        //sphereMesh->getVertexNormals()->store(normals.data());
 
         return sphereMesh;
     }
