@@ -392,15 +392,15 @@ namespace Core {
                     positions.push_back(bottomStartZ);
                     positions.push_back(1.0f); 
 
-                    positions.push_back(0);  
-                    positions.push_back(radius);  
-                    positions.push_back(0);
-                    positions.push_back(1.0f);
-
                     positions.push_back(bottomEndX);  
                     positions.push_back(bottomY);  
                     positions.push_back(bottomEndZ);  
                     positions.push_back(1.0f); 
+
+                    positions.push_back(0);  
+                    positions.push_back(radius);  
+                    positions.push_back(0);
+                    positions.push_back(1.0f);
 
 
                     positions.push_back(bottomStartX);  
@@ -408,14 +408,14 @@ namespace Core {
                     positions.push_back(bottomStartZ); 
                     positions.push_back(1.0f);
 
-                    positions.push_back(bottomEndX);  
-                    positions.push_back(-bottomY);  
-                    positions.push_back(bottomEndZ);   
-                    positions.push_back(1.0f);
-
                     positions.push_back(0);  
                     positions.push_back(-radius);  
                     positions.push_back(0);   
+                    positions.push_back(1.0f);
+
+                    positions.push_back(bottomEndX);  
+                    positions.push_back(-bottomY);  
+                    positions.push_back(bottomEndZ);   
                     positions.push_back(1.0f);
                 }
                 else {
@@ -429,30 +429,30 @@ namespace Core {
                     positions.push_back(bottomStartZ); 
                     positions.push_back(1.0f);
 
-                    positions.push_back(topStartX);  
-                    positions.push_back(topY);  
-                    positions.push_back(topStartZ); 
-                    positions.push_back(1.0f);
-
                     positions.push_back(bottomEndX);  
                     positions.push_back(bottomY);  
                     positions.push_back(bottomEndZ); 
-                    positions.push_back(1.0f);  
+                    positions.push_back(1.0f); 
+
+                    positions.push_back(topStartX);  
+                    positions.push_back(topY);  
+                    positions.push_back(topStartZ); 
+                    positions.push_back(1.0f); 
 
                     positions.push_back(topStartX);  
                     positions.push_back(topY);  
                     positions.push_back(topStartZ);
                     positions.push_back(1.0f);  
 
-                    positions.push_back(topEndX);  
-                    positions.push_back(topY);  
-                    positions.push_back(topEndZ); 
-                    positions.push_back(1.0f);
-
                     positions.push_back(bottomEndX);  
                     positions.push_back(bottomY);  
                     positions.push_back(bottomEndZ);
                     positions.push_back(1.0f);  
+
+                    positions.push_back(topEndX);  
+                    positions.push_back(topY);  
+                    positions.push_back(topEndZ); 
+                    positions.push_back(1.0f);
 
 
 
@@ -460,16 +460,16 @@ namespace Core {
                     positions.push_back(bottomStartX);  
                     positions.push_back(-bottomY);  
                     positions.push_back(bottomStartZ); 
-                    positions.push_back(1.0f);
-
-                    positions.push_back(bottomEndX);  
-                    positions.push_back(-bottomY);  
-                    positions.push_back(bottomEndZ); 
                     positions.push_back(1.0f); 
 
                     positions.push_back(topStartX);  
                     positions.push_back(-topY);  
                     positions.push_back(topStartZ); 
+                    positions.push_back(1.0f);
+
+                    positions.push_back(bottomEndX);  
+                    positions.push_back(-bottomY);  
+                    positions.push_back(bottomEndZ); 
                     positions.push_back(1.0f);
  
                     positions.push_back(topStartX);  
@@ -477,34 +477,17 @@ namespace Core {
                     positions.push_back(topStartZ);  
                     positions.push_back(1.0f);
 
-                    positions.push_back(bottomEndX);  
-                    positions.push_back(-bottomY);  
-                    positions.push_back(bottomEndZ);
-                    positions.push_back(1.0f);
-
                     positions.push_back(topEndX);  
                     positions.push_back(-topY);  
                     positions.push_back(topEndZ); 
-                    positions.push_back(1.0f);   
+                    positions.push_back(1.0f); 
+
+                    positions.push_back(bottomEndX);  
+                    positions.push_back(-bottomY);  
+                    positions.push_back(bottomEndZ);
+                    positions.push_back(1.0f);  
                 }       
             }
-        }
-
-        for (UInt32 i = 0; i < positions.size(); i+=12) {
-            Real tx = positions[i + 4];
-            Real ty = positions[i + 5];
-            Real tz = positions[i + 6];
-            Real tw = positions[i + 7];
-
-            positions[i + 4] = positions[i + 8];
-            positions[i + 5] = positions[i + 9];
-            positions[i + 6] = positions[i + 10];
-            positions[i + 7] = positions[i + 11];
-
-            positions[i + 8] = tx;
-            positions[i + 9] = ty;
-            positions[i + 10] = tz;
-            positions[i + 11] = tw;
         }
 
         for (UInt32 i = 0; i < positions.size(); i+=4) {
@@ -548,8 +531,6 @@ namespace Core {
 
         sphereMesh->calculateBoundingBox();
         sphereMesh->calculateNormals(85.0f);
-
-        //sphereMesh->getVertexNormals()->store(normals.data());
 
         return sphereMesh;
     }
