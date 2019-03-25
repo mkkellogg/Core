@@ -187,6 +187,63 @@ namespace Core {
 
     }
 
+    void Mesh::reverseVertexAttributeWindingOrder() {
+        UInt32 realVertexCount = this->vertexCount;
+        WeakPointer<IndexBuffer> indices;
+        if (this->indexed) {
+            indices = this->getIndexBuffer();
+            realVertexCount = this->indexCount;
+        }
+
+        WeakPointer<AttributeArray<Vector3rs>> vertexNormals = this->vertexNormals;
+        WeakPointer<AttributeArray<Vector3rs>> vertexAveragedNormals = this->vertexAveragedNormals;
+        WeakPointer<AttributeArray<Vector3rs>> vertexFaceNormals = this->vertexFaceNormals;
+        WeakPointer<AttributeArray<Point3rs>> vertexPositions = this->vertexPositions;
+     
+        for (UInt32 i = 0; i < realVertexCount; i+=3) {
+            if (this->indexed) {
+
+            }
+            else {
+                Point3rs& p2 = vertexPositions->getAttribute(i + 1);
+                Point3rs& p3 = vertexPositions->getAttribute(i + 2);
+
+                Point3r temp = p2;
+                p2 = p3;
+                p3 = temp;
+
+                Vector3rs& n2 = vertexNormals->getAttribute(i + 1);
+                Vector3rs& n3 = vertexNormals->getAttribute(i + 2);
+
+                Vector3r tempV = n2;
+                n2 = n3;
+                n3 = tempV;
+
+                Vector3rs& an2 = vertexAveragedNormals->getAttribute(i + 1);
+                Vector3rs& an3 = vertexAveragedNormals->getAttribute(i + 2);
+
+                tempV = an2;
+                an2 = an3;
+                an3 = tempV;
+
+                Vector3rs& fn2 = vertexFaceNormals->getAttribute(i + 1);
+                Vector3rs& fn3 = vertexFaceNormals->getAttribute(i + 2);
+
+                tempV = fn2;
+                fn2 = fn3;
+                fn3 = tempV;
+            }
+
+            vertexPositions->updateGPUStorageData();
+            vertexNormals->updateGPUStorageData();
+            vertexAveragedNormals->updateGPUStorageData();
+            vertexFaceNormals->updateGPUStorageData();
+
+            this->update();
+
+        }
+    }
+
     void Mesh::setCalculateNormals(Bool calculateNormals) {
         this->shoudCalculateNormals = calculateNormals;
     }

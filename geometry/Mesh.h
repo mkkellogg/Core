@@ -67,6 +67,7 @@ namespace Core {
         void calculateTangents(Real smoothingThreshhold);
 
         void update();
+        void reverseVertexAttributeWindingOrder();
 
     protected:
         Mesh(WeakPointer<Graphics> graphics, UInt32 vertexCount, UInt32 indexCount);
