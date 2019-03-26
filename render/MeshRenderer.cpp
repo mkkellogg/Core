@@ -60,17 +60,17 @@ namespace Core {
         // send custom uniforms first so that the renderer can override if necessary.
         material->sendCustomUniformsToShader();
 
-        this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::Position, mesh->getVertexPositions());
-        this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::Normal, mesh->getVertexNormals());
-        this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::AveragedNormal, mesh->getVertexAveragedNormals());
-        this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::FaceNormal, mesh->getVertexFaceNormals());
-        this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::Tangent, mesh->getVertexTangents());
-        this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::Color, mesh->getVertexColors());
-        this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::AlbedoUV, mesh->getVertexAlbedoUVs());
+        this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::Position, StandardAttribute::Position, mesh->getVertexPositions());
+        this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::Normal, StandardAttribute::Normal, mesh->getVertexNormals());
+        this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::AveragedNormal, StandardAttribute::AveragedNormal, mesh->getVertexAveragedNormals());
+        this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::FaceNormal, StandardAttribute::FaceNormal, mesh->getVertexFaceNormals());
+        this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::Tangent, StandardAttribute::Tangent, mesh->getVertexTangents());
+        this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::Color, StandardAttribute::Color, mesh->getVertexColors());
+        this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::AlbedoUV, StandardAttribute::AlbedoUV, mesh->getVertexAlbedoUVs());
         if (mesh->getVertexNormalUVs())
-            this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::NormalUV, mesh->getVertexNormalUVs());
+            this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::NormalUV, StandardAttribute::NormalUV, mesh->getVertexNormalUVs());
         else
-            this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::NormalUV, mesh->getVertexAlbedoUVs());
+            this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::AlbedoUV, StandardAttribute::NormalUV, mesh->getVertexAlbedoUVs());
 
         Int32 cameraPositionLoc = material->getShaderLocation(StandardUniform::CameraPosition);
         Int32 projectionLoc = material->getShaderLocation(StandardUniform::ProjectionMatrix);
@@ -328,10 +328,10 @@ namespace Core {
         return this->material;
     }
 
-    void MeshRenderer::checkAndSetShaderAttribute(WeakPointer<Mesh> mesh, WeakPointer<Material> material, StandardAttribute attribute,
-                                                  WeakPointer<AttributeArrayBase> array) {
-        if (mesh->isAttributeEnabled(attribute)) {
-            Int32 shaderLocation = material->getShaderLocation(attribute);
+    void MeshRenderer::checkAndSetShaderAttribute(WeakPointer<Mesh> mesh, WeakPointer<Material> material, StandardAttribute checkAttribute,
+                                                  StandardAttribute setAttribute, WeakPointer<AttributeArrayBase> array) {
+        if (mesh->isAttributeEnabled(checkAttribute)) {
+            Int32 shaderLocation = material->getShaderLocation(setAttribute);
             if (array->getGPUStorage()) {
                 array->getGPUStorage()->sendToShader(shaderLocation);
             }

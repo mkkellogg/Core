@@ -546,7 +546,7 @@ namespace Core {
 
             WeakPointer<Texture> diffuseTexture;
             WeakPointer<Texture> normalTexture;
-            //	TextureRef specularTexture;
+            WeakPointer<Texture> roughnessGlossTexture;
 
             UInt32 defaultMipLevel = Core::Constants::DefaultMaxMipLevels;
 
@@ -559,6 +559,11 @@ namespace Core {
             texFound = assimpMaterial->GetTexture(aiTextureType_NORMALS, 0, &aiTexturePath);
             if (texFound == AI_SUCCESS) {
                 normalTexture = this->loadAITexture(*assimpMaterial, aiTextureType_NORMALS, fixedModelPath, TextureFilter::TriLinear, defaultMipLevel);
+            }
+
+            texFound = assimpMaterial->GetTexture(aiTextureType_SHININESS, 0, &aiTexturePath);
+            if (texFound == AI_SUCCESS) {
+                roughnessGlossTexture = this->loadAITexture(*assimpMaterial, aiTextureType_SHININESS, fixedModelPath, TextureFilter::TriLinear, defaultMipLevel);
             }
 
             MaterialLibrary& materialLibrary = Engine::instance()->getMaterialLibrary();
@@ -589,11 +594,12 @@ namespace Core {
                     materialImportDescriptor.meshSpecificProperties[i].material = matchingMaterial;
 
                     // if there is a diffuse texture, set it up in the new material
-                    if (diffuseTexture.isValid() || normalTexture.isValid()) {
+                    if (diffuseTexture.isValid() || normalTexture.isValid() || roughnessGlossTexture.isValid()) {
                         // Add [diffuseTexture] to the new material (and for the appropriate shader variable), and store
                         // Assimp UV channel for it in [materialImportDescriptor] for later processing of the mesh
                         Bool setupSuccess =
-                            this->setupMeshSpecificMaterialWithTextures(*assimpMaterial, diffuseTexture, normalTexture, i, materialImportDescriptor);
+                            this->setupMeshSpecificMaterialWithTextures(*assimpMaterial, diffuseTexture, normalTexture,
+                                                                        roughnessGlossTexture, i, materialImportDescriptor);
 
                         if (!setupSuccess) {
                             throw ModelLoaderException("ModelLoader::ProcessMaterials -> Could not set up diffuse texture.");
@@ -772,8 +778,8 @@ namespace Core {
      * [materialImportDesc].
      */
     Bool ModelLoader::setupMeshSpecificMaterialWithTextures(const aiMaterial& assimpMaterial, WeakPointer<Texture> diffuseTexture,
-                                                           WeakPointer<Texture> normalsTexture,  UInt32 meshIndex,
-                                                           MaterialImportDescriptor& materialImportDesc) const {
+                                                           WeakPointer<Texture> normalsTexture,  WeakPointer<Texture> roughnessGlossTexture,
+                                                           UInt32 meshIndex, MaterialImportDescriptor& materialImportDesc) const {
        
         Int32 mappedIndex;
 
@@ -794,12 +800,17 @@ namespace Core {
                 materialImportDesc.meshSpecificProperties[meshIndex].uvMapping[TextureType::Normals] = 0;
         }
 
-        this->setTexturesOnMaterial(materialImportDesc.meshSpecificProperties[meshIndex].material, diffuseTexture, normalsTexture);
+        if (roughnessGlossTexture) {
+            materialImportDesc.meshSpecificProperties[meshIndex].uvMapping[TextureType::RoughnessGloss] = 0;
+        }
+
+        this->setTexturesOnMaterial(materialImportDesc.meshSpecificProperties[meshIndex].material, diffuseTexture, normalsTexture, roughnessGlossTexture);
 
         return true;
     }
 
-    void ModelLoader::setTexturesOnMaterial(WeakPointer<Material> material, WeakPointer<Texture> albedoMap, WeakPointer<Texture> normalMap) const {
+    void ModelLoader::setTexturesOnMaterial(WeakPointer<Material> material, WeakPointer<Texture> albedoMap, WeakPointer<Texture> normalMap,
+                                            WeakPointer<Texture> roughnessGlossMap) const {
         WeakPointer<BasicTexturedLitMaterial> texturedLitMaterial = WeakPointer<Material>::dynamicPointerCast<BasicTexturedLitMaterial>(material);
         WeakPointer<StandardPhysicalMaterial> physicalMaterial = WeakPointer<Material>::dynamicPointerCast<StandardPhysicalMaterial>(material);
   
@@ -824,6 +835,10 @@ namespace Core {
                 physicalMaterial->setNormalMap(normalMap);
                 physicalMaterial->setNormalMapEnabled(true);
             }
+            if (roughnessGlossMap) {
+                physicalMaterial->setRoughnessMap(roughnessGlossMap);
+                physicalMaterial->setRoughnessMapEnabled(true);
+            }
             return;
         }
     }
@@ -831,7 +846,9 @@ namespace Core {
     ModelLoader::TextureType ModelLoader::convertAITextureKeyToTextureType(Int32 aiTextureKey) {
         TextureType textureType = TextureType::_None;
         if (aiTextureKey == aiTextureType_SPECULAR)
-            textureType = TextureType::Specular;
+            textureType = TextureType::SpecularMetallic;
+        else if (aiTextureKey == aiTextureType_SHININESS)
+            textureType = TextureType::RoughnessGloss;
         else if (aiTextureKey == aiTextureType_NORMALS)
             textureType = TextureType::Normals;
         else if (aiTextureKey == aiTextureType_DIFFUSE)
@@ -857,8 +874,10 @@ namespace Core {
 
     int ModelLoader::convertTextureTypeToAITextureKey(TextureType textureType) {
         Int32 aiTextureKey = -1;
-        if (textureType == TextureType::Specular)
+        if (textureType == TextureType::SpecularMetallic)
             aiTextureKey = aiTextureType_SPECULAR;
+        else  if (textureType == TextureType::RoughnessGloss)
+            aiTextureKey = aiTextureType_SHININESS;
         else if (textureType == TextureType::Normals)
             aiTextureKey = aiTextureType_NORMALS;
         else if (textureType == TextureType::Albedo)

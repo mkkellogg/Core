@@ -46,8 +46,9 @@ namespace Core {
     private:
 
 #ifdef CORE_USE_PRIVATE_INCLUDES
-        void setTexturesOnMaterial(WeakPointer<Material> material, WeakPointer<Texture> albedoMap, WeakPointer<Texture> normalMap) const;
-        enum class TextureType { Albedo = 0, Specular = 1, Normals = 2, _None = 3 };
+        void setTexturesOnMaterial(WeakPointer<Material> material, WeakPointer<Texture> albedoMap, WeakPointer<Texture> normalMap,
+                                  WeakPointer<Texture> roughnessGlossMap) const;
+        enum class TextureType { Albedo = 0, SpecularMetallic = 1, RoughnessGloss = 2, Normals = 3, _None = 4 };
 
         enum class SceneTraverseOrder { PreOrder = 0 };
 
@@ -91,8 +92,8 @@ namespace Core {
         WeakPointer<Texture> loadAITexture(aiMaterial& assimpMaterial, aiTextureType textureType, const std::string& modelPath, TextureFilter filter, UInt32 mipLevel) const;
         void getImportDetails(const aiMaterial* mtl, MaterialImportDescriptor& materialImportDesc, const aiScene& scene, Bool preferPhysicalMaterial) const;
         Bool setupMeshSpecificMaterialWithTextures(const aiMaterial& assimpMaterial, WeakPointer<Texture> diffuseTexture,
-                                                  WeakPointer<Texture> normalsTexture, UInt32 meshIndex,
-                                                  MaterialImportDescriptor& materialImportDesc) const;
+                                                  WeakPointer<Texture> normalsTexture, WeakPointer<Texture> roughnessGlossTexture,
+                                                  UInt32 meshIndex, MaterialImportDescriptor& materialImportDesc) const;
         WeakPointer<Object3D> recursiveProcessModelScene(const aiScene& scene, const aiNode& node, std::vector<MaterialImportDescriptor>& materialImportDescriptors,
                                                          std::vector<WeakPointer<Object3D>>& createdSceneObjects, 
                                                          UInt32 smoothingThreshold, Bool castShadows, Bool receiveShadows) const;

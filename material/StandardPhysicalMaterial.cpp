@@ -175,7 +175,14 @@ namespace Core {
             textureLoc++;
         }
         this->shader->setUniform1f(this->metallicLocation, this->metallic);
-        this->shader->setUniform1f(this->roughnessLocation, this->roughness);
+        if (this->roughnessMapEnabled) {
+            this->shader->setTexture2D(textureLoc, this->roughnessMap->getTextureID());
+            this->shader->setUniform1i(this->roughnessLocation, textureLoc);
+            textureLoc++;
+        }
+        else {
+            this->shader->setUniform1f(this->roughnessLocation, this->roughness);
+        }
         this->shader->setUniform1f(this->ambientOcclusionLocation, this->ambientOcclusion);
         this->shader->setUniform1i(this->enabledMapLocation, this->getEnabledMapMask());
     }
@@ -184,6 +191,8 @@ namespace Core {
         WeakPointer<StandardPhysicalMaterial> targetMaterial = WeakPointer<Material>::dynamicPointerCast<StandardPhysicalMaterial>(target);
         ShaderMaterial::copyTo(targetMaterial);
         targetMaterial->albedoMap = this->albedoMap;
+        targetMaterial->normalMap = this->normalMap;
+        targetMaterial->roughnessMap = this->roughnessMap;
         targetMaterial->albedoMapEnabled = this->albedoMapEnabled;
         targetMaterial->normalMapEnabled = this->normalMapEnabled;
         targetMaterial->roughnessMapEnabled = this->roughnessMapEnabled;
@@ -201,6 +210,7 @@ namespace Core {
         targetMaterial->albedoLocation = this->albedoLocation;
         targetMaterial->albedoMapLocation = this->albedoMapLocation;
         targetMaterial->normalMapLocation = this->normalMapLocation;
+        targetMaterial->roughnessMapLocation = this->roughnessMapLocation;
         targetMaterial->lightPositionLocation = this->lightPositionLocation;
         targetMaterial->lightDirectionLocation = this->lightDirectionLocation;
         targetMaterial->lightRangeLocation = this->lightRangeLocation;
@@ -253,6 +263,7 @@ namespace Core {
         this->albedoLocation = this->shader->getUniformLocation("albedo");
         this->albedoMapLocation = this->shader->getUniformLocation("albedoMap");
         this->normalMapLocation = this->shader->getUniformLocation("normalMap");
+        this->roughnessMapLocation = this->shader->getUniformLocation("roughnessMap");
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
         this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);

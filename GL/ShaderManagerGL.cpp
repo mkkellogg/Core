@@ -923,6 +923,7 @@ namespace Core {
             "uniform vec4 albedo; \n"
             "uniform sampler2D albedoMap; \n"
             "uniform sampler2D normalMap; \n"
+            "uniform sampler2D roughnessMap; \n"
             "uniform float metallic; \n"
             "uniform float roughness; \n"
             "uniform float ambientOcclusion; \n"
@@ -950,7 +951,13 @@ namespace Core {
             "   } else { \n"
             "       _normal = normalize(vNormal); \n"
             "   } \n"
-            "   out_color = litColorPhysical(0, _albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", metallic, roughness, ambientOcclusion);\n"
+            "   float _roughness; \n"
+            "   if (roughnessMapEnabled != 0) { \n"
+            "      _roughness = texture(roughnessMap, vAlbedoUV).r; \n"
+            "   } else { \n"
+            "       _roughness = roughness; \n"
+            "   } \n"
+            "   out_color = litColorPhysical(0, _albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", metallic, _roughness, ambientOcclusion);\n"
             "}\n";
 
         this->AmbientPhysical_vertex =  

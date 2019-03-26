@@ -64,6 +64,7 @@ namespace Core {
         Int32 albedoLocation;
         Int32 albedoMapLocation;
         Int32 normalMapLocation;
+        Int32 roughnessMapLocation;
         Int32 projectionMatrixLocation;
         Int32 viewMatrixLocation;
         Int32 modelMatrixLocation;
