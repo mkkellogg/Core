@@ -26,9 +26,11 @@ namespace Core {
         void setAlbedoMap(WeakPointer<Texture> albedoMap);
         void setNormalMap(WeakPointer<Texture> normalMap);
         void setRoughnessMap(WeakPointer<Texture> roughnessMap);
+        void setMetallicMap(WeakPointer<Texture> roughnessMap);
         void setAlbedoMapEnabled(Bool enabled);
         void setNormalMapEnabled(Bool enabled);
         void setRoughnessMapEnabled(Bool enabled);
+        void setMetallicMapEnabled(Bool enabled);
         virtual UInt32 textureCount() override;
         virtual void copyTo(WeakPointer<Material> targetMaterial) override;
         virtual void bindShaderVarLocations() override;
@@ -37,6 +39,7 @@ namespace Core {
         const UInt32 ALBEDO_MAP_MASK = 0x1;
         const UInt32 NORMAL_MAP_MASK = 0x1 << 1;
         const UInt32 ROUGHNESS_MAP_MASK = 0x1 << 2;
+        const UInt32 METALLIC_MAP_MASK = 0x1 << 3;
 
         StandardPhysicalMaterial(const std::string& vertexShader, const std::string& fragmentShader, WeakPointer<Graphics> graphics);
         StandardPhysicalMaterial(WeakPointer<Graphics> graphics);
@@ -49,10 +52,12 @@ namespace Core {
         PersistentWeakPointer<Texture> albedoMap;
         PersistentWeakPointer<Texture> normalMap;
         PersistentWeakPointer<Texture> roughnessMap;
+        PersistentWeakPointer<Texture> metallicMap;
 
         Bool albedoMapEnabled;
         Bool normalMapEnabled;
         Bool roughnessMapEnabled;
+        Bool metallicMapEnabled;
 
         Int32 positionLocation;
         Int32 normalLocation;
@@ -65,6 +70,7 @@ namespace Core {
         Int32 albedoMapLocation;
         Int32 normalMapLocation;
         Int32 roughnessMapLocation;
+        Int32 metallicMapLocation;
         Int32 projectionMatrixLocation;
         Int32 viewMatrixLocation;
         Int32 modelMatrixLocation;

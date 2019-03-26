@@ -18,6 +18,7 @@ namespace Core {
         this->albedoMapEnabled = false;
         this->normalMapEnabled = false;
         this->roughnessMapEnabled = false;
+        this->metallicMapEnabled = false;
     }
 
     StandardPhysicalMaterial::StandardPhysicalMaterial(WeakPointer<Graphics> graphics): StandardPhysicalMaterial("StandardPhysical", "StandardPhysical", graphics) {
@@ -147,6 +148,10 @@ namespace Core {
         this->roughnessMap = roughnessMap;
     }
 
+    void StandardPhysicalMaterial::setMetallicMap(WeakPointer<Texture> metallicMap) {
+        this->metallicMap = metallicMap;
+    }
+
     void StandardPhysicalMaterial::setAlbedoMapEnabled(Bool enabled) {
         this->albedoMapEnabled = enabled;
     }
@@ -159,6 +164,10 @@ namespace Core {
         this->roughnessMapEnabled = enabled;
     }
 
+    void StandardPhysicalMaterial::setMetallicMapEnabled(Bool enabled) {
+        this->metallicMapEnabled = enabled;
+    }
+
     void StandardPhysicalMaterial::sendCustomUniformsToShader() {
         UInt32 textureLoc = 0;
         if (this->albedoMapEnabled) {
@@ -169,20 +178,31 @@ namespace Core {
         else {
             this->shader->setUniform4f(this->albedoLocation, this->albedo.r, this->albedo.g, this->albedo.b, this->albedo.a);
         }
+
         if (this->normalMapEnabled) {
             this->shader->setTexture2D(textureLoc, this->normalMap->getTextureID());
             this->shader->setUniform1i(this->normalMapLocation, textureLoc);
             textureLoc++;
         }
-        this->shader->setUniform1f(this->metallicLocation, this->metallic);
+
+        if (this->metallicMapEnabled) {
+            this->shader->setTexture2D(textureLoc, this->metallicMap->getTextureID());
+            this->shader->setUniform1i(this->metallicMapLocation, textureLoc);
+            textureLoc++;
+        }
+        else {
+            this->shader->setUniform1f(this->metallicLocation, this->metallic);
+        }
+
         if (this->roughnessMapEnabled) {
             this->shader->setTexture2D(textureLoc, this->roughnessMap->getTextureID());
-            this->shader->setUniform1i(this->roughnessLocation, textureLoc);
+            this->shader->setUniform1i(this->roughnessMapLocation, textureLoc);
             textureLoc++;
         }
         else {
             this->shader->setUniform1f(this->roughnessLocation, this->roughness);
         }
+        
         this->shader->setUniform1f(this->ambientOcclusionLocation, this->ambientOcclusion);
         this->shader->setUniform1i(this->enabledMapLocation, this->getEnabledMapMask());
     }
@@ -193,9 +213,11 @@ namespace Core {
         targetMaterial->albedoMap = this->albedoMap;
         targetMaterial->normalMap = this->normalMap;
         targetMaterial->roughnessMap = this->roughnessMap;
+        targetMaterial->metallicMap = this->metallicMap;
         targetMaterial->albedoMapEnabled = this->albedoMapEnabled;
         targetMaterial->normalMapEnabled = this->normalMapEnabled;
         targetMaterial->roughnessMapEnabled = this->roughnessMapEnabled;
+        targetMaterial->metallicMapEnabled = this->metallicMapEnabled;
         targetMaterial->positionLocation = this->positionLocation;
         targetMaterial->normalLocation = this->normalLocation;
         targetMaterial->faceNormalLocation = this->faceNormalLocation;
@@ -211,6 +233,7 @@ namespace Core {
         targetMaterial->albedoMapLocation = this->albedoMapLocation;
         targetMaterial->normalMapLocation = this->normalMapLocation;
         targetMaterial->roughnessMapLocation = this->roughnessMapLocation;
+        targetMaterial->metallicMapLocation = this->metallicMapLocation;
         targetMaterial->lightPositionLocation = this->lightPositionLocation;
         targetMaterial->lightDirectionLocation = this->lightDirectionLocation;
         targetMaterial->lightRangeLocation = this->lightRangeLocation;
@@ -264,6 +287,7 @@ namespace Core {
         this->albedoMapLocation = this->shader->getUniformLocation("albedoMap");
         this->normalMapLocation = this->shader->getUniformLocation("normalMap");
         this->roughnessMapLocation = this->shader->getUniformLocation("roughnessMap");
+        this->metallicMapLocation = this->shader->getUniformLocation("metallicMap");
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
         this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);
@@ -307,6 +331,8 @@ namespace Core {
         UInt32 textureCount = 0;
         if (this->albedoMapEnabled) textureCount++;
         if (this->normalMapEnabled) textureCount++;
+        if (this->metallicMapEnabled) textureCount++;
+        if (this->roughnessMapEnabled) textureCount++;
        return textureCount;
     }
 
@@ -315,6 +341,7 @@ namespace Core {
         if (this->albedoMapEnabled) mask = mask | ALBEDO_MAP_MASK;
         if (this->normalMapEnabled) mask = mask | NORMAL_MAP_MASK;
         if (this->roughnessMapEnabled) mask = mask | ROUGHNESS_MAP_MASK;
+        if (this->metallicMapEnabled) mask = mask | METALLIC_MAP_MASK;
         return mask;
     }
 }
