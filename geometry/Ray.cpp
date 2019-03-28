@@ -57,7 +57,7 @@ namespace Core {
             Real extremes[] = {0.0f, 0.0f, 0.0f};
             Bool potentialIntersect = false;
             
-            Vector3r extremeVec = _direction[i] < 0 ? max : min;
+            Vector3r extremeVec = _direction[i] < 0 ? box.getMax() : box.getMin();
             Real multiplier = -Math::sign(_direction[i]);
             extremes[0] = i == 0 ? extremeVec.x : i == 1 ? extremeVec.y : extremeVec.z;
             Real toExtreme = extremes[0] - _origin[i];
@@ -65,17 +65,11 @@ namespace Core {
                 extremes[2] = _direction[(i + 1) % 3] / _direction[i] * toExtreme + _origin[(i + 1) % 3];
                 extremes[1] = _direction[(i + 2) % 3] / _direction[i] * toExtreme + _origin[(i + 2) % 3];
                 potentialIntersect = true;
-                hitNormal = hitNormal * multiplier;
-            }
 
-            if (potentialIntersect) {
-                Point3r exteme(extremes[i], extremes[(i + 2) % 3], extremes[(i + 1) % 3]);
-                Real epsilon = 0.0001f;
-                if (exteme.x >= min.x - epsilon && exteme.x <= max.x + epsilon &&
-                    exteme.y >= min.y - epsilon && exteme.y <= max.y + epsilon &&
-                    exteme.z >= min.z - epsilon && exteme.z <= max.z + epsilon) {
-                       hit.Origin = exteme;
-                       hit.Normal = hitNormal;
+                Point3r extreme(extremes[i], extremes[(i + 2) % 3], extremes[(i + 1) % 3]);
+                if (box.containsPoint(extreme, 0.0001f)) {
+                       hit.Origin = extreme;
+                       hit.Normal = hitNormal  * multiplier;
                        return true ;
                     }
             }

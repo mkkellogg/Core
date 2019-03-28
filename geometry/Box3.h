@@ -21,6 +21,7 @@ namespace Core {
         const Vector3r& getMin() const;
         const Vector3r& getMax() const;
 
+        Bool containsPoint(const Point3r& point, Real epsilon = 0.0f) const;
         Bool containsBox(const Box3& box) const;
 
     private:

@@ -46,6 +46,12 @@ namespace Core {
         return this->max;
     }
 
+    Bool Box3::containsPoint(const Point3r& point, Real epsilon) const {
+        return point.x >= min.x - epsilon && point.x <= max.x + epsilon &&
+               point.y >= min.y - epsilon && point.y <= max.y + epsilon &&
+               point.z >= min.z - epsilon && point.z <= max.z + epsilon;
+    }
+
     Bool Box3::containsBox(const Box3& box) const {
         return box.min.x >= this->min.x && box.min.y >= this->min.y && box.min.z >= this->min.z && box.max.x <= this->max.x && box.max.y <= this->max.y &&
                box.max.z <= this->max.z;
