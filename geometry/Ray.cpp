@@ -21,17 +21,9 @@ namespace Core {
         Hit hit;
         for (UInt32 i = 0; i < tCount; i+=3) {
             Bool wasHit = false;
-            Point3r a, b, c;
-            if (mesh->isIndexed()) {
-                a = *(vertices + indices->getIndex(i));
-                b = *(vertices + indices->getIndex(i + 1));
-                c = *(vertices + indices->getIndex(i + 2));
-            }
-            else {
-                a = *(vertices + i);
-                b = *(vertices + i + 1);
-                c = *(vertices + i + 2);
-            }
+            Point3r a = mesh->isIndexed() ? *(vertices + indices->getIndex(i)) : *(vertices + i);
+            Point3r b = mesh->isIndexed() ? *(vertices + indices->getIndex(i + 1)) : *(vertices + i + 1);
+            Point3r c = mesh->isIndexed() ? *(vertices + indices->getIndex(i + 2)) : *(vertices + i + 2);
             wasHit = this->intersectTriangle(a, b, c, hit);
             if (wasHit) {
                 hit.Object = mesh;
