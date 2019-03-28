@@ -24,8 +24,8 @@ namespace Core {
             Point3r a, b, c;
             if (mesh->isIndexed()) {
                 a = *(vertices + indices->getIndex(i));
-                b = *(vertices + indices->getIndex(i));
-                c = *(vertices + indices->getIndex(i));
+                b = *(vertices + indices->getIndex(i + 1));
+                c = *(vertices + indices->getIndex(i + 2));
             }
             else {
                 a = *(vertices + i);
