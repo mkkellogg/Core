@@ -45,17 +45,14 @@ namespace Core {
             Vector3r hitNormal = i == 0 ? Vector3r(1.0, 0.0, 0.0) : i == 1 ? Vector3r(0.0, 1.0, 0.0) : Vector3r(0.0, 0.0, 1.0);
 
             Real extremes[] = {0.0f, 0.0f, 0.0f};
-            Bool potentialIntersect = false;
-            
             Vector3r extremeVec = _direction[i] < 0 ? box.getMax() : box.getMin();
             Real multiplier = -Math::sign(_direction[i]);
             extremes[0] = i == 0 ? extremeVec.x : i == 1 ? extremeVec.y : extremeVec.z;
             Real toExtreme = extremes[0] - _origin[i];
+            
             if (toExtreme * multiplier < 0) {
                 extremes[2] = _direction[(i + 1) % 3] / _direction[i] * toExtreme + _origin[(i + 1) % 3];
                 extremes[1] = _direction[(i + 2) % 3] / _direction[i] * toExtreme + _origin[(i + 2) % 3];
-                potentialIntersect = true;
-
                 Point3r extreme(extremes[i], extremes[(i + 2) % 3], extremes[(i + 1) % 3]);
                 if (box.containsPoint(extreme, 0.0001f)) {
                        hit.Origin = extreme;
