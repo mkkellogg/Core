@@ -36,8 +36,6 @@ namespace Core {
 
     Bool Ray::intersectBox(const Box3& box, Hit& hit) const {
 
-        const Vector3r& max = box.getMax();
-        const Vector3r& min = box.getMin();
         Real _origin[] = {this->Origin.x, this->Origin.y, this->Origin.z};
         Real _direction[] = {this->Direction.x, this->Direction.y, this->Direction.z};
 
