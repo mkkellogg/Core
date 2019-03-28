@@ -136,4 +136,8 @@ namespace Core {
     Real Math::random() {
         return (Real)rand() / (Real)RAND_MAX;
     }
+
+    Real Math::sign(Real a) {
+        return a < 0.0f ? -1.0f : 1.0f;
+    }
 }

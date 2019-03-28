@@ -31,5 +31,6 @@ namespace Core {
     static UInt32 max(UInt32 a, UInt32 b);
     static Real lerp(Real a, Real b, Real t);
     static Real random();
+    static Real sign(Real a);
   };
 }

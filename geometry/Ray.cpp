@@ -29,8 +29,8 @@ namespace Core {
             }
             else {
                 a = *(vertices + i);
-                b = *(vertices + (i + 1));
-                c = *(vertices + (i + 2));
+                b = *(vertices + i + 1);
+                c = *(vertices + i + 2);
             }
             wasHit = this->intersectTriangle(a, b, c, hit);
             if (wasHit) {
@@ -46,47 +46,35 @@ namespace Core {
 
         const Vector3r& max = box.getMax();
         const Vector3r& min = box.getMin();
+        Real _origin[] = {this->Origin.x, this->Origin.y, this->Origin.z};
+        Real _direction[] = {this->Direction.x, this->Direction.y, this->Direction.z};
 
         for (UInt32 i = 0; i < 3; i++) {
-            Real origin = i == 0 ? this->Origin.x : i == 1 ? this->Origin.y : this->Origin.z;
-            Real originA = i == 0 ? this->Origin.y : i == 1 ? this->Origin.z : this->Origin.x;
-            Real originB = i == 0 ? this->Origin.z : i == 1 ? this->Origin.x : this->Origin.y;
-            Real dir = i == 0 ? this->Direction.x : i == 1 ? this->Direction.y : this->Direction.z;
-            Real dirA = i == 0 ? this->Direction.y : i == 1 ? this->Direction.z : this->Direction.x;
-            Real dirB = i == 0 ? this->Direction.z : i == 1 ? this->Direction.x : this->Direction.y;
+            if (_direction[i] == 0.0f) continue;
+
             Vector3r hitNormal = i == 0 ? Vector3r(1.0, 0.0, 0.0) : i == 1 ? Vector3r(0.0, 1.0, 0.0) : Vector3r(0.0, 0.0, 1.0);
 
-            Real extreme = 0.0f, aAtExtreme = 0.0f, bAtExtreme = 0.0f;
+            Real extremes[] = {0.0f, 0.0f, 0.0f};
             Bool potentialIntersect = false;
-            if (dir > 0) {
-                extreme = i == 0 ? min.x : i == 1 ? min.y : min.z;
-                Real toMin = extreme - origin;
-                if (toMin > 0) {
-                    aAtExtreme = dirA / dir * toMin + originA;
-                    bAtExtreme = dirB / dir * toMin + originB;
-                    potentialIntersect = true;
-                    hitNormal = hitNormal * -1.0f;
-                }
-            }
-            else if(dir < 0) {
-                extreme = i == 0 ? max.x : i == 1 ? max.y : max.z;
-                Real toMax = extreme - origin;
-                if (toMax < 0) {
-                    aAtExtreme = dirA / dir * toMax + originA;
-                    bAtExtreme = dirB / dir * toMax + originB;
-                    potentialIntersect = true;
-                }
+            
+            Vector3r extremeVec = _direction[i] < 0 ? max : min;
+            Real multiplier = -Math::sign(_direction[i]);
+            extremes[0] = i == 0 ? extremeVec.x : i == 1 ? extremeVec.y : extremeVec.z;
+            Real toExtreme = extremes[0] - _origin[i];
+            if (toExtreme * multiplier < 0) {
+                extremes[2] = _direction[(i + 1) % 3] / _direction[i] * toExtreme + _origin[(i + 1) % 3];
+                extremes[1] = _direction[(i + 2) % 3] / _direction[i] * toExtreme + _origin[(i + 2) % 3];
+                potentialIntersect = true;
+                hitNormal = hitNormal * multiplier;
             }
 
             if (potentialIntersect) {
-                Real x = i == 0 ? extreme : i == 1 ? bAtExtreme : aAtExtreme;
-                Real y = i == 0 ? aAtExtreme : i == 1 ? extreme : bAtExtreme;
-                Real z = i == 0 ? bAtExtreme : i == 1 ? aAtExtreme : extreme;
+                Point3r exteme(extremes[i], extremes[(i + 2) % 3], extremes[(i + 1) % 3]);
                 Real epsilon = 0.0001f;
-                if (x >= min.x - epsilon && x <= max.x + epsilon &&
-                    y >= min.y - epsilon && y <= max.y + epsilon &&
-                    z >= min.z - epsilon && z <= max.z + epsilon) {
-                       hit.Origin.set(x, y, z); 
+                if (exteme.x >= min.x - epsilon && exteme.x <= max.x + epsilon &&
+                    exteme.y >= min.y - epsilon && exteme.y <= max.y + epsilon &&
+                    exteme.z >= min.z - epsilon && exteme.z <= max.z + epsilon) {
+                       hit.Origin = exteme;
                        hit.Normal = hitNormal;
                        return true ;
                     }
@@ -96,11 +84,6 @@ namespace Core {
         return false;
     }
 
-    Bool Ray::intersectTriangle(const Point3r* p0, const Point3r* p1,
-                                const Point3r* p2, Hit& hit, const Vector3r* normal) const {
-        this->intersectTriangle(*p0, *p1, *p2, hit, normal); 
-    }
-
     Bool Ray::intersectTriangle(const Point3r& p0, const Point3r& p1,
                                 const Point3r& p2, Hit& hit, const Vector3r* normal) const {
         Vector3r q1 = p2 - p0;
@@ -108,7 +91,7 @@ namespace Core {
         Vector3r _normal;
 
         if (normal != nullptr) {
-            _normal.set(normal->x, normal->y, normal->z);
+            _normal = *normal;
         }
         else {
             Vector3r::cross(q1, q2, _normal);
@@ -148,7 +131,7 @@ namespace Core {
         return true;
     }
 
-    Bool Ray::intersectPlane(Vector4Components<Real>& plane, Hit& hit) const {
+    Bool Ray::intersectPlane(Vector4r& plane, Hit& hit) const {
         Vector4r rayOrigin(this->Origin.x, this->Origin.y, this->Origin.z, 1.0f);
         Vector4r rayDir(this->Direction.x, this->Direction.y, this->Direction.z, 0.0f);
         Real planeRayDot = Vector4r::dot(plane, rayDir);
