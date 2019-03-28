@@ -77,7 +77,6 @@ namespace Core {
         this->processScene(rootObject, objectList);
 
         for (WeakPointer<Object3D> object : objectList) {
-            WeakPointer<ReflectionProbe> objectReflectionProbe;
             for (SceneObjectIterator<Object3DComponent> compItr = object->beginIterateComponents(); compItr != object->endIterateComponents(); ++compItr) {
                 WeakPointer<Object3DComponent> comp = (*compItr);
                 WeakPointer<Camera> camera = WeakPointer<Object3DComponent>::dynamicPointerCast<Camera>(comp);
@@ -88,7 +87,6 @@ namespace Core {
                 WeakPointer<ReflectionProbe> reflectionProbe = WeakPointer<Object3DComponent>::dynamicPointerCast<ReflectionProbe>(comp);
                 if (reflectionProbe.isValid() && reflectionProbe->isActive()) {
                     reflectionProbeList.push_back(reflectionProbe);
-                    objectReflectionProbe = reflectionProbe;
                     continue;
                 }
             }
@@ -97,16 +95,16 @@ namespace Core {
                 WeakPointer<Light> light = WeakPointer<Object3DComponent>::dynamicPointerCast<Light>(comp);
                 if (light.isValid() && light->isActive()) {
                     if (light->getType() == LightType::AmbientIBL) {
-                        if (objectReflectionProbe) {
+                        if (reflectionProbeList.size() > 0) {
                             WeakPointer<AmbientIBLLight> ambientIBLlight = WeakPointer<Object3DComponent>::dynamicPointerCast<AmbientIBLLight>(comp);
                             
-                            WeakPointer<CubeTexture> irradianceMap = WeakPointer<Texture>::dynamicPointerCast<CubeTexture>(objectReflectionProbe->getIrradianceMap()->getColorTexture());
+                            WeakPointer<CubeTexture> irradianceMap = WeakPointer<Texture>::dynamicPointerCast<CubeTexture>(reflectionProbeList[0]->getIrradianceMap()->getColorTexture());
                             ambientIBLlight->setIrradianceMap(irradianceMap);
                             
-                            WeakPointer<CubeTexture> specularIBLPreFilteredMap = WeakPointer<Texture>::dynamicPointerCast<CubeTexture>(objectReflectionProbe->getSpecularIBLPreFilteredMap()->getColorTexture());
+                            WeakPointer<CubeTexture> specularIBLPreFilteredMap = WeakPointer<Texture>::dynamicPointerCast<CubeTexture>(reflectionProbeList[0]->getSpecularIBLPreFilteredMap()->getColorTexture());
                             ambientIBLlight->setSpecularIBLPreFilteredMap(specularIBLPreFilteredMap);
                             
-                            WeakPointer<Texture2D> specularIBLBRDFMap = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(objectReflectionProbe->getSpecularIBLBRDFMap()->getColorTexture());
+                            WeakPointer<Texture2D> specularIBLBRDFMap = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(reflectionProbeList[0]->getSpecularIBLBRDFMap()->getColorTexture());
                             ambientIBLlight->setSpecularIBLBRDFMap(specularIBLBRDFMap);
                         }
                         else continue;
@@ -122,7 +120,11 @@ namespace Core {
 
         std::sort(lightList.begin(), lightList.end(), Renderer::compareLights);
         std::sort(nonIBLLightList.begin(), nonIBLLightList.end(), Renderer::compareLights);
+        
         this->renderShadowMaps(lightList, LightType::Point, objectList);
+        for (auto camera : cameraList) {
+            this->renderShadowMaps(lightList, LightType::Directional, objectList, camera);
+        }
 
         for (auto reflectionProbe : reflectionProbeList) {
             if (reflectionProbe->getNeedsFullUpdate() || reflectionProbe->getNeedsSpecularUpdate()) {
@@ -134,7 +136,6 @@ namespace Core {
         }
 
         for (auto camera : cameraList) {
-            this->renderShadowMaps(lightList, LightType::Directional, objectList, camera);
             this->render(camera, objectList, lightList, overrideMaterial, true);
         }
     }
@@ -144,20 +145,16 @@ namespace Core {
         static std::vector<WeakPointer<Object3D>> objectList;
         objectList.resize(0);
 
-        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         Matrix4x4 baseTransformation;
-        if (rootObject->getParent()) {
-            Transform& parentTransform = rootObject->getParent()->getTransform();
-            parentTransform.updateWorldMatrix();
-            baseTransformation = parentTransform.getWorldMatrix();
-        }
+        rootObject->getTransform().getAncestorWorldMatrix(baseTransformation);
+
         this->processScene(rootObject, objectList, baseTransformation);
         this->render(camera, objectList, overrideMaterial, matchPhysicalPropertiesWithLighting);
     }
 
     void Renderer::render(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
                           WeakPointer<Material> overrideMaterial, Bool matchPhysicalPropertiesWithLighting) {
-        std::vector<WeakPointer<Light>> lightList;   
+        static std::vector<WeakPointer<Light>> lightList;   
         this->render(camera, objects, lightList, overrideMaterial, matchPhysicalPropertiesWithLighting);                 
     }
 
@@ -223,7 +220,7 @@ namespace Core {
             Matrix4x4 cameraTransform = camera->getOwner()->getTransform().getWorldMatrix();
             cameraTransform.multiply(orientations[i]);
             this->getViewDescriptorTransformations(cameraTransform, camera->getProjectionMatrix(),
-                                    camera->getAutoClearRenderBuffers(), viewDescriptor);
+                                                   camera->getAutoClearRenderBuffers(), viewDescriptor);
             viewDescriptor.overrideMaterial = overrideMaterial;
             viewDescriptor.cubeFace = i;
             render(viewDescriptor, objects, lights, matchPhysicalPropertiesWithLighting);
@@ -236,48 +233,16 @@ namespace Core {
         WeakPointer<RenderTarget> currentRenderTarget = graphics->getCurrentRenderTarget();
         Vector4u currentViewport = currentRenderTarget->getViewport();
 
-        WeakPointer<RenderTarget> nextRenderTarget;
-        UInt32 targetMipLevel = viewDescriptor.renderTarget->getMipLevel();
-        if (viewDescriptor.indirectHDREnabled) {
-            nextRenderTarget = viewDescriptor.hdrRenderTarget;
-            targetMipLevel = 0;
-        }
-        else {
-            nextRenderTarget = viewDescriptor.renderTarget; 
-        }
-
-        graphics->activateRenderTarget(nextRenderTarget);
-        Vector2u renderTargetSize = nextRenderTarget->getSize();
-
-        if (!viewDescriptor.indirectHDREnabled && viewDescriptor.cubeFace >= 0) {
-            graphics->activateCubeRenderTargetSide((CubeTextureSide)viewDescriptor.cubeFace, targetMipLevel);
-        }
-        else {
-            graphics->activateRenderTarget2DMipLevel(targetMipLevel);
-        }
-        
-        Vector4u mipLevelScaledViewport = nextRenderTarget->getViewportForMipLevel(targetMipLevel);
-        graphics->setViewport(mipLevelScaledViewport.x, mipLevelScaledViewport.y, mipLevelScaledViewport.z, mipLevelScaledViewport.w);
+        WeakPointer<RenderTarget> nextRenderTarget = viewDescriptor.indirectHDREnabled ? viewDescriptor.hdrRenderTarget : viewDescriptor.renderTarget;
+        graphics->activateRenderTarget(nextRenderTarget);       
+        this->setViewportAndMipLevelForRenderTarget(nextRenderTarget, viewDescriptor.cubeFace);
 
         Bool clearColorBuffer = IntMaskUtil::isBitSetForMask(viewDescriptor.clearRenderBuffers, (UInt32)RenderBufferType::Color);
         Bool clearDepthBuffer = IntMaskUtil::isBitSetForMask(viewDescriptor.clearRenderBuffers, (UInt32)RenderBufferType::Depth);
         Bool clearStencilBuffer = IntMaskUtil::isBitSetForMask(viewDescriptor.clearRenderBuffers, (UInt32)RenderBufferType::Stencil);
-
         graphics->clearActiveRenderTarget(clearColorBuffer, clearDepthBuffer, clearStencilBuffer); 
 
-        if (viewDescriptor.skybox != nullptr) {
-            WeakPointer<BaseObjectRenderer> objectRenderer = viewDescriptor.skybox->getSkyboxObject()->getBaseRenderer();
-            if (objectRenderer) {
-                ViewDescriptor skyboxView = viewDescriptor;
-                std::vector<WeakPointer<Light>> dummyLights;
-                skyboxView.viewMatrix.setTranslation(0.0f, 0.0f, 0.0f);
-                skyboxView.viewInverseMatrix.copy(skyboxView.viewMatrix);
-                skyboxView.viewInverseMatrix.invert();
-                skyboxView.viewInverseTransposeMatrix.copy(skyboxView.viewInverseMatrix);
-                skyboxView.viewInverseTransposeMatrix.transpose();
-                objectRenderer->forwardRender(skyboxView, dummyLights, true);
-            }
-        }
+        this->renderSkybox(viewDescriptor);
 
         for (auto object : objectList) {
             this->renderObjectDirect(object, viewDescriptor, lightList, matchPhysicalPropertiesWithLighting);
@@ -292,7 +257,34 @@ namespace Core {
 
         graphics->activateRenderTarget(currentRenderTarget);
         graphics->setViewport(currentViewport.x, currentViewport.y, currentViewport.z, currentViewport.w);
+    }
 
+    void Renderer::setViewportAndMipLevelForRenderTarget(WeakPointer<RenderTarget> renderTarget, Int16 cubeFace) {
+        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
+        UInt32 targetMipLevel = renderTarget->getMipLevel();
+        if (cubeFace >= 0)
+            graphics->activateCubeRenderTargetSide((CubeTextureSide)cubeFace, targetMipLevel);
+        else
+            graphics->activateRenderTarget2DMipLevel(targetMipLevel);
+        Vector4u mipLevelScaledViewport = renderTarget->getViewportForMipLevel(targetMipLevel);
+        graphics->setViewport(mipLevelScaledViewport.x, mipLevelScaledViewport.y, mipLevelScaledViewport.z, mipLevelScaledViewport.w);
+
+    }
+
+    void Renderer::renderSkybox(ViewDescriptor& viewDescriptor) {
+        if (viewDescriptor.skybox != nullptr) {
+            WeakPointer<BaseObjectRenderer> objectRenderer = viewDescriptor.skybox->getSkyboxObject()->getBaseRenderer();
+            if (objectRenderer) {
+                ViewDescriptor skyboxView = viewDescriptor;
+                std::vector<WeakPointer<Light>> dummyLights;
+                skyboxView.viewMatrix.setTranslation(0.0f, 0.0f, 0.0f);
+                skyboxView.viewInverseMatrix.copy(skyboxView.viewMatrix);
+                skyboxView.viewInverseMatrix.invert();
+                skyboxView.viewInverseTransposeMatrix.copy(skyboxView.viewInverseMatrix);
+                skyboxView.viewInverseTransposeMatrix.transpose();
+                objectRenderer->forwardRender(skyboxView, dummyLights, true);
+            }
+        }
     }
 
     void Renderer::renderObjectDirect(WeakPointer<Object3D> object, WeakPointer<Camera> camera, WeakPointer<Material> overrideMaterial,

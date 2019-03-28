@@ -67,7 +67,7 @@ namespace Core {
         this->worldMatrix.transform(vector);
     }
 
-    void Transform::getWorldTransformation(WeakPointer<Object3D> target, Matrix4x4& result) {
+    void Transform::getWorldMatrix(WeakPointer<Object3D> target, Matrix4x4& result) {
         result.setIdentity();
         if (!target.isValid()) return;
         result.copy(target->getTransform().getLocalMatrix());
@@ -78,17 +78,17 @@ namespace Core {
         }
     }
 
-    void Transform::getWorldTransformation(Matrix4x4& result) {
-        this->getAncestorWorldTransformation(result);
+    void Transform::getWorldMatrix(Matrix4x4& result) {
+        this->getAncestorWorldMatrix(result);
         result.multiply(this->localMatrix);
     }
 
-    void Transform::getAncestorWorldTransformation(Matrix4x4& result) {
-        Transform::getWorldTransformation(this->target.getParent(), result);
+    void Transform::getAncestorWorldMatrix(Matrix4x4& result) {
+        Transform::getWorldMatrix(this->target.getParent(), result);
     }
 
     void Transform::updateWorldMatrix() {
-        this->getWorldTransformation(this->worldMatrix);
+        this->getWorldMatrix(this->worldMatrix);
     }
 
     /*
@@ -125,7 +125,7 @@ namespace Core {
      */
     void Transform::getLocalTransformationFromWorldTransformation(const Matrix4x4& newWorldTransformation, Matrix4x4& localTransformation) {
         Matrix4x4 currentFullTransformation;
-        this->getWorldTransformation(currentFullTransformation);
+        this->getWorldMatrix(currentFullTransformation);
         this->getLocalTransformationFromWorldTransformation(newWorldTransformation, currentFullTransformation, localTransformation);
     }
 
@@ -249,7 +249,7 @@ namespace Core {
         Point3r oldPosition;
         Matrix4x4 ancestorMatrix;
         Matrix4x4 fullMatrix;
-        this->getAncestorWorldTransformation(ancestorMatrix);
+        this->getAncestorWorldMatrix(ancestorMatrix);
         fullMatrix = ancestorMatrix;
         fullMatrix.multiply(this->localMatrix);
         fullMatrix.transform(oldPosition);

@@ -732,7 +732,7 @@ namespace Core {
         TextureAttributes texAttributes;
         texAttributes.FilterMode = filter;
         texAttributes.MipLevels = mipLevel;
-        texAttributes.WrapMode = TextureWrap::Clamp;
+        texAttributes.WrapMode = TextureWrap::Mirror;
         texAttributes.Format = TextureFormat::RGBA8;
 
         std::shared_ptr<StandardImage> textureImage;

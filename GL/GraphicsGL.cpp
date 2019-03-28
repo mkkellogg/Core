@@ -476,7 +476,7 @@ namespace Core {
         glPolygonMode(GL_BACK, this->_statePolygonMode[1]);
     }
 
-    void GraphicsGL::lowLevelBlit(WeakPointer<RenderTarget2D> source, WeakPointer<RenderTarget> destination, Int16 cubeFace, Bool includeColor, Bool includeDepth) {
+    void GraphicsGL::lowLevelBlit(WeakPointer<RenderTarget> source, WeakPointer<RenderTarget> destination, Int16 cubeFace, Bool includeColor, Bool includeDepth) {
         GLint srcID = (dynamic_cast<RenderTargetGL *>(source.get()))->getFBOID();
         GLint destID = (dynamic_cast<RenderTargetGL *>(destination.get()))->getFBOID();
         Vector2u size = destination->getSize();

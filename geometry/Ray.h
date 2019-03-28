@@ -23,11 +23,11 @@ namespace Core {
         Bool intersectMesh(WeakPointer<Mesh> mesh, std::vector<Hit>& hits) const;
         Bool intersectBox(const Box3& box, Hit& hit) const;
 
-        Bool intersectTriangle(const Vector3Components<Real>* p0, const Vector3Components<Real>* p1,
-                               const Vector3Components<Real>* p2, Hit& hit, const Vector3Components<Real>* normal = nullptr) const ;
+        Bool intersectTriangle(const Point3r* p0, const Point3r* p1,
+                               const Point3r* p2, Hit& hit, const Vector3r* normal = nullptr) const ;
         
-        Bool intersectTriangle(const Vector3Components<Real>& p0, const Vector3Components<Real>& p1,
-                               const Vector3Components<Real>& p2, Hit& hit, const Vector3Components<Real>* normal = nullptr) const;
+        Bool intersectTriangle(const Point3r& p0, const Point3r& p1,
+                               const Point3r& p2, Hit& hit, const Vector3r* normal = nullptr) const;
        
         Bool intersectPlane(Vector4Components<Real>& plane, Hit& hit) const;
 

@@ -50,14 +50,14 @@ namespace Core {
         Point3r getWorldPosition();
 
         void updateWorldMatrix();
+        void getAncestorWorldMatrix(Matrix4x4& result);
+        void getWorldMatrix(Matrix4x4& result);
 
     private:
 
-        void getAncestorWorldTransformation(Matrix4x4& result);
-        void getWorldTransformation(Matrix4x4& result);
+        static void getWorldMatrix(WeakPointer<Object3D> target, Matrix4x4& result);
         void getLocalTransformationFromWorldTransformation(const Matrix4x4& newWorldTransformation, Matrix4x4& localTransformation);
         void getLocalTransformationFromWorldTransformation(const Matrix4x4& newWorldTransformation, const Matrix4x4& currentFullTransformation, Matrix4x4& localTransformation);
-        static void getWorldTransformation(WeakPointer<Object3D> target, Matrix4x4& result);
 
         Matrix4x4 localMatrix;
         Matrix4x4 worldMatrix;

@@ -46,7 +46,7 @@ namespace Core {
         this->updateDefaultRenderTargetViewport(Vector4u(hOffset, vOffset, viewPortWidth, viewPortHeight));
     }
 
-    void Graphics::blit(WeakPointer<RenderTarget2D> source, WeakPointer<RenderTarget> destination, Int16 cubeFace, WeakPointer<Material> material, Bool includeDepth) {
+    void Graphics::blit(WeakPointer<RenderTarget> source, WeakPointer<RenderTarget> destination, Int16 cubeFace, WeakPointer<Material> material, Bool includeDepth) {
         static Bool initialized = false;
         static WeakPointer<Mesh> fullScreenQuadMesh;
         static WeakPointer<RenderableContainer<Mesh>> fullScreenQuadObject;

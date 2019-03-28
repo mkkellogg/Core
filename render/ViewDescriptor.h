@@ -23,7 +23,7 @@ namespace Core {
         Matrix4x4 projectionMatrix;
         PersistentWeakPointer<Material> overrideMaterial;
         PersistentWeakPointer<RenderTarget> renderTarget;
-        PersistentWeakPointer<RenderTarget2D> hdrRenderTarget;
+        PersistentWeakPointer<RenderTarget> hdrRenderTarget;
         Int32 cubeFace = -1;
         Int32 mipLevel = 0;
         IntMask clearRenderBuffers;

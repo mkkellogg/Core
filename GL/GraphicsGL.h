@@ -100,7 +100,7 @@ namespace Core {
         void saveState() override;
         void restoreState() override;
 
-        void lowLevelBlit(WeakPointer<RenderTarget2D> source, WeakPointer<RenderTarget> destination, Int16 cubeFace, Bool includeColor, Bool includeDepth) override;
+        void lowLevelBlit(WeakPointer<RenderTarget> source, WeakPointer<RenderTarget> destination, Int16 cubeFace, Bool includeColor, Bool includeDepth) override;
 
         static GLint getGLDepthFunction(RenderState::DepthFunction function);
         static GLenum getGLCubeTarget(CubeTextureSide side);

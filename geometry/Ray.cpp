@@ -21,14 +21,18 @@ namespace Core {
         Hit hit;
         for (UInt32 i = 0; i < tCount; i+=3) {
             Bool wasHit = false;
+            Point3r a, b, c;
             if (mesh->isIndexed()) {
-                wasHit = this->intersectTriangle(vertices + indices->getIndex(i),
-                                                 vertices + indices->getIndex(i + 1),
-                                                 vertices + indices->getIndex(i + 2), hit);
+                a = *(vertices + indices->getIndex(i));
+                b = *(vertices + indices->getIndex(i));
+                c = *(vertices + indices->getIndex(i));
             }
             else {
-                wasHit = this->intersectTriangle(vertices + i, vertices + (i + 1), vertices + (i + 2), hit);
+                a = *(vertices + i);
+                b = *(vertices + (i + 1));
+                c = *(vertices + (i + 2));
             }
+            wasHit = this->intersectTriangle(a, b, c, hit);
             if (wasHit) {
                 hit.Object = mesh;
                 hits.push_back(hit);
@@ -92,20 +96,15 @@ namespace Core {
         return false;
     }
 
-    Bool Ray::intersectTriangle(const Vector3Components<Real>* p0, const Vector3Components<Real>* p1,
-                               const Vector3Components<Real>* p2, Hit& hit, const Vector3Components<Real>* normal) const {
+    Bool Ray::intersectTriangle(const Point3r* p0, const Point3r* p1,
+                                const Point3r* p2, Hit& hit, const Vector3r* normal) const {
         this->intersectTriangle(*p0, *p1, *p2, hit, normal); 
     }
 
-    Bool Ray::intersectTriangle(const Vector3Components<Real>& p0, const Vector3Components<Real>& p1,
-                                const Vector3Components<Real>& p2, Hit& hit, const Vector3Components<Real>* normal) const {
-        Point3r _p0, _p1, _p2;
-        _p0.set(p0.x, p0.y, p0.z); 
-        _p1.set(p1.x, p1.y, p1.z); 
-        _p2.set(p2.x, p2.y, p2.z);
-
-        Vector3r q1 = _p2 - _p0;
-        Vector3r q2 = _p1 - _p0;
+    Bool Ray::intersectTriangle(const Point3r& p0, const Point3r& p1,
+                                const Point3r& p2, Hit& hit, const Vector3r* normal) const {
+        Vector3r q1 = p2 - p0;
+        Vector3r q2 = p1 - p0;
         Vector3r _normal;
 
         if (normal != nullptr) {
@@ -118,14 +117,14 @@ namespace Core {
 
         if (Vector3r::dot(_normal, this->Direction) >= 0) return false;
 
-        Real d = -Vector3r::dot(_p0, _normal);
+        Real d = -Vector3r::dot(p0, _normal);
         Vector4r planeEq(_normal.x, _normal.y, _normal.z, d);
         
         Hit planeHit;
         Bool intersectsPlane = this->intersectPlane(planeEq, planeHit);
         if (!intersectsPlane) return false;
 
-        Vector3r r = planeHit.Origin - _p0;
+        Vector3r r = planeHit.Origin - p0;
         Real rDotQ1 = Vector3r::dot(r, q1);
         Real rDotQ2 = Vector3r::dot(r, q2);
 
