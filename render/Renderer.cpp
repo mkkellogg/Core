@@ -231,19 +231,14 @@ namespace Core {
                           std::vector<WeakPointer<Light>>& lightList, Bool matchPhysicalPropertiesWithLighting) {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         WeakPointer<RenderTarget> currentRenderTarget = graphics->getCurrentRenderTarget();
-        Vector4u currentViewport = currentRenderTarget->getViewport();
 
         WeakPointer<RenderTarget> nextRenderTarget = viewDescriptor.indirectHDREnabled ? viewDescriptor.hdrRenderTarget : viewDescriptor.renderTarget;
         graphics->activateRenderTarget(nextRenderTarget);       
         this->setViewportAndMipLevelForRenderTarget(nextRenderTarget, viewDescriptor.cubeFace);
 
-        Bool clearColorBuffer = IntMaskUtil::isBitSetForMask(viewDescriptor.clearRenderBuffers, (UInt32)RenderBufferType::Color);
-        Bool clearDepthBuffer = IntMaskUtil::isBitSetForMask(viewDescriptor.clearRenderBuffers, (UInt32)RenderBufferType::Depth);
-        Bool clearStencilBuffer = IntMaskUtil::isBitSetForMask(viewDescriptor.clearRenderBuffers, (UInt32)RenderBufferType::Stencil);
-        graphics->clearActiveRenderTarget(clearColorBuffer, clearDepthBuffer, clearStencilBuffer); 
+        this->clearActiveRenderTarget(viewDescriptor);
 
         this->renderSkybox(viewDescriptor);
-
         for (auto object : objectList) {
             this->renderObjectDirect(object, viewDescriptor, lightList, matchPhysicalPropertiesWithLighting);
         }
@@ -256,7 +251,16 @@ namespace Core {
         }
 
         graphics->activateRenderTarget(currentRenderTarget);
-        graphics->setViewport(currentViewport.x, currentViewport.y, currentViewport.z, currentViewport.w);
+        this->setViewportAndMipLevelForRenderTarget(currentRenderTarget, -1);
+    }
+
+    void Renderer::clearActiveRenderTarget(ViewDescriptor& viewDescriptor) {
+        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
+        Bool clearColorBuffer = IntMaskUtil::isBitSetForMask(viewDescriptor.clearRenderBuffers, (UInt32)RenderBufferType::Color);
+        Bool clearDepthBuffer = IntMaskUtil::isBitSetForMask(viewDescriptor.clearRenderBuffers, (UInt32)RenderBufferType::Depth);
+        Bool clearStencilBuffer = IntMaskUtil::isBitSetForMask(viewDescriptor.clearRenderBuffers, (UInt32)RenderBufferType::Stencil);
+        graphics->clearActiveRenderTarget(clearColorBuffer, clearDepthBuffer, clearStencilBuffer); 
+
     }
 
     void Renderer::setViewportAndMipLevelForRenderTarget(WeakPointer<RenderTarget> renderTarget, Int16 cubeFace) {
@@ -378,7 +382,7 @@ namespace Core {
                                 viewDesc.indirectHDREnabled = false;
                                 viewDesc.cubeFace = -1;
                                 this->getViewDescriptorTransformations(viewTrans, orthoShadowMapCamera->getProjectionMatrix(),
-                                                        orthoShadowMapCamera->getAutoClearRenderBuffers(), viewDesc);
+                                                                       orthoShadowMapCamera->getAutoClearRenderBuffers(), viewDesc);
                                 viewDesc.overrideMaterial = this->depthMaterial;
                                 viewDesc.renderTarget = directionalLight->getShadowMap(i);
                                 this->render(viewDesc, toRender, dummyLights, true);

@@ -62,6 +62,7 @@ namespace Core {
                     std::vector<WeakPointer<Light>>& lightList,
                     Bool matchPhysicalPropertiesWithLighting);
         void setViewportAndMipLevelForRenderTarget(WeakPointer<RenderTarget> renderTarget, Int16 cubeFace);
+        void clearActiveRenderTarget(ViewDescriptor& viewDescriptor);
         void renderSkybox(ViewDescriptor& viewDescriptor);
         void renderObjectDirect(WeakPointer<Object3D> object, ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Light>>& lightList,
                                 Bool matchPhysicalPropertiesWithLighting);
