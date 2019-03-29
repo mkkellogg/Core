@@ -204,10 +204,17 @@ namespace Core {
             return temp;
         }
 
-        const Vector3<T, false> operator*(const T& scale) const {
+        Vector3<T, false> operator*(const T& scale) const {
             Vector3<T, false> vec = *this;
             vec.scale(scale);
             return vec;
+        }
+
+        template <Bool otherCustomStorage>
+        Vector3<T, false> cross(const Vector3<T, otherCustomStorage>& other) const {
+            Vector3<T, false> result;
+            cross(*this, other, result);
+            return result;
         }
 
         static void cross(const Vector3& a, const Vector3& b, Vector3& result) {

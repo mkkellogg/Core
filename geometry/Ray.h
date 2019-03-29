@@ -24,7 +24,7 @@ namespace Core {
         Bool intersectBox(const Box3& box, Hit& hit) const;
         
         Bool intersectTriangle(const Point3r& p0, const Point3r& p1,
-                               const Point3r& p2, Hit& hit, const Vector3r* normal = nullptr) const;
+                               const Point3r& p2, Hit& hit) const;
        
         Bool intersectPlane(Vector4r& plane, Hit& hit) const;
 

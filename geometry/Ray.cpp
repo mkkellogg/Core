@@ -37,27 +37,27 @@ namespace Core {
     Bool Ray::intersectBox(const Box3& box, Hit& hit) const {
 
         Real _origin[] = {this->Origin.x, this->Origin.y, this->Origin.z};
-        Real _direction[] = {this->Direction.x, this->Direction.y, this->Direction.z};
+        Real _dir[] = {this->Direction.x, this->Direction.y, this->Direction.z};
         Real extremes[] = {0.0f, 0.0f, 0.0f};
 
         for (UInt32 i = 0; i < 3; i++) {
-            if (_direction[i] == 0.0f) continue;
+            if (_dir[i] == 0.0f) continue;
 
-            Vector3r hitNormal = i == 0 ? Vector3r(1.0, 0.0, 0.0) : i == 1 ? Vector3r(0.0, 1.0, 0.0) : Vector3r(0.0, 0.0, 1.0);
-            const Vector3r& extremeVec = _direction[i] < 0 ? box.getMax() : box.getMin();
-            Real multiplier = -Math::sign(_direction[i]);
+            const Vector3r& hitNormal = i == 0 ? Vector3r::Right : i == 1 ? Vector3r::Up : Vector3r::Backward;
+            const Vector3r& extremeVec = _dir[i] < 0 ? box.getMax() : box.getMin();
+            Real multiplier = -Math::sign(_dir[i]);
             extremes[0] = i == 0 ? extremeVec.x : i == 1 ? extremeVec.y : extremeVec.z;
             Real toExtreme = extremes[0] - _origin[i];
 
             if (toExtreme * multiplier < 0) {
                 UInt32 idx1 = (i + 1) % 3;
                 UInt32 idx2 = (i + 2) % 3;
-                extremes[2] = _direction[idx1] / _direction[i] * toExtreme + _origin[idx1];
-                extremes[1] = _direction[idx2] / _direction[i] * toExtreme + _origin[idx2];
+                extremes[2] = _dir[idx1] / _dir[i] * toExtreme + _origin[idx1];
+                extremes[1] = _dir[idx2] / _dir[i] * toExtreme + _origin[idx2];
                 Point3r extreme(extremes[i], extremes[idx2], extremes[idx1]);
                 if (box.containsPoint(extreme, 0.0001f)) {
                        hit.Origin = extreme;
-                       hit.Normal = hitNormal  * multiplier;
+                       hit.Normal = hitNormal * multiplier;
                        return true ;
                     }
             }
@@ -67,23 +67,15 @@ namespace Core {
     }
 
     Bool Ray::intersectTriangle(const Point3r& p0, const Point3r& p1,
-                                const Point3r& p2, Hit& hit, const Vector3r* normal) const {
+                                const Point3r& p2, Hit& hit) const {
         Vector3r q1 = p2 - p0;
         Vector3r q2 = p1 - p0;
-        Vector3r _normal;
+        Vector3r normal = q1.cross(q2);
 
-        if (normal != nullptr) {
-            _normal = *normal;
-        }
-        else {
-            Vector3r::cross(q1, q2, _normal);
-            _normal.normalize();
-        }
+        if (Vector3r::dot(normal, this->Direction) >= 0) return false;
 
-        if (Vector3r::dot(_normal, this->Direction) >= 0) return false;
-
-        Real d = -Vector3r::dot(p0, _normal);
-        Vector4r planeEq(_normal.x, _normal.y, _normal.z, d);
+        Real d = -Vector3r::dot(p0, normal);
+        Vector4r planeEq(normal.x, normal.y, normal.z, d);
         
         Hit planeHit;
         Bool intersectsPlane = this->intersectPlane(planeEq, planeHit);
@@ -108,7 +100,7 @@ namespace Core {
         }
 
         hit.Origin = planeHit.Origin;
-        hit.Normal = _normal;
+        hit.Normal = normal;
 
         return true;
     }
