@@ -47,23 +47,6 @@ namespace Core {
     }
 
     void Graphics::blit(WeakPointer<RenderTarget> source, WeakPointer<RenderTarget> destination, Int16 cubeFace, WeakPointer<Material> material, Bool includeDepth) {
-        static Bool initialized = false;
-        static WeakPointer<Mesh> fullScreenQuadMesh;
-        static WeakPointer<RenderableContainer<Mesh>> fullScreenQuadObject;
-        static WeakPointer<Mesh> fullScreenCubeMesh;
-        static WeakPointer<RenderableContainer<Mesh>> fullScreenCubeObject;
-        static WeakPointer<Object3D> renderCameraObject;
-        static WeakPointer<Camera> renderCamera;
-        if (!initialized) {
-            fullScreenQuadMesh = GeometryUtils::createGrid(2.0f, 2.0f, 2, 2, 1.0f, 1.0f);
-            fullScreenQuadObject = GeometryUtils::buildMeshContainer(fullScreenQuadMesh, material, "");
-            renderCameraObject = Engine::instance()->createObject3D();
-            renderCameraObject->getTransform().translate(0.0f, 0.0f, 4.0f);
-            renderCameraObject->getTransform().updateWorldMatrix();
-            renderCamera = Engine::instance()->createOrthographicCamera(renderCameraObject, 1.0f, -1.0f, -1.0f, 1.0f, 0.1f, 10.0f);
-            initialized = true;
-        }
-
         UInt32 samplerSlot = 0;
         Int32 texture0Loc = material->getShaderLocation(StandardUniform::Texture0);
         if (texture0Loc >= 0) {
@@ -77,41 +60,10 @@ namespace Core {
             samplerSlot++;
         }
 
-        Bool depthTestEnabled = material->getDepthTestEnabled();
-        Bool faceCullingEnabled = material->getFaceCullingEnabled();
-        material->setDepthTestEnabled(false);
-        material->setFaceCullingEnabled(false);
-        renderCamera->setRenderTarget(destination);
-        renderCamera->setAutoClearRenderBuffer(RenderBufferType::Color, true);
-        renderCamera->setAutoClearRenderBuffer(RenderBufferType::Depth, false);
-        renderCamera->setAutoClearRenderBuffer(RenderBufferType::Stencil, false);
-
-        WeakPointer<RenderTarget> currentRenderTarget = this->getCurrentRenderTarget();
-        Vector4u currentViewport = currentRenderTarget->getViewport();
-
-        UInt32 targetMipLevel = destination->getMipLevel();
-        this->activateRenderTarget(destination);
-        if (cubeFace >= 0) {
-            this->activateCubeRenderTargetSide((CubeTextureSide)cubeFace, targetMipLevel);
-        }
-        else {
-            this->activateRenderTarget2DMipLevel(targetMipLevel);
-        }
-
-        Vector4u mipLevelScaledViewport = destination->getViewportForMipLevel(targetMipLevel);
-        this->setViewport(mipLevelScaledViewport.x, mipLevelScaledViewport.y, mipLevelScaledViewport.z, mipLevelScaledViewport.w);
-
-        this->getRenderer()->renderObjectDirect(fullScreenQuadObject, renderCamera, material);
-
-        material->setFaceCullingEnabled(faceCullingEnabled);
-        material->setDepthTestEnabled(depthTestEnabled);
-
+        this->renderFullScreenQuad(destination, cubeFace, material);
         if (includeDepth) {
             this->lowLevelBlit(source, destination, -1, false, true);
         }
-
-        this->activateRenderTarget(currentRenderTarget);
-        this->setViewport(currentViewport.x, currentViewport.y, currentViewport.z, currentViewport.w);
     }
 
     void Graphics::renderFullScreenQuad(WeakPointer<RenderTarget> destination, Int16 cubeFace, WeakPointer<Material> material) {
