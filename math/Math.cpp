@@ -129,6 +129,10 @@ namespace Core {
             return b;
     }
 
+    Real Math::clamp(Real value, Real min, Real max) {
+        return Math::max(Math::min(value, max), min);
+    }
+
     Real Math::lerp(Real a, Real b, Real t) {
         return (b - a) * t + a;
     }

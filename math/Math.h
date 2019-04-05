@@ -29,6 +29,7 @@ namespace Core {
     static Real max(Real a, Real b);
     static Int32 max(Int32 a, Int32 b);
     static UInt32 max(UInt32 a, UInt32 b);
+    static Real clamp(Real value, Real min, Real max);
     static Real lerp(Real a, Real b, Real t);
     static Real random();
     static Real sign(Real a);
