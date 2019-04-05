@@ -34,7 +34,11 @@ namespace Core {
             return *this;
         }
 
-        static Real dot(const Vector4Components<T>& a, Vector4Components<T>& b) {
+        Real dot(const Vector4Components<T>& b) const {
+            return dot(*this, b);
+        }
+
+        static Real dot(const Vector4Components<T>& a, const Vector4Components<T>& b) {
             return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
         }
     };

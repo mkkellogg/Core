@@ -105,7 +105,11 @@ namespace Core {
         return true;
     }
 
-    Bool Ray::intersectPlane(Vector4r& plane, Hit& hit) const {
+    Bool Ray::intersectPlane(const Plane& plane, Hit& hit) const {
+        return this->intersectPlane(plane.getPlaneEquation(), hit);
+    }
+
+    Bool Ray::intersectPlane(const Vector4r& plane, Hit& hit) const {
         Vector4r rayOrigin(this->Origin.x, this->Origin.y, this->Origin.z, 1.0f);
         Vector4r rayDir(this->Direction.x, this->Direction.y, this->Direction.z, 0.0f);
         Real planeRayDot = Vector4r::dot(plane, rayDir);

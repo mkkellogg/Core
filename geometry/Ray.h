@@ -8,6 +8,7 @@
 #include "Vector3.h"
 #include "Box3.h"
 #include "Hit.h"
+#include "Plane.h"
 
 namespace Core {
 
@@ -26,7 +27,8 @@ namespace Core {
         Bool intersectTriangle(const Point3r& p0, const Point3r& p1,
                                const Point3r& p2, Hit& hit) const;
        
-        Bool intersectPlane(Vector4r& plane, Hit& hit) const;
+        Bool intersectPlane(const Vector4r& plane, Hit& hit) const;
+        Bool intersectPlane(const Plane& plane, Hit& hit) const;
 
         Vector3r Direction;
         Point3r Origin;
