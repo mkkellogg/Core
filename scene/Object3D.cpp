@@ -101,6 +101,18 @@ namespace Core {
         this->active = active;
     }
 
+    Bool Object3D::isActive() const {
+        return this->active;
+    }
+
+    void Object3D::setStatic(Bool objStatic) {
+        this->objStatic = objStatic;
+    }
+
+    Bool Object3D::isStatic() const {
+        return this->objStatic;
+    }
+
     void Object3D::setName(const std::string& name) {
         this->name = name;
     }

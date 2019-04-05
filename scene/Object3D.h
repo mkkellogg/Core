@@ -40,6 +40,9 @@ namespace Core {
         WeakPointer<Object3D> getParent() const;
         Bool addComponent(WeakPointer<Object3DComponent> component);
         void setActive(Bool active);
+        Bool isActive() const;
+        void setStatic(Bool objStatic);
+        Bool isStatic() const;
         void setName(const std::string& name);
         const std::string& getName() const;
         UInt32 childCount();
@@ -54,6 +57,7 @@ namespace Core {
         PersistentWeakPointer<Object3D> _self;
         std::vector<PersistentWeakPointer<Object3DComponent>> components;
         Bool active;
+        Bool objStatic;
         UInt64 id;
         std::string name;
 
