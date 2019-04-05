@@ -535,6 +535,120 @@ namespace Core {
         return sphereMesh;
     }
 
+    WeakPointer<Mesh> GeometryUtils::buildTorusMesh(Real radius, Real tubeRadius, UInt32 subdivisions, UInt32 tubeSubdivisions, Color color) {
+
+        std::vector<Real> positions;
+        std::vector<Real> normals;
+        std::vector<Real> colors;
+
+        Real deltaTheta = Math::TwoPI / (Real)subdivisions;
+        Real deltaPhi = Math::TwoPI  / (Real)tubeSubdivisions;
+
+        for (UInt32 i = 0; i < subdivisions; i++) {
+            UInt32 nextI = i < subdivisions - 1 ? i + 1 : 0;
+            for (UInt32  j = 0; j < tubeSubdivisions; j++) {
+                UInt32 nextJ = j < tubeSubdivisions - 1 ? j + 1 : 0;
+                
+                Real theta = (Real)i * deltaTheta;
+                Real nextTheta = (Real)nextI * deltaTheta;
+                Real phi = (Real)j * deltaPhi;
+                Real nextPhi = (Real)nextJ * deltaPhi;
+
+                Point3r bottom;
+                Point3r top;
+                Point3r nextbottom;
+                Point3r nextTop;
+
+                generateTorusSection(radius, tubeRadius, theta, phi, nextPhi, bottom, top);
+                generateTorusSection(radius, tubeRadius, nextTheta, phi, nextPhi, nextbottom, nextTop);
+
+                positions.push_back(bottom.x);  
+                positions.push_back(bottom.y);  
+                positions.push_back(bottom.z); 
+                positions.push_back(1.0f);
+
+                positions.push_back(nextbottom.x);  
+                positions.push_back(nextbottom.y);  
+                positions.push_back(nextbottom.z); 
+                positions.push_back(1.0f); 
+
+                positions.push_back(top.x);  
+                positions.push_back(top.y);  
+                positions.push_back(top.z); 
+                positions.push_back(1.0f); 
+
+                positions.push_back(nextbottom.x);  
+                positions.push_back(nextbottom.y);  
+                positions.push_back(nextbottom.z); 
+                positions.push_back(1.0f); 
+
+                positions.push_back(nextTop.x);  
+                positions.push_back(nextTop.y);  
+                positions.push_back(nextTop.z); 
+                positions.push_back(1.0f); 
+
+                positions.push_back(top.x);  
+                positions.push_back(top.y);  
+                positions.push_back(top.z); 
+                positions.push_back(1.0f); 
+
+            }
+        }
+
+        for (UInt32 i = 0; i < positions.size(); i+=4) {
+            colors.push_back(color.r);
+            colors.push_back(color.g);
+            colors.push_back(color.b);
+            colors.push_back(color.a);
+        }
+
+        WeakPointer<Engine> engine = Engine::instance();
+
+        UInt32 vertexCount = positions.size() / 4;
+
+        WeakPointer<Mesh> torusMesh(engine->createMesh(vertexCount, 0));
+        torusMesh->init();
+        torusMesh->enableAttribute(StandardAttribute::Position);
+        Bool positionInited = torusMesh->initVertexPositions();
+        ASSERT(positionInited, "Unable to initialize torus mesh vertex positions.");
+        torusMesh->getVertexPositions()->store(positions.data());
+
+        torusMesh->enableAttribute(StandardAttribute::Color);
+        Bool colorInited = torusMesh->initVertexColors();
+        ASSERT(colorInited, "Unable to initialize torus mesh colors.");
+        torusMesh->getVertexColors()->store(colors.data());
+
+        torusMesh->enableAttribute(StandardAttribute::Normal);
+        Bool normalInited = torusMesh->initVertexNormals();
+        ASSERT(normalInited, "Unable to initialize torus vertex normals.");
+
+        torusMesh->enableAttribute(StandardAttribute::FaceNormal);
+        Bool faceNormalInited = torusMesh->initVertexFaceNormals();
+
+        torusMesh->calculateBoundingBox();
+        torusMesh->calculateNormals(85.0f);
+
+        return torusMesh;
+
+    }
+
+    void GeometryUtils::generateTorusSection(Real radius, Real tubeRadius, Real angle, Real tubeAngleStart,
+                                             Real tubeAngleEnd, Point3r& start, Point3r& end) {
+        Real baseStartX = Math::cos(tubeAngleStart) * tubeRadius;
+        Real finalStartY = Math::sin(tubeAngleStart) * tubeRadius;
+        Real baseEndX = Math::cos(tubeAngleEnd) * tubeRadius;
+        Real finalEndY = Math::sin(tubeAngleEnd) * tubeRadius;
+
+        Real finalStartX = (radius + baseStartX) * Math::cos(angle);
+        Real finalEndX = (radius + baseEndX) * Math::cos(angle);
+
+        Real finalStartZ = (radius + baseStartX) * Math::sin(angle);
+        Real finalEndZ = (radius + baseEndX) * Math::sin(angle);
+
+        start.set(finalStartX, finalStartY, finalStartZ);
+        end.set(finalEndX, finalEndY, finalEndZ);
+    }
+
     WeakPointer<RenderableContainer<Mesh>> GeometryUtils::buildMeshContainer(WeakPointer<Mesh> mesh,
                                                                              WeakPointer<Material> material,
                                                                              const std::string& name) {
