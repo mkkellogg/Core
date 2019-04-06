@@ -34,7 +34,7 @@ namespace Core {
         SceneObjectIterator<Object3D> endIterateChildren();
         SceneObjectIterator<Object3DComponent> beginIterateComponents();
         SceneObjectIterator<Object3DComponent> endIterateComponents();
-        UInt32 size() const;
+        UInt32 childCount() const;
         void addChild(WeakPointer<Object3D> object);
         void removeChild(WeakPointer<Object3D> object);
         WeakPointer<Object3D> getParent() const;

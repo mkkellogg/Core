@@ -451,6 +451,7 @@ namespace Core {
 
     void Renderer::processScene(WeakPointer<Object3D> object, std::vector<WeakPointer<Object3D>>& outObjects, const Matrix4x4& curTransform) {
 
+        if (!object->isActive()) return;
         Matrix4x4 nextTransform = curTransform;
         Transform& objTransform = object->getTransform();
         nextTransform.multiply(objTransform.getLocalMatrix());

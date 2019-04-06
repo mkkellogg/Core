@@ -21,11 +21,13 @@ namespace Core {
         Bool hitFound = false;
         for (UInt32 i = 0; i < this->objects.size(); i++) {
             WeakPointer<Object3D> object = this->objects[i];
-            WeakPointer<Mesh> mesh = this->meshes[i];
-            Transform objTransform = object->getTransform();
-            objTransform.updateWorldMatrix();
-            Matrix4x4& transform = objTransform.getWorldMatrix();
-            hitFound = this->castRay(ray, mesh, transform, hits, i) || hitFound;
+            if (object->isActive()) {
+                WeakPointer<Mesh> mesh = this->meshes[i];
+                Transform objTransform = object->getTransform();
+                objTransform.updateWorldMatrix();
+                Matrix4x4& transform = objTransform.getWorldMatrix();
+                hitFound = this->castRay(ray, mesh, transform, hits, i) || hitFound;
+            }
         }
 
         std::sort(hits.begin(), hits.end(), [](const Hit& a, const Hit& b){

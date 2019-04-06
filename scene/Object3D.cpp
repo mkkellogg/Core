@@ -41,7 +41,7 @@ namespace Core {
         return SceneObjectIterator<Object3DComponent>(this->components.end());
     }
 
-    UInt32 Object3D::size() const {
+    UInt32 Object3D::childCount() const {
         return this->children.size();
     }
 
