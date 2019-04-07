@@ -3,6 +3,7 @@
 #include "../base/VectorStorage.h"
 #include "../common/types.h"
 #include "Vector2Components.h"
+#include "../math/Math.h"
 
 namespace Core {
 
@@ -32,6 +33,48 @@ namespace Core {
         Vector2& operator=(const Vector2<T, otherCustomStorage>& other) {
             this->copy(other);
             return *this;
+        }
+
+        void normalize() {
+            Real magnitude = this->magnitude();
+            if (magnitude != 0) {
+                this->scale(1 / magnitude);
+            }
+        }
+
+        void scale(Real magnitude) {
+            this->x *= magnitude;
+            this->y *= magnitude;
+        }
+
+        T magnitude() const {
+            return Vector2<T, customStorage>::magnitude(this->x, this->y);
+        }
+
+        static T magnitude(const T& x, const T& y) {
+            return Math::squareRoot(x * x + y * y);
+        };
+
+        Real squareMagnitude() const {
+            return Vector2<T, customStorage>::squareMagnitude(this->x, this->y);
+        }
+
+        static T squareMagnitude(const T& x, const T& y) {
+            return x * x + y * y;
+        };
+
+        Bool isZeroLength() const {
+            Real epsilon = (Real)1e-06;
+            Real sqlen = (this->x * this->x) + (this->y * this->y);
+            return (sqlen < (epsilon * epsilon));
+        }
+
+        Real dot(const Vector2& other) {
+            return Vector2::dot(*this, other);
+        }
+
+        static Real dot(const Vector2Components<Real>& a, const Vector2Components<Real>& b) {
+            return a.x * b.x + a.y * b.y;
         }
     };
 
