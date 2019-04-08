@@ -33,6 +33,7 @@ namespace Core {
         void setAspectRatio(Real ratio);       
         void setAspectRatioFromDimensions(UInt32 width, UInt32 height);
         void setDimensions(Real top, Real  bottom, Real left, Real right);
+        Vector4r getDimensions() const;
         void setNear(Real near);
         void setFar(Real far);
         void setNearAndFar(Real near, Real far);
@@ -71,6 +72,10 @@ namespace Core {
         static void buildPerspectiveProjectionMatrix(Real fov, Real aspectRatio, Real near, Real far, Matrix4x4& out);
         static void buildOrthographicProjectionMatrix(Real top, Real bottom, Real left, Real right, Real near, Real far, Matrix4x4& matrix);
 
+        static Vector2r ndcToViewport(const Point3r& ndcCoords, const Vector4u& viewport);
+        static Vector2r ndcToViewport(const Vector2r& ndcCoords, const Vector4u& viewport);
+        static Vector2r viewportToNDC(const Vector2r& viewportCoords, const Vector4u& viewport);
+
     private:
         Camera(WeakPointer<Object3D> owner);
         void updateProjection();
@@ -87,10 +92,7 @@ namespace Core {
         Real near;
         Real far;
 
-        Real top;
-        Real bottom;
-        Real left;
-        Real right;
+        Vector4r dimensions;
 
         Matrix4x4 projectionMatrix;
         PersistentWeakPointer<RenderTarget> renderTarget;

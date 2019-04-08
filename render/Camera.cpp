@@ -37,11 +37,12 @@ namespace Core {
     }
 
     void Camera::setDimensions(Real top, Real  bottom, Real left, Real right) {
-        this->top = top;
-        this->bottom = bottom;
-        this->left = left;
-        this->right = right;
+        this->dimensions.set(left, top, right, bottom);
         this->updateProjection();
+    }
+
+    Vector4r Camera::getDimensions() const {
+        return this->dimensions;
     }
 
     void Camera::setNear(Real near) {
@@ -158,10 +159,7 @@ namespace Core {
         this->aspectRatio = other->aspectRatio;
         this->near = other->near;
         this->far = other->far;
-        this->top = other->top;
-        this->bottom = other->bottom;
-        this->left = other->left;
-        this->right = other->right;
+        this->dimensions = other->dimensions;
         this->skybox = other->skybox;
         this->skyboxEnabled = other->skyboxEnabled;
         this->hdrEnabled = other->hdrEnabled;
@@ -272,9 +270,25 @@ namespace Core {
         matrix.copy(data);
     }
 
+    Vector2r Camera::ndcToViewport(const Point3r& ndcCoords, const Vector4u& viewport) {
+        return ndcToViewport(Vector2r(ndcCoords.x, ndcCoords.y), viewport);
+    }
+
+    Vector2r Camera::ndcToViewport(const Vector2r& ndcCoords, const Vector4u& viewport) {
+        Real vpX =  ((ndcCoords.x + 1.0f) / 2.0f) * (Real)viewport.z;
+        Real vpY =  ((ndcCoords.y + 1.0f) / 2.0f) * (Real)viewport.w;
+        return Vector2r(vpX, vpY);
+    }
+
+    Vector2r Camera::viewportToNDC(const Vector2r& viewportCoords, const Vector4u& viewport) {
+        Real ndcX = (viewportCoords.x / (Real)viewport.z) * 2.0f - 1.0f;
+        Real ndcY = (viewportCoords.y / (Real)viewport.w) * 2.0f - 1.0f;
+        return Vector2r(ndcY, ndcY);
+    }
+
     void Camera::updateProjection() {
         if (this->ortho) {
-            Camera::buildOrthographicProjectionMatrix(this->top, this->bottom, this->left, this->right, this->near, this->far, this->projectionMatrix);
+            Camera::buildOrthographicProjectionMatrix(dimensions.y, dimensions.w, dimensions.x, dimensions.z, this->near, this->far, this->projectionMatrix);
         }
         else {
             Camera::buildPerspectiveProjectionMatrix(this->fov, this->aspectRatio, this->near, this->far, this->projectionMatrix);
@@ -314,10 +328,7 @@ namespace Core {
         if (cam == nullptr) {
             throw AllocationException("Camera::createOrthographicCamera -> Could not allocation new Camera object.");
         }
-        cam->top = top;
-        cam->bottom = bottom;
-        cam->left = left;
-        cam->right = right;
+        cam->dimensions.set(left, top, right, bottom);
         cam->near = near;
         cam->far = far;
         cam->ortho = true;
