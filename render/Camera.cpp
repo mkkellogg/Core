@@ -101,17 +101,14 @@ namespace Core {
         return this->unProject(vec.x, vec.y, ndcZ);
     }
 
-    Point3r Camera::unProject(Real screenX, Real screenY, Real ndcZ) const {
+    Point3r Camera::unProject(UInt32 screenX, UInt32 screenY, Real ndcZ) const {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         WeakPointer<RenderTarget> cameraRenderTarget = this->getRenderTarget();
         if (!cameraRenderTarget.isValid()) {
             cameraRenderTarget = graphics->getDefaultRenderTarget();
         }
         Vector4u viewport = cameraRenderTarget->getViewport();
-        screenY = viewport.w - screenY;
-        Real ndcX = (Real)screenX / (Real)viewport.z * 2.0f - 1.0f;
-        Real ndcY = (Real)screenY / (Real)viewport.w * 2.0f - 1.0f;
-        Point3r ndcPos(ndcX, ndcY, ndcZ);
+        Point3r ndcPos = screenToNDC(screenX, screenY, ndcZ, viewport);
         this->unProject(ndcPos);
         return ndcPos;
     }
@@ -295,10 +292,15 @@ namespace Core {
         return Vector2r(vpX, (Real)viewport.w - vpY);
     }
 
-    Vector2r Camera::screenToNDC(const Vector2r& screenCoords, const Vector4u& viewport) {
-        Real ndcX = (screenCoords.x / (Real)viewport.z) * 2.0f - 1.0f;
-        Real ndcY = (screenCoords.y / (Real)viewport.w) * 2.0f - 1.0f;
-        return Vector2r(ndcY, (Real)viewport.w - ndcY);
+    Point3r Camera::screenToNDC(const Vector2u& screenCoords, Real ndcZ, const Vector4u& viewport) {
+        return screenToNDC(screenCoords.x, screenCoords.y, ndcZ, viewport);
+    }
+
+    Point3r Camera::screenToNDC(UInt32 screenX, UInt32 screenY, Real ndcZ, const Vector4u& viewport) {
+        screenY = viewport.w - screenY;
+        Real ndcX = ((Real)screenX / (Real)viewport.z) * 2.0f - 1.0f;
+        Real ndcY = ((Real)screenY / (Real)viewport.w) * 2.0f - 1.0f;
+        return Point3r(ndcX, ndcY, ndcZ);
     }
 
     void Camera::updateProjection() {

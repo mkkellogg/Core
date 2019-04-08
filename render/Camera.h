@@ -47,7 +47,7 @@ namespace Core {
         void project(Vector3Base<Real>& vec) const;
         void unProject(Vector3Base<Real>& vec) const;
         Point3r unProject(Vector2u& vec, Real ndcZ) const;
-        Point3r unProject(Real screenX, Real screenY, Real ndcZ) const;
+        Point3r unProject(UInt32 screenX, UInt32 screenY, Real ndcZ) const;
         void setRenderTarget(WeakPointer<RenderTarget> renderTarget);
         WeakPointer<RenderTarget> getRenderTarget() const;
         WeakPointer<RenderTarget2D> getHDRRenderTarget() const ;
@@ -76,7 +76,9 @@ namespace Core {
 
         static Vector2r ndcToScreen(const Point3r& ndcCoords, const Vector4u& viewport);
         static Vector2r ndcToScreen(const Vector2r& ndcCoords, const Vector4u& viewport);
-        static Vector2r screenToNDC(const Vector2r& screenCoords, const Vector4u& viewport);
+        static Point3r screenToNDC(const Vector2u& screenCoords, Real ndcZ, const Vector4u& viewport);
+        static Point3r screenToNDC(UInt32 screenX, UInt32 screenY, Real ndcZ, const Vector4u& viewport);
+
 
     private:
         Camera(WeakPointer<Object3D> owner);
