@@ -270,19 +270,19 @@ namespace Core {
         matrix.copy(data);
     }
 
-    Vector2r Camera::ndcToViewport(const Point3r& ndcCoords, const Vector4u& viewport) {
-        return ndcToViewport(Vector2r(ndcCoords.x, ndcCoords.y), viewport);
+    Vector2r Camera::ndcToScreen(const Point3r& ndcCoords, const Vector4u& viewport) {
+        return ndcToScreen(Vector2r(ndcCoords.x, ndcCoords.y), viewport);
     }
 
-    Vector2r Camera::ndcToViewport(const Vector2r& ndcCoords, const Vector4u& viewport) {
+    Vector2r Camera::ndcToScreen(const Vector2r& ndcCoords, const Vector4u& viewport) {
         Real vpX =  ((ndcCoords.x + 1.0f) / 2.0f) * (Real)viewport.z;
         Real vpY =  ((ndcCoords.y + 1.0f) / 2.0f) * (Real)viewport.w;
         return Vector2r(vpX, vpY);
     }
 
-    Vector2r Camera::viewportToNDC(const Vector2r& viewportCoords, const Vector4u& viewport) {
-        Real ndcX = (viewportCoords.x / (Real)viewport.z) * 2.0f - 1.0f;
-        Real ndcY = (viewportCoords.y / (Real)viewport.w) * 2.0f - 1.0f;
+    Vector2r Camera::screenToNDC(const Vector2r& screenCoords, const Vector4u& viewport) {
+        Real ndcX = (screenCoords.x / (Real)viewport.z) * 2.0f - 1.0f;
+        Real ndcY = (screenCoords.y / (Real)viewport.w) * 2.0f - 1.0f;
         return Vector2r(ndcY, ndcY);
     }
 

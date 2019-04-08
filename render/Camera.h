@@ -72,9 +72,9 @@ namespace Core {
         static void buildPerspectiveProjectionMatrix(Real fov, Real aspectRatio, Real near, Real far, Matrix4x4& out);
         static void buildOrthographicProjectionMatrix(Real top, Real bottom, Real left, Real right, Real near, Real far, Matrix4x4& matrix);
 
-        static Vector2r ndcToViewport(const Point3r& ndcCoords, const Vector4u& viewport);
-        static Vector2r ndcToViewport(const Vector2r& ndcCoords, const Vector4u& viewport);
-        static Vector2r viewportToNDC(const Vector2r& viewportCoords, const Vector4u& viewport);
+        static Vector2r ndcToScreen(const Point3r& ndcCoords, const Vector4u& viewport);
+        static Vector2r ndcToScreen(const Vector2r& ndcCoords, const Vector4u& viewport);
+        static Vector2r screenToNDC(const Vector2r& screenCoords, const Vector4u& viewport);
 
     private:
         Camera(WeakPointer<Object3D> owner);
