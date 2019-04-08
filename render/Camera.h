@@ -46,15 +46,17 @@ namespace Core {
         void lookAt(const Point3r& target);
         void project(Vector3Base<Real>& vec) const;
         void unProject(Vector3Base<Real>& vec) const;
+        Point3r unProject(Vector2u& vec, Real ndcZ) const;
+        Point3r unProject(Real screenX, Real screenY, Real ndcZ) const;
         void setRenderTarget(WeakPointer<RenderTarget> renderTarget);
-        WeakPointer<RenderTarget> getRenderTarget();
-        WeakPointer<RenderTarget2D> getHDRRenderTarget();
+        WeakPointer<RenderTarget> getRenderTarget() const;
+        WeakPointer<RenderTarget2D> getHDRRenderTarget() const ;
         void setOrtho(Bool ortho);
         Bool isOrtho() const;
         void setAutoClearRenderBuffer(RenderBufferType type, Bool clear);
         Bool getAutoClearRenderBuffer(RenderBufferType type) const;
         IntMask getAutoClearRenderBuffers() const;
-        Ray getRay(const Vector4u& viewport, Core::Int32 x, Core::Int32 y);
+        Ray getRay(Core::Int32 x, Core::Int32 y);
         void copyFrom(WeakPointer<Camera> other);
         Skybox& getSkybox();
         void setSkybox(Skybox& skybox);
@@ -95,9 +97,9 @@ namespace Core {
         Vector4r dimensions;
 
         Matrix4x4 projectionMatrix;
-        PersistentWeakPointer<RenderTarget> renderTarget;
-        PersistentWeakPointer<RenderTarget2D> hdrRenderTarget;
         IntMask clearRenderBuffers;
+        mutable PersistentWeakPointer<RenderTarget> renderTarget;
+        mutable PersistentWeakPointer<RenderTarget2D> hdrRenderTarget;
 
         Bool skyboxEnabled;
         Skybox skybox;

@@ -7,6 +7,7 @@
 #include "../math/Quaternion.h"
 #include "../util/WeakPointer.h"
 #include "../scene/Object3D.h"
+#include "../render/RenderTarget.h"
 
 namespace Core {
 
@@ -96,15 +97,34 @@ namespace Core {
         projection.transform(vec);
     }
 
+    Point3r Camera::unProject(Vector2u& vec, Real ndcZ) const {
+        return this->unProject(vec.x, vec.y, ndcZ);
+    }
+
+    Point3r Camera::unProject(Real screenX, Real screenY, Real ndcZ) const {
+        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
+        WeakPointer<RenderTarget> cameraRenderTarget = this->getRenderTarget();
+        if (!cameraRenderTarget.isValid()) {
+            cameraRenderTarget = graphics->getDefaultRenderTarget();
+        }
+        Vector4u viewport = cameraRenderTarget->getViewport();
+        screenY = viewport.w - screenY;
+        Real ndcX = (Real)screenX / (Real)viewport.z * 2.0f - 1.0f;
+        Real ndcY = (Real)screenY / (Real)viewport.w * 2.0f - 1.0f;
+        Point3r ndcPos(ndcX, ndcY, ndcZ);
+        this->unProject(ndcPos);
+        return ndcPos;
+    }
+
     void Camera::setRenderTarget(WeakPointer<RenderTarget> renderTarget) {
         this->renderTarget = renderTarget;
     }
 
-    WeakPointer<RenderTarget> Camera::getRenderTarget() {
+    WeakPointer<RenderTarget> Camera::getRenderTarget() const {
         return this->renderTarget;
     }
     
-    WeakPointer<RenderTarget2D> Camera::getHDRRenderTarget() {
+    WeakPointer<RenderTarget2D> Camera::getHDRRenderTarget() const {
         return this->hdrRenderTarget;
     }
 
@@ -133,17 +153,12 @@ namespace Core {
         return this->clearRenderBuffers;
     }
 
-    Ray Camera::getRay(const Vector4u& viewport, Core::Int32 x, Core::Int32 y) {
-        Core::Point3r pos((Core::Real)x, (Core::Real)y, (Core::Real)-1.0f);
-
-        Core::Real ndcX = (Core::Real)pos.x / (Core::Real)viewport.z * 2.0f - 1.0f;
-        Core::Real ndcY = -((Core::Real)pos.y / (Core::Real)viewport.w * 2.0f - 1.0f);
-        Core::Point3r ndcPos(ndcX, ndcY, -1.0);
-        this->unProject(ndcPos);
+    Ray Camera::getRay(Core::Int32 x, Core::Int32 y) {
+        Core::Point3r viewPos = this->unProject(x, y, -1.0f);
         Core::Transform& camTransform = this->getOwner()->getTransform();
         camTransform.updateWorldMatrix();
 
-        Core::Point3r worldPos = ndcPos;
+        Core::Point3r worldPos = viewPos;
         camTransform.getWorldMatrix().transform(worldPos);
         Core::Point3r origin;
         camTransform.getWorldMatrix().transform(origin);
@@ -277,13 +292,13 @@ namespace Core {
     Vector2r Camera::ndcToScreen(const Vector2r& ndcCoords, const Vector4u& viewport) {
         Real vpX =  ((ndcCoords.x + 1.0f) / 2.0f) * (Real)viewport.z;
         Real vpY =  ((ndcCoords.y + 1.0f) / 2.0f) * (Real)viewport.w;
-        return Vector2r(vpX, vpY);
+        return Vector2r(vpX, (Real)viewport.w - vpY);
     }
 
     Vector2r Camera::screenToNDC(const Vector2r& screenCoords, const Vector4u& viewport) {
         Real ndcX = (screenCoords.x / (Real)viewport.z) * 2.0f - 1.0f;
         Real ndcY = (screenCoords.y / (Real)viewport.w) * 2.0f - 1.0f;
-        return Vector2r(ndcY, ndcY);
+        return Vector2r(ndcY, (Real)viewport.w - ndcY);
     }
 
     void Camera::updateProjection() {
