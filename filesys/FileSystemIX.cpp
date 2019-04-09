@@ -17,7 +17,6 @@ namespace Core {
     Char FileSystemIX::getPathSeparator() const {
         return '/';
     }
-   
   
     std::string FileSystemIX::fixupPathForLocalFilesystem(const std::string& path) const {
         const UInt32 size = (UInt32)path.size() + 1;

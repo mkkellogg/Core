@@ -2,6 +2,7 @@
 #include <unordered_map>
 
 #include "StandardUniforms.h"
+#include "../common/Exception.h"
 
 namespace Core {
     std::shared_ptr<StandardUniforms> StandardUniforms::instance = nullptr;
@@ -117,8 +118,13 @@ namespace Core {
     }
 
     void StandardUniforms::checkAndInitInstance() {
+        StandardUniforms* uniformsPtr = new(std::nothrow) StandardUniforms();
+        if (uniformsPtr == nullptr) {
+            throw AllocationException("StandardUniforms::checkAndInitInstance -> Unable to allocate StandardUniforms.");
+        }
+
         if (!instance) {
-           instance = std::shared_ptr<StandardUniforms>(new StandardUniforms());
+           instance = std::shared_ptr<StandardUniforms>(uniformsPtr);
            instance->init();
         }
     }

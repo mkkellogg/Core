@@ -74,7 +74,7 @@ namespace Core {
 
         fclose(fp);
 
-        StandardImage * rawPNG = new StandardImage(width, height);
+        StandardImage * rawPNG = new(std::nothrow) StandardImage(width, height);
         if (rawPNG == nullptr) {
             throw PNGLoaderException("PNGLoader::loadPNG() -> Could not allocate StandardImage object.");
         }

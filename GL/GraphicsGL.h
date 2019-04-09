@@ -117,6 +117,7 @@ namespace Core {
         GraphicsGL(GLVersion version);
         std::shared_ptr<RendererGL> createRenderer();
         std::shared_ptr<RenderTarget2DGL> createDefaultRenderTarget();
+        WeakPointer<Shader> addShader(ShaderGL* shaderPtr);
         void setupRenderState();
 
         GLVersion glVersion;

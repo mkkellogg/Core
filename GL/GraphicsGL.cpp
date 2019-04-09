@@ -63,13 +63,21 @@ namespace Core {
     }
 
     WeakPointer<Texture2D> GraphicsGL::createTexture2D(const TextureAttributes& attributes) {
-        std::shared_ptr<Texture2DGL> newTexture = std::shared_ptr<Texture2DGL>(new Texture2DGL(attributes));
+        Texture2DGL* newTexturePtr = new(std::nothrow) Texture2DGL(attributes);
+        if (newTexturePtr == nullptr) {
+            throw AllocationException("GraphicsGL::createTexture2D -> Unable to allocate new Texture2DGL");
+        }
+        std::shared_ptr<Texture2DGL> newTexture = std::shared_ptr<Texture2DGL>(newTexturePtr);
         this->textures2D.push_back(newTexture);
         return std::static_pointer_cast<Texture2D>(newTexture);
     }
 
     WeakPointer<CubeTexture> GraphicsGL::createCubeTexture(const TextureAttributes& attributes) {
-        std::shared_ptr<CubeTextureGL> newTexture = std::shared_ptr<CubeTextureGL>(new CubeTextureGL(attributes));
+        CubeTextureGL* newTexturePtr = new(std::nothrow) CubeTextureGL(attributes);
+        if (newTexturePtr == nullptr) {
+            throw AllocationException("GraphicsGL::createCubeTexture -> Unable to allocate new CubeTextureGL");
+        }
+        std::shared_ptr<CubeTextureGL> newTexture = std::shared_ptr<CubeTextureGL>(newTexturePtr);
         this->cubeTextures.push_back(newTexture);
         return std::static_pointer_cast<CubeTexture>(newTexture);
     }
@@ -99,28 +107,30 @@ namespace Core {
     }
 
     WeakPointer<Shader> GraphicsGL::createShader(const std::string& vertex, const std::string& fragment) {
-        std::shared_ptr<ShaderGL> shaderGL(new ShaderGL(vertex, fragment));
-        shaders.push_back(shaderGL);
-        std::shared_ptr<Shader> shader = std::static_pointer_cast<Shader>(shaderGL);
-        return shader;
+        ShaderGL* shaderPtr = new(std::nothrow) ShaderGL(vertex, fragment);
+        return this->addShader(shaderPtr);
     }
 
     WeakPointer<Shader> GraphicsGL::createShader(const std::string& vertex, const std::string& geometry, const std::string& fragment) {
-        std::shared_ptr<ShaderGL> shaderGL(new ShaderGL(vertex, geometry, fragment));
-        shaders.push_back(shaderGL);
-        std::shared_ptr<Shader> shader = std::static_pointer_cast<Shader>(shaderGL);
-        return shader;
+        ShaderGL* shaderPtr = new(std::nothrow) ShaderGL(vertex, geometry, fragment);
+        return this->addShader(shaderPtr);
     }
 
     WeakPointer<Shader> GraphicsGL::createShader(const char vertex[], const char fragment[]) {
-        std::shared_ptr<ShaderGL> shaderGL(new ShaderGL(vertex, fragment));
-        shaders.push_back(shaderGL);
-        std::shared_ptr<Shader> shader = std::static_pointer_cast<Shader>(shaderGL);
-        return shader;
+        ShaderGL* shaderPtr = new(std::nothrow) ShaderGL(vertex, fragment);
+        return this->addShader(shaderPtr);
     }
 
     WeakPointer<Shader> GraphicsGL::createShader(const char vertex[], const char geometry[], const char fragment[]) {
-        std::shared_ptr<ShaderGL> shaderGL(new ShaderGL(vertex, geometry, fragment));
+        ShaderGL* shaderPtr = new(std::nothrow) ShaderGL(vertex, geometry, fragment);
+        return this->addShader(shaderPtr);
+    }
+
+    WeakPointer<Shader> GraphicsGL::addShader(ShaderGL* shaderPtr) {
+        if (shaderPtr == nullptr) {
+            throw AllocationException("GraphicsGL::addShader -> Could not allocate new shader.");
+        }
+        std::shared_ptr<ShaderGL> shaderGL(shaderPtr);
         shaders.push_back(shaderGL);
         std::shared_ptr<Shader> shader = std::static_pointer_cast<Shader>(shaderGL);
         return shader;
@@ -727,7 +737,7 @@ namespace Core {
     }
 
     std::shared_ptr<RendererGL> GraphicsGL::createRenderer() {
-        RendererGL* renderPtr = new RendererGL();
+        RendererGL* renderPtr = new(std::nothrow) RendererGL();
         if (renderPtr == nullptr) {
             throw AllocationException("GraphicsGL::createRenderer -> Unable to allocate renderer.");
         }

@@ -1,4 +1,5 @@
 #include "StandardAttributes.h"
+#include "../common/Exception.h"
 
 namespace Core {
 
@@ -57,8 +58,13 @@ namespace Core {
     }
 
     void StandardAttributes::checkAndInitInstance() {
+        StandardAttributes* attributesPtr = new(std::nothrow) StandardAttributes();
+        if (attributesPtr == nullptr) {
+            throw AllocationException("StandardAttributes::checkAndInitInstance -> Unable to allocate StandardAttributes.");
+        }
+
         if (!instance) {
-           instance = std::shared_ptr<StandardAttributes>(new StandardAttributes());
+           instance = std::shared_ptr<StandardAttributes>(attributesPtr);
            instance->init();
         }
     }

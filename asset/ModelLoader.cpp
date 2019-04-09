@@ -114,7 +114,7 @@ namespace Core {
         std::vector<MaterialImportDescriptor> materialImportDescriptors;
 
         // verify that we have a valid scene
-        if (scene.mRootNode == nullptr) throw new ModelLoaderException("ModelLoader::processModelScene -> Assimp scene root is null.");
+        if (scene.mRootNode == nullptr) throw ModelLoaderException("ModelLoader::processModelScene -> Assimp scene root is null.");
         
         std::shared_ptr<FileSystem> fileSystem = FileSystem::getInstance();
         std::string fixedModelPath = fileSystem->fixupPathForLocalFilesystem(modelPath);

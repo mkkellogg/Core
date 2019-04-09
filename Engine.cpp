@@ -48,6 +48,8 @@ namespace Core {
     void Engine::init() {
 
         cleanup();
+
+        // TODO: make this configurable so that it is not hard-coded to use OpenGL
         std::shared_ptr<GraphicsGL> graphicsSystem(new GraphicsGL(GraphicsGL::GLVersion::Three));
         this->graphics = std::static_pointer_cast<Graphics>(graphicsSystem);
         this->graphics->init();
@@ -165,13 +167,21 @@ namespace Core {
 
     WeakPointer<Scene> Engine::createScene() {
         WeakPointer<Object3D> newRoot = this->createObject3D<Object3D>();
-        std::shared_ptr<Scene> newScene = std::shared_ptr<Scene>(new Scene(newRoot));
+        Scene* newScenePtr = new(std::nothrow) Scene(newRoot);
+        if (newScenePtr == nullptr) {
+            throw AllocationException("Engine::createScene -> Unable to allocate new Scene");
+        }
+        std::shared_ptr<Scene> newScene = std::shared_ptr<Scene>(newScenePtr);
         this->scenes.push_back(newScene);
         return newScene;
     }
 
     WeakPointer<Mesh> Engine::createMesh(UInt32 size, UInt32 indexCount) {
-        std::shared_ptr<Mesh> newMesh = std::shared_ptr<Mesh>(new Mesh(this->graphics, size, indexCount));
+        Mesh* newMeshPtr = new(std::nothrow) Mesh(this->graphics, size, indexCount);
+        if (newMeshPtr == nullptr) {
+            throw AllocationException("Engine::createMesh -> Unable to allocate new Mesh");
+        }
+        std::shared_ptr<Mesh> newMesh = std::shared_ptr<Mesh>(newMeshPtr);
         newMesh->init();
         this->meshes.push_back(newMesh);
         return newMesh;
@@ -210,7 +220,11 @@ namespace Core {
     }
 
     WeakPointer<ReflectionProbe> Engine::createReflectionProbe(WeakPointer<Object3D> owner) {
-        std::shared_ptr<ReflectionProbe> newReflectionProbe = std::shared_ptr<ReflectionProbe>(new ReflectionProbe(owner));
+        ReflectionProbe* newReflectionProbePtr = new(std::nothrow) ReflectionProbe(owner);
+        if (newReflectionProbePtr == nullptr) {
+            throw AllocationException("Engine::createReflectionProbe -> Unable to allocate new ReflectionProbe");
+        }
+        std::shared_ptr<ReflectionProbe> newReflectionProbe = std::shared_ptr<ReflectionProbe>(newReflectionProbePtr);
         newReflectionProbe->init();
         this->reflectionProbes.push_back(newReflectionProbe);
         WeakPointer<ReflectionProbe> probePtr(newReflectionProbe);
