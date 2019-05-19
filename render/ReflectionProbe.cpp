@@ -1,12 +1,13 @@
 #include "ReflectionProbe.h"
 #include "../geometry/Vector2.h"
+#include "../geometry/GeometryUtils.h"
+#include "../geometry/Mesh.h"
 #include "../image/TextureAttr.h"
 #include "../render/Camera.h"
 #include "../render/RenderTargetCube.h"
 #include "../material/IrradianceRendererMaterial.h"
 #include "../material/SpecularIBLPreFilteredRendererMaterial.h"
 #include "../material/SpecularIBLBRDFRendererMaterial.h"
-#include "../geometry/GeometryUtils.h"
 #include "../scene/Object3D.h"
 
 namespace Core {

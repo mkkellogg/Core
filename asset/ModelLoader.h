@@ -12,6 +12,7 @@
 
 #include "../util/WeakPointer.h"
 #include "../image/ImageLoader.h"
+#include "../image/TextureAttr.h"
 #include "../base/BitMask.h"
 #include "../common/Exception.h"
 #include "../common/types.h"
@@ -27,6 +28,8 @@ namespace Core {
     class Material;
     class Engine;
     class Mesh;
+    class Skeleton;
+    class VertexBoneMap;
 
     class ModelLoader {
     public:
@@ -100,9 +103,21 @@ namespace Core {
         WeakPointer<Mesh> convertAssimpMesh(UInt32 meshIndex, const aiScene& scene, MaterialImportDescriptor& materialImportDescriptor, Bool invert, UInt32 smoothingThreshold) const;
         
         static ModelLoader::TextureType convertAITextureKeyToTextureType(Int32 aiTextureKey);
-        static int convertTextureTypeToAITextureKey(TextureType textureType);
-        static Bool hasOddReflections(Matrix4x4& mat);                            
+        static int convertTextureTypeToAITextureKey(TextureType textureType);                      
         static StandardAttribute mapTextureTypeToAttribute(TextureType textureType);
+
+        //void setupVertexBoneMapForRenderer(const aiScene& scene, WeakPointer<Skeleton> skeleton, SkinnedMesh3DRendererSharedPtr target, Bool reverseVertexOrder) const;
+        //VertexBoneMap * expandIndexBoneMapping(VertexBoneMap& indexBoneMap, const aiMesh& mesh, Bool reverseVertexOrder) const;
+        WeakPointer<Skeleton> loadSkeleton(const aiScene& scene) const;
+        void addMeshBoneMappingsToSkeleton(WeakPointer<Skeleton> skeleton, const aiMesh& mesh, UInt32& currentBoneIndex) const;
+        void setupVertexBoneMapMappingsFromAIMesh(WeakPointer<const Skeleton> skeleton, const aiMesh& mesh, VertexBoneMap& vertexIndexBoneMap) const;
+        UInt32 countBones(const aiScene& scene) const;
+        Bool createAndMapNodeHierarchy(WeakPointer<Skeleton> skeleton, const aiScene& scene) const;
+
+        void traverseScene(const aiScene& scene, SceneTraverseOrder traverseOrder, std::function<Bool(const aiNode&)> callback) const;
+        void preOrderTraverseScene(const aiScene& scene, const aiNode& node, std::function<Bool(const aiNode&)> callback) const;
+
+        static Bool hasOddReflections(Matrix4x4& mat);      
         static void convertAssimpMatrix(const aiMatrix4x4& source, Matrix4x4& dest);                  
 #endif
 

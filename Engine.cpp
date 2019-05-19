@@ -4,11 +4,12 @@
 
 #include "Engine.h"
 #include "common/debug.h"
+#include "util/Time.h"
+#include "GL/GraphicsGL.h"
 #include "geometry/Vector3.h"
 #include "math/Math.h"
 #include "math/Quaternion.h"
-#include "util/Time.h"
-#include "GL/GraphicsGL.h"
+#include "animation/Skeleton.h"
 #include "render/BaseObjectRenderer.h"
 #include "render/ReflectionProbe.h"
 #include "scene/Scene.h"
@@ -174,6 +175,17 @@ namespace Core {
         std::shared_ptr<Scene> newScene = std::shared_ptr<Scene>(newScenePtr);
         this->scenes.push_back(newScene);
         return newScene;
+    }
+    
+    WeakPointer<Skeleton> Engine::createSkeleton(UInt32 boneCount) {
+        Skeleton * newSkeletonPtr = new(std::nothrow) Skeleton(boneCount);
+        if (newSkeletonPtr == nullptr) {
+            throw AllocationException("Engine::createSkeleton -> Could not allocate new skeleton.");
+        }
+        std::shared_ptr<Skeleton> newSkeleton = std::shared_ptr<Skeleton>(newSkeletonPtr);
+        newSkeleton->init();
+        this->skeletons.push_back(newSkeleton);
+        return newSkeleton;
     }
 
     WeakPointer<Mesh> Engine::createMesh(UInt32 size, UInt32 indexCount) {

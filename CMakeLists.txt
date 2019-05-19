@@ -22,6 +22,10 @@ set(INCLUDE_DIRS
     GL)
 
 set(INCLUDE_FILES
+    animation/Bone.h
+    animation/Skeleton.h
+    animation/VertexBoneMap.h
+    animation/Object3DSkeletonNode.h
     base/VectorStorage.h
     base/BaseVector.h
     base/BitMask.h
@@ -137,6 +141,7 @@ set(INCLUDE_FILES
     util/PersistentWeakPointer.h
     util/ValueIterator.h
     util/ObjectPool.h
+    util/Tree.h
     math/Math.h
     math/Quaternion.h
     math/Matrix4x4.h
@@ -154,6 +159,10 @@ set(INCLUDE_FILES
     Engine.h)
 
 set(SOURCE_FILES
+    animation/Bone.cpp
+    animation/Skeleton.cpp
+    animation/VertexBoneMap.cpp
+    animation/Object3DSkeletonNode.cpp
     base/CoreObject.cpp
     base/BaseVector.cpp
     common/Debug.cpp

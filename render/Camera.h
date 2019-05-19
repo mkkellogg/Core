@@ -79,7 +79,6 @@ namespace Core {
         static Point3r screenToNDC(const Vector2u& screenCoords, Real ndcZ, const Vector4u& viewport);
         static Point3r screenToNDC(UInt32 screenX, UInt32 screenY, Real ndcZ, const Vector4u& viewport);
 
-
     private:
         Camera(WeakPointer<Object3D> owner);
         void updateProjection();

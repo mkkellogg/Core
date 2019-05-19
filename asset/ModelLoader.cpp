@@ -25,6 +25,11 @@
 #include "../material/ShaderMaterialCharacteristic.h"
 #include "../render/MeshRenderer.h"
 #include "../render/RenderableContainer.h"
+#include "../animation/Bone.h"
+#include "../animation/Skeleton.h"
+#include "../animation/Object3DSkeletonNode.h"
+#include "../animation/VertexBoneMap.h"
+#include "../geometry/Mesh.h"
 #include "ModelLoader.h"
 
 namespace Core {
@@ -883,6 +888,221 @@ namespace Core {
         else if (textureType == TextureType::Albedo)
             aiTextureKey = aiTextureType_DIFFUSE;
         return aiTextureKey;
+    }
+
+    /*void ModelImporter::setupVertexBoneMapForRenderer(const aiScene& scene, SkeletonSharedPtr skeleton, SkinnedMesh3DRendererSharedPtr target, Bool reverseVertexOrder) const {
+        for (UInt32 m = 0; m < scene.mNumMeshes; m++) {
+            aiMesh * cMesh = scene.mMeshes[m];
+            if (cMesh != nullptr && cMesh->mNumBones > 0) {
+                VertexBoneMap indexBoneMap(cMesh->mNumVertices, cMesh->mNumVertices);
+
+                Bool mapInitSuccess = indexBoneMap.Init();
+                if (!mapInitSuccess) {
+                    Debug::PrintError("ModelImporter::SetupVertexBoneMapForRenderer -> Could not initialize index bone map.");
+                }
+
+                SetupVertexBoneMapMappingsFromAIMesh(skeleton, *cMesh, indexBoneMap);
+
+                VertexBoneMap * fullBoneMap = ExpandIndexBoneMapping(indexBoneMap, *cMesh, reverseVertexOrder);
+                if (fullBoneMap == nullptr) {
+                    Debug::PrintError("ModelImporter::SetupVertexBoneMapForRenderer -> Could not create full vertex bone map.");
+                }
+
+                target->AddVertexBoneMap(fullBoneMap);
+            }
+            else {
+                target->AddVertexBoneMap(nullptr);
+            }
+        }
+    }
+    
+    VertexBoneMap * ModelLoader::expandIndexBoneMapping(VertexBoneMap& indexBoneMap, const aiMesh& mesh, Bool reverseVertexOrder) const {
+        VertexBoneMap * fullBoneMap = new(std::nothrow) VertexBoneMap(mesh.mNumFaces * 3, mesh.mNumVertices);
+        if (fullBoneMap == nullptr) {
+            Debug::PrintError("ModelImporter::ExpandIndexBoneMapping -> Could not allocate vertex bone map.");
+            return nullptr;
+        }
+
+        Bool mapInitSuccess = fullBoneMap->Init();
+        if (!mapInitSuccess) {
+            Debug::PrintError("ModelImporter::ExpandIndexBoneMapping -> Could not initialize vertex bone map.");
+            return nullptr;
+        }
+
+        unsigned fullIndex = 0;
+        for (UInt32 f = 0; f < mesh.mNumFaces; f++) {
+            aiFace& face = mesh.mFaces[f];
+
+            Int32 start, end, inc;
+            if (!reverseVertexOrder) {
+                start = face.mNumIndices - 1; end = -1; inc = -1;
+            }
+            else {
+                start = 0; end = face.mNumIndices; inc = 1;
+            }
+            // ** IMPORTANT ** Iterate through face vertices in reverse order. This is necessary because
+            // vertices are stored in counter-clockwise order for each face. if [reverseVertexOrder] == true,
+            // then we iterate in normal forward order
+            for (Int32 i = start; i != end; i += inc) {
+                UInt32 vertexIndex = face.mIndices[i];
+                fullBoneMap->GetDescriptor(fullIndex)->SetTo(indexBoneMap.GetDescriptor(vertexIndex));
+                fullIndex++;
+            }
+        }
+
+        return fullBoneMap;
+    }
+    */
+
+    WeakPointer<Skeleton> ModelLoader::loadSkeleton(const aiScene& scene) const {
+        UInt32 boneCount = this->countBones(scene);
+        if (boneCount <= 0) {
+            return WeakPointer<Skeleton>::nullPtr();
+        }
+
+        WeakPointer<Skeleton> target = Engine::instance()->createSkeleton(boneCount);
+        ASSERT(target.isValid(), "ModelImporter::loadSkeleton -> Could not allocate skeleton.");
+
+        UInt32 boneIndex = 0;
+        for (UInt32 m = 0; m < scene.mNumMeshes; m++) {
+            aiMesh * cMesh = scene.mMeshes[m];
+            if (cMesh != nullptr && cMesh->mNumBones > 0) {
+                this->addMeshBoneMappingsToSkeleton(target, *cMesh, boneIndex);
+            }
+        }
+
+        Bool hierarchysuccess = this->createAndMapNodeHierarchy(target, scene);
+        ASSERT(hierarchysuccess, "ModelImporter::loadSkeleton -> Could not create node hierarchy.");
+
+        return target;
+    }
+
+    void ModelLoader::addMeshBoneMappingsToSkeleton(WeakPointer<Skeleton> skeleton, const aiMesh& mesh, UInt32& currentBoneIndex) const {
+        ASSERT(skeleton.isValid(), "ModelImporter::addMeshBoneMappingsToSkeleton -> skeleton is invalid.");
+
+        for (UInt32 b = 0; b < mesh.mNumBones; b++) {
+            aiBone * cBone = mesh.mBones[b];
+            if (cBone != nullptr) {
+                std::string boneName = std::string(cBone->mName.C_Str());
+
+                if (skeleton->getBoneMapping(boneName) == -1) {
+                    skeleton->mapBone(boneName, currentBoneIndex);
+
+                    Matrix4x4 offsetMatrix;
+                    ModelLoader::convertAssimpMatrix(cBone->mOffsetMatrix, offsetMatrix);
+
+                    skeleton->getBone(currentBoneIndex)->Name = boneName;
+                    skeleton->getBone(currentBoneIndex)->ID = currentBoneIndex;
+                    skeleton->getBone(currentBoneIndex)->OffsetMatrix.copy(offsetMatrix);
+
+                    currentBoneIndex++;
+                }
+            }
+        }
+    }
+
+    void ModelLoader::setupVertexBoneMapMappingsFromAIMesh(WeakPointer<const Skeleton> skeleton, const aiMesh& mesh, VertexBoneMap& vertexIndexBoneMap) const {
+        ASSERT(skeleton.isValid(), "ModelImporter::setupVertexBoneMapMappingsFromAIMesh -> skeleton is invalid.");
+
+        for (UInt32 b = 0; b < mesh.mNumBones; b++) {
+            aiBone * cBone = mesh.mBones[b];
+            if (cBone != nullptr) {
+                std::string boneName = std::string(cBone->mName.C_Str());
+                UInt32 boneIndex = skeleton->getBoneMapping(boneName);
+
+                for (UInt32 w = 0; w < cBone->mNumWeights; w++) {
+                    aiVertexWeight& weightDesc = cBone->mWeights[w];
+
+                    UInt32 vertexID = weightDesc.mVertexId;
+                    Real weight = weightDesc.mWeight;
+
+                    VertexBoneMap::VertexMappingDescriptor * desc = vertexIndexBoneMap.getDescriptor(vertexID);
+                    if (desc != nullptr && desc->BoneCount < Constants::MaxBonesPerVertex) {
+                        desc->UniqueVertexIndex = vertexID;
+                        desc->BoneIndex[desc->BoneCount] = boneIndex;
+                        desc->Weight[desc->BoneCount] = weight;
+                        desc->Name[desc->BoneCount] = boneName;
+                        desc->BoneCount++;
+                    }
+                }
+            }
+        }
+    }
+
+    UInt32 ModelLoader::countBones(const aiScene& scene) const {
+        UInt32 boneCount = 0;
+        std::unordered_map<std::string, UInt32> boneCountMap;
+        for (UInt32 m = 0; m < scene.mNumMeshes; m++) {
+            aiMesh * cMesh = scene.mMeshes[m];
+            if (cMesh != nullptr && cMesh->mNumBones > 0) {
+                for (UInt32 b = 0; b < cMesh->mNumBones; b++) {
+                    std::string boneName(cMesh->mBones[b]->mName.C_Str());
+                    if (boneCountMap.find(boneName) == boneCountMap.end()) {
+                        boneCountMap[boneName] = 1;
+                        boneCount++;
+                    }
+                }
+            }
+        }
+
+        return boneCount;
+    }
+
+    Bool ModelLoader::createAndMapNodeHierarchy(WeakPointer<Skeleton> skeleton, const aiScene& scene) const {
+        Object3DSkeletonNode * skeletonNodePtr = new(std::nothrow) Object3DSkeletonNode(WeakPointer<Object3D>::nullPtr(), -1, "");
+        if (skeletonNodePtr == nullptr) {
+            throw AllocationException("ModelImporter::createAndMapNodeHierarchy -> Could not allocate skeleton root node.");
+        }
+
+        Tree<Skeleton::SkeletonNode*>::TreeNode * lastNode = skeleton->createRoot(skeletonNodePtr);
+        ASSERT(lastNode != nullptr, "ModelImporter::createAndMapNodeHierarchy -> Could not create skeleton root node.");
+
+        Skeleton * skeletonPtr = skeleton.get();
+        Bool success = true;
+        this->traverseScene(scene, SceneTraverseOrder::PreOrder, [skeletonPtr, lastNode, &success](const aiNode& node) -> Bool {
+            std::string boneName(node.mName.C_Str());
+            Int32 mappedBoneIndex = skeletonPtr->getBoneMapping(boneName);
+
+            Object3DSkeletonNode * childSkeletonNodePtr = new(std::nothrow) Object3DSkeletonNode(WeakPointer<Object3D>::nullPtr(), mappedBoneIndex, boneName);
+            if (childSkeletonNodePtr == nullptr) {
+                throw AllocationException("ModelImporter::createAndMapNodeHierarchy -> Could not allocate skeleton child node.");
+            }
+
+            skeletonPtr->mapNode(boneName, skeletonPtr->getNodeCount());
+            skeletonPtr->addNodeToList(childSkeletonNodePtr);
+
+            Tree<Skeleton::SkeletonNode*>::TreeNode * childNode = skeletonPtr->addChild(lastNode, childSkeletonNodePtr);
+            ASSERT(childNode != nullptr, "ModelImporter::createAndMapNodeHierarchy -> Could not create skeleton child node.");
+
+            if (mappedBoneIndex >= 0) {
+                Bone * bone = skeletonPtr->getBone(mappedBoneIndex);
+                bone->Node = childSkeletonNodePtr;
+            }
+
+            return true;
+        });
+
+        return success;
+    }
+
+    void ModelLoader::traverseScene(const aiScene& scene, SceneTraverseOrder traverseOrder, std::function<Bool(const aiNode&)> callback) const {
+        if (scene.mRootNode != nullptr) {
+            const aiNode& sceneRef = (const aiNode&)(*(scene.mRootNode));
+            if (traverseOrder == SceneTraverseOrder::PreOrder)
+                this->preOrderTraverseScene(scene, sceneRef, callback);
+        }
+    }
+
+    void ModelLoader::preOrderTraverseScene(const aiScene& scene, const aiNode& node, std::function<Bool(const aiNode&)> callback) const {
+        Bool doContinue = callback(node);
+        if (!doContinue)return;
+
+        for (UInt32 i = 0; i < node.mNumChildren; i++) {
+            aiNode* childNode = node.mChildren[i];
+            if (childNode != nullptr) {
+                this->preOrderTraverseScene(scene, (const aiNode&)(*(childNode)), callback);
+            }
+        }
     }
 
     /*

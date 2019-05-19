@@ -5,7 +5,6 @@
 
 #include "util/PersistentWeakPointer.h"
 #include "scene/Object3D.h"
-#include "geometry/Mesh.h"
 #include "asset/ModelLoader.h"
 #include "geometry/Vector4.h"
 #include "image/TextureAttr.h"
@@ -28,6 +27,8 @@ namespace Core {
     class Camera;
     class Scene;
     class ReflectionProbe;
+    class Skeleton;
+    class Mesh;
 
     class Engine final {
     public:
@@ -98,6 +99,7 @@ namespace Core {
             return objPtr;
         }
 
+        WeakPointer<Skeleton> createSkeleton(UInt32 boneCount);
         WeakPointer<Mesh> createMesh(UInt32 size, UInt32 indexCount);
 
         template <typename T, typename R>
@@ -154,6 +156,7 @@ namespace Core {
         std::vector<std::shared_ptr<Object3D>> sceneObjects;
         std::vector<std::shared_ptr<Material>> materials;
         std::vector<std::shared_ptr<BaseObjectRenderer>> objectRenderers;
+        std::vector<std::shared_ptr<Skeleton>> skeletons;
         std::vector<std::shared_ptr<Mesh>> meshes;
         std::vector<std::shared_ptr<ReflectionProbe>> reflectionProbes;
 

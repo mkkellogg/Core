@@ -27,6 +27,7 @@
 #include "../math/Quaternion.h"
 #include "../light/PointLight.h"
 #include "../light/AmbientIBLLight.h"
+#include "../geometry/Mesh.h"
 #include "ReflectionProbe.h"
 
 
