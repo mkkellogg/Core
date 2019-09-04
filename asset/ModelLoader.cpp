@@ -132,6 +132,9 @@ namespace Core {
             throw ModelLoaderException("ModelLoader::processModelScene -> processMaterials() returned an error.");
         }
 
+        // pull the skeleton data from the scene/model (if it exists)
+        WeakPointer<Skeleton> skeleton = this->loadSkeleton(scene);
+
         // container for all the SceneObject instances that get created during this process
         std::vector<WeakPointer<Object3D>> createdSceneObjects;
 
@@ -140,15 +143,15 @@ namespace Core {
         // any time meshes or mesh renderers are created, the information in [materialImportDescriptors]
         // will be used to link their materials and textures as appropriate.
 
-        WeakPointer <Object3D> root = recursiveProcessModelScene(scene, *(scene.mRootNode), materialImportDescriptors, createdSceneObjects,
-                                                                 smoothingThreshold, castShadows, receiveShadows);
+        WeakPointer <Object3D> root = recursiveProcessModelScene(scene, *(scene.mRootNode), materialImportDescriptors, skeleton, 
+                                                                 createdSceneObjects, smoothingThreshold, castShadows, receiveShadows);
         root->getTransform().getLocalMatrix().scale(importScale, importScale, importScale);
 
         // deactivate the root scene object so that it is not immediately
         // active or visible in the scene after it has been loaded
         root->setActive(false);
 
-        // loop through each instance of SceneObject that was created in the call to RecursiveProcessModelScene()
+        // loop through each instance of SceneObject that was created in the call to recursiveProcessModelScene()
         // and for each instance that contains a SkinnedMesh3DRenderer instance, clone the Skeleton instance
         // created earlier in the call to LoadSkeleton() and assign the cloned skeleton to that renderer.
         for (UInt32 s = 0; s < createdSceneObjects.size(); s++) {
@@ -181,6 +184,7 @@ namespace Core {
 
     WeakPointer<Object3D> ModelLoader::recursiveProcessModelScene(const aiScene& scene, const aiNode& node,
                                                                   std::vector<MaterialImportDescriptor>& materialImportDescriptors,
+                                                                  WeakPointer<Skeleton> skeleton,
                                                                   std::vector<WeakPointer<Object3D>>& createdSceneObjects, 
                                                                   UInt32 smoothingThreshold, Bool castShadows, Bool receiveShadows) const {
         WeakPointer<Object3D> nodeObject;
@@ -193,11 +197,24 @@ namespace Core {
         ModelLoader::convertAssimpMatrix(matBaseTransformation, mat);
         nodeObject->getTransform().getLocalMatrix().copy(mat);
 
+        // determine if [skeleton] is valid
+        Bool hasSkeleton = skeleton.isValid() && skeleton->getBoneCount() > 0 ? true : false;
+
+        std::vector<UInt32> boneCounts;
         std::queue<WeakPointer<Mesh>> tempMeshes;
         std::queue<std::string> tempMeshNames;
         WeakPointer<Material> lastMaterial;
         // are there any meshes in the model/scene?
         if (node.mNumMeshes > 0) {
+
+            // loop through each mesh on this node and check for any bones.
+            for (UInt32 n = 0; n < node.mNumMeshes; n++) {
+                UInt32 sceneMeshIndex = node.mMeshes[n];
+                const aiMesh* mesh = scene.mMeshes[sceneMeshIndex];
+                boneCounts.push_back(mesh->mNumBones);
+                //if (mesh->mNumBones > 0)requiresSkinnedRenderer = true && hasSkeleton;
+            }
+
             // loop through each Assimp mesh attached to the current Assimp node and
             // create a Mesh instance for it
             for (UInt32 n = 0; n <= node.mNumMeshes; n++) {
@@ -254,37 +271,54 @@ namespace Core {
 
                     WeakPointer<MeshRenderer> meshRenderer = Engine::instance()->createRenderer<MeshRenderer>(lastMaterial, meshContainer);
                     nodeObject->addChild(meshContainer);
-
                     createdSceneObjects.push_back(meshContainer);
-
                     newChildrenCount++;
                 }
 
                 lastMaterial = material;
             }
 
-            /*Mesh3DFilterSharedPtr filter = engineObjectManager->CreateMesh3DFilter();
-            NONFATAL_ASSERT(filter.IsValid(), "ModelImporter::RecursiveProcessModelScene -> Unable to create mesh#D filter object.", false);
-
-            // set shadow properties
-            filter->SetCastShadows(castShadows);
-            filter->SetReceiveShadows(receiveShadows);
-            filter->SetMesh3D(mesh3D);
-            sceneObject->SetMesh3DFilter(filter);
-
-            sceneObject->SetRenderer(GTE::DynamicCastEngineObject<GTE::Mesh3DRenderer, GTE::Renderer>(meshRenderer));*/
+            if (hasSkeleton) {
+                this->mapSkeletonNodeToObject3D(skeleton, std::string(node.mName.C_Str()), nodeObject, mat);
+            }
         }
 
         for (UInt32 i = 0; i < node.mNumChildren; i++) {
             const aiNode* childNode = node.mChildren[i];
             if (childNode != nullptr) {
-                WeakPointer<Object3D> childObject = this->recursiveProcessModelScene(scene, *childNode, materialImportDescriptors, createdSceneObjects, 
-                                                                                     smoothingThreshold, castShadows, receiveShadows);
+                WeakPointer<Object3D> childObject = this->recursiveProcessModelScene(scene, *childNode, materialImportDescriptors, skeleton, 
+                                                                                     createdSceneObjects, smoothingThreshold, castShadows, receiveShadows);
                 nodeObject->addChild(childObject);
             }
         }
 
         return nodeObject;
+    }
+
+    void ModelLoader::mapSkeletonNodeToObject3D(WeakPointer<Skeleton> skeleton, const std::string& nodeName, WeakPointer<Object3D> object3D, const Matrix4x4& mat) const{
+        Int32 nodeMapping = skeleton->getNodeMapping(nodeName);
+        if (nodeMapping >= 0) {
+            Skeleton::SkeletonNode * node = skeleton->getNodeFromList(nodeMapping);
+            if (node != nullptr) {
+                node->InitialTransform = mat;
+
+                Vector3r scale;
+                Vector3r translation;
+                Quaternion rotation;
+
+                // set the initial transformation properties
+                mat.decompose(translation, rotation, scale);
+                node->InitialTranslation = translation;
+                node->InitialRotation = rotation;
+                node->InitialScale = scale;
+
+                // if this skeleton node has a SceneObject target, then set it to [sceneObject]
+                Object3DSkeletonNode *soskNode = dynamic_cast<Object3DSkeletonNode*>(node);
+                if (soskNode != nullptr) {
+                    soskNode->Target = object3D;
+                }
+            }
+        }
     }
 
     /**

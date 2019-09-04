@@ -97,9 +97,12 @@ namespace Core {
         Bool setupMeshSpecificMaterialWithTextures(const aiMaterial& assimpMaterial, WeakPointer<Texture> diffuseTexture,
                                                   WeakPointer<Texture> normalsTexture, WeakPointer<Texture> roughnessGlossTexture,
                                                   UInt32 meshIndex, MaterialImportDescriptor& materialImportDesc) const;
-        WeakPointer<Object3D> recursiveProcessModelScene(const aiScene& scene, const aiNode& node, std::vector<MaterialImportDescriptor>& materialImportDescriptors,
+        WeakPointer<Object3D> recursiveProcessModelScene(const aiScene& scene, const aiNode& node,
+                                                         std::vector<MaterialImportDescriptor>& materialImportDescriptors,
+                                                         WeakPointer<Skeleton> skeleton,
                                                          std::vector<WeakPointer<Object3D>>& createdSceneObjects, 
                                                          UInt32 smoothingThreshold, Bool castShadows, Bool receiveShadows) const;
+        void mapSkeletonNodeToObject3D(WeakPointer<Skeleton> skeleton, const std::string& nodeName, WeakPointer<Object3D> object3D, const Matrix4x4& mat) const;
         WeakPointer<Mesh> convertAssimpMesh(UInt32 meshIndex, const aiScene& scene, MaterialImportDescriptor& materialImportDescriptor, Bool invert, UInt32 smoothingThreshold) const;
         
         static ModelLoader::TextureType convertAITextureKeyToTextureType(Int32 aiTextureKey);

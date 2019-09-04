@@ -19,6 +19,7 @@ namespace Core {
      * concatenated with the transforms of all its ancestors.
      */
     const Transform * Object3DSkeletonNode::getFullTransform() const {
+        ASSERT(false, "Revisit this!!!");
         ASSERT(this->Target.isValid(), "Object3DSkeletonNode::getFullTransform -> Node does not have a valid target.");
         WeakPointer<Object3D> target = this->Target;
         return &target->getTransform();
