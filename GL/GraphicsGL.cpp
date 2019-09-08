@@ -617,7 +617,6 @@ namespace Core {
                 return GL_DEPTH_COMPONENT32;
 
         }
-
         return GL_RGBA8;
     }
 

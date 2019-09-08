@@ -528,9 +528,11 @@ namespace Core {
             "const int POINT_LIGHT = 3;\n"
             "const int SPOT_LIGHT = 4;\n"
             "const int PLANAR_LIGHT = 5;\n"
+
             "float calDirShadowFactorSingleIndex(int index, vec2 uv, float fragDepth, float angularBias, int lightIndex) { \n"
             "    vec3 coords = vec3(uv.xy, fragDepth - angularBias - " + LIGHT_CONSTANT_SHADOW_BIAS + "[lightIndex]); \n"
-            "    float shadowDepth = clamp(texture(" + LIGHT_SHADOW_MAP + "[index], coords), 0.0, 1.0); \n"
+           //"    float shadowDepth = clamp(texture(" + LIGHT_SHADOW_MAP + "[index], coords), 0.0, 1.0); \n"
+           "     float shadowDepth = 1.0; \n"
             "    return (1.0-shadowDepth); \n"
             "} \n"
 
@@ -578,7 +580,8 @@ namespace Core {
             "} \n"
 
             "float getPointLightShadowFactor(vec3 lightLocalPos, float bias, int lightIndex) { \n"
-            "   vec4 shadowDepthVec = texture(" + LIGHT_SHADOW_CUBE_MAP + "[lightIndex], lightLocalPos);\n"
+           // "   vec4 shadowDepthVec = texture(" + LIGHT_SHADOW_CUBE_MAP + "[lightIndex], lightLocalPos);\n"
+           "    vec4 shadowDepthVec = vec4(1000.0, 0.0, 0.0, 0.0); \n"
             "   float shadowDepth = shadowDepthVec.r;\n"
             "   float shadowFactor = 0.0; \n"
             "   if (shadowDepth + bias > length(lightLocalPos) || shadowDepth < .001) {\n"
@@ -821,24 +824,24 @@ namespace Core {
             "        vec3 F0 = vec3(0.04); \n "
             "        F0 = mix(F0, albedo.rgb, metallic); \n " 
             "        if (" + LIGHT_TYPE + "[lightIndex] == AMBIENT_LIGHT) {\n"
-            "            return vec4(albedo.rgb * " + LIGHT_COLOR + "[lightIndex].rgb * " + LIGHT_INTENSITY + "[lightIndex], albedo.a);\n"
+             "            return vec4(albedo.rgb * " + LIGHT_COLOR + "[lightIndex].rgb * " + LIGHT_INTENSITY + "[lightIndex], albedo.a);\n"
             "        }\n"
             "        else if (" + LIGHT_TYPE + "[lightIndex] == AMBIENT_IBL_LIGHT) {\n"
             "             vec3 irradiance = texture(" + LIGHT_IRRADIANCE_MAP + "[lightIndex], worldNormal).rgb; \n"
+
             "             vec3 F = fresnelSchlickRoughness(max(dot(worldNormal, V), 0.0), F0, roughness);  \n"
             "             vec3 kS = F; \n"
             "             vec3 kD = 1.0 - kS;  \n"
             "             vec3 diffuseIBL  = irradiance * albedo.rgb;  \n"
-            
+
             "             vec3 R = reflect(-V, worldNormal); \n"
             "             kD *= 1.0 - metallic; \n"
-        
-            "             vec3 prefilteredColor = textureLod(" + LIGHT_SPECULAR_IBL_PREFILTERED_MAP + "[lightIndex], R,  roughness * MAX_REFLECTION_LOD).rgb; \n"   
+
+            "             vec3 prefilteredColor = textureLod(" + LIGHT_SPECULAR_IBL_PREFILTERED_MAP + "[lightIndex], R, roughness * MAX_REFLECTION_LOD).rgb; \n"
             "             vec2 envBRDF  = texture(" + LIGHT_SPECULAR_IBL_BRDF_MAP + "[lightIndex], vec2(max(dot(worldNormal, V), 0.0), roughness)).rg; \n"
             "             vec3 specularIBL = prefilteredColor * F * (envBRDF.x + envBRDF.y); \n"
             "             vec3 ambient = (kD * diffuseIBL + specularIBL) * ao; \n"
             "             return vec4(max(ambient, 0.0), 1.0); \n"
-
             "        }\n"
             "        else { \n"
             "            vec3 lightLocalPos, toLight, halfwayVec, radiance; \n"
@@ -871,7 +874,7 @@ namespace Core {
             "            vec3 ambient = vec3(0.03) * albedo.rgb * ao; \n"
             "            vec3 color = ambient + Lo;  \n"
 
-            "            return vec4(color, albedo.a); \n" 
+            "            return vec4(color, albedo.a); \n"
             "        }\n"
             "    }\n"
             "    return albedo;\n"
@@ -1506,7 +1509,7 @@ namespace Core {
             "in vec2 vUV;\n"
             "out vec4 out_color;\n"
             "void main() {\n"
-            "    vec4 textureColor = texture2D(twoDtexture, vUV);\n"
+            "    vec4 textureColor = texture(twoDtexture, vUV);\n"
             "    out_color = textureColor;\n"
             "}\n";
 

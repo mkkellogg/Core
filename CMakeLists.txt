@@ -177,7 +177,6 @@ set(SOURCE_FILES
     image/Texture2D.cpp
     image/TextureAttr.cpp
     image/CubeTexture.cpp
-    image/PNGLoader.cpp
     image/ImagePainter.cpp
     image/TextureUtils.cpp
     geometry/AttributeArrayGPUStorage.cpp
@@ -263,17 +262,19 @@ set(SOURCE_FILES
 
 add_library(${EXECUTABLE_NAME} ${SOURCE_FILES})
 
+include_directories(/usr/local/include)
 target_link_libraries(${EXECUTABLE_NAME} ${OPENGL_LIBRARIES})
 
-set(DEVIL_DIR ../../DevIL/DevIL)
+set(DEVIL_DIR ../../devil/devil-src/DevIL)
 include_directories(${DEVIL_DIR}/include)
 link_directories(${DEVIL_DIR}/build/lib/x64/)
 target_link_libraries(${EXECUTABLE_NAME} IL)
 
-set(ASSIMP_DIR ../../assimp_dynamic)
-include_directories(${ASSIMP_DIR}/build/include)
-include_directories(${ASSIMP_DIR}/include)
-link_directories(${ASSIMP_DIR}/lib/)
+set(ASSIMP_SRC_DIR ../../assimp/assimp-src)
+set(ASSIMP_BUILD_DIR ../../assimp/build)
+include_directories(${ASSIMP_BUILD_DIR}/include)
+include_directories(${ASSIMP_SRC_DIR}/include)
+link_directories(${ASSIMP_BUILD_DIR}/lib/)
 target_link_libraries(${EXECUTABLE_NAME} assimp)
 
 add_custom_target(MakeIncludeDir ALL COMMAND ${CMAKE_COMMAND} -E make_directory "include")
