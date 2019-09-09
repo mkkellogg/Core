@@ -270,7 +270,11 @@ namespace Core {
             case ShaderType::Fragment:
                 return GL_FRAGMENT_SHADER;
             case ShaderType::Geometry:
+#ifdef GL_GEOMETRY_SHADER
                 return GL_GEOMETRY_SHADER;
+#else 
+                return GL_GEOMETRY_SHADER_EXT;
+#endif
         }
         return 0;
     }

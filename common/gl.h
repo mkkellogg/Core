@@ -5,8 +5,9 @@
 #endif
 
 #ifdef __APPLE__
-#include <OpenGL/gl3.h>
-#include <OpenGL/gl3ext.h>
+#include <OpenGL/gl.h>
+#include <OpenGL/glext.h>
+#define MANUAL_2D_SHADOWS 1
 #else
 #include <GL/gl.h>
 #include <GL/glcorearb.h>

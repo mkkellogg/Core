@@ -54,7 +54,26 @@ namespace Core {
         }
         glBindTexture(GL_TEXTURE_2D, tex);
 
-        // set the wrap mode
+        GLenum textureFormat = graphicsGL->getGLTextureFormat(attributes.Format);
+        GLenum pixelFormat = graphicsGL->getGLPixelFormat(attributes.Format);
+        GLenum pixelType = graphicsGL->getGLPixelType(attributes.Format);
+
+        if (attributes.IsDepthTexture) {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+#ifndef MANUAL_2D_SHADOWS
+#ifdef GL_COMPARE_REF_TO_TEXTURE
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+#else
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+#endif
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+#endif
+        }
+        else {
+            glTexImage2D(GL_TEXTURE_2D, 0, textureFormat, width, height, 0, pixelFormat, pixelType, data);
+        }
+
+                // set the wrap mode
         if (this->attributes.WrapMode == TextureWrap::Mirror) {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
@@ -95,19 +114,6 @@ namespace Core {
         else {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        }
-
-        GLenum textureFormat = graphicsGL->getGLTextureFormat(attributes.Format);
-        GLenum pixelFormat = graphicsGL->getGLPixelFormat(attributes.Format);
-        GLenum pixelType = graphicsGL->getGLPixelType(attributes.Format);
-
-        if (attributes.IsDepthTexture) {
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-        }
-        else {
-            glTexImage2D(GL_TEXTURE_2D, 0, textureFormat, width, height, 0, pixelFormat, pixelType, data);
         }
 
         if (attributes.MipLevels > 1) {

@@ -604,9 +604,17 @@ namespace Core {
             case TextureFormat::RGBA8:
                 return GL_RGBA8;
             case TextureFormat::RGBA16F:
+#ifdef GL_RGBA16F
                 return GL_RGBA16F;
+#else
+                return GL_RGBA16F_ARB;
+#endif
             case TextureFormat::RGBA32F:
+#ifdef GL_RGBA32F
                 return GL_RGBA32F;
+#else
+                return GL_RGBA32F_ARB;
+#endif
             case TextureFormat::RG16F:
                 return GL_RG16F;
             case TextureFormat::DEPTH16:
