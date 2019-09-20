@@ -339,12 +339,7 @@ namespace Core {
     }
 
     UInt32 StandardPhysicalMaterial::textureCount() {
-        UInt32 textureCount = 0;
-        if (this->albedoMapEnabled) textureCount++;
-        if (this->normalMapEnabled) textureCount++;
-        if (this->metallicMapEnabled) textureCount++;
-        if (this->roughnessMapEnabled) textureCount++;
-       return textureCount;
+        return 4;
     }
 
     UInt32 StandardPhysicalMaterial::getEnabledMapMask() {
