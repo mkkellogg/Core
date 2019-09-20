@@ -34,7 +34,10 @@ namespace Core {
     public:
         Graphics();
         virtual ~Graphics();
-        virtual void init() = 0;
+        virtual void init();
+
+        WeakPointer<Texture2D> getPlaceHolderTexture2D();
+        WeakPointer<CubeTexture> getPlaceHolderCubeTexture();
 
         void setSharedRenderState(Bool shared);
 
@@ -112,6 +115,8 @@ namespace Core {
         virtual void restoreState() = 0;
 
     protected:
+        WeakPointer<Texture2D> placeHolderTexture2D;
+        WeakPointer<CubeTexture> placeHolderCubeTexture;
         Bool sharedRenderState;
     };
 }

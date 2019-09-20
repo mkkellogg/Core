@@ -4,6 +4,8 @@
 #include "StandardAttributes.h"
 #include "StandardUniforms.h"
 #include "../image/Texture.h"
+#include "../image/Texture2D.h"
+#include "../image/CubeTexture.h"
 #include "../Engine.h"
 #include "../material/ShaderManager.h"
 
@@ -173,35 +175,44 @@ namespace Core {
         if (this->albedoMapEnabled) {
             this->shader->setTexture2D(textureLoc, this->albedoMap->getTextureID());
             this->shader->setUniform1i(this->albedoMapLocation, textureLoc);
-            textureLoc++;
         }
         else {
             this->shader->setUniform4f(this->albedoLocation, this->albedo.r, this->albedo.g, this->albedo.b, this->albedo.a);
+            this->shader->setTexture2D(textureLoc, this->graphics->getPlaceHolderTexture2D()->getTextureID());
+            this->shader->setUniform1i(this->albedoMapLocation, textureLoc);
         }
+        textureLoc++;
 
         if (this->normalMapEnabled) {
             this->shader->setTexture2D(textureLoc, this->normalMap->getTextureID());
             this->shader->setUniform1i(this->normalMapLocation, textureLoc);
-            textureLoc++;
+        } else {
+            this->shader->setTexture2D(textureLoc, this->graphics->getPlaceHolderTexture2D()->getTextureID());
+            this->shader->setUniform1i(this->normalMapLocation, textureLoc);
         }
+        textureLoc++;
 
         if (this->metallicMapEnabled) {
             this->shader->setTexture2D(textureLoc, this->metallicMap->getTextureID());
             this->shader->setUniform1i(this->metallicMapLocation, textureLoc);
-            textureLoc++;
         }
         else {
             this->shader->setUniform1f(this->metallicLocation, this->metallic);
+            this->shader->setTexture2D(textureLoc, this->graphics->getPlaceHolderTexture2D()->getTextureID());
+            this->shader->setUniform1i(this->metallicMapLocation, textureLoc);
         }
+        textureLoc++;
 
         if (this->roughnessMapEnabled) {
             this->shader->setTexture2D(textureLoc, this->roughnessMap->getTextureID());
             this->shader->setUniform1i(this->roughnessMapLocation, textureLoc);
-            textureLoc++;
         }
         else {
             this->shader->setUniform1f(this->roughnessLocation, this->roughness);
+            this->shader->setTexture2D(textureLoc, this->graphics->getPlaceHolderTexture2D()->getTextureID());
+            this->shader->setUniform1i(this->roughnessMapLocation, textureLoc);
         }
+        textureLoc++;
         
         this->shader->setUniform1f(this->ambientOcclusionLocation, this->ambientOcclusion);
         this->shader->setUniform1i(this->enabledMapLocation, this->getEnabledMapMask());

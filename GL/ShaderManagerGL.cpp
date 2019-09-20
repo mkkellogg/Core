@@ -865,7 +865,7 @@ namespace Core {
              "            return vec4(albedo.rgb * " + LIGHT_COLOR + "[@lightIndex].rgb * " + LIGHT_INTENSITY + "[@lightIndex], albedo.a);\n"
             "        }\n"
             "        else if (" + LIGHT_TYPE + "[@lightIndex] == AMBIENT_IBL_LIGHT) {\n"
-            "             vec3 irradiance = texture(" + LIGHT_IRRADIANCE_MAP + "[@lightIndex], worldNormal).rgb; \n"
+           /* "             vec3 irradiance = texture(" + LIGHT_IRRADIANCE_MAP + "[@lightIndex], worldNormal).rgb; \n"
             //"             vec3 irradiance = vec3(1.0, 1.0, 1.0); \n"
             "             vec3 F = fresnelSchlickRoughness(max(dot(worldNormal, V), 0.0), F0, roughness);  \n"
             "             vec3 kS = F; \n"
@@ -881,7 +881,7 @@ namespace Core {
             //"             vec2 envBRDF = vec2(1.0, 1.0); \n"
             "             vec3 specularIBL = prefilteredColor * F * (envBRDF.x + envBRDF.y); \n"
             "             vec3 ambient = (kD * diffuseIBL + specularIBL) * ao; \n"
-            "             return vec4(max(ambient, 0.0), 1.0); \n"
+            "             return vec4(max(ambient, 0.0), 1.0); \n"*/
             "        }\n"
             "        else { \n"
             "            vec3 lightLocalPos, toLight, halfwayVec, radiance; \n"

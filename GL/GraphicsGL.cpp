@@ -26,6 +26,8 @@ namespace Core {
     }
 
     void GraphicsGL::init() {
+        Graphics::init();
+
         printGlString("Version", GL_VERSION);
         printGlString("Vendor", GL_VENDOR);
         printGlString("Renderer", GL_RENDERER);
