@@ -114,6 +114,7 @@ namespace Core {
         UInt32 currentTextureSlot = material->textureCount();
 
         Int32 lightEnabledLoc = material->getShaderLocation(StandardUniform::LightEnabled);
+        Int32 lightShadowsEnabledLoc = material->getShaderLocation(StandardUniform::LightShadowsEnabled);
 
         if (lights.size() > 0 && material->isLit()) {
 
@@ -252,6 +253,10 @@ namespace Core {
                         shader->setUniform4f(lightPositionLoc, pos.x, pos.y, pos.z, 1.0f);
                     }
 
+                    if (lightShadowsEnabledLoc >= 0) {
+                        shader->setUniform1i(lightShadowsEnabledLoc, pointLight->getShadowsEnabled() ? 1.0 : 0.0);
+                    } 
+
                     if (lightShadowCubeMapLoc >= 0) {
                         if (pointLight->getShadowsEnabled())
                             shader->setTextureCube(currentTextureSlot, lightShadowCubeMapLoc, pointLight->getShadowMap()->getColorTexture()->getTextureID());
@@ -284,12 +289,20 @@ namespace Core {
                         shader->setUniform1i(cascadeCountLoc, cascadeCount);
                     }
 
+                    if (lightShadowsEnabledLoc >= 0) {
+                        shader->setUniform1i(lightShadowsEnabledLoc, directionalLight->getShadowsEnabled() ? 1.0 : 0.0);
+                    } 
+
                     for (UInt32 l = 0; l < cascadeCount; l++) {
                         Int32 shadowMapLoc = material->getShaderLocation(StandardUniform::LightShadowMap, l);
                         if (shadowMapLoc >= 0) {
-                            shader->setTexture2D(currentTextureSlot, shadowMapLoc, directionalLight->getShadowMap(l)->getDepthTexture()->getTextureID());
+                            if (directionalLight->getShadowsEnabled()) {
+                                shader->setTexture2D(currentTextureSlot, shadowMapLoc, directionalLight->getShadowMap(l)->getDepthTexture()->getTextureID());
+                            } else {
+                                shader->setTexture2D(currentTextureSlot, shadowMapLoc, this->graphics->getPlaceHolderTexture2D()->getTextureID());
+                            }
                             currentTextureSlot++;
-                        }
+                        } 
 
                         Int32 viewProjectionLoc = material->getShaderLocation(StandardUniform::LightViewProjection, l);
                         if (viewProjectionLoc >= 0) {
@@ -340,6 +353,15 @@ namespace Core {
             this->drawMesh(mesh);
         }
 
+        this->disableShaderAttribute(mesh, material, StandardAttribute::Position, mesh->getVertexPositions());
+        this->disableShaderAttribute(mesh, material, StandardAttribute::Normal, mesh->getVertexNormals());
+        this->disableShaderAttribute(mesh, material, StandardAttribute::AveragedNormal, mesh->getVertexAveragedNormals());
+        this->disableShaderAttribute(mesh, material, StandardAttribute::FaceNormal, mesh->getVertexFaceNormals());
+        this->disableShaderAttribute(mesh, material, StandardAttribute::Tangent, mesh->getVertexTangents());
+        this->disableShaderAttribute(mesh, material, StandardAttribute::Color, mesh->getVertexColors());
+        this->disableShaderAttribute(mesh, material, StandardAttribute::AlbedoUV, mesh->getVertexAlbedoUVs());
+        this->disableShaderAttribute(mesh, material, StandardAttribute::NormalUV, mesh->getVertexNormalUVs());
+
         return true;
     }
 
@@ -375,6 +397,16 @@ namespace Core {
             Int32 shaderLocation = material->getShaderLocation(setAttribute);
             if (array->getGPUStorage()) {
                 array->getGPUStorage()->sendToShader(shaderLocation);
+            }
+        }
+    }
+
+     void MeshRenderer::disableShaderAttribute(WeakPointer<Mesh> mesh, WeakPointer<Material> material, StandardAttribute attribute, 
+                                              WeakPointer<AttributeArrayBase> array) {
+        if (mesh->isAttributeEnabled(attribute)) {
+            Int32 shaderLocation = material->getShaderLocation(attribute);
+            if (array->getGPUStorage()) {
+                array->getGPUStorage()->disable(shaderLocation);
             }
         }
     }

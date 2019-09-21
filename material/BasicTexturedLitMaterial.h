@@ -63,6 +63,7 @@ namespace Core {
         Int32 lightIntensityLocation;
         Int32 lightColorLocation;
         Int32 lightEnabledLocation;
+        Int32 lightShadowsEnabledLocation;
         Int32 lightMatrixLocation;
         Int32 lightShadowCubeMapLocation;
         Int32 lightAngularShadowBiasLocation;

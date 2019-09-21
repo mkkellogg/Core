@@ -36,6 +36,7 @@ const std::string LIGHT_ATTENUATION = _un(Core::StandardUniform::LightAttenuatio
 const std::string LIGHT_TYPE = _un(Core::StandardUniform::LightType);
 const std::string LIGHT_RANGE = _un(Core::StandardUniform::LightRange);
 const std::string LIGHT_ENABLED = _un(Core::StandardUniform::LightEnabled);
+const std::string LIGHT_SHADOWS_ENABLED = _un(Core::StandardUniform::LightShadowsEnabled);
 const std::string LIGHT_MATRIX = _un(Core::StandardUniform::LightMatrix);
 const std::string LIGHT_VIEW_PROJECTION = _un(Core::StandardUniform::LightViewProjection);
 const std::string LIGHT_CASCADE_COUNT = _un(Core::StandardUniform::LightCascadeCount);
@@ -83,6 +84,7 @@ const std::string LIGHT_COLOR_SINGLE_DEF = "uniform vec4 " + LIGHT_COLOR + "[1];
 const std::string LIGHT_INTENSITY_SINGLE_DEF = "uniform float " + LIGHT_INTENSITY + "[1];\n";
 const std::string LIGHT_TYPE_SINGLE_DEF = "uniform int " + LIGHT_TYPE + "[1];\n";
 const std::string LIGHT_ENABLED_SINGLE_DEF = "uniform int " + LIGHT_ENABLED + "[1];\n";
+const std::string LIGHT_SHADOWS_ENABLED_SINGLE_DEF = "uniform int " + LIGHT_SHADOWS_ENABLED + "[1];\n";
 const std::string LIGHT_MATRIX_SINGLE_DEF = "uniform mat4 " + LIGHT_MATRIX + "[1];\n";
 const std::string LIGHT_CONSTANT_SHADOW_BIAS_SINGLE_DEF = "uniform float " + LIGHT_CONSTANT_SHADOW_BIAS + "[1];\n";
 const std::string LIGHT_ANGULAR_SHADOW_BIAS_SINGLE_DEF ="uniform float " + LIGHT_ANGULAR_SHADOW_BIAS + "[1];\n";
@@ -131,6 +133,7 @@ const std::string LIGHT_COLOR_DEF = "uniform vec4 " + LIGHT_COLOR + "[" + MAX_LI
 const std::string LIGHT_INTENSITY_DEF = "uniform float " + LIGHT_INTENSITY + "[" + MAX_LIGHTS + "];\n";
 const std::string LIGHT_TYPE_DEF = "uniform int " + LIGHT_TYPE + "[" + MAX_LIGHTS + "];\n";
 const std::string LIGHT_ENABLED_DEF = "uniform int " + LIGHT_ENABLED + "[" + MAX_LIGHTS + "];\n";
+const std::string LIGHT_SHADOWS_ENABLED_DEF = "uniform int " + LIGHT_SHADOWS_ENABLED + "[" + MAX_LIGHTS + "];\n";
 const std::string LIGHT_MATRIX_DEF = "uniform mat4 " + LIGHT_MATRIX + "[" + MAX_LIGHTS + "];\n";
 const std::string LIGHT_SHADOW_MAP_SIZE_DEF = "uniform float " + LIGHT_SHADOW_MAP_SIZE + "[" + MAX_LIGHTS + "];\n";
 const std::string LIGHT_SHADOW_SOFTNESS_DEF = "uniform int " + LIGHT_SHADOW_SOFTNESS + "[" + MAX_LIGHTS + "];\n";
@@ -460,6 +463,7 @@ namespace Core {
             + LIGHT_RANGE_DEF
             + LIGHT_TYPE_DEF
             + LIGHT_ENABLED_DEF
+            + LIGHT_SHADOWS_ENABLED_DEF
             + LIGHT_SHADOW_SOFTNESS_DEF
             + LIGHT_COLOR_DEF
             + LIGHT_INTENSITY_DEF
@@ -495,6 +499,7 @@ namespace Core {
             + LIGHT_RANGE_SINGLE_DEF
             + LIGHT_TYPE_SINGLE_DEF
             + LIGHT_ENABLED_SINGLE_DEF
+            + LIGHT_SHADOWS_ENABLED_SINGLE_DEF
             + LIGHT_SHADOW_SOFTNESS_SINGLE_DEF
             + LIGHT_COLOR_SINGLE_DEF
             + LIGHT_INTENSITY_SINGLE_DEF
@@ -593,7 +598,7 @@ namespace Core {
             "const int PLANAR_LIGHT = 5;\n"
 
             "vec4 getDirLightColor(vec4 worldPos, float bias) { \n"
-            "    float shadowFactor = 1.0;\n"
+            "    float shadowFactor = 0.0;\n"
             "    vec3 lightColor = " + LIGHT_COLOR + "[@lightIndex].rgb; \n"
            /* "    for (int i = 0 ; i < " + LIGHT_CASCADE_COUNT + "[@lightIndex]; i++) { \n"
             "        int offset = @lightIndex * " + MAX_CASCADES + " + i;\n"
@@ -603,15 +608,17 @@ namespace Core {
             "        } \n"
             "    } \n"*/
 
-            "    int offset0 = @lightIndex * " + MAX_CASCADES + ";\n"
-            "    int offset1 = @lightIndex * " + MAX_CASCADES + " + 1;\n"
-            "    int offset2 = @lightIndex * " + MAX_CASCADES + " + 2;\n"
-            "    if (_core_viewSpacePosZ[@lightIndex] <= " + LIGHT_CASCADE_END + "[offset0]) { \n"
-            "        shadowFactor = calcDirShadowFactor0(bias, worldPos); \n"
-            "    } else if (_core_viewSpacePosZ[@lightIndex] <= " + LIGHT_CASCADE_END + "[offset1]) { \n"
-            "        shadowFactor = calcDirShadowFactor1(bias, worldPos); \n"
-            "    } else if (_core_viewSpacePosZ[@lightIndex] <= " + LIGHT_CASCADE_END + "[offset2]) { \n"
-            "        shadowFactor = calcDirShadowFactor2(bias, worldPos); \n"
+            "    if (" + LIGHT_SHADOWS_ENABLED + "[@lightIndex] != 0) {\n"
+            "      int offset0 = @lightIndex * " + MAX_CASCADES + ";\n"
+            "      int offset1 = @lightIndex * " + MAX_CASCADES + " + 1;\n"
+            "      int offset2 = @lightIndex * " + MAX_CASCADES + " + 2;\n"
+            "      if (_core_viewSpacePosZ[@lightIndex] <= " + LIGHT_CASCADE_END + "[offset0]) { \n"
+            "          shadowFactor = calcDirShadowFactor0(bias, worldPos); \n"
+            "      } else if (_core_viewSpacePosZ[@lightIndex] <= " + LIGHT_CASCADE_END + "[offset1]) { \n"
+            "          shadowFactor = calcDirShadowFactor1(bias, worldPos); \n"
+            "      } else if (_core_viewSpacePosZ[@lightIndex] <= " + LIGHT_CASCADE_END + "[offset2]) { \n"
+            "          shadowFactor = calcDirShadowFactor2(bias, worldPos); \n"
+            "      } \n"
             "    } \n"
 
             "    return vec4((1.0 - shadowFactor) * lightColor * " + LIGHT_INTENSITY + "[@lightIndex], 1.0);\n"    
