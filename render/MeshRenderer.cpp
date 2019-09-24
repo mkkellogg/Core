@@ -114,6 +114,7 @@ namespace Core {
         UInt32 currentTextureSlot = material->textureCount();
 
         Int32 lightEnabledLoc = material->getShaderLocation(StandardUniform::LightEnabled);
+        Int32 lightShadowsEnabledLoc = material->getShaderLocation(StandardUniform::LightShadowsEnabled);
 
         if (lights.size() > 0 && material->isLit()) {
 
@@ -174,11 +175,11 @@ namespace Core {
                     shader->setUniformMatrix4(lightMatrixLoc, light->getOwner()->getTransform().getConstInverseWorldMatrix());
                 }
 
-                if (lightType == LightType::AmbientIBL) {
-                    Int32 irradianceMapLoc = material->getShaderLocation(StandardUniform::LightIrradianceMap);
-                    Int32 specularIBLPreFilteredMapLoc = material->getShaderLocation(StandardUniform::LightSpecularIBLPreFilteredMap);
-                    Int32 specularIBLBRDFMapLoc = material->getShaderLocation(StandardUniform::LightSpecularIBLBRDFMap);
+                Int32 irradianceMapLoc = material->getShaderLocation(StandardUniform::LightIrradianceMap);
+                Int32 specularIBLPreFilteredMapLoc = material->getShaderLocation(StandardUniform::LightSpecularIBLPreFilteredMap);
+                Int32 specularIBLBRDFMapLoc = material->getShaderLocation(StandardUniform::LightSpecularIBLBRDFMap);
 
+                if (lightType == LightType::AmbientIBL) {
                     WeakPointer<AmbientIBLLight> ambientIBLLight = WeakPointer<Light>::dynamicPointerCast<AmbientIBLLight>(light);
 
                     if (irradianceMapLoc >= 0) {
@@ -193,6 +194,21 @@ namespace Core {
                     
                     if (specularIBLBRDFMapLoc >= 0) {
                         shader->setTexture2D(currentTextureSlot, specularIBLBRDFMapLoc, ambientIBLLight->getSpecularIBLBRDFMap()->getTextureID());
+                        currentTextureSlot++;
+                    }
+                } else {
+                    if (irradianceMapLoc >= 0) {
+                        shader->setTextureCube(currentTextureSlot, irradianceMapLoc, this->graphics->getPlaceHolderCubeTexture()->getTextureID());
+                        currentTextureSlot++;
+                    }
+                    
+                    if (specularIBLPreFilteredMapLoc >= 0) {
+                        shader->setTextureCube(currentTextureSlot, specularIBLPreFilteredMapLoc, this->graphics->getPlaceHolderCubeTexture()->getTextureID());
+                        currentTextureSlot++;
+                    }
+                    
+                    if (specularIBLBRDFMapLoc >= 0) {
+                        shader->setTexture2D(currentTextureSlot, specularIBLBRDFMapLoc, this->graphics->getPlaceHolderTexture2D()->getTextureID());
                         currentTextureSlot++;
                     }
                 }
@@ -217,6 +233,7 @@ namespace Core {
                     }
                 }
 
+                Int32 lightShadowCubeMapLoc = material->getShaderLocation(StandardUniform::LightShadowCubeMap);
                 if (lightType == LightType::Point) {
 
                     WeakPointer<PointLight> pointLight = WeakPointer<Light>::dynamicPointerCast<PointLight>(light);
@@ -236,13 +253,26 @@ namespace Core {
                         shader->setUniform4f(lightPositionLoc, pos.x, pos.y, pos.z, 1.0f);
                     }
 
-                    Int32 lightShadowCubeMapLoc = material->getShaderLocation(StandardUniform::LightShadowCubeMap);
-                    if (lightShadowCubeMapLoc >= 0 && pointLight->getShadowsEnabled()) {
-                        shader->setTextureCube(currentTextureSlot, lightShadowCubeMapLoc, pointLight->getShadowMap()->getColorTexture()->getTextureID());
+                    if (lightShadowsEnabledLoc >= 0) {
+                        shader->setUniform1i(lightShadowsEnabledLoc, pointLight->getShadowsEnabled() ? 1.0 : 0.0);
+                    } 
+
+                    if (lightShadowCubeMapLoc >= 0) {
+                        if (pointLight->getShadowsEnabled())
+                            shader->setTextureCube(currentTextureSlot, lightShadowCubeMapLoc, pointLight->getShadowMap()->getColorTexture()->getTextureID());
+                        else
+                            shader->setTextureCube(currentTextureSlot, lightShadowCubeMapLoc, this->graphics->getPlaceHolderCubeTexture()->getTextureID());
+                        currentTextureSlot++;
+                    }
+                } else {
+                    if (lightShadowCubeMapLoc >= 0) {
+                        shader->setTextureCube(currentTextureSlot, lightShadowCubeMapLoc, this->graphics->getPlaceHolderCubeTexture()->getTextureID());
                         currentTextureSlot++;
                     }
                 }
-                else if (lightType == LightType::Directional) {
+                
+                
+                if (lightType == LightType::Directional) {
                     WeakPointer<DirectionalLight> directionalLight = WeakPointer<Light>::dynamicPointerCast<DirectionalLight>(light);
 
                     Int32 lightDirectionLoc = material->getShaderLocation(StandardUniform::LightDirection);
@@ -259,12 +289,20 @@ namespace Core {
                         shader->setUniform1i(cascadeCountLoc, cascadeCount);
                     }
 
+                    if (lightShadowsEnabledLoc >= 0) {
+                        shader->setUniform1i(lightShadowsEnabledLoc, directionalLight->getShadowsEnabled() ? 1.0 : 0.0);
+                    } 
+
                     for (UInt32 l = 0; l < cascadeCount; l++) {
                         Int32 shadowMapLoc = material->getShaderLocation(StandardUniform::LightShadowMap, l);
                         if (shadowMapLoc >= 0) {
-                            shader->setTexture2D(currentTextureSlot, shadowMapLoc, directionalLight->getShadowMap(l)->getDepthTexture()->getTextureID());
+                            if (directionalLight->getShadowsEnabled()) {
+                                shader->setTexture2D(currentTextureSlot, shadowMapLoc, directionalLight->getShadowMap(l)->getDepthTexture()->getTextureID());
+                            } else {
+                                shader->setTexture2D(currentTextureSlot, shadowMapLoc, this->graphics->getPlaceHolderTexture2D()->getTextureID());
+                            }
                             currentTextureSlot++;
-                        }
+                        } 
 
                         Int32 viewProjectionLoc = material->getShaderLocation(StandardUniform::LightViewProjection, l);
                         if (viewProjectionLoc >= 0) {
@@ -283,6 +321,22 @@ namespace Core {
                             shader->setUniform1f(lightShadowMapAspectLoc, aspect);
                         }
                     }
+
+                    for (UInt32 l = cascadeCount; l < Constants::MaxDirectionalCascades; l++) {
+                        Int32 shadowMapLoc = material->getShaderLocation(StandardUniform::LightShadowMap, l);
+                        if (shadowMapLoc >= 0) {
+                            shader->setTexture2D(currentTextureSlot, shadowMapLoc, this->graphics->getPlaceHolderTexture2D()->getTextureID());
+                            currentTextureSlot++;
+                        }
+                    }
+                } else {
+                    for (UInt32 l = 0; l < Constants::MaxDirectionalCascades; l++) {
+                        Int32 shadowMapLoc = material->getShaderLocation(StandardUniform::LightShadowMap, l);
+                        if (shadowMapLoc >= 0) {
+                            shader->setTexture2D(currentTextureSlot, shadowMapLoc, this->graphics->getPlaceHolderTexture2D()->getTextureID());
+                            currentTextureSlot++;
+                        }
+                    }
                 }
                 renderedCount++;
                 this->drawMesh(mesh);
@@ -298,6 +352,15 @@ namespace Core {
             }
             this->drawMesh(mesh);
         }
+
+        this->disableShaderAttribute(mesh, material, StandardAttribute::Position, mesh->getVertexPositions());
+        this->disableShaderAttribute(mesh, material, StandardAttribute::Normal, mesh->getVertexNormals());
+        this->disableShaderAttribute(mesh, material, StandardAttribute::AveragedNormal, mesh->getVertexAveragedNormals());
+        this->disableShaderAttribute(mesh, material, StandardAttribute::FaceNormal, mesh->getVertexFaceNormals());
+        this->disableShaderAttribute(mesh, material, StandardAttribute::Tangent, mesh->getVertexTangents());
+        this->disableShaderAttribute(mesh, material, StandardAttribute::Color, mesh->getVertexColors());
+        this->disableShaderAttribute(mesh, material, StandardAttribute::AlbedoUV, mesh->getVertexAlbedoUVs());
+        this->disableShaderAttribute(mesh, material, StandardAttribute::NormalUV, mesh->getVertexNormalUVs());
 
         return true;
     }
@@ -334,6 +397,16 @@ namespace Core {
             Int32 shaderLocation = material->getShaderLocation(setAttribute);
             if (array->getGPUStorage()) {
                 array->getGPUStorage()->sendToShader(shaderLocation);
+            }
+        }
+    }
+
+     void MeshRenderer::disableShaderAttribute(WeakPointer<Mesh> mesh, WeakPointer<Material> material, StandardAttribute attribute, 
+                                              WeakPointer<AttributeArrayBase> array) {
+        if (mesh->isAttributeEnabled(attribute)) {
+            Int32 shaderLocation = material->getShaderLocation(attribute);
+            if (array->getGPUStorage()) {
+                array->getGPUStorage()->disable(shaderLocation);
             }
         }
     }

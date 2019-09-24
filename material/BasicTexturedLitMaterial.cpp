@@ -73,6 +73,8 @@ namespace Core {
                 return this->lightColorLocation;
             case StandardUniform::LightEnabled:
                 return this->lightEnabledLocation;
+             case StandardUniform::LightShadowsEnabled:
+                return this->lightShadowsEnabledLocation;
             case StandardUniform::LightMatrix:
                 return this->lightMatrixLocation;
             case StandardUniform::LightViewProjection:
@@ -165,6 +167,7 @@ namespace Core {
         newMaterial->lightIntensityLocation = this->lightIntensityLocation;
         newMaterial->lightColorLocation = this->lightColorLocation;
         newMaterial->lightEnabledLocation = this->lightEnabledLocation;
+        newMaterial->lightShadowsEnabledLocation = this->lightShadowsEnabledLocation;
         newMaterial->lightMatrixLocation = this->lightMatrixLocation;
         for (UInt32 i =0; i < Constants::MaxDirectionalCascades; i++) {
             newMaterial->lightViewProjectionLocations[i] = this->lightViewProjectionLocations[i];
@@ -206,6 +209,7 @@ namespace Core {
         this->lightIntensityLocation = this->shader->getUniformLocation(StandardUniform::LightIntensity);
         this->lightColorLocation = this->shader->getUniformLocation(StandardUniform::LightColor);
         this->lightEnabledLocation = this->shader->getUniformLocation(StandardUniform::LightEnabled);
+        this->lightShadowsEnabledLocation = this->shader->getUniformLocation(StandardUniform::LightShadowsEnabled);
         this->lightMatrixLocation = this->shader->getUniformLocation(StandardUniform::LightMatrix);
         for (UInt32 i =0; i < Constants::MaxDirectionalCascades; i++) {
             this->lightViewProjectionLocations[i] = this->shader->getUniformLocation(StandardUniform::LightViewProjection, i);

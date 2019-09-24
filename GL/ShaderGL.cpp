@@ -75,9 +75,11 @@ namespace Core {
 
 
     void ShaderGL::setTexture2D(UInt32 slot, UInt32 textureID) {
-        static UInt32 slots[] = {GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2, GL_TEXTURE3, GL_TEXTURE4, GL_TEXTURE5, GL_TEXTURE6, GL_TEXTURE7, GL_TEXTURE8, GL_TEXTURE9};
-
-        if (slot >= 10) {
+        static UInt32 slots[] = {GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2, GL_TEXTURE3, GL_TEXTURE4, GL_TEXTURE5,
+                                 GL_TEXTURE6, GL_TEXTURE7, GL_TEXTURE8, GL_TEXTURE9, GL_TEXTURE10, GL_TEXTURE11,
+                                 GL_TEXTURE12, GL_TEXTURE13, GL_TEXTURE14, GL_TEXTURE15, GL_TEXTURE16, GL_TEXTURE17,
+                                 GL_TEXTURE18, GL_TEXTURE19};
+        if (slot >= 20) {
             std::cerr << "slot: " << slot << std::endl;
             throw Shader::ShaderVariableException("ShaderGL::setTexture2D() value for [slot] is too high.");
         }
@@ -92,9 +94,11 @@ namespace Core {
     }
 
     void ShaderGL::setTextureCube(UInt32 slot, UInt32 textureID) {
-        static UInt32 slots[] = {GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2, GL_TEXTURE3, GL_TEXTURE4, GL_TEXTURE5};
+        static UInt32 slots[] = {GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2, GL_TEXTURE3, GL_TEXTURE4, GL_TEXTURE5,
+                                 GL_TEXTURE6, GL_TEXTURE7, GL_TEXTURE8, GL_TEXTURE9, GL_TEXTURE10, GL_TEXTURE11,
+                                 GL_TEXTURE12, GL_TEXTURE13, GL_TEXTURE14, GL_TEXTURE15};
 
-        if (slot >= 6) {
+        if (slot >= 16) {
             std::cerr << "slot: " << slot << std::endl;
             throw Shader::ShaderVariableException("ShaderGL::setTextureCube() value for [slot] is too high.");
         }
@@ -270,7 +274,11 @@ namespace Core {
             case ShaderType::Fragment:
                 return GL_FRAGMENT_SHADER;
             case ShaderType::Geometry:
+#ifdef GL_GEOMETRY_SHADER
                 return GL_GEOMETRY_SHADER;
+#else 
+                return GL_GEOMETRY_SHADER_EXT;
+#endif
         }
         return 0;
     }

@@ -98,7 +98,7 @@ namespace Core {
 
         if (hdr_data == NULL) {
             std::string msg("ImageLoader::loadImageHDR -> Could not load HDRImage: ");
-            msg = msg + stbi_failure_reason();
+            msg = msg + fullPath + std::string(", reason: ") + stbi_failure_reason();
             throw ImageLoaderException(msg);
         }
 

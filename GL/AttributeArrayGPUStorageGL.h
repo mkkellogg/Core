@@ -43,6 +43,10 @@ namespace Core {
             glBindBuffer(GL_ARRAY_BUFFER, 0);
         }
 
+         void disable(UInt32 location) override {
+            glDisableVertexAttribArray(location);
+        }
+
         void updateBufferData(void * data) override {
             glBindBuffer(GL_ARRAY_BUFFER, this->bufferID);
             glBufferData(GL_ARRAY_BUFFER, this->size, data, GL_DYNAMIC_DRAW);

@@ -44,4 +44,10 @@ namespace Core {
         OutOfRangeException(const char* msg): Exception(msg) {}
     };
 
+    class KeyNotFoundException: Exception {
+    public:
+        KeyNotFoundException(const std::string& msg): Exception(msg) {}
+        KeyNotFoundException(const char* msg): Exception(msg) {}
+    };
+
 }

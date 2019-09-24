@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 
+#include "../common/gl.h"
 #include "../common/types.h"
 #include "../common/Exception.h"
 #include "../material/ShaderManager.h"
@@ -41,6 +42,8 @@ namespace Core {
 
         std::string Lighting_vertex;
         std::string Lighting_fragment;
+
+        std::string Lighting_Dir_Cascade_fragment;
 
         std::string PhysicalCommon_vertex;
         std::string PhysicalCommon_fragment;

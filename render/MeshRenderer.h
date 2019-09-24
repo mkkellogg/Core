@@ -33,6 +33,8 @@ namespace Core {
         MeshRenderer(WeakPointer<Graphics> graphics, WeakPointer<Material> material, WeakPointer<Object3D> owner);
         void checkAndSetShaderAttribute(WeakPointer<Mesh> mesh, WeakPointer<Material> material, StandardAttribute checkAttribute,
                                         StandardAttribute setAttribute, WeakPointer<AttributeArrayBase> array);
+        void disableShaderAttribute(WeakPointer<Mesh> mesh, WeakPointer<Material> material, StandardAttribute attribute,
+                                    WeakPointer<AttributeArrayBase> array);
         void drawMesh(WeakPointer<Mesh> mesh);
 
         PersistentWeakPointer<Material> material;

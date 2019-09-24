@@ -26,6 +26,24 @@ namespace Core {
     Graphics::~Graphics() {
     }
 
+    void Graphics::init() {
+        TextureAttributes texAttributes;
+        texAttributes.FilterMode = TextureFilter::Point;
+        texAttributes.MipLevels = 0;
+        texAttributes.WrapMode = TextureWrap::Mirror;
+        texAttributes.Format = TextureFormat::RGBA8;
+        this->placeHolderTexture2D = this->createTexture2D(texAttributes);
+        this->placeHolderCubeTexture = this->createCubeTexture(texAttributes);
+    }
+
+    WeakPointer<Texture2D> Graphics::getPlaceHolderTexture2D() {
+        return this->placeHolderTexture2D;
+    }
+    
+    WeakPointer<CubeTexture> Graphics::getPlaceHolderCubeTexture() {
+        return this->placeHolderCubeTexture;
+    }
+
     void Graphics::setSharedRenderState(Bool shared) {
         this->sharedRenderState = shared;
     }
