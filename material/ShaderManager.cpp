@@ -4,6 +4,13 @@
 #include "ShaderManager.h"
 #include "../util/String.h"
 
+static const Core::UInt32 ASCII_ZERO = 48;
+static const Core::UInt32 ASCII_NINE = 57;
+static const Core::UInt32 ASCII_A = 65;
+static const Core::UInt32 ASCII_Z = 90;
+static const Core::UInt32 ASCII_a = 97;
+static const Core::UInt32 ASCII_z = 122;
+
 namespace Core {
 
     const std::string ShaderManager::INCLUDE_PARAMS_PATTERN(".*");
@@ -135,7 +142,7 @@ namespace Core {
                 while (e < varLine.size()) {
                     char testChar = varLine[e];
                     int asc = (int)testChar;
-                    if (asc >= 48 && asc <=57 || asc >= 65 && asc <= 90 || asc >= 97 && asc <= 122) {
+                    if (asc >= ASCII_ZERO && asc <= ASCII_NINE || asc >= ASCII_A && asc <= ASCII_Z || asc >= ASCII_a && asc <= ASCII_z) {
                         paramNameStream << testChar;
                         e++;
                     } else {
