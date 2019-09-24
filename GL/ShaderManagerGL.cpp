@@ -625,8 +625,8 @@ namespace Core {
             "} \n"
 
             "float getPointLightShadowFactor(vec3 lightLocalPos, float bias) { \n"
-            // "   vec4 shadowDepthVec = texture(" + LIGHT_SHADOW_CUBE_MAP + "[@lightIndex], lightLocalPos);\n"
-            "    vec4 shadowDepthVec = vec4(1000.0, 0.0, 0.0, 0.0); \n"
+             "   vec4 shadowDepthVec = texture(" + LIGHT_SHADOW_CUBE_MAP + "[@lightIndex], lightLocalPos);\n"
+            //"    vec4 shadowDepthVec = vec4(1000.0, 0.0, 0.0, 0.0); \n"
             "    float shadowDepth = shadowDepthVec.r;\n"
             "    float shadowFactor = 0.0; \n"
             "    if (shadowDepth + bias > length(lightLocalPos) || shadowDepth < .001) {\n"
