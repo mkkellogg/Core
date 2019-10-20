@@ -87,7 +87,9 @@ namespace Core {
      * Connect a child node [child] to a parent node [parent].
      */
     Tree<Skeleton::SkeletonNode*>::TreeNode * Skeleton::addChild(Tree<Skeleton::SkeletonNode*>::TreeNode * parent, Skeleton::SkeletonNode * node) {
-        ASSERT(parent != nullptr, "Skeleton::addChild -> 'parent' is null.");
+        if (parent == nullptr) {
+            throw NullPointerException("Skeleton::addChild -> 'parent' is null.");
+        }
         Tree<Skeleton::SkeletonNode*>::TreeNode * childNode = parent->addChild(node);
         return childNode;
     }
@@ -115,7 +117,9 @@ namespace Core {
      * Get the Bone object stored at [index] in [bones].
      */
     Bone* Skeleton::getBone(UInt32 boneIndex) {
-        ASSERT(boneIndex < boneCount, "Skeleton::getBone -> 'boneIndex' is out of range.");
+        if (boneIndex >= boneCount) {
+            throw OutOfRangeException("Skeleton::getBone -> 'boneIndex' is out of range.");
+        }
         return this->bones + boneIndex;
     }
 
@@ -162,7 +166,9 @@ namespace Core {
      * Replace the bones in this skeleton with matching bones from [skeleton].
      */
     void Skeleton::overrideBonesFrom(WeakPointer<const Skeleton> skeleton, Bool takeOffset, Bool takeNode) {
-        ASSERT(skeleton.isValid(), "Skeleton::overrideBonesFrom -> 'skeleton' is not valid.");
+        if (!skeleton.isValid()) {
+            throw InvalidReferenceException("Skeleton::overrideBonesFrom -> 'skeleton' is not valid.");
+        }
         this->overrideBonesFrom(skeleton.get(), takeOffset, takeNode);
     }
 
@@ -216,12 +222,16 @@ namespace Core {
             // create a clone of the root SkeletonNode
             if (rootTreeNode->Data != nullptr) {
                 rootClone = rootTreeNode->Data->fullClone();
-                ASSERT(rootClone != nullptr, "Skeleton::fullClone -> Could not clone root node.");
+                if (rootClone == nullptr) {
+                    throw AllocationException("Skeleton::fullClone -> Could not clone root node.");
+                }
             }
 
             // create new root TreeNode and set its Data to the new root SkeletonNode
             Tree<Skeleton::SkeletonNode *>::TreeNode * newRoot = newSkeleton->createRoot(rootClone);
-            ASSERT(newRoot != nullptr, "Skeleton::fullClone -> Could not create new root node.");
+            if (newRoot == nullptr) {
+                throw AllocationException("Skeleton::fullClone -> Could not create new root node.");
+            }
 
             // map from TreeNode objects in the existing skeleton to their counterparts in the new skeleton
             std::unordered_map<Tree<Skeleton::SkeletonNode *>::TreeNode *, Tree<Skeleton::SkeletonNode *>::TreeNode *> newNodeMap;
@@ -238,13 +248,17 @@ namespace Core {
             // set yet, so there will be no hierarchy information available.
             skeleton.setTraversalCallback([&allocateTreeSuccess, &newNodeMap](Tree<Skeleton::SkeletonNode *>::TreeNode * node) -> Bool {
                 Tree<Skeleton::SkeletonNode *>::TreeNode * newNode = new(std::nothrow) Tree<Skeleton::SkeletonNode *>::TreeNode();
-                ASSERT(newNode != nullptr, "Skeleton::fullClone -> Could not allocte new node.");
+                if (newNode == nullptr) {
+                    throw AllocationException("Skeleton::fullClone -> Could not allocte new node.");
+                }
                 newNodeMap[node] = newNode;
                 return true;
             });
             skeleton.traverse();
 
-            ASSERT(allocateTreeSuccess, "Skeleton::fullClone -> Could not allocate new nodes for skeleton clone");
+            if (!allocateTreeSuccess) {
+                throw AllocationException("Skeleton::fullClone -> Could not allocate new nodes for skeleton clone");
+            }
 
             // copy over the node name map
             newSkeleton->nodeNameMap = nodeNameMap;
@@ -264,7 +278,9 @@ namespace Core {
                 if (node != nullptr && node->Data != nullptr) {
                     // clone the SkeletonNode
                     clonedSkeletonNode = node->Data->fullClone();
-                    ASSERT(clonedSkeletonNode != nullptr, "Skeleton::fullClone -> Could not clone node in skeletal tree.");
+                    if (clonedSkeletonNode == nullptr) {
+                        throw AllocationException("Skeleton::fullClone -> Could not clone node in skeletal tree.");
+                    }
                 }
 
                 // find the corresponding TreeNode in the new skeleton and attach the cloned SkeletonNode
@@ -296,7 +312,9 @@ namespace Core {
             skeleton.traverse();
 
             // check for successful clone
-            ASSERT(cloneTreeSuccess, "Skeleton::fullClone -> Could not clone skeletal tree.");
+            if (!cloneTreeSuccess) {
+                throw AllocationException("Skeleton::fullClone -> Could not clone skeletal tree.");
+            }
         }
 
         return newSkeleton;

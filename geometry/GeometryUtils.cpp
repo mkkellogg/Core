@@ -173,17 +173,23 @@ namespace Core {
         boxMesh->init();
         boxMesh->enableAttribute(StandardAttribute::Position);
         Bool positionInited = boxMesh->initVertexPositions();
-        ASSERT(positionInited, "Unable to initializebox mesh vertex positions.");
+        if (!positionInited) {
+            throw Exception("GeometryUtils::buildBoxMesh -> Unable to initializebox mesh vertex positions.");
+        }
         boxMesh->getVertexPositions()->store(vertexPositions);
 
         boxMesh->enableAttribute(StandardAttribute::Color);
         Bool colorInited = boxMesh->initVertexColors();
-        ASSERT(colorInited, "Unable to initialize box mesh colors.");
+        if (!colorInited) {
+            throw Exception("GeometryUtils::buildBoxMesh -> Unable to initialize box mesh colors.");
+        }
         boxMesh->getVertexColors()->store(vertexColors);
 
         boxMesh->enableAttribute(StandardAttribute::Normal);
         Bool normalInited = boxMesh->initVertexNormals();
-        ASSERT(normalInited, "Unable to initialize box vertex normals.");
+        if (!normalInited) {
+            throw Exception("GeometryUtils::buildBoxMesh -> Unable to initialize box vertex normals.");
+        }
         boxMesh->getVertexNormals()->store(vertexNormals);
 
         boxMesh->enableAttribute(StandardAttribute::FaceNormal);
@@ -335,17 +341,23 @@ namespace Core {
         arrowMesh->init();
         arrowMesh->enableAttribute(StandardAttribute::Position);
         Bool positionInited = arrowMesh->initVertexPositions();
-        ASSERT(positionInited, "Unable to initialize arrow mesh vertex positions.");
+        if (!positionInited) {
+            throw Exception("GeometryUtils::buildArrowMesh -> Unable to initialize arrow mesh vertex positions.");
+        }
         arrowMesh->getVertexPositions()->store(vertices);
 
         arrowMesh->enableAttribute(StandardAttribute::Color);
         Bool colorInited = arrowMesh->initVertexColors();
-        ASSERT(colorInited, "Unable to initialize arrow mesh colors.");
+        if (!colorInited) {
+            throw Exception("GeometryUtils::buildArrowMesh -> Unable to initialize arrow mesh colors.");
+        }
         arrowMesh->getVertexColors()->store(colors);
 
         arrowMesh->enableAttribute(StandardAttribute::Normal);
         Bool normalInited = arrowMesh->initVertexNormals();
-        ASSERT(normalInited, "Unable to initialize arrow vertex normals.");
+        if (!normalInited) {
+            throw Exception("GeometryUtils::buildArrowMesh -> Unable to initialize arrow vertex normals.");
+        }
 
         arrowMesh->enableAttribute(StandardAttribute::FaceNormal);
         Bool faceNormalInited = arrowMesh->initVertexFaceNormals();
@@ -514,17 +526,23 @@ namespace Core {
         sphereMesh->init();
         sphereMesh->enableAttribute(StandardAttribute::Position);
         Bool positionInited = sphereMesh->initVertexPositions();
-        ASSERT(positionInited, "Unable to initialize sphere mesh vertex positions.");
+        if (!positionInited) {
+            throw Exception("GeometryUtils::buildSphereMesh -> Unable to initialize sphere mesh vertex positions.");
+        }
         sphereMesh->getVertexPositions()->store(positions.data());
 
         sphereMesh->enableAttribute(StandardAttribute::Color);
         Bool colorInited = sphereMesh->initVertexColors();
-        ASSERT(colorInited, "Unable to initialize sphere mesh colors.");
+        if (!colorInited) {
+            throw Exception("GeometryUtils::buildSphereMesh -> Unable to initialize sphere mesh colors.");
+        }
         sphereMesh->getVertexColors()->store(colors.data());
 
         sphereMesh->enableAttribute(StandardAttribute::Normal);
         Bool normalInited = sphereMesh->initVertexNormals();
-        ASSERT(normalInited, "Unable to initialize sphere vertex normals.");
+        if (!normalInited) {
+            throw Exception("GeometryUtils::buildSphereMesh -> Unable to initialize sphere mesh vertex normals.");
+        }
 
         sphereMesh->enableAttribute(StandardAttribute::FaceNormal);
         Bool faceNormalInited = sphereMesh->initVertexFaceNormals();
@@ -610,17 +628,23 @@ namespace Core {
         torusMesh->init();
         torusMesh->enableAttribute(StandardAttribute::Position);
         Bool positionInited = torusMesh->initVertexPositions();
-        ASSERT(positionInited, "Unable to initialize torus mesh vertex positions.");
+        if (!positionInited) {
+            throw Exception("GeometryUtils::buildTorusMesh -> Unable to initialize torus mesh vertex positions.");
+        }
         torusMesh->getVertexPositions()->store(positions.data());
 
         torusMesh->enableAttribute(StandardAttribute::Color);
         Bool colorInited = torusMesh->initVertexColors();
-        ASSERT(colorInited, "Unable to initialize torus mesh colors.");
+        if (!colorInited) {
+            throw Exception("GeometryUtils::buildTorusMesh -> Unable to initialize torus mesh colors.");
+        }
         torusMesh->getVertexColors()->store(colors.data());
 
         torusMesh->enableAttribute(StandardAttribute::Normal);
         Bool normalInited = torusMesh->initVertexNormals();
-        ASSERT(normalInited, "Unable to initialize torus vertex normals.");
+        if (!normalInited) {
+            throw Exception("GeometryUtils::buildTorusMesh -> Unable to initialize torus mesh vertex normals.");
+        }
 
         torusMesh->enableAttribute(StandardAttribute::FaceNormal);
         Bool faceNormalInited = torusMesh->initVertexFaceNormals();

@@ -79,7 +79,9 @@ namespace Core {
      * Update the bone indices in this map to match that of [skeleton]
      */
     void VertexBoneMap::bindTo(WeakPointer<const Skeleton> skeleton) {
-        ASSERT(skeleton.isValid(), "VertexBoneMap::bindTo -> 'skeleton' is not valid.");
+        if(!skeleton.isValid()) {
+            throw InvalidReferenceException("VertexBoneMap::bindTo -> 'skeleton' is not valid.");
+        }
 
         for (UInt32 v = 0; v < vertexCount; v++) {
             VertexBoneMap::VertexMappingDescriptor * desc = this->getDescriptor(v);
@@ -102,7 +104,9 @@ namespace Core {
 
         // initialize the new map
         Bool initSuccess = clone->init();
-        ASSERT(initSuccess, "VertexBoneMap::fullClone -> Could not initialize vertex bone map.");
+        if(!initSuccess) {
+            throw Exception("VertexBoneMap::fullClone -> Could not initialize vertex bone map.");
+        }
 
         // copy over VertexMappingDescriptors one-by-one
         for (UInt32 v = 0; v < vertexCount; v++) {

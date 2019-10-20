@@ -266,7 +266,7 @@ namespace Core {
                     while (tempConvertedMeshes.size() > targetRemainingCount) {
                         WeakPointer<Mesh> convertedMesh = tempConvertedMeshes.front();
                         tempConvertedMeshes.pop();
-                        const aiMesh* mesh = tempAIMeshes.front();
+                        const aiMesh* originalMesh = tempAIMeshes.front();
                         tempAIMeshes.pop();
                         objName = tempMeshNames.front();
                         tempMeshNames.pop();
@@ -276,12 +276,15 @@ namespace Core {
                             // if the transformation matrix for this scene object has an inverted scale, we need to process the
                             // vertex bone map in reverse order.
                             Bool reverseVertexOrder = this->hasOddReflections(mat);
-                            WeakPointer<VertexBoneMap> indexBoneMap = Engine::instance()->createVertexBoneMap(mesh->mNumVertices, mesh->mNumVertices);
-                            this->setupVertexBoneMapMappingsFromAIMesh(skeleton, *mesh, indexBoneMap);
-                            WeakPointer<VertexBoneMap> fullBoneMap = this->expandIndexBoneMapping(indexBoneMap, *mesh, reverseVertexOrder);
-                            meshContainer->addVertexBoneMap(addedCount, fullBoneMap);
+                            WeakPointer<VertexBoneMap> vertexBoneMap = Engine::instance()->createVertexBoneMap(originalMesh->mNumVertices, originalMesh->mNumVertices);
+                            this->setupVertexBoneMapMappingsFromAIMesh(skeleton, *originalMesh, vertexBoneMap);
+                            if (!convertedMesh->isIndexed()) vertexBoneMap = this->expandIndexBoneMapping(vertexBoneMap, *originalMesh, reverseVertexOrder);
+                            meshContainer->addVertexBoneMap(addedCount, vertexBoneMap);
                         }
                         addedCount++;
+                    }
+                    if (hasSkeleton) {
+                        meshContainer->setSkeleton(skeleton);
                     }
                     meshContainer->setName(objName);
 
@@ -969,12 +972,12 @@ namespace Core {
     WeakPointer<VertexBoneMap> ModelLoader::expandIndexBoneMapping(WeakPointer<VertexBoneMap> indexBoneMap, const aiMesh& mesh, Bool reverseVertexOrder) const {
         WeakPointer<VertexBoneMap> fullBoneMap = Engine::instance()->createVertexBoneMap(mesh.mNumFaces * 3, mesh.mNumVertices);
         if (!fullBoneMap.isValid()) {
-            throw ModelLoaderException("ModelImporter::ExpandIndexBoneMapping -> Could not allocate vertex bone map.");
+            throw ModelLoaderException("ModelImporter::expandIndexBoneMapping -> Could not allocate vertex bone map.");
         }
 
         Bool mapInitSuccess = fullBoneMap->init();
         if (!mapInitSuccess) {
-            throw ModelLoaderException("ModelImporter::ExpandIndexBoneMapping -> Could not initialize vertex bone map.");
+            throw ModelLoaderException("ModelImporter::expandIndexBoneMapping -> Could not initialize vertex bone map.");
         }
 
         unsigned fullIndex = 0;
@@ -1008,7 +1011,9 @@ namespace Core {
         }
 
         WeakPointer<Skeleton> target = Engine::instance()->createSkeleton(boneCount);
-        ASSERT(target.isValid(), "ModelImporter::loadSkeleton -> Could not allocate skeleton.");
+        if (!target.isValid()) {
+            throw AllocationException("ModelImporter::loadSkeleton -> Could not allocate skeleton.");
+        }
 
         UInt32 boneIndex = 0;
         for (UInt32 m = 0; m < scene.mNumMeshes; m++) {
@@ -1019,13 +1024,17 @@ namespace Core {
         }
 
         Bool hierarchysuccess = this->createAndMapNodeHierarchy(target, scene);
-        ASSERT(hierarchysuccess, "ModelImporter::loadSkeleton -> Could not create node hierarchy.");
+        if (!hierarchysuccess) {
+            throw Exception("ModelImporter::loadSkeleton -> Could not create node hierarchy.");
+        }
 
         return target;
     }
 
     void ModelLoader::addMeshBoneMappingsToSkeleton(WeakPointer<Skeleton> skeleton, const aiMesh& mesh, UInt32& currentBoneIndex) const {
-        ASSERT(skeleton.isValid(), "ModelImporter::addMeshBoneMappingsToSkeleton -> skeleton is invalid.");
+        if (!skeleton.isValid()) {
+            throw InvalidReferenceException("ModelImporter::addMeshBoneMappingsToSkeleton -> skeleton is invalid.");
+        }
 
         for (UInt32 b = 0; b < mesh.mNumBones; b++) {
             aiBone * cBone = mesh.mBones[b];
@@ -1104,7 +1113,9 @@ namespace Core {
         }
 
         Tree<Skeleton::SkeletonNode*>::TreeNode * lastNode = skeleton->createRoot(skeletonNodePtr);
-        ASSERT(lastNode != nullptr, "ModelImporter::createAndMapNodeHierarchy -> Could not create skeleton root node.");
+        if (lastNode == nullptr) {
+            throw Exception("ModelImporter::createAndMapNodeHierarchy -> Could not create skeleton root node.");
+        }
 
         Skeleton * skeletonPtr = skeleton.get();
         Bool success = true;
@@ -1121,7 +1132,9 @@ namespace Core {
             skeletonPtr->addNodeToList(childSkeletonNodePtr);
 
             Tree<Skeleton::SkeletonNode*>::TreeNode * childNode = skeletonPtr->addChild(lastNode, childSkeletonNodePtr);
-            ASSERT(childNode != nullptr, "ModelImporter::createAndMapNodeHierarchy -> Could not create skeleton child node.");
+            if (childNode == nullptr) {
+                throw Exception("ModelImporter::createAndMapNodeHierarchy -> Could not create skeleton child node.");
+            }
 
             if (mappedBoneIndex >= 0) {
                 Bone * bone = skeletonPtr->getBone(mappedBoneIndex);

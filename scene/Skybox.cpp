@@ -39,7 +39,9 @@ namespace Core {
 
         skyboxMesh->enableAttribute(Core::StandardAttribute::Position);
         Bool positionInited = skyboxMesh->initVertexPositions();
-        ASSERT(positionInited, "Unable to initialize skybox mesh vertex positions.");
+        if (!positionInited) {
+            throw Exception("Skybox::build -> Unable to initialize skybox mesh vertex positions.");
+        }
         skyboxMesh->getVertexPositions()->store(vertexPositions);
 
         WeakPointer<SkyboxMaterial> skyboxMaterial;

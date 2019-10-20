@@ -5,6 +5,7 @@
 
 #include "../common/types.h"
 #include "../geometry/Mesh.h"
+#include "../animation/Skeleton.h"
 #include "RenderableContainer.h"
 
 namespace Core {
@@ -16,10 +17,12 @@ namespace Core {
 
     public:
 
+        void setSkeleton(WeakPointer<Skeleton> skeleton);
         void addVertexBoneMap(UInt32 meshIndex, WeakPointer<VertexBoneMap> vertexBoneMap);
 
     private:
 
+        PersistentWeakPointer<Skeleton> skeleton;
         std::unordered_map<UInt32, PersistentWeakPointer<VertexBoneMap>> vertexBoneMaps;
     };
 

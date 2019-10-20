@@ -19,8 +19,10 @@ namespace Core {
      * concatenated with the transforms of all its ancestors.
      */
     const Transform * Object3DSkeletonNode::getFullTransform() const {
-        ASSERT(false, "Revisit this!!!");
-        ASSERT(this->Target.isValid(), "Object3DSkeletonNode::getFullTransform -> Node does not have a valid target.");
+        throw Exception("Object3DSkeletonNode::getFullTransform -> revisit this!!");
+        if (!this->Target.isValid()) {
+            throw InvalidReferenceException("Object3DSkeletonNode::getFullTransform -> Node does not have a valid target.");
+        }
         WeakPointer<Object3D> target = this->Target;
         return &target->getTransform();
     }
@@ -29,7 +31,9 @@ namespace Core {
      * Retrieve only the local transform of the target Object3D.
      */
     Transform * Object3DSkeletonNode::getLocalTransform() {
-        ASSERT(this->Target.isValid(), "Object3DSkeletonNode::getLocalTransform -> Node does not have a valid target.");
+        if (!this->Target.isValid()) {
+            throw InvalidReferenceException("Object3DSkeletonNode::getLocalTransform -> Node does not have a valid target.");
+        }
         Transform& ref = Target->getTransform();
         return &ref;
     }
@@ -46,8 +50,9 @@ namespace Core {
      */
     Skeleton::SkeletonNode * Object3DSkeletonNode::fullClone() const {
         Skeleton::SkeletonNode * newNode = new(std::nothrow) Object3DSkeletonNode(this->Target, this->BoneIndex, this->Name);
-        ASSERT(newNode != nullptr, "Object3DSkeletonNode::fullClone -> Could not allocate new node.");
-
+        if (newNode == nullptr) {
+            throw AllocationException("Object3DSkeletonNode::fullClone -> Could not allocate new node.");
+        }
         newNode->InitialTransform = this->InitialTransform;
         newNode->InitialTranslation = this->InitialTranslation;
         newNode->InitialScale = this->InitialScale;

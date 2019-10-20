@@ -45,8 +45,10 @@ namespace Core {
 
             // make this VertexMappingDexcriptor object identical to [desc].
             void copy(VertexMappingDescriptor* desc) {
-                ASSERT(desc != nullptr, "VertexMappingDescriptor::SetTo -> 'desc' is null.");
-
+                if (desc == nullptr) {
+                    throw NullPointerException("VertexMappingDescriptor::SetTo -> 'desc' is null.");
+                }
+                
                 this->BoneCount = desc->BoneCount;
                 this->UniqueVertexIndex = desc->UniqueVertexIndex;
                 memcpy(this->BoneIndex, desc->BoneIndex, sizeof(UInt32) * Constants::MaxBonesPerVertex);
