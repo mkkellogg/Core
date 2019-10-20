@@ -22,10 +22,21 @@ set(INCLUDE_DIRS
     GL)
 
 set(INCLUDE_FILES
+    animation/Animation.h
+    animation/AnimationInstance.h
+    animation/AnimationPlayer.h
+    animation/AnimationManager.h
+    animation/KeyFrameSet.h
+    animation/KeyFrame.h
+    animation/TranslationKeyFrame.h
+    animation/RotationKeyFrame.h
+    animation/ScaleKeyFrame.h
     animation/Bone.h
     animation/Skeleton.h
     animation/VertexBoneMap.h
     animation/Object3DSkeletonNode.h
+    animation/BlendOp.h
+    animation/CrossFadeBlendOp.h
     base/VectorStorage.h
     base/BaseVector.h
     base/BitMask.h
@@ -160,10 +171,21 @@ set(INCLUDE_FILES
     Engine.h)
 
 set(SOURCE_FILES
+    animation/Animation.cpp
+    animation/AnimationInstance.cpp
+    animation/AnimationPlayer.cpp
+    animation/AnimationManager.cpp
+    animation/KeyFrameSet.cpp
+    animation/KeyFrame.cpp
+    animation/TranslationKeyFrame.cpp
+    animation/RotationKeyFrame.cpp
+    animation/ScaleKeyFrame.cpp
     animation/Bone.cpp
     animation/Skeleton.cpp
     animation/VertexBoneMap.cpp
     animation/Object3DSkeletonNode.cpp
+    animation/BlendOp.cpp
+    animation/CrossFadeBlendOp.cpp
     base/CoreObject.cpp
     base/BaseVector.cpp
     common/Debug.cpp

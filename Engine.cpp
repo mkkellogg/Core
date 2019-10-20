@@ -9,6 +9,7 @@
 #include "geometry/Vector3.h"
 #include "math/Math.h"
 #include "math/Quaternion.h"
+#include "animation/AnimationManager.h"
 #include "animation/Skeleton.h"
 #include "animation/VertexBoneMap.h"
 #include "render/BaseObjectRenderer.h"
@@ -55,6 +56,8 @@ namespace Core {
         std::shared_ptr<GraphicsGL> graphicsSystem(new GraphicsGL(GraphicsGL::GLVersion::Three));
         this->graphics = std::static_pointer_cast<Graphics>(graphicsSystem);
         this->graphics->init();
+
+        this->animationManager = std::shared_ptr<AnimationManager>(new AnimationManager());
 
         WeakPointer<BasicMaterial> basicMaterial = this->createMaterial<BasicMaterial>();
         WeakPointer<BasicTexturedMaterial> basicTexturedMaterial = this->createMaterial<BasicTexturedMaterial>();
@@ -157,6 +160,10 @@ namespace Core {
 
     WeakPointer<Graphics> Engine::getGraphicsSystem() {
         return this->graphics;
+    }
+
+    WeakPointer<AnimationManager> Engine::getAnimationManager() {
+        return this->animationManager;
     }
 
     void Engine::setActiveScene(WeakPointer<Scene> scene) {

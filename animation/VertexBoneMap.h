@@ -14,6 +14,7 @@
 
 #include <memory.h>
 
+#include "../base/CoreObject.h"
 #include "../common/types.h"
 #include "../util/WeakPointer.h"
 #include "../common/assert.h"
@@ -24,8 +25,10 @@ namespace Core {
     // forward declarations
     class Skeleton;
 
-    class VertexBoneMap {
+    class VertexBoneMap : public CoreObject {
     public:
+
+        friend class Engine;
 
         // this class holds vertex skinning information for a single vertex
         class VertexMappingDescriptor {
@@ -59,13 +62,17 @@ namespace Core {
             }
         };
 
-        VertexBoneMap(UInt32 vertexCount, UInt32 uVertexCount);
         ~VertexBoneMap();
         Bool init();
         VertexMappingDescriptor* getDescriptor(UInt32 index);
         UInt32 getVertexCount() const;
         UInt32 getUniqueVertexCount() const;
         void bindTo(WeakPointer<const Skeleton> skeleton);
+
+    protected:
+
+        VertexBoneMap(UInt32 vertexCount, UInt32 uVertexCount);
+
 
     private:
 

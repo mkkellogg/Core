@@ -19,6 +19,8 @@
 namespace Core {
 
     // forward declarations
+    class Graphics;
+    class AnimationManager;
     class ImageLoader;
     class AssetLoader;
     class CubeTexture;
@@ -50,6 +52,7 @@ namespace Core {
         ModelLoader& getModelLoader();
 
         WeakPointer<Graphics> getGraphicsSystem();
+        WeakPointer<AnimationManager> getAnimationManager();
 
         void setActiveScene(WeakPointer<Scene> scene);
         WeakPointer<Scene> getActiveScene();
@@ -150,6 +153,7 @@ namespace Core {
         static std::shared_ptr<Engine> _instance;
         
         std::shared_ptr<Graphics> graphics;
+        std::shared_ptr<AnimationManager> animationManager;
 
         std::vector<std::shared_ptr<Scene>> scenes;
         std::shared_ptr<Scene> activeScene;
