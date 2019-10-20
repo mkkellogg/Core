@@ -28,6 +28,7 @@ namespace Core {
     class Scene;
     class ReflectionProbe;
     class Skeleton;
+    class VertexBoneMap;
     class Mesh;
 
     class Engine final {
@@ -100,6 +101,7 @@ namespace Core {
         }
 
         WeakPointer<Skeleton> createSkeleton(UInt32 boneCount);
+        WeakPointer<VertexBoneMap> createVertexBoneMap(UInt32 vertexCount, UInt32 uVertexCount);
         WeakPointer<Mesh> createMesh(UInt32 size, UInt32 indexCount);
 
         template <typename T, typename R>
@@ -157,6 +159,7 @@ namespace Core {
         std::vector<std::shared_ptr<Material>> materials;
         std::vector<std::shared_ptr<BaseObjectRenderer>> objectRenderers;
         std::vector<std::shared_ptr<Skeleton>> skeletons;
+        std::vector<std::shared_ptr<VertexBoneMap>> vertexBoneMaps;
         std::vector<std::shared_ptr<Mesh>> meshes;
         std::vector<std::shared_ptr<ReflectionProbe>> reflectionProbes;
 

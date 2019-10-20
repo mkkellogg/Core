@@ -10,6 +10,7 @@
 #include "math/Math.h"
 #include "math/Quaternion.h"
 #include "animation/Skeleton.h"
+#include "animation/VertexBoneMap.h"
 #include "render/BaseObjectRenderer.h"
 #include "render/ReflectionProbe.h"
 #include "scene/Scene.h"
@@ -186,6 +187,20 @@ namespace Core {
         newSkeleton->init();
         this->skeletons.push_back(newSkeleton);
         return newSkeleton;
+    }
+
+    WeakPointer<VertexBoneMap> Engine::createVertexBoneMap(UInt32 vertexCount, UInt32 uVertexCount) {
+        VertexBoneMap * newVertexBoneMapPtr = new(std::nothrow) VertexBoneMap(vertexCount, uVertexCount);
+        if (newVertexBoneMapPtr == nullptr) {
+            throw AllocationException("Engine::createVertexBoneMap -> Could not allocate new vertex bone map.");
+        }
+        std::shared_ptr<VertexBoneMap> newVertexBoneMap = std::shared_ptr<VertexBoneMap>(newVertexBoneMapPtr);
+        Bool mapInitSuccess = newVertexBoneMap->init();
+        if (!mapInitSuccess) {
+            throw Exception("Engine::createVertexBoneMap -> Could not initialize vertex bone map.");
+        }
+        this->vertexBoneMaps.push_back(newVertexBoneMap);
+        return newVertexBoneMap;
     }
 
     WeakPointer<Mesh> Engine::createMesh(UInt32 size, UInt32 indexCount) {

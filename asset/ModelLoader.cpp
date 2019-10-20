@@ -24,7 +24,7 @@
 #include "../material/MaterialLibrary.h"
 #include "../material/ShaderMaterialCharacteristic.h"
 #include "../render/MeshRenderer.h"
-#include "../render/RenderableContainer.h"
+#include "../render/MeshContainer.h"
 #include "../animation/Bone.h"
 #include "../animation/Skeleton.h"
 #include "../animation/Object3DSkeletonNode.h"
@@ -201,7 +201,8 @@ namespace Core {
         Bool hasSkeleton = skeleton.isValid() && skeleton->getBoneCount() > 0 ? true : false;
 
         std::vector<UInt32> boneCounts;
-        std::queue<WeakPointer<Mesh>> tempMeshes;
+        std::queue<const aiMesh*> tempAIMeshes;
+        std::queue<WeakPointer<Mesh>> tempConvertedMeshes;
         std::queue<std::string> tempMeshNames;
         WeakPointer<Material> lastMaterial;
         // are there any meshes in the model/scene?
@@ -242,7 +243,8 @@ namespace Core {
 
                     // convert Assimp mesh to a Mesh object
                     WeakPointer<Mesh> subMesh = this->convertAssimpMesh(sceneMeshIndex, scene, materialImportDescriptor, invert, smoothingThreshold);
-                    tempMeshes.push(subMesh);
+                    tempAIMeshes.push(mesh);
+                    tempConvertedMeshes.push(subMesh);
                     std::string meshName(mesh->mName.C_Str());
                     if (meshName.size() == 0) {
                         meshName = std::string("Mesh") + std::to_string(n);
@@ -253,23 +255,37 @@ namespace Core {
                 UInt32 newChildrenCount = 0;
                 if (n == node.mNumMeshes || (n > 0 && material.get() != lastMaterial.get())) {
                     // create new scene object to hold the meshes object and its renderer
-                    WeakPointer<RenderableContainer<Mesh>> meshContainer = Engine::instance()->createObject3D<RenderableContainer<Mesh>>();
+                    WeakPointer<MeshContainer> meshContainer = Engine::instance()->createObject3D<MeshContainer>();
                     if (!meshContainer.isValid()) {
                         throw ModelLoaderException("ModelLoader::recursiveProcessModelScene -> Could not create mesh container.");
                     };
                 
                     std::string objName;
-                    unsigned int targetRemainingCount = n == node.mNumMeshes ? 0 : 1;
-                    while (tempMeshes.size() > targetRemainingCount) {
-                        WeakPointer<Mesh> subMesh = tempMeshes.front();
-                        tempMeshes.pop();
+                    UInt32 targetRemainingCount = n == node.mNumMeshes ? 0 : 1;
+                    UInt32 addedCount = 0;
+                    while (tempConvertedMeshes.size() > targetRemainingCount) {
+                        WeakPointer<Mesh> convertedMesh = tempConvertedMeshes.front();
+                        tempConvertedMeshes.pop();
+                        const aiMesh* mesh = tempAIMeshes.front();
+                        tempAIMeshes.pop();
                         objName = tempMeshNames.front();
                         tempMeshNames.pop();
-                        meshContainer->addRenderable(subMesh);
+                        meshContainer->addRenderable(convertedMesh);
+
+                        if (hasSkeleton) {
+                            // if the transformation matrix for this scene object has an inverted scale, we need to process the
+                            // vertex bone map in reverse order.
+                            Bool reverseVertexOrder = this->hasOddReflections(mat);
+                            WeakPointer<VertexBoneMap> indexBoneMap = Engine::instance()->createVertexBoneMap(mesh->mNumVertices, mesh->mNumVertices);
+                            this->setupVertexBoneMapMappingsFromAIMesh(skeleton, *mesh, indexBoneMap);
+                            WeakPointer<VertexBoneMap> fullBoneMap = this->expandIndexBoneMapping(indexBoneMap, *mesh, reverseVertexOrder);
+                            meshContainer->addVertexBoneMap(addedCount, fullBoneMap);
+                        }
+                        addedCount++;
                     }
                     meshContainer->setName(objName);
 
-                    WeakPointer<MeshRenderer> meshRenderer = Engine::instance()->createRenderer<MeshRenderer>(lastMaterial, meshContainer);
+                    WeakPointer<MeshRenderer> meshRenderer = Engine::instance()->createRenderer<MeshRenderer, Mesh>(lastMaterial, meshContainer);
                     nodeObject->addChild(meshContainer);
                     createdSceneObjects.push_back(meshContainer);
                     newChildrenCount++;
@@ -948,19 +964,17 @@ namespace Core {
                 target->AddVertexBoneMap(nullptr);
             }
         }
-    }
+    }*/
     
-    VertexBoneMap * ModelLoader::expandIndexBoneMapping(VertexBoneMap& indexBoneMap, const aiMesh& mesh, Bool reverseVertexOrder) const {
-        VertexBoneMap * fullBoneMap = new(std::nothrow) VertexBoneMap(mesh.mNumFaces * 3, mesh.mNumVertices);
-        if (fullBoneMap == nullptr) {
-            Debug::PrintError("ModelImporter::ExpandIndexBoneMapping -> Could not allocate vertex bone map.");
-            return nullptr;
+    WeakPointer<VertexBoneMap> ModelLoader::expandIndexBoneMapping(WeakPointer<VertexBoneMap> indexBoneMap, const aiMesh& mesh, Bool reverseVertexOrder) const {
+        WeakPointer<VertexBoneMap> fullBoneMap = Engine::instance()->createVertexBoneMap(mesh.mNumFaces * 3, mesh.mNumVertices);
+        if (!fullBoneMap.isValid()) {
+            throw ModelLoaderException("ModelImporter::ExpandIndexBoneMapping -> Could not allocate vertex bone map.");
         }
 
-        Bool mapInitSuccess = fullBoneMap->Init();
+        Bool mapInitSuccess = fullBoneMap->init();
         if (!mapInitSuccess) {
-            Debug::PrintError("ModelImporter::ExpandIndexBoneMapping -> Could not initialize vertex bone map.");
-            return nullptr;
+            throw ModelLoaderException("ModelImporter::ExpandIndexBoneMapping -> Could not initialize vertex bone map.");
         }
 
         unsigned fullIndex = 0;
@@ -979,14 +993,13 @@ namespace Core {
             // then we iterate in normal forward order
             for (Int32 i = start; i != end; i += inc) {
                 UInt32 vertexIndex = face.mIndices[i];
-                fullBoneMap->GetDescriptor(fullIndex)->SetTo(indexBoneMap.GetDescriptor(vertexIndex));
+                fullBoneMap->getDescriptor(fullIndex)->copy(indexBoneMap->getDescriptor(vertexIndex));
                 fullIndex++;
             }
         }
 
         return fullBoneMap;
     }
-    */
 
     WeakPointer<Skeleton> ModelLoader::loadSkeleton(const aiScene& scene) const {
         UInt32 boneCount = this->countBones(scene);
@@ -1035,8 +1048,10 @@ namespace Core {
         }
     }
 
-    void ModelLoader::setupVertexBoneMapMappingsFromAIMesh(WeakPointer<const Skeleton> skeleton, const aiMesh& mesh, VertexBoneMap& vertexIndexBoneMap) const {
-        ASSERT(skeleton.isValid(), "ModelImporter::setupVertexBoneMapMappingsFromAIMesh -> skeleton is invalid.");
+    void ModelLoader::setupVertexBoneMapMappingsFromAIMesh(WeakPointer<const Skeleton> skeleton, const aiMesh& mesh, WeakPointer<VertexBoneMap> vertexIndexBoneMap) const {
+        if(!skeleton.isValid()) {
+            throw ModelLoaderException("ModelImporter::setupVertexBoneMapMappingsFromAIMesh -> skeleton is invalid.");
+        }
 
         for (UInt32 b = 0; b < mesh.mNumBones; b++) {
             aiBone * cBone = mesh.mBones[b];
@@ -1050,7 +1065,7 @@ namespace Core {
                     UInt32 vertexID = weightDesc.mVertexId;
                     Real weight = weightDesc.mWeight;
 
-                    VertexBoneMap::VertexMappingDescriptor * desc = vertexIndexBoneMap.getDescriptor(vertexID);
+                    VertexBoneMap::VertexMappingDescriptor * desc = vertexIndexBoneMap->getDescriptor(vertexID);
                     if (desc != nullptr && desc->BoneCount < Constants::MaxBonesPerVertex) {
                         desc->UniqueVertexIndex = vertexID;
                         desc->BoneIndex[desc->BoneCount] = boneIndex;

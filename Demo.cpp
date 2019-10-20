@@ -10,7 +10,7 @@
 #include "material/StandardAttributes.h"
 #include "geometry/Mesh.h"
 #include "render/MeshRenderer.h"
-#include "render/RenderableContainer.h"
+#include "render/MeshContainer.h"
 #include "material/BasicCubeMaterial.h"
 #include "material/BasicMaterial.h"
 #include "material/StandardAttributes.h"
@@ -94,10 +94,10 @@ namespace Core {
     WeakPointer<Core::BasicMaterial> skyboxMaterialPtr(this->skyboxMaterial);
     skyboxMaterialPtr->build();
 
-    WeakPointer<Core::RenderableContainer<Mesh>> skyboxObj = Engine::instance()->createObject3D<Core::RenderableContainer<Mesh>>();
-    WeakPointer<Core::RenderableContainer<Mesh>> skyboxObjPtr = WeakPointer<Core::RenderableContainer<Mesh>>(skyboxObj);
+    WeakPointer<Core::MeshContainer> skyboxObj = Engine::instance()->createObject3D<Core::MeshContainer>();
+    WeakPointer<Core::MeshContainer> skyboxObjPtr = WeakPointer<Core::MeshContainer>(skyboxObj);
 
-    WeakPointer<Core::MeshRenderer> skyboxRenderer = Engine::instance()->createRenderer<Core::MeshRenderer>(this->skyboxMaterial, skyboxObj);
+    WeakPointer<Core::MeshRenderer> skyboxRenderer = Engine::instance()->createRenderer<Core::MeshRenderer, Core::Mesh>(this->skyboxMaterial, skyboxObj);
     skyboxObjPtr->addRenderable(skyboxMesh);
 
     WeakPointer<Object3D> sceneRootPtr = WeakPointer<Object3D>(scenePtr->getRoot());

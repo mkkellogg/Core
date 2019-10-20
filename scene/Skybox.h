@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Engine.h"
+#include "../render/MeshContainer.h"
 #include "../common/types.h"
 #include "../util/WeakPointer.h"
 
@@ -12,9 +13,9 @@ namespace Core {
     public:
         Skybox();
         void build(WeakPointer<CubeTexture> skyboxTexture, Bool isPhysical = false, Real exposure = 1.0f);
-        WeakPointer<RenderableContainer<Mesh>> getSkyboxObject();
+        WeakPointer<MeshContainer> getSkyboxObject();
     private:
-        PersistentWeakPointer<Core::RenderableContainer<Mesh>> skyboxObj;
+        PersistentWeakPointer<MeshContainer> skyboxObj;
     };
 
 }

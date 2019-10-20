@@ -10,7 +10,7 @@
 #include "render/MeshRenderer.h"
 #include "render/ObjectRenderer.h"
 #include "render/BaseObjectRenderer.h"
-#include "render/RenderableContainer.h"
+#include "render/MeshContainer.h"
 #include "render/Camera.h"
 #include "render/RenderTarget.h"
 #include "render/RenderTarget2D.h"
@@ -87,9 +87,9 @@ namespace Core {
     void Graphics::renderFullScreenQuad(WeakPointer<RenderTarget> destination, Int16 cubeFace, WeakPointer<Material> material) {
         static Bool initialized = false;
         static WeakPointer<Mesh> fullScreenQuadMesh;
-        static WeakPointer<RenderableContainer<Mesh>> fullScreenQuadObject;
+        static WeakPointer<MeshContainer> fullScreenQuadObject;
         static WeakPointer<Mesh> fullScreenCubeMesh;
-        static WeakPointer<RenderableContainer<Mesh>> fullScreenCubeObject;
+        static WeakPointer<MeshContainer> fullScreenCubeObject;
         static WeakPointer<Object3D> renderCameraObject;
         static WeakPointer<Camera> renderCamera;
         if (!initialized) {

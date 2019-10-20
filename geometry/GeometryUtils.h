@@ -3,7 +3,7 @@
 #include "../common/types.h"
 #include "../util/WeakPointer.h"
 #include "../color/Color.h"
-#include "../render/RenderableContainer.h"
+#include "../render/MeshContainer.h"
 
 namespace Core {
 
@@ -26,9 +26,9 @@ namespace Core {
 
         static WeakPointer<Mesh> buildTorusMesh(Real radius, Real tubeRadius, UInt32 subdivisions, UInt32 tubeSubdivisions, Color color);
 
-        static WeakPointer<RenderableContainer<Mesh>> buildMeshContainer(WeakPointer<Mesh> mesh,
-                                                                    WeakPointer<Material> material,
-                                                                    const std::string& name);
+        static WeakPointer<MeshContainer> buildMeshContainer(WeakPointer<Mesh> mesh,
+                                                             WeakPointer<Material> material,
+                                                             const std::string& name);
     private:
         
 

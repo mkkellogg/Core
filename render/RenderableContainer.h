@@ -44,7 +44,7 @@ namespace Core {
             return this->renderables.end();
         }
 
-    private:
+    protected:
         RenderableContainer() {
         }
 

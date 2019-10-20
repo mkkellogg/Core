@@ -96,6 +96,7 @@ set(INCLUDE_FILES
     render/RenderPath.h
     render/BaseRenderableContainer.h
     render/RenderableContainer.h
+    render/MeshContainer.h
     render/Renderable.h
     render/BaseObjectRenderer.h
     render/ObjectRenderer.h
@@ -196,6 +197,7 @@ set(SOURCE_FILES
     render/BaseObjectRenderer.cpp
     render/BaseRenderableContainer.cpp
     render/RenderableContainer.cpp
+    render/MeshContainer.cpp
     render/MeshRenderer.cpp
     render/Camera.cpp
     render/Renderer.cpp

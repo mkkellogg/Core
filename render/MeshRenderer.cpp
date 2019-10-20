@@ -12,7 +12,7 @@
 #include "../material/Shader.h"
 #include "../render/Camera.h"
 #include "../render/RenderTarget.h"
-#include "RenderableContainer.h"
+#include "MeshContainer.h"
 #include "RenderException.h"
 
 namespace Core {
@@ -367,7 +367,7 @@ namespace Core {
 
     Bool MeshRenderer::forwardRender(const ViewDescriptor& viewDescriptor, const std::vector<WeakPointer<Light>>& lights,
                                      Bool matchPhysicalPropertiesWithLighting) {
-        std::shared_ptr<RenderableContainer<Mesh>> thisContainer = std::dynamic_pointer_cast<RenderableContainer<Mesh>>(this->owner.lock());
+        std::shared_ptr<MeshContainer> thisContainer = std::dynamic_pointer_cast<MeshContainer>(this->owner.lock());
         if (thisContainer) {
             auto renderables = thisContainer->getRenderables();
             for (auto mesh : renderables) {
