@@ -30,6 +30,7 @@ namespace Core {
     class Mesh;
     class Skeleton;
     class VertexBoneMap;
+    class Animation;
 
     class ModelLoader {
     public:
@@ -45,6 +46,7 @@ namespace Core {
         ~ModelLoader();
         WeakPointer<Object3D> loadModel(const std::string& filePath, Real importScale, UInt32 smoothingThreshold, 
                                         Bool castShadows, Bool receiveShadows, Bool preserveFBXPivots, Bool preferPhysicalMaterial);
+        WeakPointer<Animation> loadAnimation(const std::string& filePath, Bool addLoopPadding, Bool preserveFBXPivots);
 
     private:
 
@@ -116,7 +118,7 @@ namespace Core {
         void setupVertexBoneMapMappingsFromAIMesh(WeakPointer<const Skeleton> skeleton, const aiMesh& mesh, WeakPointer<VertexBoneMap> vertexIndexBoneMap) const;
         UInt32 countBones(const aiScene& scene) const;
         Bool createAndMapNodeHierarchy(WeakPointer<Skeleton> skeleton, const aiScene& scene) const;
-
+        WeakPointer<Animation> loadAnimation(aiAnimation& animation, Bool addLoopPadding) const;
         void traverseScene(const aiScene& scene, SceneTraverseOrder traverseOrder, std::function<Bool(const aiNode&)> callback) const;
         void preOrderTraverseScene(const aiScene& scene, const aiNode& node, std::function<Bool(const aiNode&)> callback) const;
 

@@ -102,12 +102,21 @@ namespace Core {
     }
 
     void Engine::update() {
+        static std::vector<LifecycleEventCallback> tempUpdateCallbacks;
+        static std::vector<LifecycleEventCallback> tempPersistentUpdateCallbacks;
         Time::update();
+        this->animationManager->update();
         if (this->updateCallbacks.size() > 0) {
+            
             for (auto func : this->updateCallbacks) {
-                func();
+               tempUpdateCallbacks.push_back(func);
             }
             this->updateCallbacks.clear();
+
+            for (auto func : tempUpdateCallbacks) {
+                func();
+            }
+            tempUpdateCallbacks.clear();
         }
         for (auto func : this->persistentUpdateCallbacks) {
             func();

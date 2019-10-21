@@ -18,6 +18,7 @@ namespace Core {
     public:
 
         void setSkeleton(WeakPointer<Skeleton> skeleton);
+        WeakPointer<Skeleton> getSkeleton();
         void addVertexBoneMap(UInt32 meshIndex, WeakPointer<VertexBoneMap> vertexBoneMap);
 
     private:

@@ -25,14 +25,16 @@
 
 namespace Core {
 
-	class Animation : public CoreObject 
-	{
+	class Animation : public CoreObject {
+
 		friend class Engine;
-		// needed when loading animations
-		friend class ModelImporter;
+		friend class AnimationManager;
+		friend class ModelLoader;
 
 	public:
 
+		~Animation();
+		
 		void clipEnds(Real startOffsetTicks, Real earlyEndTicks);
 		UInt32 getChannelCount() const;
 		KeyFrameSet * getKeyFrameSet(UInt32 nodeIndex);
@@ -72,7 +74,7 @@ namespace Core {
 
 		Animation(Real durationTicks, Real ticksPerSecond);
 		Animation(Real durationTicks, Real ticksPerSecond, Real startOffsetTicks, Real earlyEndTicks);
-		~Animation();
+
 		void destroy();
 		Bool init(UInt32 channelCount);
 	};

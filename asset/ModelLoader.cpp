@@ -29,6 +29,8 @@
 #include "../animation/Skeleton.h"
 #include "../animation/Object3DSkeletonNode.h"
 #include "../animation/VertexBoneMap.h"
+#include "../animation/Animation.h"
+#include "../animation/AnimationManager.h"
 #include "../geometry/Mesh.h"
 #include "ModelLoader.h"
 
@@ -1145,6 +1147,113 @@ namespace Core {
         });
 
         return success;
+    }
+
+    WeakPointer<Animation> ModelLoader::loadAnimation(aiAnimation& animation, Bool addLoopPadding) const {
+       
+        Real ticksPerSecond = (Real)animation.mTicksPerSecond;
+
+        // adding little extra time to the animation allows for the interpolation between the last
+        // and the first frame, which smoothes out looping animations
+        // TODO: figure out a better way to do this, possibly a setting for smoothing looped animations
+        Real loopPadding = ticksPerSecond * .05f;
+        Real durationTicks = (Real)animation.mDuration;
+
+        if (addLoopPadding) durationTicks += loopPadding;
+
+        if (ticksPerSecond <= 0.0f) {
+            throw ModelLoaderException("ModelLoader::loadAnimation -> Ticks per second is 0.");
+        } 
+
+        WeakPointer<Animation> convertedAnimation = Engine::instance()->getAnimationManager()->createAnimation(durationTicks, ticksPerSecond);
+        if (!convertedAnimation.isValid()) {
+            throw ModelLoaderException("ModelLoader::loadAnimation -> Unable to create Animation.");
+        }
+       
+        Bool initSuccess = convertedAnimation->init(animation.mNumChannels);
+        if (!initSuccess) {
+            throw ModelLoaderException("ModelLoader::LoadAnimation -> Unable to initialize Animation.");
+        }
+
+        for (UInt32 n = 0; n < animation.mNumChannels; n++) {
+            aiNodeAnim * nodeAnim = animation.mChannels[n];
+            std::string nodeName(nodeAnim->mNodeName.C_Str());
+
+            convertedAnimation->setChannelName(n, nodeName);
+
+            //int nodeIndex = skeleton->GetNodeMapping(nodeName);
+            Int32 nodeIndex = n;
+            if (nodeIndex >= 0) {
+                KeyFrameSet * keyFrameSet = convertedAnimation->getKeyFrameSet(nodeIndex);
+                if (keyFrameSet == nullptr) {
+                    std::string msg = std::string("ModelLoader::LoadAnimation -> nullptr KeyFrameSet encountered for: ") + nodeName;
+                    throw ModelLoaderException(std::string("ModelLoader::loadAnimation -> nullptr KeyFrameSet encountered for: ") + msg);
+                }
+
+                keyFrameSet->Used = true;
+
+                for (UInt32 t = 0; t < nodeAnim->mNumPositionKeys; t++) {
+                    aiVectorKey& vectorKey = *(nodeAnim->mPositionKeys + t);
+
+                    TranslationKeyFrame keyFrame;
+                    keyFrame.NormalizedTime = (Real)vectorKey.mTime / durationTicks;
+                    keyFrame.RealTime = (Real)vectorKey.mTime / ticksPerSecond;
+                    keyFrame.RealTimeTicks = (Real)vectorKey.mTime;
+                    keyFrame.Translation.set(vectorKey.mValue.x, vectorKey.mValue.y, vectorKey.mValue.z);
+                    keyFrameSet->TranslationKeyFrames.push_back(keyFrame);
+                }
+
+                for (UInt32 s = 0; s < nodeAnim->mNumScalingKeys; s++) {
+
+                    aiVectorKey& vectorKey = *(nodeAnim->mScalingKeys + s);
+
+                    ScaleKeyFrame keyFrame;
+                    keyFrame.NormalizedTime = (Real)vectorKey.mTime / durationTicks;
+                    keyFrame.RealTime = (Real)vectorKey.mTime / ticksPerSecond;
+                    keyFrame.RealTimeTicks = (Real)vectorKey.mTime;
+                    keyFrame.Scale.set(vectorKey.mValue.x, vectorKey.mValue.y, vectorKey.mValue.z);
+                    keyFrameSet->ScaleKeyFrames.push_back(keyFrame);
+                }
+
+                for (UInt32 r = 0; r < nodeAnim->mNumRotationKeys; r++) {
+                    aiQuatKey& quatKey = *(nodeAnim->mRotationKeys + r);
+
+                    RotationKeyFrame keyFrame;
+                    keyFrame.NormalizedTime = (Real)quatKey.mTime / durationTicks;
+                    keyFrame.RealTime = (Real)quatKey.mTime / ticksPerSecond;
+                    keyFrame.RealTimeTicks = (Real)quatKey.mTime;
+                    keyFrame.Rotation.set(quatKey.mValue.x, quatKey.mValue.y, quatKey.mValue.z, quatKey.mValue.w);
+                    keyFrameSet->RotationKeyFrames.push_back(keyFrame);
+                }
+            }
+        }
+
+        return convertedAnimation;;
+    }
+
+    /*
+     * Currently this loads only the first animation found in the model file.
+     *
+     */
+    WeakPointer<Animation> ModelLoader::loadAnimation(const std::string& filePath, Bool addLoopPadding, Bool preserveFBXPivots) {
+       this->initImporter();
+
+        const aiScene * scene = this->loadAIScene(filePath, preserveFBXPivots);
+        if (scene == nullptr) {
+            throw ModelLoaderException("ModelLoader::loadAnimation -> Unable to load scene.");
+        }
+
+        if (scene->mNumAnimations <= 0) {
+            throw ModelLoaderException("ModelLoader::loadAnimation -> Model does not contain any animations.");
+        }
+
+        // only load the first animation
+        WeakPointer<Animation> animation = this->loadAnimation(*(scene->mAnimations[0]), addLoopPadding);
+        if(!animation.isValid()) {
+            throw ModelLoaderException("ModelLoader::loadAnimation -> Unable to load Animation.");
+        }
+      
+        return animation;
     }
 
     void ModelLoader::traverseScene(const aiScene& scene, SceneTraverseOrder traverseOrder, std::function<Bool(const aiNode&)> callback) const {

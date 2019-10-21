@@ -78,12 +78,24 @@ namespace Core {
 	 * Loop through each active AnimationPlayer and drive its playback.
 	 */
 	void AnimationManager::update() {
-		for (std::unordered_map<UInt64, WeakPointer<AnimationPlayer>>::iterator iter = this->activePlayers.begin(); iter != activePlayers.end(); ++iter) {
+		for (std::unordered_map<UInt64, std::shared_ptr<AnimationPlayer>>::iterator iter = this->activePlayers.begin(); iter != activePlayers.end(); ++iter) {
 			WeakPointer<AnimationPlayer> player = iter->second;
 			if (player.isValid()) {
 				player->update();
 			}
 		}
+	}
+
+	WeakPointer<Animation> AnimationManager::createAnimation(Real durationTicks, Real ticksPerSecond) {
+		Animation * animationPtr = new(std::nothrow) Animation(durationTicks, ticksPerSecond);
+		if (animationPtr == nullptr) {
+			throw AllocationException("AnimationManager::createAnimation -> Could not allocate new Animation object.");
+		}
+
+		std::shared_ptr<Animation> animation(animationPtr);
+		this->animations.push_back(animation);
+
+        return animation;
 	}
 
 	/*
@@ -102,8 +114,7 @@ namespace Core {
 			}
 
 			std::shared_ptr<AnimationPlayer> player(playerPtr);
-			this->allPlayers.push_back(player);
-			// put the newly created AnimationPlayer in the list of active players.s
+			// put the newly created AnimationPlayer in the list of active players.
 			this->activePlayers[target->getObjectID()] = player;
 			return player;
 		}
@@ -128,6 +139,8 @@ namespace Core {
 
         std::shared_ptr<AnimationInstance> instance(instancePtr);
 		this->instances.push_back(instance);
+
+		return instance;
 	}
 }
 

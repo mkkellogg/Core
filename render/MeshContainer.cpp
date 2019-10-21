@@ -8,6 +8,10 @@ namespace Core {
         this->skeleton = skeleton;
     }
 
+    WeakPointer<Skeleton> MeshContainer::getSkeleton() {
+        return this->skeleton;
+    }
+
     void MeshContainer::addVertexBoneMap(UInt32 meshIndex, WeakPointer<VertexBoneMap> vertexBoneMap) {
         this->vertexBoneMaps[meshIndex] = vertexBoneMap;
     }
