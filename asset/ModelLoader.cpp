@@ -292,6 +292,7 @@ namespace Core {
 
                     WeakPointer<MeshRenderer> meshRenderer = Engine::instance()->createRenderer<MeshRenderer, Mesh>(lastMaterial, meshContainer);
                     nodeObject->addChild(meshContainer);
+                    meshContainer->getTransform().getLocalMatrix().setIdentity();
                     createdSceneObjects.push_back(meshContainer);
                     newChildrenCount++;
                 }
