@@ -298,10 +298,10 @@ namespace Core {
 
                 lastMaterial = material;
             }
+        }
 
-            if (hasSkeleton) {
-                this->mapSkeletonNodeToObject3D(skeleton, std::string(node.mName.C_Str()), nodeObject, mat);
-            }
+        if (hasSkeleton) {
+            this->mapSkeletonNodeToObject3D(skeleton, std::string(node.mName.C_Str()), nodeObject, mat);
         }
 
         for (UInt32 i = 0; i < node.mNumChildren; i++) {

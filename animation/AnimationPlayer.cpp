@@ -196,6 +196,7 @@ namespace Core {
 					if (mappedChannel >= 0) {
 						this->calculateInterpolatedValues(instance, mappedChannel, translation, rotation, scale);
 					}
+
 					// if there is no channel in the current animation for this node, use the
 					// default transformation values for this node
 					else {
@@ -235,6 +236,7 @@ namespace Core {
 
 							if (agWeight != 0)temp = Quaternion::slerp(agRotation, rotation, weight / agWeight);
 							else temp = rotation;
+
 							agRotation = temp;
 						}
 					}
@@ -245,12 +247,14 @@ namespace Core {
 
 			// only apply transformations if they were actually calculated
 			if (playingAnimationsSeen > 0) {
+
 				matrix.setIdentity();
 				// apply interpolated scale
 				matrix.scale(agScale.x, agScale.y, agScale.z);
 				// apply interpolated rotation
 				agRotation.normalize();
 				rotMatrix = agRotation.rotationMatrix();
+
 				matrix.preMultiply(rotMatrix);
 				// apply interpolated translation
 				matrix.preTranslate(agTranslation.x, agTranslation.y, agTranslation.z);
@@ -267,7 +271,9 @@ namespace Core {
 					// get the local transform of the target of this node and apply
 					// [matrix], which contains the interpolated scale, rotation, and translation
 					Transform * localTransform = targetNode->getLocalTransform();
-					if (localTransform != nullptr)localTransform->setLocalMatrix(matrix);
+					if (localTransform != nullptr) {
+						localTransform->setLocalMatrix(matrix);
+					}
 				}
 			}
 		}
@@ -441,6 +447,7 @@ namespace Core {
 			Quaternion b(nextFrame.Rotation.x(), nextFrame.Rotation.y(), nextFrame.Rotation.z(), nextFrame.Rotation.w());
 			Quaternion quatOut = Quaternion::slerp(a, b, interFrameProgress);
 			rotation.set(quatOut.x(), quatOut.y(), quatOut.z(), quatOut.w());
+
 		} else {//we did not find 2 frames, so set rotation equal to the first frame
 			const RotationKeyFrame& firstFrame = keyFrameSet.RotationKeyFrames[0];
 			rotation.set(firstFrame.Rotation.x(), firstFrame.Rotation.y(), firstFrame.Rotation.z(), firstFrame.Rotation.w());
