@@ -153,34 +153,6 @@ namespace Core {
         // active or visible in the scene after it has been loaded
         root->setActive(false);
 
-        // loop through each instance of SceneObject that was created in the call to recursiveProcessModelScene()
-        // and for each instance that contains a SkinnedMesh3DRenderer instance, clone the Skeleton instance
-        // created earlier in the call to LoadSkeleton() and assign the cloned skeleton to that renderer.
-        for (UInt32 s = 0; s < createdSceneObjects.size(); s++) {
-            // does the SceneObject instance have a SkinnedMesh3DRenderer ?
-
-            /*  SkinnedMesh3DRendererSharedPtr skinnedRenderer = GTE::DynamicCastEngineObject<GTE::Renderer,
-              GTE::SkinnedMesh3DRenderer>(createdSceneObjects[s]->GetRenderer()); if (skinnedRenderer.IsValid()) {
-                  // clone [skeleton]
-                  SkeletonSharedPtr skeletonClone = objectManager->CloneSkeleton(skeleton);
-                  if (!skeletonClone.IsValid()) {
-                      Debug::PrintWarning("ModelImporter::ProcessModelScene -> Could not clone scene skeleton.");
-                      continue;
-                  }
-
-                  // assign the clones skeleton to [renderer]
-                  skinnedRenderer->SetSkeleton(skeletonClone);
-
-                  Matrix4x4 mat;
-                  createdSceneObjects[s]->GetTransform().CopyMatrix(mat);
-
-                  // if the transformation matrix for this scene object has an inverted scale, we need to process the
-                  // vertex bone map in reverse order. we pass the [reverseVertexOrder] flag to SetupVertexBoneMapForRenderer()
-                  Bool reverseVertexOrder = HasOddReflections(mat);
-                  SetupVertexBoneMapForRenderer(scene, skeletonClone, skinnedRenderer, reverseVertexOrder);
-              }*/
-        }
-
         return root;
     }
 
@@ -945,32 +917,6 @@ namespace Core {
             aiTextureKey = aiTextureType_DIFFUSE;
         return aiTextureKey;
     }
-
-    /*void ModelImporter::setupVertexBoneMapForRenderer(const aiScene& scene, SkeletonSharedPtr skeleton, SkinnedMesh3DRendererSharedPtr target, Bool reverseVertexOrder) const {
-        for (UInt32 m = 0; m < scene.mNumMeshes; m++) {
-            aiMesh * cMesh = scene.mMeshes[m];
-            if (cMesh != nullptr && cMesh->mNumBones > 0) {
-                VertexBoneMap indexBoneMap(cMesh->mNumVertices, cMesh->mNumVertices);
-
-                Bool mapInitSuccess = indexBoneMap.Init();
-                if (!mapInitSuccess) {
-                    Debug::PrintError("ModelImporter::SetupVertexBoneMapForRenderer -> Could not initialize index bone map.");
-                }
-
-                SetupVertexBoneMapMappingsFromAIMesh(skeleton, *cMesh, indexBoneMap);
-
-                VertexBoneMap * fullBoneMap = ExpandIndexBoneMapping(indexBoneMap, *cMesh, reverseVertexOrder);
-                if (fullBoneMap == nullptr) {
-                    Debug::PrintError("ModelImporter::SetupVertexBoneMapForRenderer -> Could not create full vertex bone map.");
-                }
-
-                target->AddVertexBoneMap(fullBoneMap);
-            }
-            else {
-                target->AddVertexBoneMap(nullptr);
-            }
-        }
-    }*/
     
     WeakPointer<VertexBoneMap> ModelLoader::expandIndexBoneMapping(WeakPointer<VertexBoneMap> indexBoneMap, const aiMesh& mesh, Bool reverseVertexOrder) const {
         WeakPointer<VertexBoneMap> fullBoneMap = Engine::instance()->createVertexBoneMap(mesh.mNumFaces * 3, mesh.mNumVertices);
