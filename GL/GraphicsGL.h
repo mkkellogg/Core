@@ -8,6 +8,7 @@
 #include "../common/gl.h"
 #include "../geometry/AttributeType.h"
 #include "AttributeArrayGPUStorageGL.h"
+#include "IndexBufferGL.h"
 #include "ShaderManagerGL.h"
 
 namespace Core {
@@ -52,7 +53,7 @@ namespace Core {
         void activateShader(WeakPointer<Shader> shader) override;
 
         WeakPointer<AttributeArrayGPUStorage> createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) override;
-        std::shared_ptr<IndexBuffer> createIndexBuffer(UInt32 size) const override;
+        WeakPointer<IndexBuffer> createIndexBuffer(UInt32 size) override;
 
         void drawBoundVertexBuffer(UInt32 vertexCount) override;
         void drawBoundVertexBuffer(UInt32 vertexCount, WeakPointer<IndexBuffer> indices) override;
@@ -123,6 +124,7 @@ namespace Core {
 
         GLVersion glVersion;
         std::vector<std::shared_ptr<AttributeArrayGPUStorageGL>> attributeArrays;
+         std::vector<std::shared_ptr<IndexBufferGL>> indexBuffers;
         std::shared_ptr<RendererGL> renderer;
         std::vector<std::shared_ptr<Texture2DGL>> textures2D;
         std::vector<std::shared_ptr<CubeTextureGL>> cubeTextures;

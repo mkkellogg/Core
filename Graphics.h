@@ -62,7 +62,7 @@ namespace Core {
         virtual void activateShader(WeakPointer<Shader> shader) = 0;
     
         virtual WeakPointer<AttributeArrayGPUStorage> createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) = 0;
-        virtual std::shared_ptr<IndexBuffer> createIndexBuffer(UInt32 size) const = 0;
+        virtual WeakPointer<IndexBuffer> createIndexBuffer(UInt32 size) = 0;
 
         virtual void drawBoundVertexBuffer(UInt32 vertexCount) = 0;
         virtual void drawBoundVertexBuffer(UInt32 vertexCount, WeakPointer<IndexBuffer> indices) = 0;

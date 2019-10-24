@@ -109,7 +109,8 @@ namespace Core {
         std::shared_ptr<AttributeArray<ColorS>> vertexColors;
         std::shared_ptr<AttributeArray<Vector2rs>> vertexAlbedoUVs;
         std::shared_ptr<AttributeArray<Vector2rs>> vertexNormalUVs;
-        std::shared_ptr<IndexBuffer> indexBuffer;
+        
+        PersistentWeakPointer<IndexBuffer> indexBuffer;
 
         // maps vertices to other equal vertices
         std::vector<UInt32>** vertexCrossMap;
