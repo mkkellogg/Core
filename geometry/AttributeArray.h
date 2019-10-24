@@ -35,7 +35,7 @@ namespace Core {
     protected:
         UInt32 attributeCount;
         UInt32 componentCount;
-        std::shared_ptr<AttributeArrayGPUStorage> gpuStorage;
+        PersistentWeakPointer<AttributeArrayGPUStorage> gpuStorage;
     };
 
     template <typename T>
@@ -70,7 +70,7 @@ namespace Core {
             this->updateGPUStorageData();
         }
 
-        void setGPUStorage(std::shared_ptr<AttributeArrayGPUStorage> storage) { 
+        void setGPUStorage(WeakPointer<AttributeArrayGPUStorage> storage) { 
             this->gpuStorage = storage;
             this->updateGPUStorageData();
         }

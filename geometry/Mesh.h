@@ -87,7 +87,7 @@ namespace Core {
                 throw AllocationException("MeshGL::initVertexAttributes() -> Unable to allocate array.");
             }
 
-            std::shared_ptr<AttributeArrayGPUStorage> gpuStorage =
+            WeakPointer<AttributeArrayGPUStorage> gpuStorage =
                 this->graphics->createGPUStorage((*attributes)->getSize(), T::ComponentCount, AttributeType::Float, false);
             (*attributes)->setGPUStorage(gpuStorage);
             return true;

@@ -142,14 +142,16 @@ namespace Core {
         glUseProgram(shader->getProgram());
     }
 
-    std::shared_ptr<AttributeArrayGPUStorage> GraphicsGL::createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) const {
-        AttributeArrayGPUStorageGL* gpuStorage =
+    WeakPointer<AttributeArrayGPUStorage> GraphicsGL::createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) {
+        AttributeArrayGPUStorageGL* gpuStoragePtr =
             new (std::nothrow) AttributeArrayGPUStorageGL(size, componentCount, convertAttributeType(type), normalize ? GL_TRUE : GL_FALSE, 0);
-        if (gpuStorage == nullptr) {
+        if (gpuStoragePtr == nullptr) {
             throw AllocationException("GraphicsGL::createGPUStorage() -> Unable to allocate gpu buffer.");
         }
-        std::shared_ptr<AttributeArrayGPUStorageGL> gpuStoragePtr(gpuStorage);
-        return gpuStoragePtr;
+        std::shared_ptr<AttributeArrayGPUStorageGL> gpuStorage(gpuStoragePtr);
+        this->attributeArrays.push_back(gpuStorage);
+        WeakPointer<AttributeArrayGPUStorageGL> temp = gpuStorage;
+        return temp;
     }
 
     std::shared_ptr<IndexBuffer> GraphicsGL::createIndexBuffer(UInt32 size) const {
