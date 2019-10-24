@@ -253,6 +253,7 @@ namespace Core {
                             WeakPointer<VertexBoneMap> vertexBoneMap = Engine::instance()->createVertexBoneMap(originalMesh->mNumVertices, originalMesh->mNumVertices);
                             this->setupVertexBoneMapMappingsFromAIMesh(skeleton, *originalMesh, vertexBoneMap);
                             if (!convertedMesh->isIndexed()) vertexBoneMap = this->expandIndexBoneMapping(vertexBoneMap, *originalMesh, reverseVertexOrder);
+                            vertexBoneMap->buildAttributeArray();
                             meshContainer->addVertexBoneMap(addedCount, vertexBoneMap);
                         }
                         addedCount++;

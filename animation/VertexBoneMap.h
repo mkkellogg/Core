@@ -19,11 +19,13 @@
 #include "../util/WeakPointer.h"
 #include "../common/assert.h"
 #include "../common/Constants.h"
+#include "../geometry/Vector4.h"
 
 namespace Core {
 
     // forward declarations
     class Skeleton;
+    template <typename T> class AttributeArray;
 
     class VertexBoneMap : public CoreObject {
     public:
@@ -67,7 +69,11 @@ namespace Core {
         VertexMappingDescriptor* getDescriptor(UInt32 index);
         UInt32 getVertexCount() const;
         UInt32 getUniqueVertexCount() const;
+        void buildAttributeArray();
         void bindTo(WeakPointer<const Skeleton> skeleton);
+
+        WeakPointer<AttributeArray<Vector4rs>> getWeights();
+        WeakPointer<AttributeArray<Vector4us>> getIndices();
 
     protected:
 
@@ -82,6 +88,9 @@ namespace Core {
         UInt32 vertexCount;
         // mapping descriptor for each vertex
         VertexMappingDescriptor * mappingDescriptors;
+
+        std::shared_ptr<AttributeArray<Vector4rs>> boneWeights;
+        std::shared_ptr<AttributeArray<Vector4us>> boneIndices;
 
         void destroy();
         VertexBoneMap * fullClone();

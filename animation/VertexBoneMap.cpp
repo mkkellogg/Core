@@ -75,6 +75,58 @@ namespace Core {
         return this->uniqueVertexCount;
     }
 
+// virtual std::shared_ptr<AttributeArrayGPUStorage> Graphics::createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) const = 0;
+    void VertexBoneMap::buildAttributeArray() {
+        try {
+            this->boneWeights = std::make_shared<AttributeArray<Vector4rs>>(this->vertexCount);
+            this->boneIndices = std::make_shared<AttributeArray<Vector4us>>(this->vertexCount);
+        } catch(...) {
+            throw AllocationException("VertexBoneMap::buildAttributeArray() -> Unable to allocate array.");
+        }
+
+        WeakPointer<AttributeArrayGPUStorage> boneWeightsGpuStorage =
+            Engine::instance()->getGraphicsSystem()->createGPUStorage(this->boneWeights->getSize(), 4, AttributeType::Float, false);
+        this->boneWeights->setGPUStorage(boneWeightsGpuStorage);
+
+
+        WeakPointer<AttributeArrayGPUStorage> boneIndicesGpuStorage =
+            Engine::instance()->getGraphicsSystem()->createGPUStorage(this->boneIndices->getSize(), 4, AttributeType::UnsignedInt, false);
+        this->boneIndices->setGPUStorage(boneIndicesGpuStorage);
+
+        Real* boneWeightsDataArray = new (std::nothrow) Real[this->vertexCount * Constants::MaxBonesPerVertex];
+        if (boneWeightsDataArray == nullptr) {
+            throw AllocationException("VertexBoneMap::buildAttributeArray() -> Unable to allocate bone weights raw data storage.");
+        }
+        std::unique_ptr<Real[]> spBoneWeights(boneWeightsDataArray);
+
+        UInt32* boneIndicesDataArray = new (std::nothrow) UInt32[this->vertexCount * Constants::MaxBonesPerVertex];
+        if (boneIndicesDataArray == nullptr) {
+            throw AllocationException("VertexBoneMap::buildAttributeArray() -> Unable to allocate bone indices raw data storage.");
+        }
+        std::unique_ptr<UInt32[]> spBoneIndices(boneIndicesDataArray);
+
+        for (UInt32 i = 0; i < this->vertexCount; i++) {
+            VertexMappingDescriptor* desc = this->getDescriptor(i);
+            UInt32 baseIndex = i * Constants::MaxBonesPerVertex;
+            
+            for (UInt32 b = 0; b < Constants::MaxBonesPerVertex; b++) {
+                boneWeightsDataArray[baseIndex + b] = desc->Weight[b];
+                boneIndicesDataArray[baseIndex + b] = desc->BoneIndex[b];
+            }
+        }
+
+        this->boneWeights->store(boneWeightsDataArray);
+        this->boneIndices->store(boneIndicesDataArray);
+    }
+
+    WeakPointer<AttributeArray<Vector4rs>> VertexBoneMap::getWeights() {
+        return this->boneWeights;
+    }
+
+    WeakPointer<AttributeArray<Vector4us>> VertexBoneMap::getIndices() {
+        return this->boneIndices;
+    }
+
     /*
      * Update the bone indices in this map to match that of [skeleton]
      */
