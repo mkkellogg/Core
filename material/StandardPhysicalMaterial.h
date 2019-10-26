@@ -76,6 +76,11 @@ namespace Core {
         Int32 modelMatrixLocation;
         Int32 modelInverseTransposeMatrixLocation;
 
+        Int32 skinningEnabledLocation;
+        Int32 bonesLocation[Constants::MaxBones];
+        Int32 boneIndexLocation;
+        Int32 boneWeightLocation;
+
         Int32 lightPositionLocation;
         Int32 lightDirectionLocation;
         Int32 lightViewProjectionLocations[Constants::MaxDirectionalCascades];

@@ -75,22 +75,21 @@ namespace Core {
         return this->uniqueVertexCount;
     }
 
-// virtual std::shared_ptr<AttributeArrayGPUStorage> Graphics::createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) const = 0;
     void VertexBoneMap::buildAttributeArray() {
         try {
             this->boneWeights = std::make_shared<AttributeArray<Vector4rs>>(this->vertexCount);
-            this->boneIndices = std::make_shared<AttributeArray<Vector4us>>(this->vertexCount);
+            this->boneIndices = std::make_shared<AttributeArray<Vector4is>>(this->vertexCount);
         } catch(...) {
             throw AllocationException("VertexBoneMap::buildAttributeArray() -> Unable to allocate array.");
         }
 
         WeakPointer<AttributeArrayGPUStorage> boneWeightsGpuStorage =
-            Engine::instance()->getGraphicsSystem()->createGPUStorage(this->boneWeights->getSize(), 4, AttributeType::Float, false);
+            Engine::instance()->getGraphicsSystem()->createGPUStorage(this->vertexCount * Constants::MaxBonesPerVertex * sizeof(Real), Constants::MaxBonesPerVertex, AttributeType::Float, false);
         this->boneWeights->setGPUStorage(boneWeightsGpuStorage);
 
 
         WeakPointer<AttributeArrayGPUStorage> boneIndicesGpuStorage =
-            Engine::instance()->getGraphicsSystem()->createGPUStorage(this->boneIndices->getSize(), 4, AttributeType::UnsignedInt, false);
+            Engine::instance()->getGraphicsSystem()->createGPUStorage(this->vertexCount * Constants::MaxBonesPerVertex * sizeof(Int32), Constants::MaxBonesPerVertex, AttributeType::Int, false);
         this->boneIndices->setGPUStorage(boneIndicesGpuStorage);
 
         Real* boneWeightsDataArray = new (std::nothrow) Real[this->vertexCount * Constants::MaxBonesPerVertex];
@@ -99,22 +98,28 @@ namespace Core {
         }
         std::unique_ptr<Real[]> spBoneWeights(boneWeightsDataArray);
 
-        UInt32* boneIndicesDataArray = new (std::nothrow) UInt32[this->vertexCount * Constants::MaxBonesPerVertex];
+        Int32* boneIndicesDataArray = new (std::nothrow) Int32[this->vertexCount * Constants::MaxBonesPerVertex];
         if (boneIndicesDataArray == nullptr) {
             throw AllocationException("VertexBoneMap::buildAttributeArray() -> Unable to allocate bone indices raw data storage.");
         }
-        std::unique_ptr<UInt32[]> spBoneIndices(boneIndicesDataArray);
+        std::unique_ptr<Int32[]> spBoneIndices(boneIndicesDataArray);
 
         for (UInt32 i = 0; i < this->vertexCount; i++) {
+            Real tWeight = 0.0;
             VertexMappingDescriptor* desc = this->getDescriptor(i);
             UInt32 baseIndex = i * Constants::MaxBonesPerVertex;
             
-            for (UInt32 b = 0; b < Constants::MaxBonesPerVertex; b++) {
-                boneWeightsDataArray[baseIndex + b] = desc->Weight[b];
-                boneIndicesDataArray[baseIndex + b] = desc->BoneIndex[b];
+            for (UInt32 b = 0; b < desc->BoneCount; b++) {
+               boneWeightsDataArray[baseIndex + b] = desc->Weight[b];
+               boneIndicesDataArray[baseIndex + b] = desc->BoneIndex[b];
+               tWeight += desc->Weight[b];
+            }
+            for (UInt32 b = desc->BoneCount; b < Constants::MaxBonesPerVertex; b++) {
+               boneWeightsDataArray[baseIndex + b] = 0.0f;
+               boneIndicesDataArray[baseIndex + b] = 0;
             }
         }
-
+        
         this->boneWeights->store(boneWeightsDataArray);
         this->boneIndices->store(boneIndicesDataArray);
     }
@@ -123,7 +128,7 @@ namespace Core {
         return this->boneWeights;
     }
 
-    WeakPointer<AttributeArray<Vector4us>> VertexBoneMap::getIndices() {
+    WeakPointer<AttributeArray<Vector4is>> VertexBoneMap::getIndices() {
         return this->boneIndices;
     }
 
@@ -147,7 +152,7 @@ namespace Core {
     /*
      * Create a full (deep) clone of this VertexBoneMap object.
      */
-    VertexBoneMap * VertexBoneMap::fullClone() {
+    /*VertexBoneMap * VertexBoneMap::fullClone() {
         // allocate new VertexBoneMap objects
         VertexBoneMap * clone = new(std::nothrow) VertexBoneMap(vertexCount, uniqueVertexCount);
         if (clone == nullptr) {
@@ -166,5 +171,5 @@ namespace Core {
         }
 
         return clone;
-    }
+    }*/
 }

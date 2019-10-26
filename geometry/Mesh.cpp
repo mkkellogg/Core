@@ -24,6 +24,10 @@ namespace Core {
 
     Mesh::~Mesh() {
         this->destroyVertexCrossMap();
+        /*if (this->indexBuffer.isValid()) {
+            this->graphics->destroyIndexbuffer(this->indexBuffer);
+        }*/
+
     }
 
     void Mesh::init() {
@@ -578,6 +582,14 @@ namespace Core {
         //if (invertTangents)InvertTangents();
 
         tangents->updateGPUStorageData();
+    }
+
+    void Mesh::setName(const std::string& name) {
+        this->name = name;
+    }
+
+    const std::string& Mesh::getName() const {
+        return this->name;
     }
 
     /*

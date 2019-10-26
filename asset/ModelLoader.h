@@ -115,7 +115,7 @@ namespace Core {
         WeakPointer<VertexBoneMap> expandIndexBoneMapping(WeakPointer<VertexBoneMap> indexBoneMap, const aiMesh& mesh, Bool reverseVertexOrder) const;
         WeakPointer<Skeleton> loadSkeleton(const aiScene& scene) const;
         void addMeshBoneMappingsToSkeleton(WeakPointer<Skeleton> skeleton, const aiMesh& mesh, UInt32& currentBoneIndex) const;
-        void setupVertexBoneMapMappingsFromAIMesh(WeakPointer<const Skeleton> skeleton, const aiMesh& mesh, WeakPointer<VertexBoneMap> vertexIndexBoneMap) const;
+        Bool setupVertexBoneMapMappingsFromAIMesh(WeakPointer<const Skeleton> skeleton, const aiMesh& mesh, WeakPointer<VertexBoneMap> vertexIndexBoneMap) const;
         UInt32 countBones(const aiScene& scene) const;
         Bool createAndMapNodeHierarchy(WeakPointer<Skeleton> skeleton, const aiScene& scene) const;
         WeakPointer<Animation> loadAnimation(aiAnimation& animation, Bool addLoopPadding) const;

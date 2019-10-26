@@ -63,8 +63,8 @@ namespace Core {
             }
             virtual ~SkeletonNode() {}
 
-            virtual const Transform * getFullTransform() const = 0;
-            virtual Transform * getLocalTransform() = 0;
+            virtual Matrix4x4& getFullTransform() = 0;
+            virtual Matrix4x4& getLocalTransform() = 0;
             virtual Bool hasTarget() const = 0;
             virtual SkeletonNode * fullClone() const = 0;
         };
@@ -84,6 +84,7 @@ namespace Core {
         void mapNode(std::string& name, UInt32 nodeIndex);
         Int32 getNodeMapping(const std::string& name) const;
         SkeletonNode * getNodeFromList(UInt32 nodeIndex);
+        Tree<SkeletonNode*>::TreeNode * getRootNode();
         void addNodeToList(SkeletonNode * node);
 
         void overrideBonesFrom(WeakPointer<const Skeleton> skeleton, Bool takeOffset, Bool takeNode);

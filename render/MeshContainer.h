@@ -19,12 +19,15 @@ namespace Core {
 
         void setSkeleton(WeakPointer<Skeleton> skeleton);
         WeakPointer<Skeleton> getSkeleton();
-        void addVertexBoneMap(UInt32 meshIndex, WeakPointer<VertexBoneMap> vertexBoneMap);
+        void addVertexBoneMap(UInt64 meshID, WeakPointer<VertexBoneMap> vertexBoneMap);
+        WeakPointer<VertexBoneMap> getVertexBoneMap(UInt64 meshID);
+        Bool hasVertexBoneMap(UInt64 meshID);
 
     private:
 
         PersistentWeakPointer<Skeleton> skeleton;
-        std::unordered_map<UInt32, PersistentWeakPointer<VertexBoneMap>> vertexBoneMaps;
+        std::unordered_map<UInt64, PersistentWeakPointer<VertexBoneMap>> vertexBoneMaps;
+        std::unordered_map<UInt64, Bool> vertexBoneMapSet;
     };
 
 }

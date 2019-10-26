@@ -66,6 +66,9 @@ namespace Core {
         void calculateNormals(Real smoothingThreshold);
         void calculateTangents(Real smoothingThreshhold);
 
+        void setName(const std::string& name);
+        const std::string& getName() const;
+
         void update();
         void reverseVertexAttributeWindingOrder();
 
@@ -93,6 +96,7 @@ namespace Core {
             return true;
         }
 
+        std::string name;
         PersistentWeakPointer<Graphics> graphics;
         Bool initialized;
         StandardAttributeSet enabledAttributes;
@@ -109,7 +113,7 @@ namespace Core {
         std::shared_ptr<AttributeArray<ColorS>> vertexColors;
         std::shared_ptr<AttributeArray<Vector2rs>> vertexAlbedoUVs;
         std::shared_ptr<AttributeArray<Vector2rs>> vertexNormalUVs;
-        
+
         PersistentWeakPointer<IndexBuffer> indexBuffer;
 
         // maps vertices to other equal vertices

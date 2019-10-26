@@ -16,6 +16,8 @@ namespace Core {
             "AVERAGED_NORMAL",
             "TANGENT",
             "FACE_NORMAL",
+            "BONE_INDEX",
+            "BONE_WEIGHT"
         };
 
         nameToAttribute =
@@ -27,7 +29,9 @@ namespace Core {
             {attributeNames[(UInt16)StandardAttribute::Normal],StandardAttribute::Normal},
             {attributeNames[(UInt16)StandardAttribute::AveragedNormal],StandardAttribute::AveragedNormal},
             {attributeNames[(UInt16)StandardAttribute::Tangent],StandardAttribute::Tangent},
-            {attributeNames[(UInt16)StandardAttribute::FaceNormal],StandardAttribute::FaceNormal}
+            {attributeNames[(UInt16)StandardAttribute::FaceNormal],StandardAttribute::FaceNormal},
+            {attributeNames[(UInt16)StandardAttribute::BoneIndex],StandardAttribute::BoneIndex},
+            {attributeNames[(UInt16)StandardAttribute::BoneWeight],StandardAttribute::BoneWeight}
             
         };
     }

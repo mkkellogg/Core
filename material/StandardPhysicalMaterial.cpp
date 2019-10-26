@@ -48,17 +48,18 @@ namespace Core {
                 return this->colorLocation;
             case StandardAttribute::AlbedoUV:
                 return this->albedoUVLocation;
-             case StandardAttribute::NormalUV:
+            case StandardAttribute::NormalUV:
                 return this->normalUVLocation;
+            case StandardAttribute::BoneIndex:
+                return this->boneIndexLocation;
+            case StandardAttribute::BoneWeight:
+                return this->boneWeightLocation;
             default:
                 return -1;
         }
     }
 
     Int32 StandardPhysicalMaterial::getShaderLocation(StandardUniform uniform, UInt32 offset) {
-        if (offset >= Constants::MaxDirectionalCascades) {
-            throw InvalidArgumentException("StandardPhysicalMaterial::getShaderLocation() -> invalid offset.");
-        }
 
         switch (uniform) {
             case StandardUniform::ProjectionMatrix:
@@ -119,6 +120,10 @@ namespace Core {
                 return this->lightCountLocation;
             case StandardUniform::CameraPosition:
                 return this->cameraPositionLocation;
+            case StandardUniform::SkinningEnabled:
+                return this->skinningEnabledLocation;
+            case StandardUniform::Bones:
+                return this->bonesLocation[offset];
             default:
                 return -1;
         }
@@ -231,6 +236,7 @@ namespace Core {
         targetMaterial->normalMapEnabled = this->normalMapEnabled;
         targetMaterial->roughnessMapEnabled = this->roughnessMapEnabled;
         targetMaterial->metallicMapEnabled = this->metallicMapEnabled;
+
         targetMaterial->positionLocation = this->positionLocation;
         targetMaterial->normalLocation = this->normalLocation;
         targetMaterial->faceNormalLocation = this->faceNormalLocation;
@@ -238,6 +244,9 @@ namespace Core {
         targetMaterial->colorLocation = this->colorLocation;
         targetMaterial->albedoUVLocation = this->albedoUVLocation;
         targetMaterial->normalUVLocation = this->normalUVLocation;
+        targetMaterial->boneIndexLocation = this->boneIndexLocation;
+        targetMaterial->boneWeightLocation = this->boneWeightLocation;
+
         targetMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
         targetMaterial->viewMatrixLocation = this->viewMatrixLocation;
         targetMaterial->modelMatrixLocation = this->modelMatrixLocation;
@@ -281,6 +290,11 @@ namespace Core {
         targetMaterial->metallic = this->metallic;
         targetMaterial->roughness = this->roughness;
         targetMaterial->ambientOcclusion = this->ambientOcclusion;
+
+        targetMaterial->skinningEnabledLocation = this->skinningEnabledLocation;
+        for (UInt32 i = 0; i < Constants::MaxBones; i++) {
+          targetMaterial->bonesLocation[i] = this->bonesLocation[i];
+        }
     }
 
     WeakPointer<Material> StandardPhysicalMaterial::clone() {
@@ -297,6 +311,9 @@ namespace Core {
         this->colorLocation = this->shader->getAttributeLocation(StandardAttribute::Color);
         this->albedoUVLocation = this->shader->getAttributeLocation(StandardAttribute::AlbedoUV);
         this->normalUVLocation = this->shader->getAttributeLocation(StandardAttribute::NormalUV);
+        this->boneIndexLocation = this->shader->getAttributeLocation(StandardAttribute::BoneIndex);
+        this->boneWeightLocation = this->shader->getAttributeLocation(StandardAttribute::BoneWeight);
+
         this->albedoLocation = this->shader->getUniformLocation("albedo");
         this->albedoMapLocation = this->shader->getUniformLocation("albedoMap");
         this->normalMapLocation = this->shader->getUniformLocation("normalMap");
@@ -340,6 +357,12 @@ namespace Core {
         this->roughnessLocation = this->shader->getUniformLocation("roughness");
         this->ambientOcclusionLocation = this->shader->getUniformLocation("ambientOcclusion");
         this->enabledMapLocation = this->shader->getUniformLocation("enabledMap");
+
+        this->skinningEnabledLocation = this->shader->getUniformLocation(StandardUniform::SkinningEnabled);
+        for (UInt32 i = 0; i < Constants::MaxBones; i++) {
+          this->bonesLocation[i] = this->shader->getUniformLocation(StandardUniform::Bones, i);
+        }
+
     }
 
     UInt32 StandardPhysicalMaterial::textureCount() {

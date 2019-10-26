@@ -155,6 +155,10 @@ namespace Core {
         return nodeList[nodeIndex];
     }
 
+    Tree<Skeleton::SkeletonNode*>::TreeNode * Skeleton::getRootNode() {
+        return this->skeleton.getRoot();
+    }
+
     /*
      * Add SkeletonNode object to [nodeList].
      */

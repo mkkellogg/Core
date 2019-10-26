@@ -39,7 +39,11 @@ namespace Core {
         void sendToShader(UInt32 location) override {
             glBindBuffer(GL_ARRAY_BUFFER, this->bufferID);
             glEnableVertexAttribArray(location);
-            glVertexAttribPointer(location, this->componentCount, this->type, this->normalize, this->stride, 0);
+            if (this->type == GL_INT || this->type == GL_UNSIGNED_INT) {
+                glVertexAttribIPointer(location, this->componentCount, this->type, this->stride, 0);
+            } else {
+                glVertexAttribPointer(location, this->componentCount, this->type, this->normalize, this->stride, 0);
+            }
             glBindBuffer(GL_ARRAY_BUFFER, 0);
         }
 

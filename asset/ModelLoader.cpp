@@ -243,6 +243,7 @@ namespace Core {
                         const aiMesh* originalMesh = tempAIMeshes.front();
                         tempAIMeshes.pop();
                         objName = tempMeshNames.front();
+                        convertedMesh->setName(objName);
                         tempMeshNames.pop();
                         meshContainer->addRenderable(convertedMesh);
 
@@ -251,19 +252,27 @@ namespace Core {
                             // vertex bone map in reverse order.
                             Bool reverseVertexOrder = this->hasOddReflections(mat);
                             WeakPointer<VertexBoneMap> vertexBoneMap = Engine::instance()->createVertexBoneMap(originalMesh->mNumVertices, originalMesh->mNumVertices);
-                            this->setupVertexBoneMapMappingsFromAIMesh(skeleton, *originalMesh, vertexBoneMap);
-                            if (!convertedMesh->isIndexed()) vertexBoneMap = this->expandIndexBoneMapping(vertexBoneMap, *originalMesh, reverseVertexOrder);
-                            vertexBoneMap->buildAttributeArray();
-                            meshContainer->addVertexBoneMap(addedCount, vertexBoneMap);
+                            
+                            Bool vertexBoneMapHasBones = this->setupVertexBoneMapMappingsFromAIMesh(skeleton, *originalMesh, vertexBoneMap);
+                            if (vertexBoneMapHasBones) {
+                                if (!convertedMesh->isIndexed()) {
+                                    vertexBoneMap = this->expandIndexBoneMapping(vertexBoneMap, *originalMesh, reverseVertexOrder);
+                                }
+                                vertexBoneMap->buildAttributeArray();
+                                meshContainer->addVertexBoneMap(convertedMesh->getObjectID(), vertexBoneMap);
+                            }
                         }
                         addedCount++;
-                    }
-                    if (hasSkeleton) {
-                        meshContainer->setSkeleton(skeleton);
                     }
                     meshContainer->setName(objName);
 
                     WeakPointer<MeshRenderer> meshRenderer = Engine::instance()->createRenderer<MeshRenderer, Mesh>(lastMaterial, meshContainer);
+                    
+                    if (hasSkeleton) {
+                        meshContainer->setSkeleton(skeleton);
+                        meshRenderer->getMaterial()->setSkinningEnabled(true);
+                    }
+
                     nodeObject->addChild(meshContainer);
                     meshContainer->getTransform().getLocalMatrix().setIdentity();
                     createdSceneObjects.push_back(meshContainer);
@@ -997,9 +1006,10 @@ namespace Core {
                     Matrix4x4 offsetMatrix;
                     ModelLoader::convertAssimpMatrix(cBone->mOffsetMatrix, offsetMatrix);
 
-                    skeleton->getBone(currentBoneIndex)->Name = boneName;
-                    skeleton->getBone(currentBoneIndex)->ID = currentBoneIndex;
-                    skeleton->getBone(currentBoneIndex)->OffsetMatrix.copy(offsetMatrix);
+                    Bone * newBone = skeleton->getBone(currentBoneIndex);
+                    newBone->Name = boneName;
+                    newBone->ID = currentBoneIndex;
+                    newBone->OffsetMatrix.copy(offsetMatrix);
 
                     currentBoneIndex++;
                 }
@@ -1007,11 +1017,12 @@ namespace Core {
         }
     }
 
-    void ModelLoader::setupVertexBoneMapMappingsFromAIMesh(WeakPointer<const Skeleton> skeleton, const aiMesh& mesh, WeakPointer<VertexBoneMap> vertexIndexBoneMap) const {
+    Bool ModelLoader::setupVertexBoneMapMappingsFromAIMesh(WeakPointer<const Skeleton> skeleton, const aiMesh& mesh, WeakPointer<VertexBoneMap> vertexIndexBoneMap) const {
         if(!skeleton.isValid()) {
             throw ModelLoaderException("ModelImporter::setupVertexBoneMapMappingsFromAIMesh -> skeleton is invalid.");
         }
 
+        bool vertexBoneMapHasBones = false;
         for (UInt32 b = 0; b < mesh.mNumBones; b++) {
             aiBone * cBone = mesh.mBones[b];
             if (cBone != nullptr) {
@@ -1031,10 +1042,13 @@ namespace Core {
                         desc->Weight[desc->BoneCount] = weight;
                         desc->Name[desc->BoneCount] = boneName;
                         desc->BoneCount++;
+                        vertexBoneMapHasBones = true;
                     }
                 }
             }
         }
+
+        return vertexBoneMapHasBones;
     }
 
     UInt32 ModelLoader::countBones(const aiScene& scene) const {
@@ -1057,19 +1071,12 @@ namespace Core {
     }
 
     Bool ModelLoader::createAndMapNodeHierarchy(WeakPointer<Skeleton> skeleton, const aiScene& scene) const {
-        Object3DSkeletonNode * skeletonNodePtr = new(std::nothrow) Object3DSkeletonNode(WeakPointer<Object3D>::nullPtr(), -1, "");
-        if (skeletonNodePtr == nullptr) {
-            throw AllocationException("ModelImporter::createAndMapNodeHierarchy -> Could not allocate skeleton root node.");
-        }
-
-        Tree<Skeleton::SkeletonNode*>::TreeNode * lastNode = skeleton->createRoot(skeletonNodePtr);
-        if (lastNode == nullptr) {
-            throw Exception("ModelImporter::createAndMapNodeHierarchy -> Could not create skeleton root node.");
-        }
-
+       
+        Bool rootCreated = false;
+        Tree<Skeleton::SkeletonNode*>::TreeNode * lastNode = nullptr;
         Skeleton * skeletonPtr = skeleton.get();
         Bool success = true;
-        this->traverseScene(scene, SceneTraverseOrder::PreOrder, [skeletonPtr, lastNode, &success](const aiNode& node) -> Bool {
+        this->traverseScene(scene, SceneTraverseOrder::PreOrder, [skeletonPtr, &lastNode, &success, &rootCreated, &skeleton](const aiNode& node) -> Bool {
             std::string boneName(node.mName.C_Str());
             Int32 mappedBoneIndex = skeletonPtr->getBoneMapping(boneName);
 
@@ -1077,15 +1084,24 @@ namespace Core {
             if (childSkeletonNodePtr == nullptr) {
                 throw AllocationException("ModelImporter::createAndMapNodeHierarchy -> Could not allocate skeleton child node.");
             }
+            if(!rootCreated) {
+                lastNode = skeleton->createRoot(childSkeletonNodePtr);
+                if (lastNode == nullptr) {
+                    throw Exception("ModelImporter::createAndMapNodeHierarchy -> Could not create skeleton root node.");
+                }
+                rootCreated = true;
+            } else {
+                Tree<Skeleton::SkeletonNode*>::TreeNode * childNode = skeletonPtr->addChild(lastNode, childSkeletonNodePtr);
+                if (childNode == nullptr) {
+                    throw Exception("ModelImporter::createAndMapNodeHierarchy -> Could not create skeleton child node.");
+                }
+
+            }
 
             skeletonPtr->mapNode(boneName, skeletonPtr->getNodeCount());
             skeletonPtr->addNodeToList(childSkeletonNodePtr);
 
-            Tree<Skeleton::SkeletonNode*>::TreeNode * childNode = skeletonPtr->addChild(lastNode, childSkeletonNodePtr);
-            if (childNode == nullptr) {
-                throw Exception("ModelImporter::createAndMapNodeHierarchy -> Could not create skeleton child node.");
-            }
-
+           
             if (mappedBoneIndex >= 0) {
                 Bone * bone = skeletonPtr->getBone(mappedBoneIndex);
                 bone->Node = childSkeletonNodePtr;

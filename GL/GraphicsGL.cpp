@@ -143,18 +143,33 @@ namespace Core {
     }
 
     WeakPointer<AttributeArrayGPUStorage> GraphicsGL::createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) {
+        
         AttributeArrayGPUStorageGL* gpuStoragePtr =
             new (std::nothrow) AttributeArrayGPUStorageGL(size, componentCount, convertAttributeType(type), normalize ? GL_TRUE : GL_FALSE, 0);
         if (gpuStoragePtr == nullptr) {
             throw AllocationException("GraphicsGL::createGPUStorage() -> Unable to allocate gpu buffer.");
         }
+
         std::shared_ptr<AttributeArrayGPUStorageGL> spGpuStorage(gpuStoragePtr);
-        this->attributeArrays.push_back(spGpuStorage);
+        this->attributeArraGPUStorages.push_back(spGpuStorage);
         WeakPointer<AttributeArrayGPUStorageGL> wpGpuStorage = spGpuStorage;
         return wpGpuStorage;
     }
 
-   WeakPointer<IndexBuffer> GraphicsGL::createIndexBuffer(UInt32 size) {
+    void GraphicsGL::destroyGPUStorage(WeakPointer<AttributeArrayGPUStorage> storage) {
+        Int32 foundIndex = -1;
+        for (UInt32 i = 0; i < this->attributeArraGPUStorages.size(); i++) {
+            if(this->attributeArraGPUStorages[i].get() == storage.get()) {
+                foundIndex = 1;
+                break;
+            }
+        }
+        if (foundIndex >= 0) {
+            this->attributeArraGPUStorages.erase (this->attributeArraGPUStorages.begin()+5);
+        }
+    }
+
+    WeakPointer<IndexBuffer> GraphicsGL::createIndexBuffer(UInt32 size) {
         IndexBufferGL* indexBufferPtr = new (std::nothrow) IndexBufferGL(size);
         if (indexBufferPtr == nullptr) {
             throw AllocationException("GraphicsGL::createIndexBuffer() -> Unable to allocate index buffer.");
@@ -164,6 +179,19 @@ namespace Core {
         this->indexBuffers.push_back(spIndexBuffer);
         WeakPointer<IndexBufferGL> wpIndexBuffer = spIndexBuffer;
         return wpIndexBuffer;
+    }
+
+    void GraphicsGL::destroyIndexbuffer(WeakPointer<IndexBuffer> buffer) {
+        Int32 foundIndex = -1;
+        for (UInt32 i = 0; i < this->indexBuffers.size(); i++) {
+            if(this->indexBuffers[i].get() == buffer.get()) {
+                foundIndex = 1;
+                break;
+            }
+        }
+        if (foundIndex >= 0) {
+            this->indexBuffers.erase (this->indexBuffers.begin()+5);
+        }
     }
 
     void GraphicsGL::drawBoundVertexBuffer(UInt32 vertexCount) {

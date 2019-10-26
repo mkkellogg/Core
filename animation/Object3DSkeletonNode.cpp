@@ -18,24 +18,22 @@ namespace Core {
      * This method gets the full transform of the target Object3D, meaning its local transform
      * concatenated with the transforms of all its ancestors.
      */
-    const Transform * Object3DSkeletonNode::getFullTransform() const {
-        throw Exception("Object3DSkeletonNode::getFullTransform -> revisit this!!");
+    Matrix4x4& Object3DSkeletonNode::getFullTransform() {
         if (!this->Target.isValid()) {
             throw InvalidReferenceException("Object3DSkeletonNode::getFullTransform -> Node does not have a valid target.");
         }
-        WeakPointer<Object3D> target = this->Target;
-        return &target->getTransform();
+        Target->getTransform().updateWorldMatrix();
+        return  Target->getTransform().getWorldMatrix();
     }
 
     /*
      * Retrieve only the local transform of the target Object3D.
      */
-    Transform * Object3DSkeletonNode::getLocalTransform() {
+    Matrix4x4& Object3DSkeletonNode::getLocalTransform() {
         if (!this->Target.isValid()) {
             throw InvalidReferenceException("Object3DSkeletonNode::getLocalTransform -> Node does not have a valid target.");
         }
-        Transform& ref = Target->getTransform();
-        return &ref;
+        return Target->getTransform().getLocalMatrix();
     }
 
     /*

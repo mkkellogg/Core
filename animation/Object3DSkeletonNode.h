@@ -31,8 +31,8 @@ namespace Core {
         Object3DSkeletonNode(WeakPointer<Object3D> target, Int32 boneIndex, const std::string& name);
         ~Object3DSkeletonNode();
 
-        const Transform * getFullTransform() const override;
-        Transform * getLocalTransform() override;
+        Matrix4x4& getFullTransform() override;
+        Matrix4x4& getLocalTransform() override;
         Bool hasTarget() const override;
         SkeletonNode * fullClone() const override;
     };

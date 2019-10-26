@@ -270,10 +270,8 @@ namespace Core {
 				if (targetNode->hasTarget()) {
 					// get the local transform of the target of this node and apply
 					// [matrix], which contains the interpolated scale, rotation, and translation
-					Transform * localTransform = targetNode->getLocalTransform();
-					if (localTransform != nullptr) {
-						localTransform->setLocalMatrix(matrix);
-					}
+					Matrix4x4& localTransform = targetNode->getLocalTransform();
+					localTransform.copy(matrix);
 				}
 			}
 		}

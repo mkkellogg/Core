@@ -12,8 +12,21 @@ namespace Core {
         return this->skeleton;
     }
 
-    void MeshContainer::addVertexBoneMap(UInt32 meshIndex, WeakPointer<VertexBoneMap> vertexBoneMap) {
-        this->vertexBoneMaps[meshIndex] = vertexBoneMap;
+    void MeshContainer::addVertexBoneMap(UInt64 meshID, WeakPointer<VertexBoneMap> vertexBoneMap) {
+        this->vertexBoneMaps[meshID] = vertexBoneMap;
+        this->vertexBoneMapSet[meshID] = true;
+    }
+
+    WeakPointer<VertexBoneMap> MeshContainer::getVertexBoneMap(UInt64 meshID) {
+        if (this->vertexBoneMaps.find(meshID) != this->vertexBoneMaps.end()) {
+            return this->vertexBoneMaps[meshID];
+        } else {
+            throw InvalidArgumentException("MeshContainer::getVertexBoneMap() -> Invalid mesh id.");
+        }
+    }
+
+    Bool MeshContainer::hasVertexBoneMap(UInt64 meshID) {
+        return this->vertexBoneMapSet[meshID];
     }
 
 }

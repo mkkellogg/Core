@@ -73,7 +73,7 @@ namespace Core {
         void bindTo(WeakPointer<const Skeleton> skeleton);
 
         WeakPointer<AttributeArray<Vector4rs>> getWeights();
-        WeakPointer<AttributeArray<Vector4us>> getIndices();
+        WeakPointer<AttributeArray<Vector4is>> getIndices();
 
     protected:
 
@@ -90,9 +90,9 @@ namespace Core {
         VertexMappingDescriptor * mappingDescriptors;
 
         std::shared_ptr<AttributeArray<Vector4rs>> boneWeights;
-        std::shared_ptr<AttributeArray<Vector4us>> boneIndices;
+        std::shared_ptr<AttributeArray<Vector4is>> boneIndices;
 
         void destroy();
-        VertexBoneMap * fullClone();
+        //VertexBoneMap * fullClone();
     };
 }

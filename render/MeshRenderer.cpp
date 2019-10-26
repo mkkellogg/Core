@@ -13,6 +13,9 @@
 #include "../render/Camera.h"
 #include "../render/RenderTarget.h"
 #include "MeshContainer.h"
+#include "../animation/VertexBoneMap.h"
+#include "../animation/Bone.h"
+#include "../animation/Object3DSkeletonNode.h"
 #include "RenderException.h"
 
 namespace Core {
@@ -71,6 +74,44 @@ namespace Core {
             this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::NormalUV, StandardAttribute::NormalUV, mesh->getVertexNormalUVs());
         else
             this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::AlbedoUV, StandardAttribute::NormalUV, mesh->getVertexAlbedoUVs());
+
+        Int32 skinningEnabledLocation = material->getShaderLocation(StandardUniform::SkinningEnabled);
+        if (skinningEnabledLocation >= 0) shader->setUniform1i(skinningEnabledLocation, 0.0);
+        if (material->isSkinningEnabled()) {
+            std::shared_ptr<MeshContainer> thisContainer = std::dynamic_pointer_cast<MeshContainer>(this->owner.lock());
+            if (thisContainer) {
+                if (thisContainer->hasVertexBoneMap(mesh->getObjectID())) {
+                    if (skinningEnabledLocation >= 0) shader->setUniform1i(skinningEnabledLocation, 1.0);
+                    WeakPointer<VertexBoneMap> vertexBoneMap = thisContainer->getVertexBoneMap(mesh->getObjectID());
+                    this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::BoneIndex, StandardAttribute::BoneIndex, vertexBoneMap->getIndices(), true);
+                    this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::BoneWeight, StandardAttribute::BoneWeight, vertexBoneMap->getWeights(), true);
+
+                    WeakPointer<Skeleton> skeleton = thisContainer->getSkeleton();
+                    Tree<Skeleton::SkeletonNode*>::TreeNode * rootNode = skeleton->getRootNode();
+                    WeakPointer<Object3D> rootTarget = ((Object3DSkeletonNode *)rootNode->Data)->Target;
+
+                    Matrix4x4 rootTransformInverse = this->owner->getTransform().getWorldMatrix();
+                    rootTransformInverse.invert();
+
+                    Matrix4x4 temp;
+                    for(UInt32 i = 0; i < skeleton->getNodeCount(); i++) {
+                        Skeleton::SkeletonNode * node = skeleton->getNodeFromList(i);
+                        if (node->BoneIndex >= 0) {
+                            Int32 bonesLocation = material->getShaderLocation(StandardUniform::Bones, node->BoneIndex);
+                            if (bonesLocation >= 0) {
+                                Bone * bone = skeleton->getBone(node->BoneIndex);
+                                temp.copy(bone->OffsetMatrix);
+                                temp.preMultiply(node->getFullTransform());
+                                temp.preMultiply(rootTransformInverse);
+                                shader->setUniformMatrix4(bonesLocation, temp);
+                            }
+                        }
+                    }
+                } else {
+
+                }
+            }
+        }
 
         Int32 cameraPositionLoc = material->getShaderLocation(StandardUniform::CameraPosition);
         Int32 projectionLoc = material->getShaderLocation(StandardUniform::ProjectionMatrix);
@@ -362,6 +403,17 @@ namespace Core {
         this->disableShaderAttribute(mesh, material, StandardAttribute::AlbedoUV, mesh->getVertexAlbedoUVs());
         this->disableShaderAttribute(mesh, material, StandardAttribute::NormalUV, mesh->getVertexNormalUVs());
 
+         if (material->isSkinningEnabled()) {
+            std::shared_ptr<MeshContainer> thisContainer = std::dynamic_pointer_cast<MeshContainer>(this->owner.lock());
+            if (thisContainer) {
+                if (thisContainer->hasVertexBoneMap(mesh->getObjectID())) {
+                    WeakPointer<VertexBoneMap> vertexBoneMap = thisContainer->getVertexBoneMap(mesh->getObjectID());
+                    this->disableShaderAttribute(mesh, material, StandardAttribute::BoneIndex, vertexBoneMap->getIndices());
+                    this->disableShaderAttribute(mesh, material, StandardAttribute::BoneWeight, vertexBoneMap->getWeights());
+                }
+            }
+        }
+
         return true;
     }
 
@@ -392,8 +444,8 @@ namespace Core {
     }
 
     void MeshRenderer::checkAndSetShaderAttribute(WeakPointer<Mesh> mesh, WeakPointer<Material> material, StandardAttribute checkAttribute,
-                                                  StandardAttribute setAttribute, WeakPointer<AttributeArrayBase> array) {
-        if (mesh->isAttributeEnabled(checkAttribute)) {
+                                                  StandardAttribute setAttribute, WeakPointer<AttributeArrayBase> array, Bool force) {
+        if (mesh->isAttributeEnabled(checkAttribute) || force) {
             Int32 shaderLocation = material->getShaderLocation(setAttribute);
             if (array->getGPUStorage()) {
                 array->getGPUStorage()->sendToShader(shaderLocation);

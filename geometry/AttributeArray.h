@@ -3,6 +3,7 @@
 #include <string.h>
 #include <new>
 
+#include "../Engine.h"
 #include "../util/WeakPointer.h"
 #include "../common/Exception.h"
 #include "../common/assert.h"
@@ -71,6 +72,7 @@ namespace Core {
         }
 
         void setGPUStorage(WeakPointer<AttributeArrayGPUStorage> storage) { 
+            this->deallocateGPUStorage();
             this->gpuStorage = storage;
             this->updateGPUStorageData();
         }
@@ -164,6 +166,13 @@ namespace Core {
                 delete this->storage;
                 this->storage = nullptr;
             }
+            this->deallocateGPUStorage();
+        }
+
+        void deallocateGPUStorage() {
+          /*  if( this->gpuStorage.isValid()) {
+                Engine::instance()->getGraphicsSystem()->destroyGPUStorage(this->gpuStorage);
+            }*/
         }
     };
 }

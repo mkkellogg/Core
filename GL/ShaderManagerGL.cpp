@@ -14,6 +14,9 @@ const std::string TANGENT = _an(Core::StandardAttribute::Tangent);
 const std::string COLOR = _an(Core::StandardAttribute::Color);
 const std::string ALBEDO_UV = _an(Core::StandardAttribute::AlbedoUV);
 const std::string NORMAL_UV = _an(Core::StandardAttribute::NormalUV);
+const std::string BONE_INDEX = _an(Core::StandardAttribute::BoneIndex);
+const std::string BONE_WEIGHT = _an(Core::StandardAttribute::BoneWeight);
+
 const std::string MODEL_MATRIX = _un(Core::StandardUniform::ModelMatrix);
 const std::string MODEL_INVERSE_TRANSPOSE_MATRIX = _un(Core::StandardUniform::ModelInverseTransposeMatrix);
 const std::string VIEW_MATRIX = _un(Core::StandardUniform::ViewMatrix);
@@ -21,7 +24,10 @@ const std::string PROJECTION_MATRIX = _un(Core::StandardUniform::ProjectionMatri
 const std::string CAMERA_POSITION = _un(Core::StandardUniform::CameraPosition);
 const std::string TEXTURE0 = _un(Core::StandardUniform::Texture0);
 const std::string DEPTH_TEXTURE = _un(Core::StandardUniform::DepthTexture);
+const std::string BONES = _un(Core::StandardUniform::Bones);
+const std::string SKINNING_ENABLED = _un(Core::StandardUniform::SkinningEnabled);
 
+const std::string MAX_BONES = std::to_string(Core::Constants::MaxBones);
 const std::string MAX_CASCADES = std::to_string(Core::Constants::MaxDirectionalCascades);
 const std::string MAX_LIGHTS = std::to_string(Core::Constants::MaxShaderLights);
 const std::string MAX_POINT_LIGHTS = std::to_string(Core::Constants::MaxShaderPointLights);
@@ -58,21 +64,26 @@ const std::string POINT_LIGHT_COUNT = _un(Core::StandardUniform::PointLightCount
 const std::string DIRECTIONAL_LIGHT_COUNT = _un(Core::StandardUniform::DirectionalLightCount);
 const std::string MAX_IBL_LOD_LEVELS = std::to_string(Core::Constants::MaxIBLLODLevels);
 
-const std::string POSITION_DEF = "in vec4 " +  POSITION + ";\n";
-const std::string NORMAL_DEF = "in vec4 " +  NORMAL + ";\n";
-const std::string AVERAGED_NORMAL_DEF = "in vec4 " +  AVERAGED_NORMAL + ";\n";
-const std::string FACE_NORMAL_DEF = "in vec4 " +  FACE_NORMAL + ";\n";
-const std::string TANGENT_DEF = "in vec4 " +  TANGENT + ";\n";
-const std::string COLOR_DEF = "in vec4 " +  COLOR + ";\n";
-const std::string ALBEDO_UV_DEF = "in vec2 " +  ALBEDO_UV + ";\n";
-const std::string NORMAL_UV_DEF = "in vec2 " +  NORMAL_UV + ";\n";
-const std::string MODEL_MATRIX_DEF = "uniform mat4 " +  MODEL_MATRIX + ";\n";
-const std::string MODEL_INVERSE_TRANSPOSE_MATRIX_DEF = "uniform mat4 " +  MODEL_INVERSE_TRANSPOSE_MATRIX + ";\n";
-const std::string VIEW_MATRIX_DEF = "uniform mat4 " +  VIEW_MATRIX + ";\n";
-const std::string PROJECTION_MATRIX_DEF = "uniform mat4 " +  PROJECTION_MATRIX + ";\n";
-const std::string CAMERA_POSITION_DEF = "uniform vec4 " +  CAMERA_POSITION + ";\n";
-const std::string TEXTURE0_DEF = "uniform sampler2D " +  TEXTURE0 + ";\n";
-const std::string DEPTH_TEXTURE_DEF = "uniform sampler2D " +  DEPTH_TEXTURE + ";\n";
+const std::string POSITION_DEF = "in vec4 " + POSITION + ";\n";
+const std::string NORMAL_DEF = "in vec4 " + NORMAL + ";\n";
+const std::string AVERAGED_NORMAL_DEF = "in vec4 " + AVERAGED_NORMAL + ";\n";
+const std::string FACE_NORMAL_DEF = "in vec4 " + FACE_NORMAL + ";\n";
+const std::string TANGENT_DEF = "in vec4 " + TANGENT + ";\n";
+const std::string COLOR_DEF = "in vec4 " + COLOR + ";\n";
+const std::string ALBEDO_UV_DEF = "in vec2 " + ALBEDO_UV + ";\n";
+const std::string NORMAL_UV_DEF = "in vec2 " + NORMAL_UV + ";\n";
+const std::string BONE_INDEX_DEF = "in ivec4 " + BONE_INDEX + ";\n";
+const std::string BONE_WEIGHT_DEF = "in vec4 " + BONE_WEIGHT + ";\n";
+
+const std::string MODEL_MATRIX_DEF = "uniform mat4 " + MODEL_MATRIX + ";\n";
+const std::string MODEL_INVERSE_TRANSPOSE_MATRIX_DEF = "uniform mat4 " + MODEL_INVERSE_TRANSPOSE_MATRIX + ";\n";
+const std::string VIEW_MATRIX_DEF = "uniform mat4 " + VIEW_MATRIX + ";\n";
+const std::string PROJECTION_MATRIX_DEF = "uniform mat4 " + PROJECTION_MATRIX + ";\n";
+const std::string CAMERA_POSITION_DEF = "uniform vec4 " + CAMERA_POSITION + ";\n";
+const std::string TEXTURE0_DEF = "uniform sampler2D " + TEXTURE0 + ";\n";
+const std::string DEPTH_TEXTURE_DEF = "uniform sampler2D " + DEPTH_TEXTURE + ";\n";
+const std::string BONES_DEF = "uniform mat4 " + BONES + "[" + MAX_BONES + "];\n";
+const std::string SKINNING_ENABLED_DEF = "uniform int " + SKINNING_ENABLED + ";\n";
 
 // ------------------------------------
 // Single-pass lighting definitions
@@ -941,7 +952,13 @@ namespace Core {
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
             + MODEL_MATRIX_DEF
-            + MODEL_INVERSE_TRANSPOSE_MATRIX_DEF +
+            + MODEL_INVERSE_TRANSPOSE_MATRIX_DEF
+
+            + SKINNING_ENABLED_DEF
+            + BONES_DEF 
+            + BONE_WEIGHT_DEF
+            + BONE_INDEX_DEF +
+
             "out vec4 vColor;\n"
             "out vec3 vNormal;\n"
             "out vec3 vTangent;\n"
@@ -950,18 +967,31 @@ namespace Core {
             "out vec2 vNormalUV;\n"
             "out vec4 vWorldPos;\n"
             "void main() {\n"
-            "    vWorldPos = " +  MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    vec4 localPos = " + POSITION + "; \n"
+            "    vec4 localNormal = " + NORMAL + "; \n"
+            "    vec4 localFaceNormal = " + FACE_NORMAL + "; \n"
+            "    if (" + SKINNING_ENABLED + " == 1) { \n"
+            "        mat4 boneTransform = " + BONES + "[" + BONE_INDEX + ".x] * " + BONE_WEIGHT + ".x;\n"
+            "        boneTransform += " + BONES + "[" + BONE_INDEX + ".y] * " + BONE_WEIGHT + ".y;\n"
+            "        boneTransform += " + BONES + "[" + BONE_INDEX + ".z] * " + BONE_WEIGHT + ".z; \n"
+            "        boneTransform += " + BONES + "[" + BONE_INDEX + ".w] * " + BONE_WEIGHT + ".w; \n"
+            "        localPos = boneTransform * localPos; \n"
+            "        localNormal = boneTransform * localNormal; \n"
+            "        localFaceNormal = boneTransform * localFaceNormal; \n"
+           "    }"
+
+            "    vWorldPos = " +  MODEL_MATRIX + " * localPos;\n"
             "    vec4 viewSpacePos = " + VIEW_MATRIX + " * vWorldPos;\n"
             "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * vWorldPos;\n"
             "    vAlbedoUV = " + ALBEDO_UV + ";\n"
             "    vNormalUV = " + NORMAL_UV + ";\n"
             "    vColor = " + COLOR + ";\n"
-            "    vec4 eNormal = " + NORMAL + ";\n"
+            "    vec4 eNormal = localNormal;\n"
             "    vNormal = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * eNormal);\n"
             "    vec4 eTangent = " + TANGENT + ";\n"
             "    vTangent = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * eTangent);\n"
-            "    vFaceNormal = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * " + FACE_NORMAL + ");\n"
-            "    TRANSFER_LIGHTING(" + POSITION + ", gl_Position, viewSpacePos) \n"
+            "    vFaceNormal = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * localFaceNormal);\n"
+            "    TRANSFER_LIGHTING(localPos, gl_Position, viewSpacePos) \n"
             "}\n";
 
         this->StandardPhysical_fragment =   

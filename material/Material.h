@@ -43,6 +43,8 @@ namespace Core {
         void setLit(Bool lit);
         Bool isPhysical() const;
         void setPhysical(Bool physical);
+        Bool isSkinningEnabled() const;
+        void setSkinningEnabled(Bool enabled);
         
         Bool getDepthWriteEnabled() const;
         void setDepthWriteEnabled(Bool enabled);
@@ -92,6 +94,7 @@ namespace Core {
         Bool transparent;
         Bool lit;
         Bool physical;
+        Bool skinningEnabled;
 
         Bool stencilTestEnabled;
         Byte stencilRef;

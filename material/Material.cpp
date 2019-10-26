@@ -16,6 +16,7 @@ namespace Core {
         this->transparent = false;
         this->lit = false;
         this->physical = false;
+        this->skinningEnabled = false;
         
         this->depthWriteEnabled = true;
         this->depthTestEnabled = true;
@@ -103,6 +104,14 @@ namespace Core {
 
     void Material::setPhysical(Bool physical) {
         this->physical = physical;
+    }
+
+    void Material::setSkinningEnabled(Bool enabled) {
+        this->skinningEnabled = enabled;
+    }
+
+    Bool Material::isSkinningEnabled() const {
+        return this->skinningEnabled;
     }
 
     Bool Material::getDepthWriteEnabled() const {
@@ -227,6 +236,7 @@ namespace Core {
         target->transparent = this->transparent;
         target->lit = this->lit;
         target->physical = this->physical;
+        target->skinningEnabled = this->skinningEnabled;
 
         target->stencilTestEnabled = this->stencilTestEnabled;
         target->stencilRef = this->stencilRef;

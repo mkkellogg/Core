@@ -151,10 +151,7 @@ namespace Core {
         void resolveRenderCallbacks(std::vector<LifecycleEventCallback>& oneTime, const std::vector<LifecycleEventCallback>& persistent);
 
         static std::shared_ptr<Engine> _instance;
-        
-        std::shared_ptr<Graphics> graphics;
-        std::shared_ptr<AnimationManager> animationManager;
-
+      
         std::vector<std::shared_ptr<Scene>> scenes;
         std::shared_ptr<Scene> activeScene;
         std::vector<std::shared_ptr<Camera>> cameras;
@@ -178,6 +175,9 @@ namespace Core {
 
         MaterialLibrary materialLibrary;
         ModelLoader modelLoader;
+  
+        std::shared_ptr<AnimationManager> animationManager;
+        std::shared_ptr<Graphics> graphics;
         
     };
 }

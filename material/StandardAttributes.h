@@ -18,8 +18,10 @@ namespace Core {
         AveragedNormal = 5,
         Tangent = 6,
         FaceNormal = 7,
-        _Count = 8,  // Must always be last in the list ( before _None);
-        _None = 9,
+        BoneIndex = 8,
+        BoneWeight = 9,
+        _Count = 10,  // Must always be last in the list ( before _None);
+        _None = 11,
     };
 
     typedef IntMask StandardAttributeSet;

@@ -49,7 +49,9 @@ namespace Core {
             "DIRECTIONAL_LIGHT_COUNT",
             "CAMERA_POSITION",
             "TEXTURE0",
-            "DEPTH_TEXTURE"
+            "DEPTH_TEXTURE",
+            "SKINNING_ENABLED",
+            "BONES"
         };
 
         nameToUniform =
@@ -92,7 +94,9 @@ namespace Core {
             {uniformNames[(UInt16)StandardUniform::DirectionalLightCount],StandardUniform::DirectionalLightCount},
             {uniformNames[(UInt16)StandardUniform::CameraPosition],StandardUniform::CameraPosition},
             {uniformNames[(UInt16)StandardUniform::Texture0], StandardUniform::Texture0},
-            {uniformNames[(UInt16)StandardUniform::DepthTexture], StandardUniform::DepthTexture}
+            {uniformNames[(UInt16)StandardUniform::DepthTexture], StandardUniform::DepthTexture},
+            {uniformNames[(UInt16)StandardUniform::SkinningEnabled], StandardUniform::SkinningEnabled},
+            {uniformNames[(UInt16)StandardUniform::Bones], StandardUniform::Bones}
         };
     }
 

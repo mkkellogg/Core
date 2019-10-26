@@ -48,8 +48,10 @@ namespace Core {
         CameraPosition = 36,
         Texture0 = 37,
         DepthTexture = 38,
-        _Count = 39,  // Must always be last in the list (before _None)
-        _None = 40,
+        SkinningEnabled = 39,
+        Bones = 40,
+        _Count = 41,  // Must always be last in the list (before _None)
+        _None = 42,
     };
 
     class StandardUniforms {

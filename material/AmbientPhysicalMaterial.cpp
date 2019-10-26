@@ -8,6 +8,6 @@ namespace Core {
     }
 
     Bool AmbientPhysicalMaterial::build() {
-        StandardPhysicalMaterial::build();
+        return StandardPhysicalMaterial::build();
     }
 }
