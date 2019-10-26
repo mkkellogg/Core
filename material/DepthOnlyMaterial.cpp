@@ -22,6 +22,7 @@ namespace Core {
         }
 
         this->bindShaderVarLocations();
+        this->setSkinningEnabled(true);
         return true;
     }
 
@@ -67,7 +68,6 @@ namespace Core {
         newMaterial->modelMatrixLocation = this->modelMatrixLocation;
         newMaterial->boneIndexLocation = this->boneIndexLocation;
         newMaterial->boneWeightLocation = this->boneWeightLocation;
-
 
         newMaterial->skinningEnabledLocation = this->skinningEnabledLocation;
         for (UInt32 i = 0; i < Constants::MaxBones; i++) {

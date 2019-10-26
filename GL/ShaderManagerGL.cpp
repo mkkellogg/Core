@@ -335,6 +335,7 @@ namespace Core {
         this->Outline_vertex =
             "#version 330\n"
             "precision highp float;\n"
+            "#include \"VertexSkinning\" \n"
             "layout (location = 0 ) " + POSITION_DEF + 
             "layout (location = 1 ) " + NORMAL_DEF
             + PROJECTION_MATRIX_DEF
@@ -347,9 +348,13 @@ namespace Core {
             "out vec3 VPosition;\n"
             "void main()\n"
             "{\n"
-            "    VNormal = normalize(vec3(inverse(transpose(" + VIEW_MATRIX + " * " + MODEL_MATRIX + ")) * " + NORMAL + "));\n"
-            "    VPosition = vec3(" + VIEW_MATRIX + " * " + MODEL_MATRIX + " * " + POSITION + ");\n"
-            "    vec4 outPos = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    vec4 localPos = " + POSITION + "; \n"
+            "    vec4 localNormal = " + NORMAL + "; \n"
+            "    vec4 localFaceNormal = vec4(1.0, 0.0, 0.0, 0.0); \n"
+            "    calculateSkinnedPositionAndNormals(localPos, localNormal, localFaceNormal); \n"
+            "    VNormal = normalize(vec3(inverse(transpose(" + VIEW_MATRIX + " * " + MODEL_MATRIX + ")) * localNormal));\n"
+            "    VPosition = vec3(" + VIEW_MATRIX + " * " + MODEL_MATRIX + " * localPos);\n"
+            "    vec4 outPos = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * localPos;\n"
             "    gl_Position = outPos;\n"
             "    vColor = color;\n"
             "}\n";
@@ -968,7 +973,7 @@ namespace Core {
             "    vec4 localPos = " + POSITION + "; \n"
             "    vec4 localNormal = " + NORMAL + "; \n"
             "    vec4 localFaceNormal = " + FACE_NORMAL + "; \n"
-            "    doSkinning(localPos, localNormal, localFaceNormal); \n"
+            "    calculateSkinnedPositionAndNormals(localPos, localNormal, localFaceNormal); \n"
             "    vWorldPos = " +  MODEL_MATRIX + " * localPos;\n"
             "    vec4 viewSpacePos = " + VIEW_MATRIX + " * vWorldPos;\n"
             "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * vWorldPos;\n"
@@ -1389,22 +1394,40 @@ namespace Core {
             "    out_color = integratedBRDF; \n"
             "} \n";
 
+
+        std::string BONE_TRANSFORM_DEF = 
+            "    mat4 boneTransform = " + BONES + "[" + BONE_INDEX + ".x] * " + BONE_WEIGHT + ".x;\n"
+            "    boneTransform += " + BONES + "[" + BONE_INDEX + ".y] * " + BONE_WEIGHT + ".y;\n"
+            "    boneTransform += " + BONES + "[" + BONE_INDEX + ".z] * " + BONE_WEIGHT + ".z; \n"
+            "    boneTransform += " + BONES + "[" + BONE_INDEX + ".w] * " + BONE_WEIGHT + ".w; \n";
         this->VertexSkinning_vertex =  
             SKINNING_ENABLED_DEF
             + BONES_DEF 
             + BONE_WEIGHT_DEF
             + BONE_INDEX_DEF +
 
-            "void doSkinning(inout vec4 skinnedPosition, inout vec4 skinnedNormal, inout vec4 skinnedFaceNormal) {\n"
+            "void calculateSkinnedPositionAndNormals(inout vec4 skinnedPosition, inout vec4 skinnedNormal, inout vec4 skinnedFaceNormal) {\n"
             "    if (" + SKINNING_ENABLED + " == 1) { \n"
-            "        mat4 boneTransform = " + BONES + "[" + BONE_INDEX + ".x] * " + BONE_WEIGHT + ".x;\n"
-            "        boneTransform += " + BONES + "[" + BONE_INDEX + ".y] * " + BONE_WEIGHT + ".y;\n"
-            "        boneTransform += " + BONES + "[" + BONE_INDEX + ".z] * " + BONE_WEIGHT + ".z; \n"
-            "        boneTransform += " + BONES + "[" + BONE_INDEX + ".w] * " + BONE_WEIGHT + ".w; \n"
+            +        BONE_TRANSFORM_DEF +
             "        skinnedPosition = boneTransform * skinnedPosition; \n"
             "        skinnedNormal = boneTransform * skinnedNormal; \n"
             "        skinnedFaceNormal = boneTransform * skinnedFaceNormal; \n"
-            "    }"
+            "    } \n"
+            "}\n"
+
+            "void calculateSkinnedPosition(inout vec4 skinnedPosition) {\n"
+            "    if (" + SKINNING_ENABLED + " == 1) { \n"
+            +        BONE_TRANSFORM_DEF +
+            "        skinnedPosition = boneTransform * skinnedPosition; \n"
+            "    } \n"
+            "}\n"
+
+            "void calculateSkinnedNormals(inout vec4 skinnedNormal, inout vec4 skinnedFaceNormal) {\n"
+            "    if (" + SKINNING_ENABLED + " == 1) { \n"
+            +        BONE_TRANSFORM_DEF + 
+            "        skinnedNormal = boneTransform * skinnedNormal; \n"
+            "        skinnedFaceNormal = boneTransform * skinnedFaceNormal; \n"
+            "    }\n"
             "}\n";
 
         this->VertexSkinning_fragment = "";
@@ -1419,9 +1442,7 @@ namespace Core {
             + MODEL_MATRIX_DEF +
             "void main() {\n"
             "    vec4 localPos = " + POSITION + "; \n"
-            "    vec4 localNormal = vec4(1.0, 0.0, 0.0, 0.0); \n"
-            "    vec4 localFaceNormal = vec4(1.0, 0.0, 0.0, 0.0);; \n"
-            "    doSkinning(localPos, localNormal, localFaceNormal); \n"
+            "    calculateSkinnedPosition(localPos); \n"
             "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * localPos;\n"
             "}\n";
 
@@ -1435,13 +1456,16 @@ namespace Core {
 
         this->Distance_vertex =
             "#version 330\n"
+            "#include \"VertexSkinning\" \n"
             + POSITION_DEF 
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
             + MODEL_MATRIX_DEF +
             "out vec4 vPos;\n"
             "void main() {\n"
-            "    vPos = " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    vec4 localPos = " + POSITION + "; \n"
+            "    calculateSkinnedPosition(localPos); \n"
+            "    vPos = " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * localPos;\n"
             "    gl_Position = " + PROJECTION_MATRIX + " * vPos;\n"
             "}\n";
 
@@ -1512,6 +1536,7 @@ namespace Core {
         this->BasicColored_vertex =
             "#version 330\n"
             "precision highp float;\n"
+            "#include \"VertexSkinning\" \n"
             + POSITION_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
@@ -1520,7 +1545,9 @@ namespace Core {
             " uniform float zOffset;"
             "out vec4 vColor;\n"
             "void main() {\n"
-            "    vec4 outPos = " + PROJECTION_MATRIX + "  * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    vec4 localPos = " + POSITION + "; \n"
+            "    calculateSkinnedPosition(localPos); \n"
+            "    vec4 outPos = " + PROJECTION_MATRIX + "  * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * localPos;\n"
             "    outPos.z += zOffset; \n"
             "    gl_Position = outPos; \n"
             "    vColor = color;\n"

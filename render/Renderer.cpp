@@ -44,7 +44,6 @@ namespace Core {
         if (!this->depthMaterial.isValid()) {
             this->depthMaterial = Engine::instance()->createMaterial<DepthOnlyMaterial>();
             this->depthMaterial->setLit(false);
-            this->depthMaterial->setSkinningEnabled(true);
         }
         if (!this->distanceMaterial.isValid()) {
             this->distanceMaterial = Engine::instance()->createMaterial<DistanceOnlyMaterial>();

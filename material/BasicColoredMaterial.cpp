@@ -23,6 +23,7 @@ namespace Core {
         }
 
         this->bindShaderVarLocations();
+        this->setSkinningEnabled(true);
         return true;
     }
 
@@ -30,6 +31,10 @@ namespace Core {
         switch (attribute) {
             case StandardAttribute::Position:
                 return this->positionLocation;
+            case StandardAttribute::BoneIndex:
+                return this->boneIndexLocation;
+            case StandardAttribute::BoneWeight:
+                return this->boneWeightLocation;
             default:
                 return -1;
         }
@@ -43,6 +48,10 @@ namespace Core {
                 return this->viewMatrixLocation;
             case StandardUniform::ModelMatrix:
                 return this->modelMatrixLocation;
+            case StandardUniform::SkinningEnabled:
+                return this->skinningEnabledLocation;
+            case StandardUniform::Bones:
+                return this->bonesLocation[offset];
             default:
                 return -1;
         }
@@ -62,6 +71,13 @@ namespace Core {
         newMaterial->modelMatrixLocation = this->modelMatrixLocation;
         newMaterial->colorLocation = this->colorLocation;
         newMaterial->zOffsetLocation = this->zOffsetLocation;
+        newMaterial->boneIndexLocation = this->boneIndexLocation;
+        newMaterial->boneWeightLocation = this->boneWeightLocation;
+
+        newMaterial->skinningEnabledLocation = this->skinningEnabledLocation;
+        for (UInt32 i = 0; i < Constants::MaxBones; i++) {
+          newMaterial->bonesLocation[i] = this->bonesLocation[i];
+        }
         return newMaterial;
     }
 
@@ -72,6 +88,13 @@ namespace Core {
         this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);
         this->colorLocation = this->shader->getUniformLocation("color");
         this->zOffsetLocation = this->shader->getUniformLocation("zOffset");
+        this->boneIndexLocation = this->shader->getAttributeLocation(StandardAttribute::BoneIndex);
+        this->boneWeightLocation = this->shader->getAttributeLocation(StandardAttribute::BoneWeight);
+
+        this->skinningEnabledLocation = this->shader->getUniformLocation(StandardUniform::SkinningEnabled);
+        for (UInt32 i = 0; i < Constants::MaxBones; i++) {
+          this->bonesLocation[i] = this->shader->getUniformLocation(StandardUniform::Bones, i);
+        }
         
     }
 

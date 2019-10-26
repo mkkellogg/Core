@@ -31,6 +31,7 @@ namespace Core {
         ShaderMaterial::build();
         this->setLit(true);
         this->setPhysical(true);
+        this->setSkinningEnabled(true);
         return true;
     }
 

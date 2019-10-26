@@ -270,7 +270,6 @@ namespace Core {
                     
                     if (hasSkeleton) {
                         meshContainer->setSkeleton(skeleton);
-                        meshRenderer->getMaterial()->setSkinningEnabled(true);
                     }
 
                     nodeObject->addChild(meshContainer);
