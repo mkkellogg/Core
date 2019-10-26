@@ -29,8 +29,10 @@
 namespace Core {
 
     std::shared_ptr<Engine> Engine::_instance;
+    Bool Engine::_shuttingDown = false;
 
     WeakPointer<Engine> Engine::instance() {
+        errorIfShuttingDown();
         if (!_instance) {
             _instance = std::shared_ptr<Engine>(new Engine());
             _instance->init();
@@ -38,19 +40,24 @@ namespace Core {
         return _instance;
     }
 
+    Bool Engine::isShuttingDown() {
+        return _shuttingDown;
+    }
+
+    void Engine::errorIfShuttingDown() {
+        if(_shuttingDown) {
+            throw Exception("Cannot access engine during shutdown.");
+        }
+    }
+
     Engine::Engine(): modelLoader() {
     }
 
     Engine::~Engine() {
-        cleanup();
+        _shuttingDown = true;
     }
-
-    void Engine::cleanup() {
-    }
-
+    
     void Engine::init() {
-
-        cleanup();
 
         // TODO: make this configurable so that it is not hard-coded to use OpenGL
         std::shared_ptr<GraphicsGL> graphicsSystem(new GraphicsGL(GraphicsGL::GLVersion::Three));
@@ -168,10 +175,12 @@ namespace Core {
     }
 
     WeakPointer<Graphics> Engine::getGraphicsSystem() {
+        errorIfShuttingDown();
         return this->graphics;
     }
 
     WeakPointer<AnimationManager> Engine::getAnimationManager() {
+        errorIfShuttingDown();
         return this->animationManager;
     }
 

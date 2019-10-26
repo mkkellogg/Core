@@ -170,9 +170,9 @@ namespace Core {
         }
 
         void deallocateGPUStorage() {
-          /*  if( this->gpuStorage.isValid()) {
+            if(!Engine::isShuttingDown() && this->gpuStorage.isValid()) {
                 Engine::instance()->getGraphicsSystem()->destroyGPUStorage(this->gpuStorage);
-            }*/
+            }
         }
     };
 }

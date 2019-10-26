@@ -40,6 +40,7 @@ namespace Core {
         ~Engine();
 
         static WeakPointer<Engine> instance();
+        static Bool isShuttingDown();
 
         void update();
         void render();
@@ -151,6 +152,8 @@ namespace Core {
         void resolveRenderCallbacks(std::vector<LifecycleEventCallback>& oneTime, const std::vector<LifecycleEventCallback>& persistent);
 
         static std::shared_ptr<Engine> _instance;
+        static Bool _shuttingDown;
+        static void errorIfShuttingDown();
       
         std::vector<std::shared_ptr<Scene>> scenes;
         std::shared_ptr<Scene> activeScene;
