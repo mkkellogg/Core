@@ -240,6 +240,9 @@ namespace Core {
         this->setShader(ShaderType::Vertex, "SpecularIBLBRDFRenderer", ShaderManagerGL::SpecularIBLBRDFRenderer_vertex);
         this->setShader(ShaderType::Fragment, "SpecularIBLBRDFRenderer", ShaderManagerGL::SpecularIBLBRDFRenderer_fragment);
 
+        this->setShader(ShaderType::Vertex, "VertexSkinning", ShaderManagerGL::VertexSkinning_vertex);
+        this->setShader(ShaderType::Fragment, "VertexSkinning", ShaderManagerGL::VertexSkinning_fragment);
+
         this->setShader(ShaderType::Vertex, "Depth", ShaderManagerGL::Depth_vertex);
         this->setShader(ShaderType::Fragment, "Depth", ShaderManagerGL::Depth_fragment);
 
@@ -942,6 +945,7 @@ namespace Core {
             "#version 330\n"
             "precision highp float;\n"
             "#include \"PhysicalLightingSingle\" \n"
+            "#include \"VertexSkinning\" \n"
             + POSITION_DEF
             + TANGENT_DEF
             + COLOR_DEF
@@ -952,13 +956,7 @@ namespace Core {
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
             + MODEL_MATRIX_DEF
-            + MODEL_INVERSE_TRANSPOSE_MATRIX_DEF
-
-            + SKINNING_ENABLED_DEF
-            + BONES_DEF 
-            + BONE_WEIGHT_DEF
-            + BONE_INDEX_DEF +
-
+            + MODEL_INVERSE_TRANSPOSE_MATRIX_DEF +
             "out vec4 vColor;\n"
             "out vec3 vNormal;\n"
             "out vec3 vTangent;\n"
@@ -970,16 +968,7 @@ namespace Core {
             "    vec4 localPos = " + POSITION + "; \n"
             "    vec4 localNormal = " + NORMAL + "; \n"
             "    vec4 localFaceNormal = " + FACE_NORMAL + "; \n"
-            "    if (" + SKINNING_ENABLED + " == 1) { \n"
-            "        mat4 boneTransform = " + BONES + "[" + BONE_INDEX + ".x] * " + BONE_WEIGHT + ".x;\n"
-            "        boneTransform += " + BONES + "[" + BONE_INDEX + ".y] * " + BONE_WEIGHT + ".y;\n"
-            "        boneTransform += " + BONES + "[" + BONE_INDEX + ".z] * " + BONE_WEIGHT + ".z; \n"
-            "        boneTransform += " + BONES + "[" + BONE_INDEX + ".w] * " + BONE_WEIGHT + ".w; \n"
-            "        localPos = boneTransform * localPos; \n"
-            "        localNormal = boneTransform * localNormal; \n"
-            "        localFaceNormal = boneTransform * localFaceNormal; \n"
-           "    }"
-
+            "    doSkinning(localPos, localNormal, localFaceNormal); \n"
             "    vWorldPos = " +  MODEL_MATRIX + " * localPos;\n"
             "    vec4 viewSpacePos = " + VIEW_MATRIX + " * vWorldPos;\n"
             "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * vWorldPos;\n"
@@ -1400,15 +1389,40 @@ namespace Core {
             "    out_color = integratedBRDF; \n"
             "} \n";
 
+        this->VertexSkinning_vertex =  
+            SKINNING_ENABLED_DEF
+            + BONES_DEF 
+            + BONE_WEIGHT_DEF
+            + BONE_INDEX_DEF +
+
+            "void doSkinning(inout vec4 skinnedPosition, inout vec4 skinnedNormal, inout vec4 skinnedFaceNormal) {\n"
+            "    if (" + SKINNING_ENABLED + " == 1) { \n"
+            "        mat4 boneTransform = " + BONES + "[" + BONE_INDEX + ".x] * " + BONE_WEIGHT + ".x;\n"
+            "        boneTransform += " + BONES + "[" + BONE_INDEX + ".y] * " + BONE_WEIGHT + ".y;\n"
+            "        boneTransform += " + BONES + "[" + BONE_INDEX + ".z] * " + BONE_WEIGHT + ".z; \n"
+            "        boneTransform += " + BONES + "[" + BONE_INDEX + ".w] * " + BONE_WEIGHT + ".w; \n"
+            "        skinnedPosition = boneTransform * skinnedPosition; \n"
+            "        skinnedNormal = boneTransform * skinnedNormal; \n"
+            "        skinnedFaceNormal = boneTransform * skinnedFaceNormal; \n"
+            "    }"
+            "}\n";
+
+        this->VertexSkinning_fragment = "";
+
         this->Depth_vertex =
             "#version 330\n"
             "precision highp float;\n"
+            "#include \"VertexSkinning\" \n"
             + POSITION_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
             + MODEL_MATRIX_DEF +
             "void main() {\n"
-            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    vec4 localPos = " + POSITION + "; \n"
+            "    vec4 localNormal = vec4(1.0, 0.0, 0.0, 0.0); \n"
+            "    vec4 localFaceNormal = vec4(1.0, 0.0, 0.0, 0.0);; \n"
+            "    doSkinning(localPos, localNormal, localFaceNormal); \n"
+            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * localPos;\n"
             "}\n";
 
         this->Depth_fragment =   

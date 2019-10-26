@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../util/WeakPointer.h"
+#include "../common/Constants.h"
 #include "Material.h"
 
 namespace Core {
@@ -26,5 +27,10 @@ namespace Core {
         Int32 projectionMatrixLocation;
         Int32 viewMatrixLocation;
         Int32 modelMatrixLocation;
+
+        Int32 skinningEnabledLocation;
+        Int32 bonesLocation[Constants::MaxBones];
+        Int32 boneIndexLocation;
+        Int32 boneWeightLocation;
     };
 }
