@@ -85,9 +85,6 @@ namespace Core {
         Real aspectRatio = targetCamera->getAspectRatio();
         Real fov = targetCamera->getFOV();
         Real tanHalfHFOV = Math::tan(fov / 2.0f);
-        Real fovV = Math::aTan(tanHalfHFOV / aspectRatio);
-        Real tanHalfVFOV = Math::tan((fov / aspectRatio) / 2.0f);
-        //Real tanHalfVFOV = Math::tan(fovV / 2.0f);
         Bool isOrtho = targetCamera->isOrtho();
 
         for (UInt32 i = 1; i <= boundaryIndex; i++) {
@@ -100,8 +97,8 @@ namespace Core {
 
                 Real xn = this->cascadeBoundaries[i - 1] * tanHalfHFOV;
                 Real xf = this->cascadeBoundaries[i] * tanHalfHFOV;
-                Real yn = this->cascadeBoundaries[i - 1] * tanHalfVFOV;
-                Real yf = this->cascadeBoundaries[i] * tanHalfVFOV;
+                Real yn = xn / aspectRatio;
+                Real yf = xf / aspectRatio;
 
                 const UInt32 NumFrustumCorners = 8;
                 Point3r frustumCorners[NumFrustumCorners] = {
