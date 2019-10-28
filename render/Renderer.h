@@ -2,6 +2,7 @@
 
 #include "../common/complextypes.h"
 #include "../common/debug.h"
+#include "../base/CoreObject.h"
 #include "RenderBuffer.h"
 #include "RenderState.h"
 #include "../geometry/Vector2.h"
@@ -28,7 +29,7 @@ namespace Core {
     class ReflectionProbe;
     class Skybox;
 
-    class Renderer {
+    class Renderer : public CoreObject {
     public:
         virtual ~Renderer();
         virtual Bool init();

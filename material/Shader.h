@@ -3,6 +3,7 @@
 #include <string>
 #include "../common/types.h"
 #include "../common/Exception.h"
+#include "../base/CoreObject.h"
 #include "../math/Matrix4x4.h"
 #include "ShaderType.h"
 #include "StandardUniforms.h"
@@ -10,7 +11,7 @@
 
 namespace Core {
 
-    class Shader {
+    class Shader : public CoreObject{
     public:
 
         class ShaderVariableException: Exception {

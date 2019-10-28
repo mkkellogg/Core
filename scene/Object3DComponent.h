@@ -10,7 +10,7 @@ namespace Core {
     // forward declaration
     class Object3D;
 
-    class Object3DComponent: public CoreObject{
+    class Object3DComponent: public CoreObject {
     public:
         Object3DComponent(WeakPointer<Object3D> owner);
         virtual ~Object3DComponent();

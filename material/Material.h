@@ -4,6 +4,7 @@
 
 #include "../Graphics.h"
 #include "../util/PersistentWeakPointer.h"
+#include "../base/CoreObject.h"
 #include "StandardAttributes.h"
 #include "StandardUniforms.h"
 #include "../render/RenderStyle.h"
@@ -14,7 +15,7 @@ namespace Core {
     // forward declarations
     class Shader;
 
-    class Material {
+    class Material : CoreObject {
     public:
         Material(WeakPointer<Graphics> graphics);
         Material(WeakPointer<Graphics> graphics, WeakPointer<Shader> shader);

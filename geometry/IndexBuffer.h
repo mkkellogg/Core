@@ -1,10 +1,11 @@
 #pragma once
 
 #include "../common/types.h"
+#include "../base/CoreObject.h"
 
 namespace Core {
 
-    class IndexBuffer {
+    class IndexBuffer : public CoreObject {
     public:
         IndexBuffer(UInt32 size);
         virtual ~IndexBuffer();

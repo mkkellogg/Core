@@ -7,6 +7,7 @@
 
 #include "../common/types.h"
 #include "../util/PersistentWeakPointer.h"
+#include "../base/CoreObject.h"
 
 namespace Core {
 
@@ -14,7 +15,7 @@ namespace Core {
     class Engine;
     class Object3D;
 
-    class Scene {
+    class Scene : CoreObject {
         friend class Engine;
 
     public:

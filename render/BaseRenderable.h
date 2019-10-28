@@ -4,7 +4,6 @@
 
 namespace Core {
 
-    class BaseRenderable : public CoreObject{
-    public:
+    class BaseRenderable : public CoreObject {
     };
 }

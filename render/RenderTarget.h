@@ -2,6 +2,7 @@
 
 #include "../util/PersistentWeakPointer.h"
 #include "../common/types.h"
+#include "../base/CoreObject.h"
 #include "../base/BitMask.h"
 #include "../geometry/Vector2.h"
 #include "../geometry/Vector4.h"
@@ -14,7 +15,7 @@ namespace Core {
     // forward declarations
     class Texture;
 
-    class RenderTarget {
+    class RenderTarget : public CoreObject {
     public:
 
         virtual ~RenderTarget();

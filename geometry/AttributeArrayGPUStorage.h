@@ -1,10 +1,11 @@
 #pragma once
 
 #include "../common/types.h"
+#include "../base/CoreObject.h"
 
 namespace Core {
 
-    class AttributeArrayGPUStorage {
+    class AttributeArrayGPUStorage : CoreObject {
     public:
 
         virtual ~AttributeArrayGPUStorage() = 0;
