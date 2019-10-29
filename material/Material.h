@@ -2,7 +2,6 @@
 
 #include <memory>
 
-#include "../Graphics.h"
 #include "../util/PersistentWeakPointer.h"
 #include "../base/CoreObject.h"
 #include "StandardAttributes.h"
@@ -14,6 +13,7 @@ namespace Core {
 
     // forward declarations
     class Shader;
+    class Graphics;
 
     class Material : CoreObject {
     public:

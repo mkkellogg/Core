@@ -151,22 +151,9 @@ namespace Core {
         }
 
         std::shared_ptr<AttributeArrayGPUStorageGL> spGpuStorage(gpuStoragePtr);
-        this->attributeArraGPUStorages.push_back(spGpuStorage);
+        this->objectManager.addReference(spGpuStorage, CoreObjectReferenceManager::OwnerType::Single);
         WeakPointer<AttributeArrayGPUStorageGL> wpGpuStorage = spGpuStorage;
         return wpGpuStorage;
-    }
-
-    void GraphicsGL::destroyGPUStorage(WeakPointer<AttributeArrayGPUStorage> storage) {
-        Int32 foundIndex = -1;
-        for (UInt32 i = 0; i < this->attributeArraGPUStorages.size(); i++) {
-            if(this->attributeArraGPUStorages[i].get() == storage.get()) {
-                foundIndex = 1;
-                break;
-            }
-        }
-        if (foundIndex >= 0) {
-            this->attributeArraGPUStorages.erase (this->attributeArraGPUStorages.begin()+5);
-        }
     }
 
     WeakPointer<IndexBuffer> GraphicsGL::createIndexBuffer(UInt32 size) {
@@ -176,22 +163,9 @@ namespace Core {
         }
         indexBufferPtr->initIndices();
         std::shared_ptr<IndexBufferGL> spIndexBuffer(indexBufferPtr);
-        this->indexBuffers.push_back(spIndexBuffer);
+        this->objectManager.addReference(spIndexBuffer, CoreObjectReferenceManager::OwnerType::Single);
         WeakPointer<IndexBufferGL> wpIndexBuffer = spIndexBuffer;
         return wpIndexBuffer;
-    }
-
-    void GraphicsGL::destroyIndexbuffer(WeakPointer<IndexBuffer> buffer) {
-        Int32 foundIndex = -1;
-        for (UInt32 i = 0; i < this->indexBuffers.size(); i++) {
-            if(this->indexBuffers[i].get() == buffer.get()) {
-                foundIndex = 1;
-                break;
-            }
-        }
-        if (foundIndex >= 0) {
-            this->indexBuffers.erase (this->indexBuffers.begin()+5);
-        }
     }
 
     void GraphicsGL::drawBoundVertexBuffer(UInt32 vertexCount) {

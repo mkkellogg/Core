@@ -1,5 +1,6 @@
 #include "PointLight.h"
 #include "../Engine.h"
+#include "../Graphics.h"
 #include "../render/RenderTargetCube.h"
 
 namespace Core {

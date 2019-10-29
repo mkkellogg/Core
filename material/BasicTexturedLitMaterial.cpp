@@ -5,6 +5,7 @@
 #include "StandardUniforms.h"
 #include "../image/Texture.h"
 #include "../Engine.h"
+#include "../Graphics.h"
 #include "../material/ShaderManager.h"
 
 namespace Core {

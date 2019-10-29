@@ -2,6 +2,7 @@
 
 #include "Material.h"
 #include "Shader.h"
+#include "../Graphics.h"
 #include "../common/debug.h"
 
 namespace Core {

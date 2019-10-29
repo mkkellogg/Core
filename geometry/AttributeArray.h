@@ -8,6 +8,7 @@
 #include "../common/Exception.h"
 #include "../common/assert.h"
 #include "../common/types.h"
+#include "../Graphics.h"
 #include "AttributeArrayGPUStorage.h"
 
 namespace Core {
@@ -171,7 +172,7 @@ namespace Core {
 
         void deallocateGPUStorage() {
             if(!Engine::isShuttingDown() && this->gpuStorage.isValid()) {
-                Engine::instance()->getGraphicsSystem()->destroyGPUStorage(this->gpuStorage);
+                Engine::instance()->getGraphicsSystem()->releaseGPUStorage(this->gpuStorage);
             }
         }
     };

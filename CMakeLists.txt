@@ -41,6 +41,7 @@ set(INCLUDE_FILES
     base/BaseVector.h
     base/BitMask.h
     base/CoreObject.h
+    base/CoreObjectReferenceManager.h
     common/gl.h
     common/assert.h
     common/types.h
@@ -187,6 +188,7 @@ set(SOURCE_FILES
     animation/BlendOp.cpp
     animation/CrossFadeBlendOp.cpp
     base/CoreObject.cpp
+    base/CoreObjectReferenceManager.cpp
     base/BaseVector.cpp
     common/Debug.cpp
     common/Constants.cpp
@@ -282,7 +284,6 @@ set(SOURCE_FILES
     GL/RenderTargetGL.cpp
     GL/RenderTarget2DGL.cpp
     GL/RenderTargetCubeGL.cpp)
-    #RendererES3.cpp)
 
 add_library(${EXECUTABLE_NAME} ${SOURCE_FILES})
 

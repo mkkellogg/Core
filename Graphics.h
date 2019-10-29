@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "util/WeakPointer.h"
+#include "base/CoreObjectReferenceManager.h"
 #include "image/TextureAttr.h"
 #include "geometry/AttributeType.h"
 #include "render/RenderState.h"
@@ -62,9 +63,9 @@ namespace Core {
         virtual void activateShader(WeakPointer<Shader> shader) = 0;
     
         virtual WeakPointer<AttributeArrayGPUStorage> createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) = 0;
-        virtual void destroyGPUStorage(WeakPointer<AttributeArrayGPUStorage> storage) = 0;
+        void releaseGPUStorage(WeakPointer<AttributeArrayGPUStorage> storage);
         virtual WeakPointer<IndexBuffer> createIndexBuffer(UInt32 size) = 0;
-        virtual void destroyIndexbuffer(WeakPointer<IndexBuffer> buffer) = 0;
+        void releaseIndexBuffer(WeakPointer<IndexBuffer> indexBuffer);
 
         virtual void drawBoundVertexBuffer(UInt32 vertexCount) = 0;
         virtual void drawBoundVertexBuffer(UInt32 vertexCount, WeakPointer<IndexBuffer> indices) = 0;
@@ -117,6 +118,8 @@ namespace Core {
         virtual void restoreState() = 0;
 
     protected:
+
+        CoreObjectReferenceManager objectManager;
         WeakPointer<Texture2D> placeHolderTexture2D;
         WeakPointer<CubeTexture> placeHolderCubeTexture;
         Bool sharedRenderState;

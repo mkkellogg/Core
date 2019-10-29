@@ -154,6 +154,9 @@ namespace Core {
         static std::shared_ptr<Engine> _instance;
         static Bool _shuttingDown;
         static void errorIfShuttingDown();
+
+        std::shared_ptr<AnimationManager> animationManager;
+        std::shared_ptr<Graphics> graphics;
       
         std::vector<std::shared_ptr<Scene>> scenes;
         std::shared_ptr<Scene> activeScene;
@@ -178,9 +181,5 @@ namespace Core {
 
         MaterialLibrary materialLibrary;
         ModelLoader modelLoader;
-  
-        std::shared_ptr<AnimationManager> animationManager;
-        std::shared_ptr<Graphics> graphics;
-        
     };
 }

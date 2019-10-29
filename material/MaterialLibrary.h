@@ -3,7 +3,6 @@
 #include <unordered_map>
 
 #include "../util/PersistentWeakPointer.h"
-#include "../Graphics.h"
 #include "ShaderMaterialCharacteristic.h"
 #include "../base/BitMask.h"
 

@@ -7,6 +7,7 @@
 #include "../image/Texture2D.h"
 #include "../image/CubeTexture.h"
 #include "../Engine.h"
+#include "../Graphics.h"
 #include "../material/ShaderManager.h"
 
 namespace Core {

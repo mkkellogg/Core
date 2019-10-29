@@ -5,7 +5,7 @@
 
 namespace Core {
 
-    class AttributeArrayGPUStorage : CoreObject {
+    class AttributeArrayGPUStorage : public CoreObject {
     public:
 
         virtual ~AttributeArrayGPUStorage() = 0;

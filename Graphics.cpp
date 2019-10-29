@@ -15,6 +15,7 @@
 #include "render/RenderTarget.h"
 #include "render/RenderTarget2D.h"
 #include "geometry/AttributeArrayGPUStorage.h"
+#include "geometry/IndexBuffer.h"
 #include "geometry/Mesh.h"
 #include "geometry/GeometryUtils.h"
 
@@ -130,5 +131,13 @@ namespace Core {
 
         this->activateRenderTarget(currentRenderTarget);
         this->setViewport(currentViewport.x, currentViewport.y, currentViewport.z, currentViewport.w);
+    }
+
+    void Graphics::releaseGPUStorage(WeakPointer<AttributeArrayGPUStorage> storage) {
+        this->objectManager.removeReference(storage);
+    }
+
+    void Graphics::releaseIndexBuffer(WeakPointer<IndexBuffer> indexBuffer) {
+        this->objectManager.removeReference(indexBuffer);
     }
 }

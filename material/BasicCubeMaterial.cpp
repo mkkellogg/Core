@@ -4,6 +4,7 @@
 #include "StandardAttributes.h"
 #include "StandardUniforms.h"
 #include "../Engine.h"
+#include "../Graphics.h"
 #include "../image/CubeTexture.h"
 #include "../image/Texture2D.h"
 #include "../material/ShaderManager.h"

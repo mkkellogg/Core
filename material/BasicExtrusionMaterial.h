@@ -2,6 +2,7 @@
 
 #include "../util/WeakPointer.h"
 #include "Material.h"
+#include "../color/Color.h"
 
 namespace Core {
 
