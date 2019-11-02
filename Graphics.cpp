@@ -133,11 +133,10 @@ namespace Core {
         this->setViewport(currentViewport.x, currentViewport.y, currentViewport.z, currentViewport.w);
     }
 
-    void Graphics::releaseGPUStorage(WeakPointer<AttributeArrayGPUStorage> storage) {
-        this->objectManager.removeReference(storage);
+    void Graphics::safeReleaseObject(WeakPointer<CoreObject> object) {
+        if(!Engine::isShuttingDown()) {
+            Engine::instance()->getGraphicsSystem()->objectManager.removeReference(object);
+        }
     }
 
-    void Graphics::releaseIndexBuffer(WeakPointer<IndexBuffer> indexBuffer) {
-        this->objectManager.removeReference(indexBuffer);
-    }
 }

@@ -9,6 +9,13 @@
 namespace Core {
 
   class Demo {
+  public:
+
+    Demo();
+    ~Demo();
+    void run();
+
+  private:
 
     std::vector<std::shared_ptr<StandardImage>> skyboxImages;
     std::shared_ptr<CubeTexture> skyboxTexture;
@@ -17,10 +24,7 @@ namespace Core {
     std::shared_ptr<Core::ImageLoader> imageLoader;
     std::shared_ptr<Core::AssetLoader> assetLoader;
 
-  public:
-
-    Demo();
-    void run();
+    PersistentWeakPointer<Scene> scene;
   };
 
 }

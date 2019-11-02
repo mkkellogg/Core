@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "util/PersistentWeakPointer.h"
+#include "base/CoreObjectReferenceManager.h"
 #include "scene/Object3D.h"
 #include "asset/ModelLoader.h"
 #include "geometry/Vector4.h"
@@ -54,6 +55,8 @@ namespace Core {
 
         WeakPointer<Graphics> getGraphicsSystem();
         WeakPointer<AnimationManager> getAnimationManager();
+
+        static void safeReleaseObject(WeakPointer<CoreObject> object);
 
         void setActiveScene(WeakPointer<Scene> scene);
         WeakPointer<Scene> getActiveScene();
@@ -155,16 +158,18 @@ namespace Core {
         static Bool _shuttingDown;
         static void errorIfShuttingDown();
 
+        CoreObjectReferenceManager objectManager;
+
         std::shared_ptr<AnimationManager> animationManager;
         std::shared_ptr<Graphics> graphics;
       
-        std::vector<std::shared_ptr<Scene>> scenes;
         std::shared_ptr<Scene> activeScene;
+        std::vector<std::shared_ptr<Object3D>> sceneObjects;
         std::vector<std::shared_ptr<Camera>> cameras;
         std::vector<std::shared_ptr<Light>> lights;
-        std::vector<std::shared_ptr<Object3D>> sceneObjects;
-        std::vector<std::shared_ptr<Material>> materials;
         std::vector<std::shared_ptr<BaseObjectRenderer>> objectRenderers;
+
+        std::vector<std::shared_ptr<Material>> materials;
         std::vector<std::shared_ptr<Skeleton>> skeletons;
         std::vector<std::shared_ptr<VertexBoneMap>> vertexBoneMaps;
         std::vector<std::shared_ptr<Mesh>> meshes;

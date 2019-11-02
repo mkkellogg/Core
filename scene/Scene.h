@@ -15,7 +15,7 @@ namespace Core {
     class Engine;
     class Object3D;
 
-    class Scene : CoreObject {
+    class Scene : public CoreObject {
         friend class Engine;
 
     public:

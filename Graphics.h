@@ -51,6 +51,8 @@ namespace Core {
         virtual void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) = 0;
         virtual Vector4u getViewport() = 0;
 
+        static void safeReleaseObject(WeakPointer<CoreObject> object);
+
         virtual WeakPointer<Texture2D> createTexture2D(const TextureAttributes& attributes) = 0;
         virtual WeakPointer<CubeTexture> createCubeTexture(const TextureAttributes& attributes) = 0;
         virtual void destroyTexture2D(WeakPointer<Texture2D> texture) = 0;
@@ -63,9 +65,7 @@ namespace Core {
         virtual void activateShader(WeakPointer<Shader> shader) = 0;
     
         virtual WeakPointer<AttributeArrayGPUStorage> createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) = 0;
-        void releaseGPUStorage(WeakPointer<AttributeArrayGPUStorage> storage);
         virtual WeakPointer<IndexBuffer> createIndexBuffer(UInt32 size) = 0;
-        void releaseIndexBuffer(WeakPointer<IndexBuffer> indexBuffer);
 
         virtual void drawBoundVertexBuffer(UInt32 vertexCount) = 0;
         virtual void drawBoundVertexBuffer(UInt32 vertexCount, WeakPointer<IndexBuffer> indices) = 0;

@@ -184,6 +184,12 @@ namespace Core {
         return this->animationManager;
     }
 
+    void Engine::safeReleaseObject(WeakPointer<CoreObject> object) {
+        if(!Engine::isShuttingDown()) {
+            Engine::instance()->objectManager.removeReference(object);
+        }
+    }
+
     void Engine::setActiveScene(WeakPointer<Scene> scene) {
         this->activeScene = scene.lock();
     }
@@ -199,7 +205,7 @@ namespace Core {
             throw AllocationException("Engine::createScene -> Unable to allocate new Scene");
         }
         std::shared_ptr<Scene> newScene = std::shared_ptr<Scene>(newScenePtr);
-        this->scenes.push_back(newScene);
+        this->objectManager.addReference(newScene, CoreObjectReferenceManager::OwnerType::Single);
         return newScene;
     }
     

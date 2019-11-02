@@ -20,8 +20,13 @@
 namespace Core {
 
   Demo::Demo() {
-    //this->imageLoader = engine.getImageLoader();
-    //this->assetLoader = engine.getAssetLoader();
+    
+  }
+
+  Demo::~Demo() {
+    if (!Engine::isShuttingDown() && this->scene.isValid()) {
+      Engine::safeReleaseObject(this->scene);
+    }
   }
 
   void Demo::run() {
@@ -57,9 +62,8 @@ namespace Core {
 
     });
 
-    WeakPointer<Core::Scene> scene = Engine::instance()->createScene();
-    Engine::instance()->setActiveScene(scene);
-    WeakPointer<Core::Scene> scenePtr(scene);
+    this->scene = Engine::instance()->createScene();
+    Engine::instance()->setActiveScene(this->scene);
 
     WeakPointer<Core::Mesh> skyboxMesh(Engine::instance()->createMesh(36, 0));
     skyboxMesh->init();
@@ -100,7 +104,7 @@ namespace Core {
     WeakPointer<Core::MeshRenderer> skyboxRenderer = Engine::instance()->createRenderer<Core::MeshRenderer, Core::Mesh>(this->skyboxMaterial, skyboxObj);
     skyboxObjPtr->addRenderable(skyboxMesh);
 
-    WeakPointer<Object3D> sceneRootPtr = WeakPointer<Object3D>(scenePtr->getRoot());
+    WeakPointer<Object3D> sceneRootPtr = WeakPointer<Object3D>(scene->getRoot());
     sceneRootPtr->addChild(skyboxObj);
 
     WeakPointer<Core::Object3D> cameraObj = Engine::instance()->createObject3D<Core::Object3D>();

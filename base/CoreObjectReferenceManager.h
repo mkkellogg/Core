@@ -1,10 +1,11 @@
 #pragma once
 
+#include <memory>
 #include <unordered_map>
 #include <vector>
 
-#include "../Engine.h"
 #include "../common/types.h"
+#include "../util/WeakPointer.h"
 #include "../base/CoreObject.h"
 
 namespace Core {

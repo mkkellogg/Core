@@ -24,8 +24,8 @@ namespace Core {
 
     Mesh::~Mesh() {
         this->destroyVertexCrossMap();
-        if (!Engine::isShuttingDown() && this->indexBuffer.isValid()) {
-            this->graphics->releaseIndexBuffer(this->indexBuffer);
+        if (this->indexBuffer.isValid()) {
+            Graphics::safeReleaseObject(this->indexBuffer);
         }
     }
 

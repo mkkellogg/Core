@@ -171,8 +171,8 @@ namespace Core {
         }
 
         void deallocateGPUStorage() {
-            if(!Engine::isShuttingDown() && this->gpuStorage.isValid()) {
-                Engine::instance()->getGraphicsSystem()->releaseGPUStorage(this->gpuStorage);
+            if(this->gpuStorage.isValid()) {
+               Graphics::safeReleaseObject(this->gpuStorage);
             }
         }
     };
