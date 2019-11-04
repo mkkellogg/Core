@@ -1,4 +1,5 @@
 #include "Scene.h"
+#include "../Engine.h"
 #include "Object3D.h"
 #include "../common/assert.h"
 #include "../common/complextypes.h"
@@ -6,6 +7,10 @@
 namespace Core {
 
     Scene::Scene(WeakPointer<Object3D> root) : root(root) {
+    }
+
+    Scene::~Scene() {
+        Engine::safeReleaseObject(this->root);
     }
 
     WeakPointer<Object3D> Scene::getRoot() {

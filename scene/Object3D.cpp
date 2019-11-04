@@ -1,4 +1,5 @@
 #include "Object3D.h"
+#include "../Engine.h"
 #include "Transform.h"
 #include "Object3DComponent.h"
 
@@ -11,6 +12,10 @@ namespace Core {
     }
 
     Object3D::~Object3D() {
+        for (UInt32 i = 0; i < this->children.size(); i ++) {
+            WeakPointer<Object3D> child = this->children[i];
+             Engine::safeReleaseObject(child);
+        }
     }
 
     UInt64 Object3D::getID() const {

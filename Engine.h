@@ -99,12 +99,12 @@ namespace Core {
 
         template <typename T = Object3D>
         WeakPointer<typename std::enable_if<std::is_base_of<Object3D, T>::value, T>::type> createObject3D() {
-            std::shared_ptr<T> objPtr = std::shared_ptr<T>(new T());
-            WeakPointer<T> _temp = objPtr;
-            objPtr->_self = _temp;
-            objPtr->setName("GameObject");
-            this->sceneObjects.push_back(objPtr);
-            return objPtr;
+            std::shared_ptr<T> spObject = std::shared_ptr<T>(new T());
+            WeakPointer<T> _temp = spObject;
+            spObject->_self = _temp;
+            spObject->setName("GameObject");
+            this->objectManager.addReference(spObject, CoreObjectReferenceManager::OwnerType::Single);
+            return spObject;
         }
 
         WeakPointer<Skeleton> createSkeleton(UInt32 boneCount);
@@ -164,7 +164,6 @@ namespace Core {
         std::shared_ptr<Graphics> graphics;
       
         std::shared_ptr<Scene> activeScene;
-        std::vector<std::shared_ptr<Object3D>> sceneObjects;
         std::vector<std::shared_ptr<Camera>> cameras;
         std::vector<std::shared_ptr<Light>> lights;
         std::vector<std::shared_ptr<BaseObjectRenderer>> objectRenderers;
