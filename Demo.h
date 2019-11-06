@@ -25,6 +25,7 @@ namespace Core {
     std::shared_ptr<Core::AssetLoader> assetLoader;
 
     PersistentWeakPointer<Scene> scene;
+    PersistentWeakPointer<Core::Camera> camera;
   };
 
 }

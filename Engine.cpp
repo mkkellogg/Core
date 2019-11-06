@@ -246,19 +246,19 @@ namespace Core {
     }
 
     WeakPointer<Camera> Engine::createPerspectiveCamera(WeakPointer<Object3D> owner, Real fov, Real aspect, Real near, Real far) {
-        std::shared_ptr<Camera> newCamera = std::shared_ptr<Camera>(Camera::createPerspectiveCamera(owner, fov, aspect, near, far));
-        this->cameras.push_back(newCamera);
-        WeakPointer<Camera> cameraPtr(newCamera);
-        owner->addComponent(cameraPtr);
-        return cameraPtr;
+        std::shared_ptr<Camera> spCamera = std::shared_ptr<Camera>(Camera::createPerspectiveCamera(owner, fov, aspect, near, far));
+        this->objectManager.addReference(spCamera, CoreObjectReferenceManager::OwnerType::Single);
+        WeakPointer<Camera> wpCamera(spCamera);
+        owner->addComponent(wpCamera);
+        return wpCamera;
     }
 
     WeakPointer<Camera> Engine::createOrthographicCamera(WeakPointer<Object3D> owner, Real top, Real bottom, Real left, Real right, Real near, Real far) {
-        std::shared_ptr<Camera> newCamera = std::shared_ptr<Camera>(Camera::createOrthographicCamera(owner, top, bottom, left, right, near, far));
-        this->cameras.push_back(newCamera);
-        WeakPointer<Camera> cameraPtr(newCamera);
-        owner->addComponent(cameraPtr);
-        return cameraPtr;
+        std::shared_ptr<Camera> spCamera = std::shared_ptr<Camera>(Camera::createOrthographicCamera(owner, top, bottom, left, right, near, far));
+        this->objectManager.addReference(spCamera, CoreObjectReferenceManager::OwnerType::Single);
+        WeakPointer<Camera> wpCamera(spCamera);
+        owner->addComponent(wpCamera);
+        return wpCamera;
     }
 
     WeakPointer<Texture2D> Engine::createTexture2D(const TextureAttributes& attributes) {

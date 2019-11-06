@@ -18,6 +18,10 @@ namespace Core {
         this->skyboxOnly = true;
     }
 
+    ReflectionProbe::~ReflectionProbe() {
+        if (this->skyboxCube.isValid()) Engine::safeReleaseObject(this->skyboxCube);
+    }
+
     void ReflectionProbe::init() {
         Vector2u size(512, 512);
 

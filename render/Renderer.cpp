@@ -38,6 +38,8 @@ namespace Core {
     }
 
     Renderer::~Renderer() {
+        if (this->perspectiveShadowMapCameraObject.isValid()) Engine::safeReleaseObject(this->perspectiveShadowMapCameraObject);
+        if (this->orthoShadowMapCameraObject.isValid()) Engine::safeReleaseObject(this->orthoShadowMapCameraObject);
     }
 
     Bool Renderer::init() {
@@ -322,16 +324,12 @@ namespace Core {
     void Renderer::renderShadowMaps(std::vector<WeakPointer<Light>>& lights, LightType lightType,
                                     std::vector<WeakPointer<Object3D>>& objects, WeakPointer<Camera> renderCamera) {
 
-        static PersistentWeakPointer<Camera> perspectiveShadowMapCamera;
-        static PersistentWeakPointer<Object3D> perspectiveShadowMapCameraObject;
-        static PersistentWeakPointer<Camera> orthoShadowMapCamera;
-        static PersistentWeakPointer<Object3D> orthoShadowMapCameraObject;
         static std::vector<WeakPointer<Object3D>> toRender;
-        if (!perspectiveShadowMapCamera.isValid()) {
-            perspectiveShadowMapCameraObject = Engine::instance()->createObject3D();
-            perspectiveShadowMapCamera = Engine::instance()->createPerspectiveCamera(perspectiveShadowMapCameraObject, Math::PI / 2.0f, 1.0f, PointLight::NearPlane, PointLight::FarPlane);
-            orthoShadowMapCameraObject = Engine::instance()->createObject3D();
-            orthoShadowMapCamera = Engine::instance()->createOrthographicCamera(orthoShadowMapCameraObject, 1.0f, -1.0f, -1.0f, 1.0f, PointLight::NearPlane, PointLight::FarPlane);
+        if (!this->perspectiveShadowMapCamera.isValid()) {
+            this->perspectiveShadowMapCameraObject = Engine::instance()->createObject3D();
+            this->perspectiveShadowMapCamera = Engine::instance()->createPerspectiveCamera(perspectiveShadowMapCameraObject, Math::PI / 2.0f, 1.0f, PointLight::NearPlane, PointLight::FarPlane);
+            this->orthoShadowMapCameraObject = Engine::instance()->createObject3D();
+            this->orthoShadowMapCamera = Engine::instance()->createOrthographicCamera(orthoShadowMapCameraObject, 1.0f, -1.0f, -1.0f, 1.0f, PointLight::NearPlane, PointLight::FarPlane);
         }
 
         toRender.resize(0);
@@ -359,10 +357,10 @@ namespace Core {
                             WeakPointer<RenderTarget> shadowMapRenderTarget = pointLight->getShadowMap();
                             WeakPointer<Object3D> lightObject = light->getOwner();
                             Matrix4x4 lightTransform = lightObject->getTransform().getWorldMatrix();
-                            perspectiveShadowMapCameraObject->getTransform().getWorldMatrix().copy(lightTransform);
+                            this->perspectiveShadowMapCameraObject->getTransform().getWorldMatrix().copy(lightTransform);
                             Vector4u renderTargetDimensions = shadowMapRenderTarget->getViewport();
-                            perspectiveShadowMapCamera->setRenderTarget(shadowMapRenderTarget);  
-                            perspectiveShadowMapCamera->setAspectRatioFromDimensions(renderTargetDimensions.z, renderTargetDimensions.w);                     
+                            this->perspectiveShadowMapCamera->setRenderTarget(shadowMapRenderTarget);  
+                            this->perspectiveShadowMapCamera->setAspectRatioFromDimensions(renderTargetDimensions.z, renderTargetDimensions.w);                     
                             this->render(perspectiveShadowMapCamera, toRender, dummyLights, this->distanceMaterial, true);
                         }
                     }
@@ -376,14 +374,14 @@ namespace Core {
                             Matrix4x4 viewTrans = directionalLight->getOwner()->getTransform().getWorldMatrix();
                             for (UInt32 i = 0; i < directionalLight->getCascadeCount(); i++) {
                                 DirectionalLight::OrthoProjection& proj = projections[i];  
-                                orthoShadowMapCamera->setDimensions(proj.top, proj.bottom, proj.left, proj.right);        
-                                orthoShadowMapCamera->setNearAndFar(proj.near, proj.far);
+                                this->orthoShadowMapCamera->setDimensions(proj.top, proj.bottom, proj.left, proj.right);        
+                                this->orthoShadowMapCamera->setNearAndFar(proj.near, proj.far);
 
                                 ViewDescriptor viewDesc;
                                 viewDesc.indirectHDREnabled = false;
                                 viewDesc.cubeFace = -1;
                                 this->getViewDescriptorTransformations(viewTrans, orthoShadowMapCamera->getProjectionMatrix(),
-                                                                       orthoShadowMapCamera->getAutoClearRenderBuffers(), viewDesc);
+                                                                       this->orthoShadowMapCamera->getAutoClearRenderBuffers(), viewDesc);
                                 viewDesc.overrideMaterial = this->depthMaterial;
                                 viewDesc.renderTarget = directionalLight->getShadowMap(i);
                                 this->render(viewDesc, toRender, dummyLights, true);

@@ -2,6 +2,8 @@
 #include "../Engine.h"
 #include "Transform.h"
 #include "Object3DComponent.h"
+#include "../light/Light.h"
+#include "../render/Camera.h"
 
 namespace Core {
 
@@ -15,6 +17,14 @@ namespace Core {
         for (UInt32 i = 0; i < this->children.size(); i ++) {
             WeakPointer<Object3D> child = this->children[i];
              Engine::safeReleaseObject(child);
+        }
+        for (UInt32 i = 0; i < this->components.size(); i ++) {
+            WeakPointer<Object3DComponent> component = this->components[i];
+            WeakPointer<Camera> cameraComponent = WeakPointer<Object3DComponent>::dynamicPointerCast<Camera>(component);
+            WeakPointer<Light> lightComponent = WeakPointer<Object3DComponent>::dynamicPointerCast<Light>(component);
+            if (lightComponent || cameraComponent) {
+                 Engine::safeReleaseObject(component);
+            }
         }
     }
 

@@ -67,34 +67,34 @@ namespace Core {
 
         template <typename T>
         WeakPointer<typename std::enable_if<std::is_base_of<Light, T>::value, T>::type> createLight(WeakPointer<Object3D> owner) {
-            std::shared_ptr<T> light = std::shared_ptr<T>(new T(owner));
-            light->init();
-            this->lights.push_back(light);
-            WeakPointer<T> lightPtr = light;
-            owner->addComponent(lightPtr);
-            return lightPtr;
+            std::shared_ptr<T> spLight = std::shared_ptr<T>(new T(owner));
+            spLight->init();
+            this->objectManager.addReference(spLight, CoreObjectReferenceManager::OwnerType::Single);
+            WeakPointer<T> wpLight = spLight;
+            owner->addComponent(wpLight);
+            return wpLight;
         }
 
         template <typename T>
         WeakPointer<typename std::enable_if<std::is_base_of<PointLight, T>::value, T>::type> 
         createPointLight(WeakPointer<Object3D> owner, Bool shadowsEnabled, UInt32 shadowMapSize, Real constantShadowBias, Real angularShadowBias) {
-            std::shared_ptr<T> light = std::shared_ptr<T>(new T(owner, shadowsEnabled, shadowMapSize, constantShadowBias, angularShadowBias));
-            light->init();
-            this->lights.push_back(light);
-            WeakPointer<T> lightPtr = light;
-            owner->addComponent(lightPtr);
-            return lightPtr;
+            std::shared_ptr<T> spLight = std::shared_ptr<T>(new T(owner, shadowsEnabled, shadowMapSize, constantShadowBias, angularShadowBias));
+            spLight->init();
+            this->objectManager.addReference(spLight, CoreObjectReferenceManager::OwnerType::Single);
+            WeakPointer<T> wpLight = spLight;
+            owner->addComponent(wpLight);
+            return wpLight;
         }
 
         template <typename T>
         WeakPointer<typename std::enable_if<std::is_base_of<DirectionalLight, T>::value, T>::type> 
         createDirectionalLight(WeakPointer<Object3D> owner, UInt32 cascadeCount, Bool shadowsEnabled, UInt32 shadowMapSize, Real constantShadowBias, Real angularShadowBias) {
-            std::shared_ptr<T> light = std::shared_ptr<T>(new T(owner, cascadeCount, shadowsEnabled, shadowMapSize, constantShadowBias, angularShadowBias));
-            light->init();
-            this->lights.push_back(light);
-            WeakPointer<T> lightPtr = light;
-            owner->addComponent(lightPtr);
-            return lightPtr;
+            std::shared_ptr<T> spLight = std::shared_ptr<T>(new T(owner, cascadeCount, shadowsEnabled, shadowMapSize, constantShadowBias, angularShadowBias));
+            spLight->init();
+            this->objectManager.addReference(spLight, CoreObjectReferenceManager::OwnerType::Single);
+            WeakPointer<T> wpLight = spLight;
+            owner->addComponent(wpLight);
+            return wpLight;
         }
 
         template <typename T = Object3D>
@@ -163,17 +163,14 @@ namespace Core {
         std::shared_ptr<AnimationManager> animationManager;
         std::shared_ptr<Graphics> graphics;
       
-        std::shared_ptr<Scene> activeScene;
-        std::vector<std::shared_ptr<Camera>> cameras;
-        std::vector<std::shared_ptr<Light>> lights;
         std::vector<std::shared_ptr<BaseObjectRenderer>> objectRenderers;
-
         std::vector<std::shared_ptr<Material>> materials;
         std::vector<std::shared_ptr<Skeleton>> skeletons;
         std::vector<std::shared_ptr<VertexBoneMap>> vertexBoneMaps;
         std::vector<std::shared_ptr<Mesh>> meshes;
         std::vector<std::shared_ptr<ReflectionProbe>> reflectionProbes;
 
+        PersistentWeakPointer<Scene> activeScene;
         PersistentWeakPointer<ImageLoader> imageLoader;
         PersistentWeakPointer<AssetLoader> assetLoader;
         std::vector<LifecycleEventCallback> updateCallbacks;

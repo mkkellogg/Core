@@ -85,5 +85,10 @@ namespace Core {
         PersistentWeakPointer<DistanceOnlyMaterial> distanceMaterial;
         PersistentWeakPointer<Object3D> reflectionProbeObject;
         PersistentWeakPointer<TonemapMaterial> tonemapMaterial;
+
+        PersistentWeakPointer<Camera> perspectiveShadowMapCamera;
+        PersistentWeakPointer<Object3D> perspectiveShadowMapCameraObject;
+        PersistentWeakPointer<Camera> orthoShadowMapCamera;
+        PersistentWeakPointer<Object3D> orthoShadowMapCameraObject;
     };
 }

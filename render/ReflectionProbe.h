@@ -23,6 +23,7 @@ namespace Core {
     class ReflectionProbe : public Object3DComponent {
     public:
         ReflectionProbe(WeakPointer<Object3D> owner);
+        ~ReflectionProbe();
         void init();
         void setNeedsFullUpdate(Bool needsUpdate);
         Bool getNeedsFullUpdate();

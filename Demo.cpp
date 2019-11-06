@@ -24,19 +24,15 @@ namespace Core {
   }
 
   Demo::~Demo() {
-    if (!Engine::isShuttingDown() && this->scene.isValid()) {
-      Engine::safeReleaseObject(this->scene);
-    }
+    if (this->scene.isValid()) Engine::safeReleaseObject(this->scene);
   }
 
   void Demo::run() {
 
-    WeakPointer<Core::Camera> camera;
-    Engine::instance()->onUpdate([this, camera]() {
+    Engine::instance()->onUpdate([this]() {
 
       static Core::Real rotationAngle = 0.0;
-      if (WeakPointer<Camera>::isValid(camera)) {
-        WeakPointer<Camera> cameraPtr(camera);
+      if (WeakPointer<Camera>::isValid(this->camera)) {
         rotationAngle += 0.01;
         if (rotationAngle >= Core::Math::TwoPI) rotationAngle -= Core::Math::TwoPI;
 
@@ -56,7 +52,7 @@ namespace Core {
         worldMatrix.translate(0, 12, 15);
         worldMatrix.multiply(rotationMatrixB);
 
-        WeakPointer<Object3D> cameraOwner(cameraPtr->getOwner());
+        WeakPointer<Object3D> cameraOwner(this->camera->getOwner());
         cameraOwner->getTransform().getLocalMatrix().copy(worldMatrix);
       }
 
@@ -99,16 +95,15 @@ namespace Core {
     skyboxMaterialPtr->build();
 
     WeakPointer<Core::MeshContainer> skyboxObj = Engine::instance()->createObject3D<Core::MeshContainer>();
-    WeakPointer<Core::MeshContainer> skyboxObjPtr = WeakPointer<Core::MeshContainer>(skyboxObj);
 
     WeakPointer<Core::MeshRenderer> skyboxRenderer = Engine::instance()->createRenderer<Core::MeshRenderer, Core::Mesh>(this->skyboxMaterial, skyboxObj);
-    skyboxObjPtr->addRenderable(skyboxMesh);
+    skyboxObj->addRenderable(skyboxMesh);
 
     WeakPointer<Object3D> sceneRootPtr = WeakPointer<Object3D>(scene->getRoot());
     sceneRootPtr->addChild(skyboxObj);
 
     WeakPointer<Core::Object3D> cameraObj = Engine::instance()->createObject3D<Core::Object3D>();
-    camera = Engine::instance()->createPerspectiveCamera(cameraObj, Camera::DEFAULT_FOV, Camera::DEFAULT_ASPECT_RATIO, 0.1f, 100);
+    this->camera = Engine::instance()->createPerspectiveCamera(cameraObj, Camera::DEFAULT_FOV, Camera::DEFAULT_ASPECT_RATIO, 0.1f, 100);
     sceneRootPtr->addChild(cameraObj);
 
   }

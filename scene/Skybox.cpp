@@ -9,7 +9,10 @@
 namespace Core {
 
     Skybox::Skybox() {
+    }
 
+    Skybox::~Skybox() {
+        if(this->skyboxObj.isValid()) Engine::safeReleaseObject(this->skyboxObj);
     }
 
     void Skybox::build(WeakPointer<CubeTexture> skyboxTexture, Bool isPhysical, Real exposure) {

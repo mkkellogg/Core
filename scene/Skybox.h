@@ -12,6 +12,7 @@ namespace Core {
     class Skybox {
     public:
         Skybox();
+        ~Skybox();
         void build(WeakPointer<CubeTexture> skyboxTexture, Bool isPhysical = false, Real exposure = 1.0f);
         WeakPointer<MeshContainer> getSkyboxObject();
     private:
