@@ -14,7 +14,7 @@ namespace Core {
         friend class GraphicsGL;
 
     public:
-        ~Texture2DGL();
+        virtual ~Texture2DGL();
 
         void buildFromImage(WeakPointer<StandardImage> imageData) override;
         void buildFromImage(WeakPointer<HDRImage> imageData) override;

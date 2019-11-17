@@ -64,7 +64,7 @@ namespace Core {
             }
         };
 
-        ~VertexBoneMap();
+        virtual ~VertexBoneMap();
         Bool init();
         VertexMappingDescriptor* getDescriptor(UInt32 index);
         UInt32 getVertexCount() const;

@@ -60,7 +60,7 @@ namespace Core {
         };
 
         Tree(): root(nullptr), fullTraversal(false) {}
-        ~Tree() {}
+        virtual ~Tree() {}
 
         TreeNode* getRoot() {
             return root;

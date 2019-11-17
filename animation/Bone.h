@@ -30,7 +30,7 @@ namespace Core {
         Bone();
         Bone(const std::string& name);
         Bone(const std::string& name, UInt32 id);
-        ~Bone();
+        virtual ~Bone();
 
         // the bone's (unique) name. Used for linking this Bone object
         // to its corresponding node in a Skeleton or scene object hierarchy.

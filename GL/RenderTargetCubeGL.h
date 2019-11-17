@@ -25,7 +25,7 @@ namespace Core {
     class RenderTargetCubeGL final : public RenderTargetCube, public RenderTargetGL {
         friend class GraphicsGL;
     public:
-        ~RenderTargetCubeGL();
+        virtual ~RenderTargetCubeGL();
         Bool init() override;
         virtual void destroyColorBuffer() override;
         virtual void destroyDepthBuffer() override;

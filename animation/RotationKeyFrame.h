@@ -26,6 +26,6 @@ namespace Core {
 
 		RotationKeyFrame();
 		RotationKeyFrame(Real normalizedTime, Real realTime, Real realTimeTicks, const Quaternion& rotation);
-		~RotationKeyFrame() override;
+		virtual ~RotationKeyFrame() override;
 	};
 }

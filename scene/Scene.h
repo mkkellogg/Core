@@ -21,7 +21,7 @@ namespace Core {
     public:
         using VisitorCallback  = std::function<void(WeakPointer<Object3D> curObject)>;
         
-        ~Scene();
+        virtual ~Scene();
         WeakPointer<Object3D> getRoot();
         void visitScene(WeakPointer<Object3D> object, VisitorCallback callback);
         

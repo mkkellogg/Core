@@ -16,7 +16,7 @@ namespace Core {
         friend class GraphicsGL;
 
     public:
-        ~RendererGL();
+        virtual ~RendererGL();
         Bool init() override;
   
     private:

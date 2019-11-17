@@ -26,7 +26,7 @@ namespace Core {
 
 		ScaleKeyFrame();
 		ScaleKeyFrame(Real normalizedTime, Real realTime, Real realTimeTicks, const Vector3r& scale);
-		~ScaleKeyFrame() override;
+		virtual ~ScaleKeyFrame() override;
 	};
 
 }

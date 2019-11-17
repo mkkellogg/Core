@@ -48,7 +48,7 @@ namespace Core {
 
 	public:
 
-		~AnimationPlayer();
+		virtual ~AnimationPlayer();
 		void addAnimation(WeakPointer<Animation> animation);
 		void setSpeed(WeakPointer<Animation> animation, Real speedFactor);
 		void play(WeakPointer<Animation> animation);

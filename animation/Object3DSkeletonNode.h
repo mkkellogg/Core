@@ -29,7 +29,7 @@ namespace Core {
         WeakPointer<Object3D> Target;
 
         Object3DSkeletonNode(WeakPointer<Object3D> target, Int32 boneIndex, const std::string& name);
-        ~Object3DSkeletonNode();
+        virtual ~Object3DSkeletonNode();
 
         Matrix4x4& getFullTransform() override;
         Matrix4x4& getLocalTransform() override;

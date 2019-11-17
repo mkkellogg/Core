@@ -59,7 +59,7 @@ namespace Core {
 
 		};
 
-		~AnimationInstance();
+		virtual ~AnimationInstance();
 
 		Bool init();
 		void reset();

@@ -26,6 +26,6 @@ namespace Core
 
 		TranslationKeyFrame();
 		TranslationKeyFrame(Real normalizedTime, Real realTime, Real realTimeTicks, const Vector3r& translation);
-		~TranslationKeyFrame() override;
+		virtual ~TranslationKeyFrame() override;
 	};
 }

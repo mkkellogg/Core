@@ -19,7 +19,7 @@ namespace Core {
         };
 
         CoreObjectReferenceManager();
-        ~CoreObjectReferenceManager();
+        virtual ~CoreObjectReferenceManager();
 
         void addReference(std::shared_ptr<CoreObject> object, OwnerType ownerType);
         void removeReference(WeakPointer<CoreObject> object);

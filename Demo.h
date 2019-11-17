@@ -12,7 +12,7 @@ namespace Core {
   public:
 
     Demo();
-    ~Demo();
+    virtual ~Demo();
     void run();
 
   private:

@@ -38,7 +38,7 @@ namespace Core {
     public:
         typedef std::function<void()> LifecycleEventCallback;
 
-        ~Engine();
+        virtual ~Engine();
 
         static WeakPointer<Engine> instance();
         static Bool isShuttingDown();

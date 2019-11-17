@@ -16,7 +16,7 @@ namespace Core {
             buildGPUBuffer();
         }
 
-        ~AttributeArrayGPUStorageGL() {
+        virtual ~AttributeArrayGPUStorageGL() {
             destroyGPUBuffer();
         }
 

@@ -9,7 +9,7 @@ namespace Core {
     class RenderTargetGL{
     public:
         RenderTargetGL(Int32 initialFBOID = 0);
-        ~RenderTargetGL();
+        virtual ~RenderTargetGL();
         GLuint getFBOID() const;
         void setFBOID(GLuint id);
 

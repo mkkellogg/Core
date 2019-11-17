@@ -70,7 +70,7 @@ namespace Core {
             virtual SkeletonNode * fullClone() const = 0;
         };
 
-        ~Skeleton();
+        virtual ~Skeleton();
         UInt32 getBoneCount() const;
         UInt32 getNodeCount() const;
 

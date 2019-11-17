@@ -53,7 +53,7 @@ namespace Core {
         Color BorderWrapColor;
 
         TextureAttributes();
-        ~TextureAttributes();
+        virtual ~TextureAttributes();
     };
     
 }

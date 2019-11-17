@@ -38,7 +38,7 @@ namespace Core {
 
 	protected:
 
-		~CrossFadeBlendOp()  override;
+		virtual ~CrossFadeBlendOp()  override;
 
 	public:
 

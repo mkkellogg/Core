@@ -33,6 +33,6 @@ namespace Core {
 		std::vector<RotationKeyFrame> RotationKeyFrames;
 
 		KeyFrameSet();
-		~KeyFrameSet();
+		virtual ~KeyFrameSet();
 	};
 }

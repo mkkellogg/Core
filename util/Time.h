@@ -30,6 +30,6 @@ namespace Core {
 		static void initialize();
 
 		Time();
-		~Time();
+		virtual ~Time();
 	};
 }

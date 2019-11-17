@@ -48,7 +48,7 @@ namespace Core {
             allocate();
         }
 
-        ~AttributeArray() {
+        virtual  ~AttributeArray() {
             deallocate();
         }
 

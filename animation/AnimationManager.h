@@ -33,7 +33,7 @@ namespace Core {
 
 	public:
 
-		~AnimationManager();
+		virtual ~AnimationManager();
 		Bool isCompatible(WeakPointer<Skeleton> skeleton, WeakPointer<Animation> animation) const;
 		void update();
 		WeakPointer<Animation> createAnimation(Real durationTicks, Real ticksPerSecond);

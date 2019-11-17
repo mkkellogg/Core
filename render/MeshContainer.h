@@ -17,7 +17,7 @@ namespace Core {
 
     public:
 
-        ~MeshContainer();
+        virtual ~MeshContainer();
 
         void setSkeleton(WeakPointer<Skeleton> skeleton);
         WeakPointer<Skeleton> getSkeleton();

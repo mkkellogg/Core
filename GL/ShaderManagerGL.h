@@ -12,7 +12,7 @@ namespace Core {
     class ShaderManagerGL final: public ShaderManager {
     public:
 
-        ~ShaderManagerGL();
+        virtual ~ShaderManagerGL();
         ShaderManagerGL();
 
         std::string Test_vertex;

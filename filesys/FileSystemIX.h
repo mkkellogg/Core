@@ -10,7 +10,7 @@ namespace Core {
         friend class FileSystem;
 
     public:
-        ~FileSystemIX();
+        virtual ~FileSystemIX();
 
         Char getPathSeparator() const override;
         std::string fixupPathForLocalFilesystem(const std::string& path) const override;

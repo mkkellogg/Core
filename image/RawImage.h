@@ -19,7 +19,7 @@ namespace Core {
             imageData = nullptr;
         }
 
-        ~RawImage() {
+        virtual ~RawImage() {
             destroy();
         }
 

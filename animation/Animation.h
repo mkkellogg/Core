@@ -33,7 +33,7 @@ namespace Core {
 
 	public:
 
-		~Animation();
+		virtual ~Animation();
 		
 		void clipEnds(Real startOffsetTicks, Real earlyEndTicks);
 		UInt32 getChannelCount() const;
