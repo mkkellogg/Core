@@ -21,6 +21,7 @@ namespace Core {
         friend class Engine;
 
     public:
+        virtual ~MeshRenderer();
         virtual Bool forwardRender(const ViewDescriptor& viewDescriptor, const std::vector<WeakPointer<Light>>& lights,
                                    Bool matchPhysicalPropertiesWithLighting) override;
         virtual Bool forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh,

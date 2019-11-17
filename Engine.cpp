@@ -230,7 +230,7 @@ namespace Core {
         if (!mapInitSuccess) {
             throw Exception("Engine::createVertexBoneMap -> Could not initialize vertex bone map.");
         }
-        this->vertexBoneMaps.push_back(newVertexBoneMap);
+        this->objectManager.addReference(newVertexBoneMap, CoreObjectReferenceManager::OwnerType::Single);
         return newVertexBoneMap;
     }
 
@@ -241,7 +241,7 @@ namespace Core {
         }
         std::shared_ptr<Mesh> newMesh = std::shared_ptr<Mesh>(newMeshPtr);
         newMesh->init();
-        this->meshes.push_back(newMesh);
+        this->objectManager.addReference(newMesh, CoreObjectReferenceManager::OwnerType::Single);
         return newMesh;
     }
 
@@ -282,12 +282,12 @@ namespace Core {
         if (newReflectionProbePtr == nullptr) {
             throw AllocationException("Engine::createReflectionProbe -> Unable to allocate new ReflectionProbe");
         }
-        std::shared_ptr<ReflectionProbe> newReflectionProbe = std::shared_ptr<ReflectionProbe>(newReflectionProbePtr);
-        newReflectionProbe->init();
-        this->reflectionProbes.push_back(newReflectionProbe);
-        WeakPointer<ReflectionProbe> probePtr(newReflectionProbe);
-        owner->addComponent(probePtr);
-        return newReflectionProbe;
+        std::shared_ptr<ReflectionProbe> spReflectionProbe = std::shared_ptr<ReflectionProbe>(newReflectionProbePtr);
+        spReflectionProbe->init();
+        this->objectManager.addReference(spReflectionProbe, CoreObjectReferenceManager::OwnerType::Single);
+        WeakPointer<ReflectionProbe> wpReflectionProbe(spReflectionProbe);
+        owner->addComponent(wpReflectionProbe);
+        return spReflectionProbe;
     }
 
     void Engine::setImageLoader(WeakPointer<ImageLoader> imageLoader) {

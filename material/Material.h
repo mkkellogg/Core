@@ -15,7 +15,7 @@ namespace Core {
     class Shader;
     class Graphics;
 
-    class Material : CoreObject {
+    class Material : public CoreObject {
     public:
         Material(WeakPointer<Graphics> graphics);
         Material(WeakPointer<Graphics> graphics, WeakPointer<Shader> shader);

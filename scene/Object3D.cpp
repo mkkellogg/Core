@@ -4,6 +4,7 @@
 #include "Object3DComponent.h"
 #include "../light/Light.h"
 #include "../render/Camera.h"
+#include "../render/ReflectionProbe.h"
 
 namespace Core {
 
@@ -22,7 +23,10 @@ namespace Core {
             WeakPointer<Object3DComponent> component = this->components[i];
             WeakPointer<Camera> cameraComponent = WeakPointer<Object3DComponent>::dynamicPointerCast<Camera>(component);
             WeakPointer<Light> lightComponent = WeakPointer<Object3DComponent>::dynamicPointerCast<Light>(component);
-            if (lightComponent || cameraComponent) {
+            WeakPointer<Mesh> meshComponent = WeakPointer<Object3DComponent>::dynamicPointerCast<Mesh>(component);
+            WeakPointer<BaseObjectRenderer> rendererComponent = WeakPointer<Object3DComponent>::dynamicPointerCast<BaseObjectRenderer>(component);
+            WeakPointer<ReflectionProbe> reflectionProbeComponent = WeakPointer<Object3DComponent>::dynamicPointerCast<ReflectionProbe>(component);
+            if (lightComponent || cameraComponent || meshComponent || rendererComponent || reflectionProbeComponent) {
                  Engine::safeReleaseObject(component);
             }
         }

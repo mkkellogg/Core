@@ -24,6 +24,12 @@ namespace Core {
         : ObjectRenderer<Mesh>(graphics, owner), material(material) {
     }
 
+    MeshRenderer::~MeshRenderer() {
+        if (this->material.isValid()) {
+            Engine::safeReleaseObject(this->material);
+        }
+    }
+
     Bool MeshRenderer::forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh, const std::vector<WeakPointer<Light>>& lights,
                                            Bool matchPhysicalPropertiesWithLighting) {
         WeakPointer<Material> material;

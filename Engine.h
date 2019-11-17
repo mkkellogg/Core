@@ -116,18 +116,18 @@ namespace Core {
                                                                                                                    WeakPointer<RenderableContainer<R>> owner) {
             std::shared_ptr<T> objectRenderer = std::shared_ptr<T>(new T(this->graphics, material, owner));
             owner->setRenderer(objectRenderer);
-            objectRenderers.push_back(objectRenderer);
+            this->objectManager.addReference(objectRenderer, CoreObjectReferenceManager::OwnerType::Single);
             return objectRenderer;
         }
 
         template <typename T>
         WeakPointer<typename std::enable_if<std::is_base_of<Material, T>::value, T>::type> createMaterial(Bool build = true) {
-            std::shared_ptr<T> materialPtr = std::shared_ptr<T>(new T(this->graphics));
+            std::shared_ptr<T> spMateiral = std::shared_ptr<T>(new T(this->graphics));
             if (build) {
-                materialPtr->build();
+                spMateiral->build();
             }
-            this->materials.push_back(materialPtr);
-            return materialPtr;
+            this->objectManager.addReference(spMateiral, CoreObjectReferenceManager::OwnerType::Single);
+            return spMateiral;
         }
 
         WeakPointer<Texture2D> createTexture2D(const TextureAttributes& attributes);
@@ -163,12 +163,7 @@ namespace Core {
         std::shared_ptr<AnimationManager> animationManager;
         std::shared_ptr<Graphics> graphics;
       
-        std::vector<std::shared_ptr<BaseObjectRenderer>> objectRenderers;
-        std::vector<std::shared_ptr<Material>> materials;
         std::vector<std::shared_ptr<Skeleton>> skeletons;
-        std::vector<std::shared_ptr<VertexBoneMap>> vertexBoneMaps;
-        std::vector<std::shared_ptr<Mesh>> meshes;
-        std::vector<std::shared_ptr<ReflectionProbe>> reflectionProbes;
 
         PersistentWeakPointer<Scene> activeScene;
         PersistentWeakPointer<ImageLoader> imageLoader;

@@ -4,6 +4,13 @@
 
 namespace Core {
 
+    MeshContainer::~MeshContainer() {
+        for (UInt32 i = 0; i < this->vertexBoneMaps.size(); i ++) {
+            WeakPointer<VertexBoneMap> child = this->vertexBoneMaps[i];
+             Engine::safeReleaseObject(child);
+        }
+    }
+
     void MeshContainer::setSkeleton(WeakPointer<Skeleton> skeleton) {
         this->skeleton = skeleton;
     }

@@ -17,6 +17,8 @@ namespace Core {
 
     public:
 
+        ~MeshContainer();
+
         void setSkeleton(WeakPointer<Skeleton> skeleton);
         WeakPointer<Skeleton> getSkeleton();
         void addVertexBoneMap(UInt64 meshID, WeakPointer<VertexBoneMap> vertexBoneMap);
