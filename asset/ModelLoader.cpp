@@ -269,6 +269,7 @@ namespace Core {
                     WeakPointer<MeshRenderer> meshRenderer = Engine::instance()->createRenderer<MeshRenderer, Mesh>(lastMaterial, meshContainer);
                     
                     if (hasSkeleton) {
+                        Engine::instance()->addOwner(skeleton);
                         meshContainer->setSkeleton(skeleton);
                     }
 
@@ -968,7 +969,7 @@ namespace Core {
             return WeakPointer<Skeleton>::nullPtr();
         }
 
-        WeakPointer<Skeleton> target = Engine::instance()->createSkeleton(boneCount);
+        WeakPointer<Skeleton> target = Engine::instance()->createSkeleton(boneCount, true);
         if (!target.isValid()) {
             throw AllocationException("ModelImporter::loadSkeleton -> Could not allocate skeleton.");
         }

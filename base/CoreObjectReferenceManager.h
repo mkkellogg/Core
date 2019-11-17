@@ -23,6 +23,8 @@ namespace Core {
 
         void addReference(std::shared_ptr<CoreObject> object, OwnerType ownerType);
         void removeReference(WeakPointer<CoreObject> object);
+        void addReferenceOwner(WeakPointer<CoreObject> object);
+        void addReferenceOwner(UInt64 id);
         UInt32 getReferenceCount(WeakPointer<CoreObject> object) const;
         UInt32 getReferenceCount(UInt64 id) const;
 

@@ -57,6 +57,7 @@ namespace Core {
         WeakPointer<AnimationManager> getAnimationManager();
 
         static void safeReleaseObject(WeakPointer<CoreObject> object);
+        void addOwner(WeakPointer<CoreObject> object);
 
         void setActiveScene(WeakPointer<Scene> scene);
         WeakPointer<Scene> getActiveScene();
@@ -107,7 +108,7 @@ namespace Core {
             return spObject;
         }
 
-        WeakPointer<Skeleton> createSkeleton(UInt32 boneCount);
+        WeakPointer<Skeleton> createSkeleton(UInt32 boneCount, Bool multiOwner = false);
         WeakPointer<VertexBoneMap> createVertexBoneMap(UInt32 vertexCount, UInt32 uVertexCount);
         WeakPointer<Mesh> createMesh(UInt32 size, UInt32 indexCount);
 
@@ -162,8 +163,6 @@ namespace Core {
 
         std::shared_ptr<AnimationManager> animationManager;
         std::shared_ptr<Graphics> graphics;
-      
-        std::vector<std::shared_ptr<Skeleton>> skeletons;
 
         PersistentWeakPointer<Scene> activeScene;
         PersistentWeakPointer<ImageLoader> imageLoader;

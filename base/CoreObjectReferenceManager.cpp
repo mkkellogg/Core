@@ -10,8 +10,10 @@ namespace Core {
 
     void CoreObjectReferenceManager::addReference(std::shared_ptr<CoreObject> object, OwnerType ownerType) {
         const UInt64 objectID = object->getObjectID();
-        const UInt32 currentReferenceCount = this->getReferenceCount(objectID);
-        this->referenceCounts[objectID] = currentReferenceCount;
+
+        const UInt32 initialReferenceCount = ownerType == CoreObjectReferenceManager::OwnerType::Single ? 1 : 0;
+        this->referenceCounts[objectID] = initialReferenceCount;
+
         this->referenceOwnerTypes[objectID] = ownerType;
         this->referenceIndex[objectID] = this->references.size();
         this->references.push_back(object);
@@ -32,6 +34,14 @@ namespace Core {
         } else {
             throw Exception("CoreObjectReferenceManager::removeReference() -> 'object' not present.");
         }
+    }
+
+    void CoreObjectReferenceManager::addReferenceOwner(WeakPointer<CoreObject> object) {
+        addReferenceOwner(object->getObjectID());
+    }
+
+    void CoreObjectReferenceManager::addReferenceOwner(UInt64 id) {
+        this->referenceCounts[id]++;
     }
 
     UInt32 CoreObjectReferenceManager::getReferenceCount(WeakPointer<CoreObject> object) const {

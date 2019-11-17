@@ -190,6 +190,10 @@ namespace Core {
         }
     }
 
+    void Engine::addOwner(WeakPointer<CoreObject> object) {
+        this->objectManager.addReferenceOwner(object);
+    }
+
     void Engine::setActiveScene(WeakPointer<Scene> scene) {
         this->activeScene = scene.lock();
     }
@@ -209,15 +213,17 @@ namespace Core {
         return newScene;
     }
     
-    WeakPointer<Skeleton> Engine::createSkeleton(UInt32 boneCount) {
+    WeakPointer<Skeleton> Engine::createSkeleton(UInt32 boneCount, Bool multiOwner) {
         Skeleton * newSkeletonPtr = new(std::nothrow) Skeleton(boneCount);
         if (newSkeletonPtr == nullptr) {
             throw AllocationException("Engine::createSkeleton -> Could not allocate new skeleton.");
         }
-        std::shared_ptr<Skeleton> newSkeleton = std::shared_ptr<Skeleton>(newSkeletonPtr);
-        newSkeleton->init();
-        this->skeletons.push_back(newSkeleton);
-        return newSkeleton;
+        std::shared_ptr<Skeleton> spSkeleton = std::shared_ptr<Skeleton>(newSkeletonPtr);
+        spSkeleton->init();
+        CoreObjectReferenceManager::OwnerType ownerType = multiOwner ? CoreObjectReferenceManager::OwnerType::Multiple : 
+                                                                       CoreObjectReferenceManager::OwnerType::Single;
+        this->objectManager.addReference(spSkeleton, ownerType);
+        return spSkeleton;
     }
 
     WeakPointer<VertexBoneMap> Engine::createVertexBoneMap(UInt32 vertexCount, UInt32 uVertexCount) {
