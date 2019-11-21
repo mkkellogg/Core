@@ -256,7 +256,6 @@ namespace Core {
         target->cullFace = this->cullFace;
     }
 
-
     Bool Material::buildFromSource(const std::string& vertexSource, const std::string& fragmentSource) {
         WeakPointer<Shader> shader = this->graphics->createShader(vertexSource, fragmentSource);
         Bool success = shader->build();

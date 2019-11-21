@@ -14,14 +14,9 @@ namespace Core {
 
     Bool DepthOnlyMaterial::build() {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-        ShaderManager& shaderDirectory = graphics->getShaderManager();
-        const std::string& vertexSrc = shaderDirectory.getShader(ShaderType::Vertex, "Depth");
-        const std::string& fragmentSrc = shaderDirectory.getShader(ShaderType::Fragment, "Depth");
-        Bool ready = this->buildFromSource(vertexSrc, fragmentSrc);
-        if (!ready) {
-            return false;
-        }
-
+        ShaderManager& shaderManager = graphics->getShaderManager();
+        this->shader = shaderManager.getShader("Depth");
+        graphics->activateShader(this->shader);
         this->bindShaderVarLocations();
         this->setSkinningEnabled(true);
         return true;

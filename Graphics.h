@@ -30,9 +30,13 @@ namespace Core {
     class RenderTarget2D;
     class RenderTargetCube;
     class Material;
+    class Engine;
     
     class Graphics {
     public:
+
+        friend class Engine;
+
         Graphics();
         virtual ~Graphics();
         virtual void init();
@@ -51,8 +55,6 @@ namespace Core {
         virtual void setViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) = 0;
         virtual Vector4u getViewport() = 0;
 
-        static void safeReleaseObject(WeakPointer<CoreObject> object);
-
         virtual WeakPointer<Texture2D> createTexture2D(const TextureAttributes& attributes) = 0;
         virtual WeakPointer<CubeTexture> createCubeTexture(const TextureAttributes& attributes) = 0;
         virtual void destroyTexture2D(WeakPointer<Texture2D> texture) = 0;
@@ -63,9 +65,6 @@ namespace Core {
         virtual WeakPointer<Shader> createShader(const char vertex[], const char fragment[]) = 0;
         virtual WeakPointer<Shader> createShader(const char vertex[], const char geometry[], const char fragment[]) = 0;
         virtual void activateShader(WeakPointer<Shader> shader) = 0;
-    
-        virtual WeakPointer<AttributeArrayGPUStorage> createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) = 0;
-        virtual WeakPointer<IndexBuffer> createIndexBuffer(UInt32 size) = 0;
 
         virtual void drawBoundVertexBuffer(UInt32 vertexCount) = 0;
         virtual void drawBoundVertexBuffer(UInt32 vertexCount, WeakPointer<IndexBuffer> indices) = 0;
@@ -119,7 +118,9 @@ namespace Core {
 
     protected:
 
-        CoreObjectReferenceManager objectManager;
+        virtual std::shared_ptr<AttributeArrayGPUStorage> createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) = 0;
+        virtual std::shared_ptr<IndexBuffer> createIndexBuffer(UInt32 size) = 0;
+
         WeakPointer<Texture2D> placeHolderTexture2D;
         WeakPointer<CubeTexture> placeHolderCubeTexture;
         Bool sharedRenderState;

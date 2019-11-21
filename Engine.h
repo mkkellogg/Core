@@ -16,6 +16,7 @@
 #include "light/Light.h"
 #include "light/PointLight.h"
 #include "light/DirectionalLight.h"
+#include "geometry/AttributeType.h"
 
 namespace Core {
 
@@ -33,6 +34,8 @@ namespace Core {
     class Skeleton;
     class VertexBoneMap;
     class Mesh;
+    class AttributeArrayGPUStorage;
+    class IndexBuffer;
 
     class Engine final {
     public:
@@ -135,6 +138,9 @@ namespace Core {
         WeakPointer<CubeTexture> createCubeTexture(const TextureAttributes& attributes);
         void destroyTexture2D(WeakPointer<Texture2D> texture);
         void destroyCubeTexture(WeakPointer<CubeTexture> texture);
+
+        WeakPointer<AttributeArrayGPUStorage> createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize);
+        WeakPointer<IndexBuffer> createIndexBuffer(UInt32 size);
 
         WeakPointer<ReflectionProbe> createReflectionProbe(WeakPointer<Object3D> owner);
 

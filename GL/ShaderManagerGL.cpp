@@ -180,95 +180,95 @@ namespace Core {
 
     void ShaderManagerGL::init() {
 
-        this->setShader(ShaderType::Vertex, "Skybox", ShaderManagerGL::Skybox_vertex);
-        this->setShader(ShaderType::Fragment, "Skybox", ShaderManagerGL::Skybox_fragment);
+        this->setShaderSource(ShaderType::Vertex, "Skybox", ShaderManagerGL::Skybox_vertex);
+        this->setShaderSource(ShaderType::Fragment, "Skybox", ShaderManagerGL::Skybox_fragment);
 
-        this->setShader(ShaderType::Vertex, "Equirectangular", ShaderManagerGL::Equirectangular_vertex);
-        this->setShader(ShaderType::Fragment, "Equirectangular", ShaderManagerGL::Equirectangular_fragment);
+        this->setShaderSource(ShaderType::Vertex, "Equirectangular", ShaderManagerGL::Equirectangular_vertex);
+        this->setShaderSource(ShaderType::Fragment, "Equirectangular", ShaderManagerGL::Equirectangular_fragment);
 
-        this->setShader(ShaderType::Vertex, "Outline", ShaderManagerGL::Outline_vertex);
-        this->setShader(ShaderType::Geometry, "Outline", ShaderManagerGL::Outline_geometry);
-        this->setShader(ShaderType::Fragment, "Outline", ShaderManagerGL::Outline_fragment);
+        this->setShaderSource(ShaderType::Vertex, "Outline", ShaderManagerGL::Outline_vertex);
+        this->setShaderSource(ShaderType::Geometry, "Outline", ShaderManagerGL::Outline_geometry);
+        this->setShaderSource(ShaderType::Fragment, "Outline", ShaderManagerGL::Outline_fragment);
 
-        this->setShader(ShaderType::Vertex, "LightingHeaderSingle", ShaderManagerGL::Lighting_Header_Single_vertex);
-        this->setShader(ShaderType::Fragment, "LightingHeaderSingle", ShaderManagerGL::Lighting_Header_Single_fragment);
+        this->setShaderSource(ShaderType::Vertex, "LightingHeaderSingle", ShaderManagerGL::Lighting_Header_Single_vertex);
+        this->setShaderSource(ShaderType::Fragment, "LightingHeaderSingle", ShaderManagerGL::Lighting_Header_Single_fragment);
 
-        this->setShader(ShaderType::Vertex, "LightingHeaderMulti", ShaderManagerGL::Lighting_Header_Multi_vertex);
-        this->setShader(ShaderType::Fragment, "LightingHeaderMulti", ShaderManagerGL::Lighting_Header_Multi_fragment);
+        this->setShaderSource(ShaderType::Vertex, "LightingHeaderMulti", ShaderManagerGL::Lighting_Header_Multi_vertex);
+        this->setShaderSource(ShaderType::Fragment, "LightingHeaderMulti", ShaderManagerGL::Lighting_Header_Multi_fragment);
 
-        this->setShader(ShaderType::Vertex, "LightingSingle", ShaderManagerGL::Lighting_Single_vertex);
-        this->setShader(ShaderType::Fragment, "LightingSingle", ShaderManagerGL::Lighting_Single_fragment);
+        this->setShaderSource(ShaderType::Vertex, "LightingSingle", ShaderManagerGL::Lighting_Single_vertex);
+        this->setShaderSource(ShaderType::Fragment, "LightingSingle", ShaderManagerGL::Lighting_Single_fragment);
 
-        this->setShader(ShaderType::Vertex, "LightingMulti", ShaderManagerGL::Lighting_Multi_vertex);
-        this->setShader(ShaderType::Fragment, "LightingMulti", ShaderManagerGL::Lighting_Multi_fragment);
+        this->setShaderSource(ShaderType::Vertex, "LightingMulti", ShaderManagerGL::Lighting_Multi_vertex);
+        this->setShaderSource(ShaderType::Fragment, "LightingMulti", ShaderManagerGL::Lighting_Multi_fragment);
 
-        this->setShader(ShaderType::Vertex, "Lighting", ShaderManagerGL::Lighting_vertex);
-        this->setShader(ShaderType::Fragment, "Lighting", ShaderManagerGL::Lighting_fragment);
+        this->setShaderSource(ShaderType::Vertex, "Lighting", ShaderManagerGL::Lighting_vertex);
+        this->setShaderSource(ShaderType::Fragment, "Lighting", ShaderManagerGL::Lighting_fragment);
 
-        this->setShader(ShaderType::Fragment, "LightingDirCascade", ShaderManagerGL::Lighting_Dir_Cascade_fragment);
+        this->setShaderSource(ShaderType::Fragment, "LightingDirCascade", ShaderManagerGL::Lighting_Dir_Cascade_fragment);
         
-        this->setShader(ShaderType::Vertex, "PhysicalCommon", ShaderManagerGL::PhysicalCommon_vertex);
-        this->setShader(ShaderType::Fragment, "PhysicalCommon", ShaderManagerGL::PhysicalCommon_fragment);
+        this->setShaderSource(ShaderType::Vertex, "PhysicalCommon", ShaderManagerGL::PhysicalCommon_vertex);
+        this->setShaderSource(ShaderType::Fragment, "PhysicalCommon", ShaderManagerGL::PhysicalCommon_fragment);
 
-        this->setShader(ShaderType::Vertex, "PhysicalLightingSingle", ShaderManagerGL::Physical_Lighting_Single_vertex);
-        this->setShader(ShaderType::Fragment, "PhysicalLightingSingle", ShaderManagerGL::Physical_Lighting_Single_fragment);
+        this->setShaderSource(ShaderType::Vertex, "PhysicalLightingSingle", ShaderManagerGL::Physical_Lighting_Single_vertex);
+        this->setShaderSource(ShaderType::Fragment, "PhysicalLightingSingle", ShaderManagerGL::Physical_Lighting_Single_fragment);
 
-        this->setShader(ShaderType::Vertex, "PhysicalLightingMulti", ShaderManagerGL::Physical_Lighting_Multi_vertex);
-        this->setShader(ShaderType::Fragment, "PhysicalLightingMulti", ShaderManagerGL::Physical_Lighting_Multi_fragment);
+        this->setShaderSource(ShaderType::Vertex, "PhysicalLightingMulti", ShaderManagerGL::Physical_Lighting_Multi_vertex);
+        this->setShaderSource(ShaderType::Fragment, "PhysicalLightingMulti", ShaderManagerGL::Physical_Lighting_Multi_fragment);
 
-        this->setShader(ShaderType::Vertex, "PhysicalLighting", ShaderManagerGL::Physical_Lighting_vertex);
-        this->setShader(ShaderType::Fragment, "PhysicalLighting", ShaderManagerGL::Physical_Lighting_fragment);
+        this->setShaderSource(ShaderType::Vertex, "PhysicalLighting", ShaderManagerGL::Physical_Lighting_vertex);
+        this->setShaderSource(ShaderType::Fragment, "PhysicalLighting", ShaderManagerGL::Physical_Lighting_fragment);
 
-        this->setShader(ShaderType::Vertex, "StandardPhysical", ShaderManagerGL::StandardPhysical_vertex);
-        this->setShader(ShaderType::Fragment, "StandardPhysical", ShaderManagerGL::StandardPhysical_fragment);
+        this->setShaderSource(ShaderType::Vertex, "StandardPhysical", ShaderManagerGL::StandardPhysical_vertex);
+        this->setShaderSource(ShaderType::Fragment, "StandardPhysical", ShaderManagerGL::StandardPhysical_fragment);
 
-        this->setShader(ShaderType::Vertex, "AmbientPhysical", ShaderManagerGL::AmbientPhysical_vertex);
-        this->setShader(ShaderType::Fragment, "AmbientPhysical", ShaderManagerGL::AmbientPhysical_fragment);
+        this->setShaderSource(ShaderType::Vertex, "AmbientPhysical", ShaderManagerGL::AmbientPhysical_vertex);
+        this->setShaderSource(ShaderType::Fragment, "AmbientPhysical", ShaderManagerGL::AmbientPhysical_fragment);
 
-        this->setShader(ShaderType::Vertex, "PhysicalSkybox", ShaderManagerGL::PhysicalSkybox_vertex);
-        this->setShader(ShaderType::Fragment, "PhysicalSkybox", ShaderManagerGL::PhysicalSkybox_fragment);
+        this->setShaderSource(ShaderType::Vertex, "PhysicalSkybox", ShaderManagerGL::PhysicalSkybox_vertex);
+        this->setShaderSource(ShaderType::Fragment, "PhysicalSkybox", ShaderManagerGL::PhysicalSkybox_fragment);
 
-        this->setShader(ShaderType::Vertex, "Tonemap", ShaderManagerGL::Tonemap_vertex);
-        this->setShader(ShaderType::Fragment, "Tonemap", ShaderManagerGL::Tonemap_fragment);
+        this->setShaderSource(ShaderType::Vertex, "Tonemap", ShaderManagerGL::Tonemap_vertex);
+        this->setShaderSource(ShaderType::Fragment, "Tonemap", ShaderManagerGL::Tonemap_fragment);
 
-        this->setShader(ShaderType::Vertex, "IrradianceRenderer", ShaderManagerGL::IrradianceRenderer_vertex);
-        this->setShader(ShaderType::Fragment, "IrradianceRenderer", ShaderManagerGL::IrradianceRenderer_fragment);
+        this->setShaderSource(ShaderType::Vertex, "IrradianceRenderer", ShaderManagerGL::IrradianceRenderer_vertex);
+        this->setShaderSource(ShaderType::Fragment, "IrradianceRenderer", ShaderManagerGL::IrradianceRenderer_fragment);
 
-        this->setShader(ShaderType::Vertex, "SpecularIBLPreFilteredRenderer", ShaderManagerGL::SpecularIBLPreFilteredRenderer_vertex);
-        this->setShader(ShaderType::Fragment, "SpecularIBLPreFilteredRenderer", ShaderManagerGL::SpecularIBLPreFilteredRenderer_fragment);
+        this->setShaderSource(ShaderType::Vertex, "SpecularIBLPreFilteredRenderer", ShaderManagerGL::SpecularIBLPreFilteredRenderer_vertex);
+        this->setShaderSource(ShaderType::Fragment, "SpecularIBLPreFilteredRenderer", ShaderManagerGL::SpecularIBLPreFilteredRenderer_fragment);
 
-        this->setShader(ShaderType::Vertex, "SpecularIBLBRDFRenderer", ShaderManagerGL::SpecularIBLBRDFRenderer_vertex);
-        this->setShader(ShaderType::Fragment, "SpecularIBLBRDFRenderer", ShaderManagerGL::SpecularIBLBRDFRenderer_fragment);
+        this->setShaderSource(ShaderType::Vertex, "SpecularIBLBRDFRenderer", ShaderManagerGL::SpecularIBLBRDFRenderer_vertex);
+        this->setShaderSource(ShaderType::Fragment, "SpecularIBLBRDFRenderer", ShaderManagerGL::SpecularIBLBRDFRenderer_fragment);
 
-        this->setShader(ShaderType::Vertex, "VertexSkinning", ShaderManagerGL::VertexSkinning_vertex);
-        this->setShader(ShaderType::Fragment, "VertexSkinning", ShaderManagerGL::VertexSkinning_fragment);
+        this->setShaderSource(ShaderType::Vertex, "VertexSkinning", ShaderManagerGL::VertexSkinning_vertex);
+        this->setShaderSource(ShaderType::Fragment, "VertexSkinning", ShaderManagerGL::VertexSkinning_fragment);
 
-        this->setShader(ShaderType::Vertex, "Depth", ShaderManagerGL::Depth_vertex);
-        this->setShader(ShaderType::Fragment, "Depth", ShaderManagerGL::Depth_fragment);
+        this->setShaderSource(ShaderType::Vertex, "Depth", ShaderManagerGL::Depth_vertex);
+        this->setShaderSource(ShaderType::Fragment, "Depth", ShaderManagerGL::Depth_fragment);
 
-        this->setShader(ShaderType::Vertex, "Distance", ShaderManagerGL::Distance_vertex);
-        this->setShader(ShaderType::Fragment, "Distance", ShaderManagerGL::Distance_fragment);
+        this->setShaderSource(ShaderType::Vertex, "Distance", ShaderManagerGL::Distance_vertex);
+        this->setShaderSource(ShaderType::Fragment, "Distance", ShaderManagerGL::Distance_fragment);
 
-        this->setShader(ShaderType::Vertex, "Basic", ShaderManagerGL::Basic_vertex);
-        this->setShader(ShaderType::Fragment, "Basic", ShaderManagerGL::Basic_fragment);
+        this->setShaderSource(ShaderType::Vertex, "Basic", ShaderManagerGL::Basic_vertex);
+        this->setShaderSource(ShaderType::Fragment, "Basic", ShaderManagerGL::Basic_fragment);
 
-        this->setShader(ShaderType::Vertex, "BasicExtrusion", ShaderManagerGL::BasicExtrusion_vertex);
-        this->setShader(ShaderType::Fragment, "BasicExtrusion", ShaderManagerGL::BasicExtrusion_fragment);
+        this->setShaderSource(ShaderType::Vertex, "BasicExtrusion", ShaderManagerGL::BasicExtrusion_vertex);
+        this->setShaderSource(ShaderType::Fragment, "BasicExtrusion", ShaderManagerGL::BasicExtrusion_fragment);
 
-        this->setShader(ShaderType::Vertex, "BasicColored", ShaderManagerGL::BasicColored_vertex);
-        this->setShader(ShaderType::Fragment, "BasicColored", ShaderManagerGL::BasicColored_fragment);
+        this->setShaderSource(ShaderType::Vertex, "BasicColored", ShaderManagerGL::BasicColored_vertex);
+        this->setShaderSource(ShaderType::Fragment, "BasicColored", ShaderManagerGL::BasicColored_fragment);
 
-        this->setShader(ShaderType::Vertex, "BasicLit", ShaderManagerGL::BasicLit_vertex);
-        this->setShader(ShaderType::Fragment, "BasicLit", ShaderManagerGL::BasicLit_fragment);
+        this->setShaderSource(ShaderType::Vertex, "BasicLit", ShaderManagerGL::BasicLit_vertex);
+        this->setShaderSource(ShaderType::Fragment, "BasicLit", ShaderManagerGL::BasicLit_fragment);
 
-        this->setShader(ShaderType::Vertex, "BasicTextured", ShaderManagerGL::BasicTextured_vertex);
-        this->setShader(ShaderType::Fragment, "BasicTextured", ShaderManagerGL::BasicTextured_fragment);
+        this->setShaderSource(ShaderType::Vertex, "BasicTextured", ShaderManagerGL::BasicTextured_vertex);
+        this->setShaderSource(ShaderType::Fragment, "BasicTextured", ShaderManagerGL::BasicTextured_fragment);
 
-        this->setShader(ShaderType::Vertex, "BasicTexturedLit", ShaderManagerGL::BasicTexturedLit_vertex);
-        this->setShader(ShaderType::Fragment, "BasicTexturedLit", ShaderManagerGL::BasicTexturedLit_fragment);
+        this->setShaderSource(ShaderType::Vertex, "BasicTexturedLit", ShaderManagerGL::BasicTexturedLit_vertex);
+        this->setShaderSource(ShaderType::Fragment, "BasicTexturedLit", ShaderManagerGL::BasicTexturedLit_fragment);
 
-        this->setShader(ShaderType::Vertex, "BasicCube", ShaderManagerGL::BasicCube_vertex);
-        this->setShader(ShaderType::Fragment, "BasicCube", ShaderManagerGL::BasicCube_fragment);
+        this->setShaderSource(ShaderType::Vertex, "BasicCube", ShaderManagerGL::BasicCube_vertex);
+        this->setShaderSource(ShaderType::Fragment, "BasicCube", ShaderManagerGL::BasicCube_fragment);
     }
 
     ShaderManagerGL::ShaderManagerGL() {

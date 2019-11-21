@@ -91,7 +91,7 @@ namespace Core {
             }
 
             WeakPointer<AttributeArrayGPUStorage> gpuStorage =
-                this->graphics->createGPUStorage((*attributes)->getSize(), T::ComponentCount, AttributeType::Float, false);
+                Engine::instance()->createGPUStorage((*attributes)->getSize(), T::ComponentCount, AttributeType::Float, false);
             (*attributes)->setGPUStorage(gpuStorage);
             return true;
         }

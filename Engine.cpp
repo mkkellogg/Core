@@ -283,6 +283,18 @@ namespace Core {
         this->graphics->destroyCubeTexture(texture);
     }
 
+    WeakPointer<AttributeArrayGPUStorage> Engine::createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) {
+        std::shared_ptr<AttributeArrayGPUStorage> spGPUStorage = this->graphics->createGPUStorage(size, componentCount, type, normalize);
+        this->objectManager.addReference(spGPUStorage, CoreObjectReferenceManager::OwnerType::Single);
+        return spGPUStorage;
+    }
+
+    WeakPointer<IndexBuffer> Engine::createIndexBuffer(UInt32 size) {
+        std::shared_ptr<IndexBuffer> spIndexBufer = this->graphics->createIndexBuffer(size);
+        this->objectManager.addReference(spIndexBufer, CoreObjectReferenceManager::OwnerType::Single);
+        return spIndexBufer;
+    }
+
     WeakPointer<ReflectionProbe> Engine::createReflectionProbe(WeakPointer<Object3D> owner) {
         ReflectionProbe* newReflectionProbePtr = new(std::nothrow) ReflectionProbe(owner);
         if (newReflectionProbePtr == nullptr) {

@@ -11,7 +11,7 @@ namespace Core {
     SpecularIBLBRDFRendererMaterial::SpecularIBLBRDFRendererMaterial(const std::string& vertShaderName, const std::string& fragShaderName, WeakPointer<Graphics> graphics): ShaderMaterial(vertShaderName, fragShaderName, graphics) {
     }
     
-    SpecularIBLBRDFRendererMaterial::SpecularIBLBRDFRendererMaterial(WeakPointer<Graphics> graphics) : SpecularIBLBRDFRendererMaterial("SpecularIBLBRDFRenderer", "SpecularIBLBRDFRenderer", graphics) {
+    SpecularIBLBRDFRendererMaterial::SpecularIBLBRDFRendererMaterial(WeakPointer<Graphics> graphics) : ShaderMaterial("SpecularIBLBRDFRenderer", graphics) {
     }
 
     Bool SpecularIBLBRDFRendererMaterial::build() {

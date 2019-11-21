@@ -8,7 +8,7 @@
 
 namespace Core {
 
-    SpecularIBLPreFilteredRendererMaterial::SpecularIBLPreFilteredRendererMaterial(WeakPointer<Graphics> graphics) : SkyboxMaterial("SpecularIBLPreFilteredRenderer", "SpecularIBLPreFilteredRenderer", graphics) {
+    SpecularIBLPreFilteredRendererMaterial::SpecularIBLPreFilteredRendererMaterial(WeakPointer<Graphics> graphics) : SkyboxMaterial("SpecularIBLPreFilteredRenderer", graphics) {
         this->setPhysical(true);
         this->roughness = 0.5;
         this->textureResolution = 512;

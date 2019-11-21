@@ -84,12 +84,12 @@ namespace Core {
         }
 
         WeakPointer<AttributeArrayGPUStorage> boneWeightsGpuStorage =
-            Engine::instance()->getGraphicsSystem()->createGPUStorage(this->vertexCount * Constants::MaxBonesPerVertex * sizeof(Real), Constants::MaxBonesPerVertex, AttributeType::Float, false);
+            Engine::instance()->createGPUStorage(this->vertexCount * Constants::MaxBonesPerVertex * sizeof(Real), Constants::MaxBonesPerVertex, AttributeType::Float, false);
         this->boneWeights->setGPUStorage(boneWeightsGpuStorage);
 
 
         WeakPointer<AttributeArrayGPUStorage> boneIndicesGpuStorage =
-            Engine::instance()->getGraphicsSystem()->createGPUStorage(this->vertexCount * Constants::MaxBonesPerVertex * sizeof(Int32), Constants::MaxBonesPerVertex, AttributeType::Int, false);
+            Engine::instance()->createGPUStorage(this->vertexCount * Constants::MaxBonesPerVertex * sizeof(Int32), Constants::MaxBonesPerVertex, AttributeType::Int, false);
         this->boneIndices->setGPUStorage(boneIndicesGpuStorage);
 
         Real* boneWeightsDataArray = new (std::nothrow) Real[this->vertexCount * Constants::MaxBonesPerVertex];

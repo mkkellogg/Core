@@ -15,13 +15,9 @@ namespace Core {
 
     Bool EquirectangularMaterial::build() {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-        ShaderManager& shaderDirectory = graphics->getShaderManager();
-        const std::string& vertexSrc = shaderDirectory.getShader(ShaderType::Vertex, "Equirectangular");
-        const std::string& fragmentSrc = shaderDirectory.getShader(ShaderType::Fragment, "Equirectangular");
-        Bool ready = this->buildFromSource(vertexSrc, fragmentSrc);
-        if (!ready) {
-            return false;
-        }
+        ShaderManager& shaderManager = graphics->getShaderManager();
+        this->shader = shaderManager.getShader("Equirectangular");
+        graphics->activateShader(this->shader);
         this->bindShaderVarLocations();
         return true;
     }

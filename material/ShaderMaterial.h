@@ -16,8 +16,12 @@ namespace Core {
     
     protected:
         ShaderMaterial(const std::string& vertexShaderName, const std::string& fragmentShaderName, WeakPointer<Graphics> graphics);
+        ShaderMaterial(const std::string& shaderName, WeakPointer<Graphics> graphics);
         virtual void copyTo(WeakPointer<Material> target) override;
         virtual void bindShaderVarLocations() = 0;
+
+        std::string builtInShaderName;
+        Bool useBuiltInShader;
 
         std::string vertexShaderName;
         std::string fragmentShaderName;

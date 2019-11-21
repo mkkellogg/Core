@@ -172,7 +172,7 @@ namespace Core {
 
         void deallocateGPUStorage() {
             if(this->gpuStorage.isValid()) {
-               Graphics::safeReleaseObject(this->gpuStorage);
+               Engine::safeReleaseObject(this->gpuStorage);
             }
         }
     };

@@ -18,15 +18,9 @@ namespace Core {
 
     Bool OutlineMaterial::build() {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-        ShaderManager& shaderDirectory = graphics->getShaderManager();
-        const std::string& vertexSrc = shaderDirectory.getShader(ShaderType::Vertex, "Outline");
-        const std::string& geometrySrc = shaderDirectory.getShader(ShaderType::Geometry, "Outline");
-        const std::string& fragmentSrc = shaderDirectory.getShader(ShaderType::Fragment, "Outline");
-        Bool ready = this->buildFromSource(vertexSrc, geometrySrc, fragmentSrc);
-        if (!ready) {
-            return false;
-        }
-
+        ShaderManager& shaderManager = graphics->getShaderManager();
+        this->shader = shaderManager.getShader("Outline");
+        graphics->activateShader(this->shader);
         this->bindShaderVarLocations();
         this->setSkinningEnabled(true);
         return true;

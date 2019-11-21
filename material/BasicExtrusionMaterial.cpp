@@ -14,14 +14,9 @@ namespace Core {
 
     Bool BasicExtrusionMaterial::build() {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-        ShaderManager& shaderDirectory = graphics->getShaderManager();
-        const std::string& vertexSrc = shaderDirectory.getShader(ShaderType::Vertex, "BasicExtrusion");
-        const std::string& fragmentSrc = shaderDirectory.getShader(ShaderType::Fragment, "BasicExtrusion");
-        Bool ready = this->buildFromSource(vertexSrc, fragmentSrc);
-        if (!ready) {
-            return false;
-        }
-
+        ShaderManager& shaderManager = graphics->getShaderManager();
+        this->shader = shaderManager.getShader("BasicExtrusion");
+        graphics->activateShader(this->shader);
         this->bindShaderVarLocations();
         return true;
     }

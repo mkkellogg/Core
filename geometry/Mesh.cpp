@@ -25,7 +25,7 @@ namespace Core {
     Mesh::~Mesh() {
         this->destroyVertexCrossMap();
         if (this->indexBuffer.isValid()) {
-            Graphics::safeReleaseObject(this->indexBuffer);
+            Engine::safeReleaseObject(this->indexBuffer);
         }
     }
 
@@ -170,7 +170,7 @@ namespace Core {
     }
 
     Bool Mesh::initIndices() {
-        this->indexBuffer = this->graphics->createIndexBuffer(indexCount);
+        this->indexBuffer = Engine::instance()->createIndexBuffer(indexCount);
         return true;
     }
 

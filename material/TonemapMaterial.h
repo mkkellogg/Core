@@ -28,6 +28,7 @@ namespace Core {
         
     protected:
         TonemapMaterial(WeakPointer<Graphics> graphics);
+        TonemapMaterial(const std::string& builtInShaderName, WeakPointer<Graphics> graphics);
         TonemapMaterial(const std::string& vertShaderName, const std::string& fragShaderName, WeakPointer<Graphics> graphics);
         virtual void copyTo(WeakPointer<Material> target) override;
         virtual void bindShaderVarLocations() override;
@@ -48,5 +49,8 @@ namespace Core {
         Int32 exposureLocation;
         Int32 gammaLocation;
         Int32 toneMapTypeLocation;
+
+    private:
+        void setInitialParams();
     };
 }

@@ -10,10 +10,12 @@
 namespace Core {
 
     SkyboxMaterial::SkyboxMaterial(const std::string& vertShaderName, const std::string& fragShaderName, WeakPointer<Graphics> graphics): ShaderMaterial(vertShaderName, fragShaderName, graphics) {
+    }
 
+    SkyboxMaterial::SkyboxMaterial(const std::string& builtInShaderName, WeakPointer<Graphics> graphics): ShaderMaterial(builtInShaderName, graphics) {
     }
     
-    SkyboxMaterial::SkyboxMaterial(WeakPointer<Graphics> graphics) : SkyboxMaterial("Skybox", "Skybox", graphics) {
+    SkyboxMaterial::SkyboxMaterial(WeakPointer<Graphics> graphics) : SkyboxMaterial("Skybox", graphics) {
     }
 
     Bool SkyboxMaterial::build() {

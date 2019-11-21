@@ -12,18 +12,31 @@ namespace Core {
     ShaderMaterial::ShaderMaterial(const std::string& vertexShaderName, const std::string& fragmentShaderName, WeakPointer<Graphics> graphics) : Material(graphics) {
         this->vertexShaderName = vertexShaderName;
         this->fragmentShaderName = fragmentShaderName;
+        this->useBuiltInShader = false;
+    }
+
+    ShaderMaterial::ShaderMaterial(const std::string& builtInShaderName, WeakPointer<Graphics> graphics) : Material(graphics) {
+        this->builtInShaderName = builtInShaderName;
+        this->useBuiltInShader = true;
     }
 
     Bool ShaderMaterial::build() {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-        ShaderManager& shaderDirectory = graphics->getShaderManager();
-        const std::string& vertexSrc = shaderDirectory.getShader(ShaderType::Vertex, this->vertexShaderName);
-        const std::string& fragmentSrc = shaderDirectory.getShader(ShaderType::Fragment, this->fragmentShaderName);
-        Bool ready = this->buildFromSource(vertexSrc, fragmentSrc);
-        this->bindShaderVarLocations();
+        ShaderManager& shaderManager = graphics->getShaderManager();
+        Bool ready = false;
+        if (this->useBuiltInShader) {
+           this->shader = shaderManager.getShader(this->builtInShaderName);
+           if (this->shader.isValid()) ready = true;
+        } else {
+            const std::string& vertexSrc = shaderManager.getShaderSource(ShaderType::Vertex, this->vertexShaderName);
+            const std::string& fragmentSrc = shaderManager.getShaderSource(ShaderType::Fragment, this->fragmentShaderName);
+            ready = this->buildFromSource(vertexSrc, fragmentSrc);
+        }
         if (!ready) {
             return false;
         }
+        graphics->activateShader(this->shader);
+        this->bindShaderVarLocations();
         return true;
     }
 

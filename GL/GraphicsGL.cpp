@@ -142,30 +142,24 @@ namespace Core {
         glUseProgram(shader->getProgram());
     }
 
-    WeakPointer<AttributeArrayGPUStorage> GraphicsGL::createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) {
-        
+    std::shared_ptr<AttributeArrayGPUStorage> GraphicsGL::createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) {
         AttributeArrayGPUStorageGL* gpuStoragePtr =
             new (std::nothrow) AttributeArrayGPUStorageGL(size, componentCount, convertAttributeType(type), normalize ? GL_TRUE : GL_FALSE, 0);
         if (gpuStoragePtr == nullptr) {
             throw AllocationException("GraphicsGL::createGPUStorage() -> Unable to allocate gpu buffer.");
         }
-
         std::shared_ptr<AttributeArrayGPUStorageGL> spGpuStorage(gpuStoragePtr);
-        this->objectManager.addReference(spGpuStorage, CoreObjectReferenceManager::OwnerType::Single);
-        WeakPointer<AttributeArrayGPUStorageGL> wpGpuStorage = spGpuStorage;
-        return wpGpuStorage;
+        return spGpuStorage;
     }
 
-    WeakPointer<IndexBuffer> GraphicsGL::createIndexBuffer(UInt32 size) {
+    std::shared_ptr<IndexBuffer> GraphicsGL::createIndexBuffer(UInt32 size) {
         IndexBufferGL* indexBufferPtr = new (std::nothrow) IndexBufferGL(size);
         if (indexBufferPtr == nullptr) {
             throw AllocationException("GraphicsGL::createIndexBuffer() -> Unable to allocate index buffer.");
         }
         indexBufferPtr->initIndices();
         std::shared_ptr<IndexBufferGL> spIndexBuffer(indexBufferPtr);
-        this->objectManager.addReference(spIndexBuffer, CoreObjectReferenceManager::OwnerType::Single);
-        WeakPointer<IndexBufferGL> wpIndexBuffer = spIndexBuffer;
-        return wpIndexBuffer;
+        return spIndexBuffer;
     }
 
     void GraphicsGL::drawBoundVertexBuffer(UInt32 vertexCount) {

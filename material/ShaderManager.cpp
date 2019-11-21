@@ -3,6 +3,8 @@
 
 #include "ShaderManager.h"
 #include "../util/String.h"
+#include "../Engine.h"
+#include "../Graphics.h"
 
 static const Core::UInt32 ASCII_ZERO = 48;
 static const Core::UInt32 ASCII_NINE = 57;
@@ -17,13 +19,17 @@ namespace Core {
     const std::string ShaderManager::INCLUDE_VAL_PATTERN(std::string("\"[0-9a-zA-Z]+(\\(") + INCLUDE_PARAMS_PATTERN + std::string("\\)){0,1}\""));
 
     ShaderManager::~ShaderManager() {
+        for(std::unordered_map<std::string, ShaderManager::Entry>::const_iterator iter = this->entries.begin(); iter != this->entries.end(); ++iter) {
+            std::pair<std::string, ShaderManager::Entry> key = *iter;
+            if (key.second.shader.isValid()) Engine::safeReleaseObject(key.second.shader);
+        }
     }
 
-    void ShaderManager::setShader(ShaderType type, const std::string& name, const std::string& shaderSrc) {
-        this->setShader(type, name, shaderSrc.c_str());
+    void ShaderManager::setShaderSource(ShaderType type, const std::string& name, const std::string& shaderSrc) {
+        this->setShaderSource(type, name, shaderSrc.c_str());
     }
 
-    void ShaderManager::setShader(ShaderType type, const std::string& name, const char shaderSrc[]) {
+    void ShaderManager::setShaderSource(ShaderType type, const std::string& name, const char shaderSrc[]) {
         Entry& entry = this->entries[name];
         switch (type) {
             case ShaderType::Vertex:
@@ -41,12 +47,12 @@ namespace Core {
         }
     }
 
-    std::string ShaderManager::getShader(ShaderType type, const std::string& name) {
+    std::string ShaderManager::getShaderSource(ShaderType type, const std::string& name) {
         IncludeParameterCollection params;
-        return this->getShader(type, name, params);
+        return this->getShaderSource(type, name, params);
     }
 
-    std::string ShaderManager::getShader(ShaderType type, const std::string& name, const IncludeParameterCollection& params) {
+    std::string ShaderManager::getShaderSource(ShaderType type, const std::string& name, const IncludeParameterCollection& params) {
         if (this->entries.find(name) != this->entries.end()) {
             Entry& entry = this->entries[name];
             switch (type) {
@@ -65,6 +71,40 @@ namespace Core {
         }
 
         throw ShaderManagerException(std::string("Could not locate requested shader ") + name);
+    }
+
+    WeakPointer<Shader> ShaderManager::getShader(const std::string& name) {
+        if (this->entries.find(name) != this->entries.end()) {
+            Entry& entry = this->entries[name];
+
+            if (!entry.shader.isValid()) {
+            
+                if (entry.vertexSource.size() <= 0 || entry.fragmentSource.size() <= 0) {
+                    throw ShaderManagerException(std::string("Requested shader is missing vertex or fragment component: ") + name);
+                }
+
+                const std::string& vertexSrc = this->getShaderSource(ShaderType::Vertex, name);
+                const std::string& fragmentSrc = this->getShaderSource(ShaderType::Fragment, name);
+
+                WeakPointer<Shader> shader;
+                if (entry.geometrySource.size() <= 0) {
+                    shader = Engine::instance()->getGraphicsSystem()->createShader(vertexSrc, fragmentSrc);
+                } else {
+                    const std::string& geometrySrc = this->getShaderSource(ShaderType::Geometry, name);
+                    shader = Engine::instance()->getGraphicsSystem()->createShader(vertexSrc, geometrySrc, fragmentSrc);
+                }
+
+                Bool success = shader->build();
+                if (success) {
+                    entry.shader = shader;
+                } else {
+                    throw ShaderManagerException(std::string("Unable to build shader: ") + name);
+                }
+
+            }
+
+            return entry.shader;
+        }
     }
 
     std::string ShaderManager::processShaderSource(ShaderType type, const std::string& src, const IncludeParameterCollection& params) {
@@ -126,7 +166,7 @@ namespace Core {
             break;
         }
         if (matchFound) {
-            return this->getShader(type, name, includeParams);
+            return this->getShaderSource(type, name, includeParams);
         }
         return std::string("");
     }

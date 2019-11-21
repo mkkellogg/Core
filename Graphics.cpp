@@ -133,10 +133,4 @@ namespace Core {
         this->setViewport(currentViewport.x, currentViewport.y, currentViewport.z, currentViewport.w);
     }
 
-    void Graphics::safeReleaseObject(WeakPointer<CoreObject> object) {
-        if(!Engine::isShuttingDown()) {
-            Engine::instance()->getGraphicsSystem()->objectManager.removeReference(object);
-        }
-    }
-
 }

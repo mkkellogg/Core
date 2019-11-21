@@ -43,6 +43,7 @@ namespace Core {
         const UInt32 METALLIC_MAP_MASK = 0x1 << 3;
 
         StandardPhysicalMaterial(const std::string& vertexShader, const std::string& fragmentShader, WeakPointer<Graphics> graphics);
+        StandardPhysicalMaterial(const std::string& buildInShaderName, WeakPointer<Graphics> graphics);
         StandardPhysicalMaterial(WeakPointer<Graphics> graphics);
         UInt32 getEnabledMapMask();
 
@@ -111,5 +112,8 @@ namespace Core {
         Int32 roughnessLocation;
         Int32 ambientOcclusionLocation;
         Int32 enabledMapLocation;
+    
+    private:
+        void setInitialParams();
     };
 }

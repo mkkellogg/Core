@@ -15,14 +15,9 @@ namespace Core {
 
     Bool BasicColoredMaterial::build() {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-        ShaderManager& shaderDirectory = graphics->getShaderManager();
-        const std::string& vertexSrc = shaderDirectory.getShader(ShaderType::Vertex, "BasicColored");
-        const std::string& fragmentSrc = shaderDirectory.getShader(ShaderType::Fragment, "BasicColored");
-        Bool ready = this->buildFromSource(vertexSrc, fragmentSrc);
-        if (!ready) {
-            return false;
-        }
-
+        ShaderManager& shaderManager = graphics->getShaderManager();
+        this->shader = shaderManager.getShader("BasicColored");
+        graphics->activateShader(this->shader);
         this->bindShaderVarLocations();
         this->setSkinningEnabled(true);
         return true;

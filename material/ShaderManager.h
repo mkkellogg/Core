@@ -5,6 +5,7 @@
 
 #include "../common/types.h"
 #include "../common/Exception.h"
+#include "../util/PersistentWeakPointer.h"
 #include "Shader.h"
 
 namespace Core {
@@ -46,9 +47,9 @@ namespace Core {
 
         class Entry {
         public:
-            Entry() {
-            }
+            Entry() {}
 
+            PersistentWeakPointer<Shader> shader;
             std::string baseSource;
             std::string vertexSource;
             std::string geometrySource;
@@ -56,10 +57,11 @@ namespace Core {
         };
 
         virtual ~ShaderManager();
-        void setShader(ShaderType type, const std::string& name, const std::string& shaderSrc);
-        void setShader(ShaderType type, const std::string& name, const char shaderSrc[]);
-        std::string getShader(ShaderType type, const std::string& name);
-        std::string getShader(ShaderType type, const std::string& name, const IncludeParameterCollection& params);
+        void setShaderSource(ShaderType type, const std::string& name, const std::string& shaderSrc);
+        void setShaderSource(ShaderType type, const std::string& name, const char shaderSrc[]);
+        std::string getShaderSource(ShaderType type, const std::string& name);
+        std::string getShaderSource(ShaderType type, const std::string& name, const IncludeParameterCollection& params);
+        WeakPointer<Shader> getShader(const std::string& name);
 
     protected:
         static const std::string INCLUDE_VAL_PATTERN;

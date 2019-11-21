@@ -52,9 +52,6 @@ namespace Core {
         WeakPointer<Shader> createShader(const char vertex[], const char geometry[], const char fragment[]) override;
         void activateShader(WeakPointer<Shader> shader) override;
 
-        WeakPointer<AttributeArrayGPUStorage> createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) override;
-        WeakPointer<IndexBuffer> createIndexBuffer(UInt32 size) override;
-
         void drawBoundVertexBuffer(UInt32 vertexCount) override;
         void drawBoundVertexBuffer(UInt32 vertexCount, WeakPointer<IndexBuffer> indices) override;
 
@@ -115,6 +112,11 @@ namespace Core {
         static GLenum getGLStencilFunction(RenderState::StencilFunction function);
         static GLenum getGLStencilAction(RenderState::StencilAction action);
 
+    protected:
+
+        std::shared_ptr<AttributeArrayGPUStorage> createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) override;
+        std::shared_ptr<IndexBuffer> createIndexBuffer(UInt32 size) override;
+
     private:
         GraphicsGL(GLVersion version);
         std::shared_ptr<RendererGL> createRenderer();
@@ -124,12 +126,14 @@ namespace Core {
 
         GLVersion glVersion;
         std::shared_ptr<RendererGL> renderer;
+
         std::vector<std::shared_ptr<Texture2DGL>> textures2D;
         std::vector<std::shared_ptr<CubeTextureGL>> cubeTextures;
         std::vector<std::shared_ptr<ShaderGL>> shaders;
-        PersistentWeakPointer<RenderTarget2DGL> defaultRenderTarget;
         std::vector<std::shared_ptr<RenderTarget2DGL>> renderTarget2Ds;
         std::vector<std::shared_ptr<RenderTargetCubeGL>> renderTargetCubes;
+        
+        PersistentWeakPointer<RenderTarget2DGL> defaultRenderTarget;
         PersistentWeakPointer<RenderTarget> currentRenderTarget;
         ShaderManagerGL shaderDirectory;
         RenderStyle renderStyle;

@@ -13,6 +13,17 @@
 namespace Core {
 
     StandardPhysicalMaterial::StandardPhysicalMaterial(const std::string& vertexShader, const std::string& fragmentShader, WeakPointer<Graphics> graphics):  ShaderMaterial(vertexShader, fragmentShader, graphics)  {
+        this->setInitialParams();
+    }
+
+    StandardPhysicalMaterial::StandardPhysicalMaterial(const std::string& builtInShaderName, WeakPointer<Graphics> graphics): ShaderMaterial(builtInShaderName, graphics) {
+        this->setInitialParams();
+    }
+
+    StandardPhysicalMaterial::StandardPhysicalMaterial(WeakPointer<Graphics> graphics): StandardPhysicalMaterial("StandardPhysical", graphics) {
+    }
+
+    void StandardPhysicalMaterial::setInitialParams() {
         this->albedo.set(1.0f, 1.0f, 1.0f, 1.0f);
         this->metallic = 0.9f;
         this->roughness = 0.35f;
@@ -22,10 +33,6 @@ namespace Core {
         this->normalMapEnabled = false;
         this->roughnessMapEnabled = false;
         this->metallicMapEnabled = false;
-    }
-
-    StandardPhysicalMaterial::StandardPhysicalMaterial(WeakPointer<Graphics> graphics): StandardPhysicalMaterial("StandardPhysical", "StandardPhysical", graphics) {
-       
     }
 
     Bool StandardPhysicalMaterial::build() {
