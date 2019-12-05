@@ -295,9 +295,11 @@ include_directories(${DEVIL_DIR}/include)
 link_directories(${DEVIL_DIR}/build/lib/x64/)
 target_link_libraries(${EXECUTABLE_NAME} IL)
 
-set(ASSIMP_INCLUDE_DIR ../../assimp/include)
+set(ASSIMP_INCLUDE_DIR1 ../../assimp/build/include)
+set(ASSIMP_INCLUDE_DIR2 ../../assimp/include)
 set(ASSIMP_BUILD_DIR ../../assimp/build/code)
-include_directories(${ASSIMP_INCLUDE_DIR})
+include_directories(${ASSIMP_INCLUDE_DIR1})
+include_directories(${ASSIMP_INCLUDE_DIR2})
 link_directories(${ASSIMP_BUILD_DIR})
 target_link_libraries(${EXECUTABLE_NAME} assimp)
 
