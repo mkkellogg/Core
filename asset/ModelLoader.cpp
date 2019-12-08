@@ -352,14 +352,14 @@ namespace Core {
 
         Int32 diffuseTextureUVIndex = -1;
         // update the StandardAttributeSet to contain appropriate attributes (UV coords) for a diffuse texture
-        if (materialImportDescriptor.meshSpecificProperties[meshIndex].uvMappingHasKey(TextureType::Albedo)) {
+        if (materialImportDescriptor.meshSpecificProperties[meshIndex].uvMappingValidForKey(TextureType::Albedo)) {
             StandardAttributes::addAttribute(&meshAttributes, ModelLoader::mapTextureTypeToAttribute(TextureType::Albedo));
             diffuseTextureUVIndex = materialImportDescriptor.meshSpecificProperties[meshIndex].uvMapping[TextureType::Albedo];
-        }
+        } 
 
         Int32 normalsTextureUVIndex = -1;
         // update the StandardAttributeSet to contain appropriate attributes (UV coords) for a normals texture
-        if (materialImportDescriptor.meshSpecificProperties[meshIndex].uvMappingHasKey(TextureType::Normals)) {
+        if (materialImportDescriptor.meshSpecificProperties[meshIndex].uvMappingValidForKey(TextureType::Normals)) {
             StandardAttributes::addAttribute(&meshAttributes, ModelLoader::mapTextureTypeToAttribute(TextureType::Normals));
             normalsTextureUVIndex = materialImportDescriptor.meshSpecificProperties[meshIndex].uvMapping[TextureType::Normals];
         }
@@ -507,7 +507,7 @@ namespace Core {
                 if (hasAlbedoUVs) {
                     albedoUVs.push_back(mesh.mTextureCoords[diffuseTextureUVIndex][vIndex].x);
                     if (materialImportDescriptor.meshSpecificProperties[meshIndex].invertVCoords) {
-                        albedoUVs.push_back(1 - mesh.mTextureCoords[diffuseTextureUVIndex][vIndex].y);
+                        albedoUVs.push_back(1.0 - mesh.mTextureCoords[diffuseTextureUVIndex][vIndex].y);
                     } else {
                         albedoUVs.push_back(mesh.mTextureCoords[diffuseTextureUVIndex][vIndex].y);
                     }
@@ -516,7 +516,7 @@ namespace Core {
                 if (hasNormalUVs) {
                     normalUVs.push_back(mesh.mTextureCoords[normalsTextureUVIndex][vIndex].x);
                     if (materialImportDescriptor.meshSpecificProperties[meshIndex].invertVCoords) {
-                        normalUVs.push_back(1 - mesh.mTextureCoords[normalsTextureUVIndex][vIndex].y);
+                        normalUVs.push_back(1.0 - mesh.mTextureCoords[normalsTextureUVIndex][vIndex].y);
                     } else {
                         normalUVs.push_back(mesh.mTextureCoords[normalsTextureUVIndex][vIndex].y);
                     }
@@ -536,7 +536,7 @@ namespace Core {
         // if (invert) mesh3D->SetInvertNormals(true);
         coreMesh->setNormalsSmoothingThreshold((Real)smoothingThreshold * Math::DegreesToRads);
         coreMesh->setCalculateNormals(true);
-        coreMesh->setCalculateTangents(true);
+        coreMesh->setCalculateTangents(hasAlbedoUVs || hasNormalUVs);
         coreMesh->setCalculateBoundingBox(true);
         coreMesh->update();
 
@@ -640,8 +640,9 @@ namespace Core {
                     if (diffuseTexture.isValid() || normalTexture.isValid() || roughnessGlossTexture.isValid()) {
                         // Add [diffuseTexture] to the new material (and for the appropriate shader variable), and store
                         // Assimp UV channel for it in [materialImportDescriptor] for later processing of the mesh
+
                         Bool setupSuccess =
-                            this->setupMeshSpecificMaterialWithTextures(*assimpMaterial, diffuseTexture, normalTexture,
+                            this->setupMeshSpecificMaterialWithTextures(scene, *assimpMaterial, diffuseTexture, normalTexture,
                                                                         roughnessGlossTexture, i, materialImportDescriptor);
 
                         if (!setupSuccess) {
@@ -790,22 +791,21 @@ namespace Core {
             std::string filename = fileSystem->getFileName(fullTextureFilePath);
             if (!(filename.length() <= 0)) {
                 // concatenate the file name with the model's directory location
-                filename = fileSystem->concatenatePaths(modelDirectory, filename);
+                fullTextureFilePath = fileSystem->concatenatePaths(modelDirectory, filename);
                 // check if the image file is in the same directory as the model and if so, load it
-                if (fileSystem->fileExists(filename)) {
-                    textureImage = ImageLoader::loadImageU(filename.c_str());
+                if (fileSystem->fileExists(fullTextureFilePath)) {
+                    textureImage = ImageLoader::loadImageU(fullTextureFilePath.c_str());
                     texture = Engine::instance()->getGraphicsSystem()->createTexture2D(texAttributes);
                 }
             }
         }
 
-        WeakPointer<Texture2D> texturePtr(texture);
-        if (textureImage && texturePtr) {
-            texturePtr->buildFromImage(textureImage);
+        if (textureImage && texture.isValid()) {
+            texture->buildFromImage(textureImage);
         }
         
         // did texture fail to load?
-        if (!textureImage || !texturePtr || !texturePtr->isBuilt()) {
+        if (!textureImage || !texture.isValid() || !texture->isBuilt()) {
             std::string msg = std::string("ModelLoader::loadAITexture -> Could not load texture file: ") + fullTextureFilePath;
             throw ModelLoaderException(msg);
         }
@@ -820,27 +820,31 @@ namespace Core {
      * The method then locates the Assimp UV data for that texture and stores that in the mesh-specific properties of
      * [materialImportDesc].
      */
-    Bool ModelLoader::setupMeshSpecificMaterialWithTextures(const aiMaterial& assimpMaterial, WeakPointer<Texture> diffuseTexture,
-                                                           WeakPointer<Texture> normalsTexture,  WeakPointer<Texture> roughnessGlossTexture,
-                                                           UInt32 meshIndex, MaterialImportDescriptor& materialImportDesc) const {
+    Bool ModelLoader::setupMeshSpecificMaterialWithTextures(const aiScene& scene, const aiMaterial& assimpMaterial, WeakPointer<Texture> diffuseTexture,
+                                                            WeakPointer<Texture> normalsTexture,  WeakPointer<Texture> roughnessGlossTexture,
+                                                            UInt32 meshIndex, MaterialImportDescriptor& materialImportDesc) const {
        
+        aiMesh& mesh = *scene.mMeshes[meshIndex];
+
         Int32 mappedIndex;
 
+        UInt32 aiDiffuseTextureKey = this->convertTextureTypeToAITextureKey(TextureType::Albedo);
+        UInt32 aiNormalsTextureKey = this->convertTextureTypeToAITextureKey(TextureType::Normals);
+
+        materialImportDesc.meshSpecificProperties[meshIndex].uvMapping[TextureType::Albedo] = -1;
         if (diffuseTexture) {
-             // get the Assimp material key for textures of type [textureType]
-            UInt32 aiDiffuseTextureKey = this->convertTextureTypeToAITextureKey(TextureType::Albedo);
             if (AI_SUCCESS == aiGetMaterialInteger(&assimpMaterial, AI_MATKEY_UVWSRC(aiDiffuseTextureKey, 0), &mappedIndex))
                 materialImportDesc.meshSpecificProperties[meshIndex].uvMapping[TextureType::Albedo] = mappedIndex;
             else
-                materialImportDesc.meshSpecificProperties[meshIndex].uvMapping[TextureType::Albedo] = 0;
+                if (mesh.HasTextureCoords(0)) materialImportDesc.meshSpecificProperties[meshIndex].uvMapping[TextureType::Albedo] = 0;
         }
 
+        materialImportDesc.meshSpecificProperties[meshIndex].uvMapping[TextureType::Normals] = -1;
         if (normalsTexture) {
-            UInt32 aiNormalsTextureKey = this->convertTextureTypeToAITextureKey(TextureType::Normals);
             if (AI_SUCCESS == aiGetMaterialInteger(&assimpMaterial, AI_MATKEY_UVWSRC(aiNormalsTextureKey, 0), &mappedIndex))
                 materialImportDesc.meshSpecificProperties[meshIndex].uvMapping[TextureType::Normals] = mappedIndex;
             else
-                materialImportDesc.meshSpecificProperties[meshIndex].uvMapping[TextureType::Normals] = 0;
+                if (mesh.HasTextureCoords(0)) materialImportDesc.meshSpecificProperties[meshIndex].uvMapping[TextureType::Normals] = 0;
         }
 
         if (roughnessGlossTexture) {

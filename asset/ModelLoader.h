@@ -63,7 +63,7 @@ namespace Core {
             LongMask shaderMaterialChacteristics;
             WeakPointer<Material> material;
             Bool invertVCoords;
-            std::map<TextureType, int> uvMapping;
+            std::map<TextureType, Int32> uvMapping;
 
             MeshSpecificMaterialDescriptor() {
                 vertexColorsIndex = -1;
@@ -71,8 +71,10 @@ namespace Core {
                 invertVCoords = false;
             }
 
-            Bool uvMappingHasKey(TextureType key) {
-                if (uvMapping.find(key) != uvMapping.end()) return true;
+            Bool uvMappingValidForKey(TextureType key) {
+                if (uvMapping.find(key) != uvMapping.end()) {
+                    return uvMapping[key] >= 0;
+                }
                 return false;
             }
         };
@@ -96,7 +98,7 @@ namespace Core {
                              std::vector<MaterialImportDescriptor>& materialImportDescriptors, Bool preferPhysicalMaterial) const;
         WeakPointer<Texture> loadAITexture(aiMaterial& assimpMaterial, aiTextureType textureType, const std::string& modelPath, TextureFilter filter, UInt32 mipLevel) const;
         void getImportDetails(const aiMaterial* mtl, MaterialImportDescriptor& materialImportDesc, const aiScene& scene, Bool preferPhysicalMaterial) const;
-        Bool setupMeshSpecificMaterialWithTextures(const aiMaterial& assimpMaterial, WeakPointer<Texture> diffuseTexture,
+        Bool setupMeshSpecificMaterialWithTextures(const aiScene& scene, const aiMaterial& assimpMaterial, WeakPointer<Texture> diffuseTexture,
                                                   WeakPointer<Texture> normalsTexture, WeakPointer<Texture> roughnessGlossTexture,
                                                   UInt32 meshIndex, MaterialImportDescriptor& materialImportDesc) const;
         WeakPointer<Object3D> recursiveProcessModelScene(const aiScene& scene, const aiNode& node,
