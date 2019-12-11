@@ -275,14 +275,6 @@ namespace Core {
         return this->graphics->createCubeTexture(attributes);
     }
 
-    void Engine::destroyTexture2D(WeakPointer<Texture2D> texture) {
-        this->graphics->destroyTexture2D(texture);
-    }
-
-    void Engine::destroyCubeTexture(WeakPointer<CubeTexture> texture) {
-        this->graphics->destroyCubeTexture(texture);
-    }
-
     WeakPointer<AttributeArrayGPUStorage> Engine::createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) {
         std::shared_ptr<AttributeArrayGPUStorage> spGPUStorage = this->graphics->createGPUStorage(size, componentCount, type, normalize);
         this->objectManager.addReference(spGPUStorage, CoreObjectReferenceManager::OwnerType::Single);

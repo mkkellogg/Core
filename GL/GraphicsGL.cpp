@@ -70,7 +70,7 @@ namespace Core {
             throw AllocationException("GraphicsGL::createTexture2D -> Unable to allocate new Texture2DGL");
         }
         std::shared_ptr<Texture2DGL> newTexture = std::shared_ptr<Texture2DGL>(newTexturePtr);
-        this->textures2D.push_back(newTexture);
+        this->addCoreObjectReference(newTexture, CoreObjectReferenceManager::OwnerType::Single);this->addCoreObjectReference(newTexture, CoreObjectReferenceManager::OwnerType::Single);
         return std::static_pointer_cast<Texture2D>(newTexture);
     }
 
@@ -80,32 +80,8 @@ namespace Core {
             throw AllocationException("GraphicsGL::createCubeTexture -> Unable to allocate new CubeTextureGL");
         }
         std::shared_ptr<CubeTextureGL> newTexture = std::shared_ptr<CubeTextureGL>(newTexturePtr);
-        this->cubeTextures.push_back(newTexture);
+       this->addCoreObjectReference(newTexture, CoreObjectReferenceManager::OwnerType::Single);
         return std::static_pointer_cast<CubeTexture>(newTexture);
-    }
-
-    void GraphicsGL::destroyTexture2D(WeakPointer<Texture2D> texture) {
-        WeakPointer<Texture2DGL> textureGL = WeakPointer<Texture2D>::dynamicPointerCast<Texture2DGL>(texture);
-        if (textureGL.isValid()) {
-            std::shared_ptr<Texture2DGL> sharedPtr = textureGL.lock();
-            auto end = this->textures2D.end();
-            auto result = std::find(this->textures2D.begin(), end, sharedPtr);
-            if (result != end) {
-                this->textures2D.erase(result);
-            }
-        }
-    }
-
-    void GraphicsGL::destroyCubeTexture(WeakPointer<CubeTexture> texture) {
-        WeakPointer<CubeTextureGL> textureGL = WeakPointer<CubeTexture>::dynamicPointerCast<CubeTextureGL>(texture);
-        if (textureGL.isValid()) {
-            std::shared_ptr<CubeTextureGL> sharedPtr = textureGL.lock();
-            auto end = this->cubeTextures.end();
-            auto result = std::find(this->cubeTextures.begin(), end, sharedPtr);
-            if (result != end) {
-                this->cubeTextures.erase(result);
-            }
-        }
     }
 
     WeakPointer<Shader> GraphicsGL::createShader(const std::string& vertex, const std::string& fragment) {
@@ -132,10 +108,10 @@ namespace Core {
         if (shaderPtr == nullptr) {
             throw AllocationException("GraphicsGL::addShader -> Could not allocate new shader.");
         }
-        std::shared_ptr<ShaderGL> shaderGL(shaderPtr);
-        shaders.push_back(shaderGL);
-        std::shared_ptr<Shader> shader = std::static_pointer_cast<Shader>(shaderGL);
-        return shader;
+        std::shared_ptr<ShaderGL> spShaderGL(shaderPtr);
+        this->addCoreObjectReference(spShaderGL, CoreObjectReferenceManager::OwnerType::Single);
+        std::shared_ptr<Shader> spShader = std::static_pointer_cast<Shader>(spShaderGL);
+        return spShader;
     }
 
     void GraphicsGL::activateShader(WeakPointer<Shader> shader) {
@@ -198,29 +174,10 @@ namespace Core {
         }
         std::shared_ptr<RenderTarget2DGL> target(renderTargetPtr);
         target->init();
-        this->renderTarget2Ds.push_back(target);
+        this->addCoreObjectReference(target, CoreObjectReferenceManager::OwnerType::Single);
 
         WeakPointer<RenderTarget2DGL> weakPtr = target;
         return weakPtr;
-    }
-
-    void GraphicsGL::destroyRenderTarget2D(WeakPointer<RenderTarget2D> renderTarget, Bool destroyColor, Bool destroyDepth) {
-        if (destroyColor) {
-            renderTarget->destroyColorBuffer();
-        }
-        if (destroyDepth) {
-            renderTarget->destroyDepthBuffer();
-        }
-
-        std::shared_ptr<RenderTarget2D> sharedPtr = renderTarget.lock();
-        if (!sharedPtr) {
-            throw Exception("GraphicsGL::destroyRenderTarget2D -> Invalid render target.");
-        }
-        auto end = this->renderTarget2Ds.end();
-        auto result = std::find(this->renderTarget2Ds.begin(), end, sharedPtr);
-        if (result != end) {
-            this->renderTarget2Ds.erase(result);
-        }
     }
 
     WeakPointer<RenderTargetCube> GraphicsGL::createRenderTargetCube(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
@@ -234,29 +191,10 @@ namespace Core {
         }
         std::shared_ptr<RenderTargetCubeGL> target(renderTargetPtr);
         target->init();
-        this->renderTargetCubes.push_back(target);
+        this->addCoreObjectReference(target, CoreObjectReferenceManager::OwnerType::Single);
 
         WeakPointer<RenderTargetCubeGL> weakPtr = target;
         return weakPtr;
-    }
-
-    void GraphicsGL::destroyRenderTargetCube(WeakPointer<RenderTargetCube> renderTarget, Bool destroyColor, Bool destroyDepth) {
-        if (destroyColor) {
-            renderTarget->destroyColorBuffer();
-        }
-        if (destroyDepth) {
-            renderTarget->destroyDepthBuffer();
-        }
-
-        std::shared_ptr<RenderTargetCube> sharedPtr = renderTarget.lock();
-        if (!sharedPtr) {
-            throw Exception("GraphicsGL::destroyRenderTargetCube -> Invalid render target.");
-        }
-        auto end = this->renderTargetCubes.end();
-        auto result = std::find(this->renderTargetCubes.begin(), end, sharedPtr);
-        if (result != end) {
-            this->renderTargetCubes.erase(result);
-        }
     }
 
     void GraphicsGL::setColorWriteEnabled(Bool enabled) {
@@ -765,7 +703,7 @@ namespace Core {
             throw AllocationException("GraphicsGL::createDefaultRenderTarget -> Unable to allocate default render target.");
         }
         std::shared_ptr<RenderTarget2DGL> defaultTarget(defaultTargetPtr);
-        this->renderTarget2Ds.push_back(defaultTarget);
+        this->addCoreObjectReference(defaultTarget, CoreObjectReferenceManager::OwnerType::Single);
         return defaultTarget;
     }
 

@@ -8,7 +8,7 @@
 
 namespace Core {
 
-    class Texture : CoreObject {
+    class Texture : public CoreObject {
     public:
 
         class TextureException: Exception {

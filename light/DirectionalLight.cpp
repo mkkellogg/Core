@@ -25,6 +25,9 @@ namespace Core {
     }
 
     DirectionalLight::~DirectionalLight() {
+        for (UInt32 i = 0; i < this->shadowMaps.size(); i++) {
+            if (this->shadowMaps[i].isValid()) Graphics::safeReleaseObject(this->shadowMaps[i]);
+        }
     }
 
     void DirectionalLight::init() {

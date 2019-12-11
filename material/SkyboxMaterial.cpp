@@ -1,4 +1,5 @@
 #include "SkyboxMaterial.h"
+#include "../Graphics.h"
 #include "../material/Shader.h"
 #include "../util/WeakPointer.h"
 #include "StandardAttributes.h"
@@ -16,6 +17,10 @@ namespace Core {
     }
     
     SkyboxMaterial::SkyboxMaterial(WeakPointer<Graphics> graphics) : SkyboxMaterial("Skybox", graphics) {
+    }
+
+    SkyboxMaterial::~SkyboxMaterial() {
+        if (this->texture.isValid()) Graphics::safeReleaseObject(this->texture);
     }
 
     Bool SkyboxMaterial::build() {

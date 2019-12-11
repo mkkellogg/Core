@@ -41,6 +41,8 @@ namespace Core {
         virtual ~Graphics();
         virtual void init();
 
+        static void safeReleaseObject(WeakPointer<CoreObject> object);
+
         WeakPointer<Texture2D> getPlaceHolderTexture2D();
         WeakPointer<CubeTexture> getPlaceHolderCubeTexture();
 
@@ -57,8 +59,6 @@ namespace Core {
 
         virtual WeakPointer<Texture2D> createTexture2D(const TextureAttributes& attributes) = 0;
         virtual WeakPointer<CubeTexture> createCubeTexture(const TextureAttributes& attributes) = 0;
-        virtual void destroyTexture2D(WeakPointer<Texture2D> texture) = 0;
-        virtual void destroyCubeTexture(WeakPointer<CubeTexture> texture) = 0;
 
         virtual WeakPointer<Shader> createShader(const std::string& vertex, const std::string& fragment) = 0;
         virtual WeakPointer<Shader> createShader(const std::string& vertex, const std::string& geometry, const std::string& fragment) = 0;
@@ -77,11 +77,10 @@ namespace Core {
         virtual WeakPointer<RenderTarget2D> createRenderTarget2D(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
                                                                  const TextureAttributes& colorTextureAttributes,
                                                                  const TextureAttributes& depthTextureAttributes, const Vector2u& size) = 0;
-        virtual void destroyRenderTarget2D(WeakPointer<RenderTarget2D> renderTarget, Bool destroyColor, Bool destroyDepth) = 0;
         virtual WeakPointer<RenderTargetCube> createRenderTargetCube(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
                                                                      const TextureAttributes& colorTextureAttributes,
                                                                      const TextureAttributes& depthTextureAttributes, const Vector2u& size) = 0;
-        virtual void destroyRenderTargetCube(WeakPointer<RenderTargetCube> renderTarget, Bool destroyColor, Bool destroyDepth) = 0;
+
         void blit(WeakPointer<RenderTarget> source, WeakPointer<RenderTarget> destination, Int16 cubeFace, WeakPointer<Material> material, Bool includeDepth);
         virtual void lowLevelBlit(WeakPointer<RenderTarget> source, WeakPointer<RenderTarget> destination, Int16 cubeFace, Bool includeColor, Bool includeDepth) = 0;
         void renderFullScreenQuad(WeakPointer<RenderTarget> destination, Int16 cubeFace, WeakPointer<Material> material);
@@ -120,6 +119,9 @@ namespace Core {
 
         virtual std::shared_ptr<AttributeArrayGPUStorage> createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) = 0;
         virtual std::shared_ptr<IndexBuffer> createIndexBuffer(UInt32 size) = 0;
+        void addCoreObjectReference(std::shared_ptr<CoreObject>, CoreObjectReferenceManager::OwnerType ownerType);
+
+        CoreObjectReferenceManager objectManager;
 
         WeakPointer<Texture2D> placeHolderTexture2D;
         WeakPointer<CubeTexture> placeHolderCubeTexture;

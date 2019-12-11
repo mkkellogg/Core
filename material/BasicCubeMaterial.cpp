@@ -14,6 +14,11 @@ namespace Core {
     BasicCubeMaterial::BasicCubeMaterial(WeakPointer<Graphics> graphics) : Material(graphics) {
     }
 
+    BasicCubeMaterial::~BasicCubeMaterial() {
+        if (this->cubeTexture.isValid()) Graphics::safeReleaseObject(this->cubeTexture);
+        if (this->rectTexture.isValid()) Graphics::safeReleaseObject(this->rectTexture);
+    }
+
     Bool BasicCubeMaterial::build() {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         ShaderManager& shaderManager = graphics->getShaderManager();

@@ -7,7 +7,7 @@
 #include "../math/Quaternion.h"
 #include "../util/WeakPointer.h"
 #include "../scene/Object3D.h"
-#include "../render/RenderTarget.h"
+#include "../render/RenderTarget2D.h"
 
 namespace Core {
 
@@ -25,6 +25,10 @@ namespace Core {
         this->hdrToneMapType = ToneMapType::Reinhard;
         this->hdrExposure = 1.0f;
         this->hdrGamma = 2.2f;
+    }
+
+    Camera::~Camera() {
+        if (this->hdrRenderTarget.isValid()) Graphics::safeReleaseObject(hdrRenderTarget);
     }
 
     void Camera::setAspectRatio(Real ratio) {
@@ -314,7 +318,7 @@ namespace Core {
 
     void Camera::buildHDRRenderTarget(const Vector2u& size) {
         if (this->hdrRenderTarget) {
-            Engine::instance()->getGraphicsSystem()->destroyRenderTarget2D(this->hdrRenderTarget, true, true);
+            Graphics::safeReleaseObject(this->hdrRenderTarget);
         }
         TextureAttributes hdrColorAttributes;
         hdrColorAttributes.Format = TextureFormat::RGBA16F;

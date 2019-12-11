@@ -1,4 +1,6 @@
 #include "TonemapMaterial.h"
+#include "../Graphics.h"
+#include "../image/Texture2D.h"
 #include "../material/Shader.h"
 #include "../util/WeakPointer.h"
 #include "StandardAttributes.h"
@@ -17,6 +19,11 @@ namespace Core {
     }
     
     TonemapMaterial::TonemapMaterial(WeakPointer<Graphics> graphics) : TonemapMaterial("Tonemap", graphics) {
+    }
+
+    TonemapMaterial::~TonemapMaterial() {
+        if (this->texture.isValid()) Graphics::safeReleaseObject(this->texture);
+        if (this->depthTexture.isValid()) Graphics::safeReleaseObject(this->depthTexture);
     }
 
     void TonemapMaterial::setInitialParams() {

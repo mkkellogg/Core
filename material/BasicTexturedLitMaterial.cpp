@@ -15,6 +15,11 @@ namespace Core {
         this->normalMapEnabled = false;
     }
 
+    BasicTexturedLitMaterial::~BasicTexturedLitMaterial() {
+        if (this->albedoMap.isValid()) Graphics::safeReleaseObject(this->albedoMap);
+        if (this->normalMap.isValid()) Graphics::safeReleaseObject(this->normalMap);
+    }
+
     Bool BasicTexturedLitMaterial::build() {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         ShaderManager& shaderManager = graphics->getShaderManager();

@@ -17,7 +17,7 @@ namespace Core {
     }
 
     RenderTargetCubeGL::~RenderTargetCubeGL() {
-
+       if(this->depthTexture) Graphics::safeReleaseObject(this->depthTexture);
     }
 
     /*
@@ -63,7 +63,7 @@ namespace Core {
         if (this->hasColorBuffer) {
             if (this->colorTexture) {
                 WeakPointer<CubeTexture> texture = WeakPointer<Texture>::dynamicPointerCast<CubeTexture>(this->colorTexture);
-                Engine::instance()->destroyCubeTexture(texture);
+                Graphics::safeReleaseObject(texture);
                 this->colorTexture = WeakPointer<Texture>::nullPtr();
             }
         }
@@ -74,7 +74,7 @@ namespace Core {
             if (!this->enableStencilBuffer) {
                 if (this->depthTexture) {
                     WeakPointer<Texture2D> texture = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->depthTexture);
-                    Engine::instance()->destroyTexture2D(texture);
+                    Graphics::safeReleaseObject(texture);
                     this->depthTexture = WeakPointer<Texture>::nullPtr();
                 }
             }

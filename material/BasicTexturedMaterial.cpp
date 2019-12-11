@@ -13,6 +13,10 @@ namespace Core {
     BasicTexturedMaterial::BasicTexturedMaterial(WeakPointer<Graphics> graphics): Material(graphics) {
     }
 
+    BasicTexturedMaterial::~BasicTexturedMaterial() {
+        if (this->texture.isValid()) Graphics::safeReleaseObject(this->texture);
+    }
+
     Bool BasicTexturedMaterial::build() {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         ShaderManager& shaderManager = graphics->getShaderManager();

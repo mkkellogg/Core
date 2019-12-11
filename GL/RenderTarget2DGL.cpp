@@ -18,7 +18,8 @@ namespace Core {
     }
 
     RenderTarget2DGL::~RenderTarget2DGL() {
-       
+       if(this->colorTexture) Graphics::safeReleaseObject(this->colorTexture);
+       if(this->depthTexture) Graphics::safeReleaseObject(this->depthTexture);
     }
 
     /*
@@ -32,7 +33,7 @@ namespace Core {
         // generate a color texture attachment
         // TODO: For now we are only supporting a texture type color attachment
         if (this->hasColorBuffer) {
-            colorTexture = Engine::instance()->createTexture2D(this->colorTextureAttributes);
+            this->colorTexture = Engine::instance()->createTexture2D(this->colorTextureAttributes);
             this->buildAndVerifyTexture(this->colorTexture);
 
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->colorTexture->getTextureID(), 0);
@@ -58,7 +59,7 @@ namespace Core {
         if (this->hasColorBuffer) {
             if (this->colorTexture) {
                 WeakPointer<Texture2D> texture = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->colorTexture);
-                Engine::instance()->destroyTexture2D(texture);
+                Graphics::safeReleaseObject(texture);
                 this->colorTexture = WeakPointer<Texture>::nullPtr();
             }
         }
@@ -69,7 +70,7 @@ namespace Core {
             if (!this->enableStencilBuffer) {
                 if (this->depthTexture) {
                     WeakPointer<Texture2D> texture = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->depthTexture);
-                    Engine::instance()->destroyTexture2D(texture);
+                    Graphics::safeReleaseObject(texture);
                     this->depthTexture = WeakPointer<Texture>::nullPtr();
                 }
             }

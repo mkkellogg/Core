@@ -13,6 +13,10 @@ namespace Core {
     EquirectangularMaterial::EquirectangularMaterial(WeakPointer<Graphics> graphics) : Material(graphics) {
     }
 
+    EquirectangularMaterial::~EquirectangularMaterial() {
+        if (this->texture.isValid()) Graphics::safeReleaseObject(this->texture);
+    }
+
     Bool EquirectangularMaterial::build() {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         ShaderManager& shaderManager = graphics->getShaderManager();

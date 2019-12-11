@@ -61,10 +61,10 @@ namespace Core {
         cubeMeshObj->getTransform().lookAt(Core::Point3r(0.f, 0.0f, -1.0f));
         Engine::instance()->getGraphicsSystem()->getRenderer()->renderObjectBasic(cubeMeshObj, renderCamera, equirectangularMaterial);
 
-        Engine::instance()->destroyTexture2D(equirectangularTexture);
+        Graphics::safeReleaseObject(equirectangularTexture);
         WeakPointer<CubeTexture> cubeMap = WeakPointer<Texture>::dynamicPointerCast<CubeTexture>(renderTarget->getColorTexture());
 
-        Engine::instance()->getGraphicsSystem()->destroyRenderTargetCube(renderTarget, false, true);
+        Graphics::safeReleaseObject(renderTarget);
 
         return cubeMap;
     }

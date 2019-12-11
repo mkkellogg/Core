@@ -30,6 +30,7 @@ namespace Core {
         static const Real DEFAULT_NEARP;
         static const Real DEFAULT_FARP;
 
+        virtual ~Camera();
         void setAspectRatio(Real ratio);       
         void setAspectRatioFromDimensions(UInt32 width, UInt32 height);
         void setDimensions(Real top, Real  bottom, Real left, Real right);

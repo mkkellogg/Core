@@ -15,6 +15,7 @@ namespace Core {
         friend class Engine;
 
     public:
+        virtual ~BasicTexturedLitMaterial();
         virtual Bool build() override;
         virtual Int32 getShaderLocation(StandardAttribute attribute, UInt32 offset = 0) override;
         virtual Int32 getShaderLocation(StandardUniform uniform, UInt32 offset = 0) override;

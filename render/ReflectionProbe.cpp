@@ -4,6 +4,7 @@
 #include "../geometry/Mesh.h"
 #include "../image/TextureAttr.h"
 #include "../render/Camera.h"
+#include "../render/RenderTarget2D.h"
 #include "../render/RenderTargetCube.h"
 #include "../material/IrradianceRendererMaterial.h"
 #include "../material/SpecularIBLPreFilteredRendererMaterial.h"
@@ -20,6 +21,7 @@ namespace Core {
 
     ReflectionProbe::~ReflectionProbe() {
         if (this->skyboxCube.isValid()) Engine::safeReleaseObject(this->skyboxCube);
+        if (this->specularIBLBRDFMap.isValid()) Graphics::safeReleaseObject(this->specularIBLBRDFMap);
     }
 
     void ReflectionProbe::init() {

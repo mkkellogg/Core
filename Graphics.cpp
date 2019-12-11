@@ -37,6 +37,12 @@ namespace Core {
         this->placeHolderCubeTexture = this->createCubeTexture(texAttributes);
     }
 
+    void Graphics::safeReleaseObject(WeakPointer<CoreObject> object) {
+        if(!Engine::isShuttingDown()) {
+            Engine::instance()->getGraphicsSystem()->objectManager.removeReference(object);
+        }
+    }
+
     WeakPointer<Texture2D> Graphics::getPlaceHolderTexture2D() {
         return this->placeHolderTexture2D;
     }
@@ -131,6 +137,10 @@ namespace Core {
 
         this->activateRenderTarget(currentRenderTarget);
         this->setViewport(currentViewport.x, currentViewport.y, currentViewport.z, currentViewport.w);
+    }
+
+    void Graphics::addCoreObjectReference(std::shared_ptr<CoreObject> object, CoreObjectReferenceManager::OwnerType ownerType) {
+        this->objectManager.addReference(object, ownerType);
     }
 
 }

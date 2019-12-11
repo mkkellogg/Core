@@ -136,8 +136,6 @@ namespace Core {
 
         WeakPointer<Texture2D> createTexture2D(const TextureAttributes& attributes);
         WeakPointer<CubeTexture> createCubeTexture(const TextureAttributes& attributes);
-        void destroyTexture2D(WeakPointer<Texture2D> texture);
-        void destroyCubeTexture(WeakPointer<CubeTexture> texture);
 
         WeakPointer<AttributeArrayGPUStorage> createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize);
         WeakPointer<IndexBuffer> createIndexBuffer(UInt32 size);

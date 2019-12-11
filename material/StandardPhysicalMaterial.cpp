@@ -23,6 +23,13 @@ namespace Core {
     StandardPhysicalMaterial::StandardPhysicalMaterial(WeakPointer<Graphics> graphics): StandardPhysicalMaterial("StandardPhysical", graphics) {
     }
 
+    StandardPhysicalMaterial::~StandardPhysicalMaterial() {
+        if (this->albedoMap.isValid()) Graphics::safeReleaseObject(this->albedoMap);
+        if (this->normalMap.isValid()) Graphics::safeReleaseObject(this->normalMap);
+        if (this->roughnessMap.isValid()) Graphics::safeReleaseObject(this->roughnessMap);
+        if (this->metallicMap.isValid()) Graphics::safeReleaseObject(this->metallicMap);
+    }
+
     void StandardPhysicalMaterial::setInitialParams() {
         this->albedo.set(1.0f, 1.0f, 1.0f, 1.0f);
         this->metallic = 0.9f;

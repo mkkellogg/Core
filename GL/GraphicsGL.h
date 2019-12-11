@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "../util/PersistentWeakPointer.h"
+#include "../base/CoreObjectReferenceManager.h"
 #include "../Graphics.h"
 #include "../common/gl.h"
 #include "../geometry/AttributeType.h"
@@ -43,8 +44,6 @@ namespace Core {
         
         WeakPointer<Texture2D> createTexture2D(const TextureAttributes& attributes) override;
         WeakPointer<CubeTexture> createCubeTexture(const TextureAttributes& attributes) override;
-        void destroyTexture2D(WeakPointer<Texture2D> texture) override;
-        void destroyCubeTexture(WeakPointer<CubeTexture> texture) override;
         
         WeakPointer<Shader> createShader(const std::string& vertex, const std::string& fragment) override;
         WeakPointer<Shader> createShader(const std::string& vertex, const std::string& geometry, const std::string& fragment) override;
@@ -63,11 +62,9 @@ namespace Core {
         WeakPointer<RenderTarget2D> createRenderTarget2D(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
                                                      const TextureAttributes& colorTextureAttributes, 
                                                      const TextureAttributes& depthTextureAttributes, const Vector2u& size) override;
-        void destroyRenderTarget2D(WeakPointer<RenderTarget2D> renderTarget, Bool destroyColor, Bool destroyDepth) override;
         WeakPointer<RenderTargetCube> createRenderTargetCube(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
                                                      const TextureAttributes& colorTextureAttributes,
                                                      const TextureAttributes& depthTextureAttributes, const Vector2u& size) override;
-        void destroyRenderTargetCube(WeakPointer<RenderTargetCube> renderTarget, Bool destroyColor, Bool destroyDepth) override;
 
         void setColorWriteEnabled(Bool enabled) override;
         void setClearColor(Color color) override;
@@ -126,12 +123,6 @@ namespace Core {
 
         GLVersion glVersion;
         std::shared_ptr<RendererGL> renderer;
-
-        std::vector<std::shared_ptr<Texture2DGL>> textures2D;
-        std::vector<std::shared_ptr<CubeTextureGL>> cubeTextures;
-        std::vector<std::shared_ptr<ShaderGL>> shaders;
-        std::vector<std::shared_ptr<RenderTarget2DGL>> renderTarget2Ds;
-        std::vector<std::shared_ptr<RenderTargetCubeGL>> renderTargetCubes;
         
         PersistentWeakPointer<RenderTarget2DGL> defaultRenderTarget;
         PersistentWeakPointer<RenderTarget> currentRenderTarget;

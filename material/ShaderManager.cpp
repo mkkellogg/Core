@@ -21,7 +21,7 @@ namespace Core {
     ShaderManager::~ShaderManager() {
         for(std::unordered_map<std::string, ShaderManager::Entry>::const_iterator iter = this->entries.begin(); iter != this->entries.end(); ++iter) {
             std::pair<std::string, ShaderManager::Entry> key = *iter;
-            if (key.second.shader.isValid()) Engine::safeReleaseObject(key.second.shader);
+            if (key.second.shader.isValid()) Graphics::safeReleaseObject(key.second.shader);
         }
     }
 
