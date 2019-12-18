@@ -1,6 +1,5 @@
 #include "StandardPhysicalMaterial.h"
 #include "../material/Shader.h"
-#include "../util/WeakPointer.h"
 #include "StandardAttributes.h"
 #include "StandardUniforms.h"
 #include "../image/Texture.h"
@@ -63,42 +62,6 @@ namespace Core {
         this->lightSpecularIBLBRDFMapLocation = -1;
     }
 
-    Bool StandardPhysicalMaterial::build() {
-        ShaderMaterial<BaseLitMaterial>::build();
-        this->setLit(true);
-        this->setPhysical(true);
-        this->setSkinningEnabled(true);
-        return true;
-    }
-
-    Int32 StandardPhysicalMaterial::getShaderLocation(StandardAttribute attribute, UInt32 offset) {
-        Int32 attributeLocation = BaseMaterial::getShaderLocation(attribute, offset);
-        if (attributeLocation >= 0) return attributeLocation;
-        switch (attribute) {
-            case StandardAttribute::AlbedoUV:
-                return this->albedoUVLocation;
-            case StandardAttribute::NormalUV:
-                return this->normalUVLocation;
-            default:
-                return -1;
-        }
-    }
-
-    Int32 StandardPhysicalMaterial::getShaderLocation(StandardUniform uniform, UInt32 offset) {
-        Int32 uniformLocation = BaseLitMaterial::getShaderLocation(uniform, offset);
-        if (uniformLocation >= 0) return uniformLocation;
-        switch (uniform) {
-            case StandardUniform::LightIrradianceMap:
-                return this->lightIrradianceMapLocation;
-            case StandardUniform::LightSpecularIBLBRDFMap:
-                return this->lightSpecularIBLBRDFMapLocation;
-            case StandardUniform::LightSpecularIBLPreFilteredMap:
-                return this->lightSpecularIBLPreFilteredMapLocation;
-            default:
-                return -1;
-        }
-    }
-
     void StandardPhysicalMaterial::setMetallic(Real metallic) {
         this->metallic = metallic;
     }
@@ -145,6 +108,42 @@ namespace Core {
 
     void StandardPhysicalMaterial::setMetallicMapEnabled(Bool enabled) {
         this->metallicMapEnabled = enabled;
+    }
+
+    Bool StandardPhysicalMaterial::build() {
+        ShaderMaterial<BaseLitMaterial>::build();
+        this->setLit(true);
+        this->setPhysical(true);
+        this->setSkinningEnabled(true);
+        return true;
+    }
+
+    Int32 StandardPhysicalMaterial::getShaderLocation(StandardAttribute attribute, UInt32 offset) {
+        Int32 attributeLocation = BaseMaterial::getShaderLocation(attribute, offset);
+        if (attributeLocation >= 0) return attributeLocation;
+        switch (attribute) {
+            case StandardAttribute::AlbedoUV:
+                return this->albedoUVLocation;
+            case StandardAttribute::NormalUV:
+                return this->normalUVLocation;
+            default:
+                return -1;
+        }
+    }
+
+    Int32 StandardPhysicalMaterial::getShaderLocation(StandardUniform uniform, UInt32 offset) {
+        Int32 uniformLocation = BaseLitMaterial::getShaderLocation(uniform, offset);
+        if (uniformLocation >= 0) return uniformLocation;
+        switch (uniform) {
+            case StandardUniform::LightIrradianceMap:
+                return this->lightIrradianceMapLocation;
+            case StandardUniform::LightSpecularIBLBRDFMap:
+                return this->lightSpecularIBLBRDFMapLocation;
+            case StandardUniform::LightSpecularIBLPreFilteredMap:
+                return this->lightSpecularIBLPreFilteredMapLocation;
+            default:
+                return -1;
+        }
     }
 
     void StandardPhysicalMaterial::sendCustomUniformsToShader() {

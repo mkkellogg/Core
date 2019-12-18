@@ -1,10 +1,5 @@
 #include "SpecularIBLPreFilteredRendererMaterial.h"
 #include "../material/Shader.h"
-#include "../util/WeakPointer.h"
-#include "StandardAttributes.h"
-#include "StandardUniforms.h"
-#include "../Engine.h"
-#include "../material/ShaderManager.h"
 
 namespace Core {
 
@@ -19,18 +14,18 @@ namespace Core {
     SpecularIBLPreFilteredRendererMaterial::~SpecularIBLPreFilteredRendererMaterial() {
     }
 
-    void SpecularIBLPreFilteredRendererMaterial::sendCustomUniformsToShader() {
-        SkyboxMaterial::sendCustomUniformsToShader();
-        this->shader->setUniform1f(this->roughnessLocation, this->roughness);
-        this->shader->setUniform1f(this->textureResolutionLocation, this->textureResolution);
-    }
-
     void SpecularIBLPreFilteredRendererMaterial::setRoughness(Real roughness) {
         this->roughness = roughness;
     }
 
     void SpecularIBLPreFilteredRendererMaterial::setTextureResolution(UInt32 resolution) {
         this->textureResolution = resolution;
+    }
+
+    void SpecularIBLPreFilteredRendererMaterial::sendCustomUniformsToShader() {
+        SkyboxMaterial::sendCustomUniformsToShader();
+        this->shader->setUniform1f(this->roughnessLocation, this->roughness);
+        this->shader->setUniform1f(this->textureResolutionLocation, this->textureResolution);
     }
 
     void SpecularIBLPreFilteredRendererMaterial::copyTo(WeakPointer<Material> target) {

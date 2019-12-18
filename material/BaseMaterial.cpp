@@ -1,6 +1,5 @@
 #include "BaseMaterial.h"
 #include "../material/Shader.h"
-#include "../util/WeakPointer.h"
 #include "StandardAttributes.h"
 #include "StandardUniforms.h"
 #include "../Engine.h"
@@ -26,6 +25,9 @@ namespace Core {
         for (UInt32 i = 0; i < Constants::MaxBones; i++) this->bonesLocation[i] = -1;
         this->boneIndexLocation = -1;
         this->boneWeightLocation = -1;
+    }
+
+    BaseMaterial::~BaseMaterial() {
     }
 
     Int32 BaseMaterial::getShaderLocation(StandardAttribute attribute, UInt32 offset) {

@@ -1,19 +1,16 @@
 #include "SkyboxMaterial.h"
-#include "../Graphics.h"
-#include "../material/Shader.h"
-#include "../util/WeakPointer.h"
-#include "../Engine.h"
 #include "../image/CubeTexture.h"
-#include "../material/ShaderManager.h"
 
 namespace Core {
 
     SkyboxMaterial::SkyboxMaterial(const std::string& vertShaderName, const std::string& fragShaderName, WeakPointer<Graphics> graphics):
         ShaderMaterial<BaseMaterial>(vertShaderName, fragShaderName, graphics) {
+            this->cubeTextureLocation = -1;
     }
 
     SkyboxMaterial::SkyboxMaterial(const std::string& builtInShaderName, WeakPointer<Graphics> graphics):
         ShaderMaterial<BaseMaterial>(builtInShaderName, graphics) {
+            this->cubeTextureLocation = -1;
     }
     
     SkyboxMaterial::SkyboxMaterial(WeakPointer<Graphics> graphics) : SkyboxMaterial("Skybox", graphics) {
@@ -37,6 +34,7 @@ namespace Core {
         if(skyboxMaterial.isValid()) {
             BaseMaterial::copyTo(skyboxMaterial);
             skyboxMaterial->cubeTextureLocation = this->cubeTextureLocation;
+            skyboxMaterial->texture = this->texture;
         } else {
             throw InvalidArgumentException("SkyboxMaterial::copyTo() -> 'target must be same material.");
         }

@@ -1,7 +1,5 @@
 #include "BasicLitMaterial.h"
 #include "../material/Shader.h"
-#include "../util/WeakPointer.h"
-#include "../image/Texture.h"
 #include "../Engine.h"
 #include "../Graphics.h"
 #include "../material/ShaderManager.h"

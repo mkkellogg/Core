@@ -8,7 +8,6 @@ namespace Core {
 
     // forward declarations
     class Engine;
-    class Texture;
 
     class AmbientPhysicalMaterial : public StandardPhysicalMaterial {
         friend class Engine;

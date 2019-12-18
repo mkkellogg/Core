@@ -1,8 +1,6 @@
 #include "BasicTexturedLitMaterial.h"
 #include "../material/Shader.h"
-#include "../util/WeakPointer.h"
 #include "StandardAttributes.h"
-#include "StandardUniforms.h"
 #include "../image/Texture.h"
 #include "../Engine.h"
 #include "../Graphics.h"
@@ -14,6 +12,7 @@ namespace Core {
         this->albedoMapEnabledLocation = -1;
         this->normalMapEnabledLocation = -1;
         this->albedoUVLocation = -1;
+        this->albedoLocation = -1;
         this->albedoMapLocation = -1;
         this->normalUVLocation = -1;
         this->normalMapLocation = -1;
@@ -24,6 +23,22 @@ namespace Core {
     BasicTexturedLitMaterial::~BasicTexturedLitMaterial() {
         if (this->albedoMap.isValid()) Graphics::safeReleaseObject(this->albedoMap);
         if (this->normalMap.isValid()) Graphics::safeReleaseObject(this->normalMap);
+    }
+
+    void BasicTexturedLitMaterial::setAlbedoMapEnabled(Bool enabled) {
+        this->albedoMapEnabled = enabled;
+    }
+
+    void BasicTexturedLitMaterial::setAlbedoMap(WeakPointer<Texture> albedoMap) {
+        this->albedoMap = albedoMap;
+    }
+
+    void BasicTexturedLitMaterial::setNormalMapEnabled(Bool enabled) {
+        this->albedoMapEnabled = enabled;
+    }
+
+    void BasicTexturedLitMaterial::setNormalMap(WeakPointer<Texture> normalMap) {
+        this->normalMap = normalMap;
     }
 
     Bool BasicTexturedLitMaterial::build() {
@@ -45,22 +60,6 @@ namespace Core {
             default:
                 return -1;
         }
-    }
-
-    void BasicTexturedLitMaterial::setAlbedoMapEnabled(Bool enabled) {
-        this->albedoMapEnabled = enabled;
-    }
-
-    void BasicTexturedLitMaterial::setAlbedoMap(WeakPointer<Texture> albedoMap) {
-        this->albedoMap = albedoMap;
-    }
-
-    void BasicTexturedLitMaterial::setNormalMapEnabled(Bool enabled) {
-        this->albedoMapEnabled = enabled;
-    }
-
-    void BasicTexturedLitMaterial::setNormalMap(WeakPointer<Texture> normalMap) {
-        this->normalMap = normalMap;
     }
 
     void BasicTexturedLitMaterial::sendCustomUniformsToShader() {
@@ -91,6 +90,7 @@ namespace Core {
             basicTexturedLitMaterial->albedoMapEnabledLocation = this->albedoMapEnabledLocation;
             basicTexturedLitMaterial->normalMapEnabledLocation = this->normalMapEnabledLocation;
             basicTexturedLitMaterial->albedoUVLocation = this->albedoUVLocation;
+            basicTexturedLitMaterial->albedoLocation = this->albedoLocation;
             basicTexturedLitMaterial->albedoMapLocation = this->albedoMapLocation;
             basicTexturedLitMaterial->normalUVLocation = this->normalUVLocation;
             basicTexturedLitMaterial->normalMapLocation = this->normalMapLocation;

@@ -1,6 +1,5 @@
 #include "BasicColoredMaterial.h"
 #include "../material/Shader.h"
-#include "../util/WeakPointer.h"
 #include "../Engine.h"
 #include "../Graphics.h"
 #include "../material/ShaderManager.h"
@@ -11,6 +10,17 @@ namespace Core {
         this->objectColorLocation = -1;
         this->zOffsetLocation = -1;
         this->zOffset = 0.0f;
+    }
+
+    BasicColoredMaterial::~BasicColoredMaterial() {
+    }
+
+    void BasicColoredMaterial::setObjectColor(Color color) {
+        this->objectColor = color;
+    }
+
+    void BasicColoredMaterial::setZOffset(Real offset) {
+        this->zOffset = offset;
     }
 
     Bool BasicColoredMaterial::build() {
@@ -49,13 +59,5 @@ namespace Core {
         BaseMaterial::bindShaderVarLocations();
         this->objectColorLocation = this->shader->getUniformLocation("objectColor");
         this->zOffsetLocation = this->shader->getUniformLocation("zOffset");
-    }
-
-    void BasicColoredMaterial::setObjectColor(Color color) {
-        this->objectColor = color;
-    }
-
-    void BasicColoredMaterial::setZOffset(Real offset) {
-        this->zOffset = offset;
     }
 }

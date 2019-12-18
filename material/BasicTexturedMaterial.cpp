@@ -1,8 +1,6 @@
 #include "BasicTexturedMaterial.h"
 #include "../material/Shader.h"
-#include "../util/WeakPointer.h"
 #include "StandardAttributes.h"
-#include "StandardUniforms.h"
 #include "../image/Texture.h"
 #include "../Engine.h"
 #include "../Graphics.h"
@@ -16,6 +14,10 @@ namespace Core {
 
     BasicTexturedMaterial::~BasicTexturedMaterial() {
         if (this->texture.isValid()) Graphics::safeReleaseObject(this->texture);
+    }
+
+    void BasicTexturedMaterial::setTexture(WeakPointer<Texture> texture) {
+        this->texture = texture;
     }
 
     Bool BasicTexturedMaterial::build() {
@@ -36,10 +38,6 @@ namespace Core {
             default:
                 return -1;
         }
-    }
-
-    void BasicTexturedMaterial::setTexture(WeakPointer<Texture> texture) {
-        this->texture = texture;
     }
 
     void BasicTexturedMaterial::sendCustomUniformsToShader() {

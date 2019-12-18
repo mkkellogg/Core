@@ -1,6 +1,5 @@
 #include "BasicCubeMaterial.h"
 #include "../material/Shader.h"
-#include "../util/WeakPointer.h"
 #include "../Engine.h"
 #include "../Graphics.h"
 #include "../image/CubeTexture.h"
@@ -19,6 +18,14 @@ namespace Core {
         if (this->rectTexture.isValid()) Graphics::safeReleaseObject(this->rectTexture);
     }
 
+    void BasicCubeMaterial::setCubeTexture(WeakPointer<CubeTexture> texture) {
+        this->cubeTexture = texture;
+    }
+
+    void BasicCubeMaterial::setRectTexture(WeakPointer<Texture2D> texture) {
+        this->rectTexture = texture;
+    }
+    
     Bool BasicCubeMaterial::build() {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         ShaderManager& shaderManager = graphics->getShaderManager();
@@ -26,14 +33,6 @@ namespace Core {
         graphics->activateShader(this->shader);
         this->bindShaderVarLocations();
         return true;
-    }
-
-    void BasicCubeMaterial::setCubeTexture(WeakPointer<CubeTexture> texture) {
-        this->cubeTexture = texture;
-    }
-
-    void BasicCubeMaterial::setRectTexture(WeakPointer<Texture2D> texture) {
-        this->rectTexture = texture;
     }
 
     void BasicCubeMaterial::sendCustomUniformsToShader() {

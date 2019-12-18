@@ -1,8 +1,5 @@
 #include "OutlineMaterial.h"
 #include "../material/Shader.h"
-#include "../util/WeakPointer.h"
-#include "StandardAttributes.h"
-#include "StandardUniforms.h"
 #include "../Engine.h"
 #include "../Graphics.h"
 #include "../material/ShaderManager.h"
@@ -10,7 +7,6 @@
 namespace Core {
 
     OutlineMaterial::OutlineMaterial(WeakPointer<Graphics> graphics) : BaseMaterial(graphics) {
-
         this->outlineColorLocation = -1;
         this->edgeWidthLocation = -1;
         this->pctExtendLocation = -1;
@@ -20,6 +16,22 @@ namespace Core {
         this->edgeWidth = 0.005;
         this->pctExtend = 0.0;
         this->absExtend = 0.0025;
+    }
+
+    void OutlineMaterial::setOutlineColor(Color color) {
+        this->outlineColor = color;
+    }
+
+    void OutlineMaterial::setEdgeWidth(Real width) {
+        this->edgeWidth = width;
+    }
+
+    void OutlineMaterial::setPctExtend(Real extend) {
+        this->pctExtend = extend;
+    }
+
+    void OutlineMaterial::setAbsExtend(Real extend) {
+        this->absExtend = extend;
     }
 
     Bool OutlineMaterial::build() {
@@ -70,21 +82,5 @@ namespace Core {
         this->edgeWidthLocation = this->shader->getUniformLocation("edgeWidth");
         this->pctExtendLocation = this->shader->getUniformLocation("pctExtend");
         this->absExtendLocation = this->shader->getUniformLocation("absExtend");
-    }
-
-    void OutlineMaterial::setOutlineColor(Color color) {
-        this->outlineColor = color;
-    }
-
-    void OutlineMaterial::setEdgeWidth(Real width) {
-        this->edgeWidth = width;
-    }
-
-    void OutlineMaterial::setPctExtend(Real extend) {
-        this->pctExtend = extend;
-    }
-
-    void OutlineMaterial::setAbsExtend(Real extend) {
-        this->absExtend = extend;
     }
 }

@@ -1,7 +1,4 @@
 #include "BaseLitMaterial.h"
-#include "../material/Shader.h"
-#include "../util/WeakPointer.h"
-#include "StandardAttributes.h"
 #include "StandardUniforms.h"
 #include "../Engine.h"
 #include "../Graphics.h"
@@ -33,6 +30,9 @@ namespace Core {
         this->lightShadowSoftnessLocation = -1;
         this->lightNearPlaneLocation = -1;
         this->lightCountLocation = -1;
+    }
+
+    BaseLitMaterial::~BaseLitMaterial(){
     }
 
     Int32 BaseLitMaterial::getShaderLocation(StandardUniform uniform, UInt32 offset) {

@@ -14,6 +14,7 @@ namespace Core {
         friend class Engine;
 
     public:
+        virtual ~BaseLitMaterial();
         virtual Int32 getShaderLocation(StandardUniform uniform, UInt32 offset = 0) override;
         virtual void bindShaderVarLocations();
         virtual void copyTo(WeakPointer<Material> target) override;

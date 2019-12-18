@@ -14,6 +14,7 @@ namespace Core {
         friend class Engine;
 
     public:
+        virtual ~BasicColoredMaterial();
         virtual Bool build() override;
         virtual void sendCustomUniformsToShader() override;
         virtual void copyTo(WeakPointer<Material> target) override;

@@ -1,8 +1,5 @@
 #include "BasicExtrusionMaterial.h"
 #include "../material/Shader.h"
-#include "../util/WeakPointer.h"
-#include "StandardAttributes.h"
-#include "StandardUniforms.h"
 #include "../Engine.h"
 #include "../Graphics.h"
 #include "../material/ShaderManager.h"
@@ -14,7 +11,22 @@ namespace Core {
         this->averagedNormalLocation = -1;
         this->zOffsetLocation = -1;
         this->extrusionFactorLocation = -1;
+
          this->zOffset = 0.0f;
+         this->extrusionFactor = 0.5;
+         this->objectColor.set(1.0, 1.0, 1.0, 1.0);
+    }
+
+    void BasicExtrusionMaterial::setObjectColor(Color color) {
+        this->objectColor = color;
+    }
+
+    void BasicExtrusionMaterial::setZOffset(Real offset) {
+        this->zOffset = offset;
+    }
+
+    void BasicExtrusionMaterial::setExtrusionFactor(Real extrusionFactor) {
+        this->extrusionFactor = extrusionFactor;
     }
 
     Bool BasicExtrusionMaterial::build() {
@@ -51,20 +63,9 @@ namespace Core {
     }
 
     void BasicExtrusionMaterial::bindShaderVarLocations() {
+        BaseMaterial::bindShaderVarLocations();
         this->objectColorLocation = this->shader->getUniformLocation("objectColor");
         this->extrusionFactorLocation = this->shader->getUniformLocation("extrusionFactor");
         this->zOffsetLocation = this->shader->getUniformLocation("zOffset");
-    }
-
-    void BasicExtrusionMaterial::setObjectColor(Color color) {
-        this->objectColor = color;
-    }
-
-    void BasicExtrusionMaterial::setZOffset(Real offset) {
-        this->zOffset = offset;
-    }
-
-    void BasicExtrusionMaterial::setExtrusionFactor(Real extrusionFactor) {
-        this->extrusionFactor = extrusionFactor;
     }
 }

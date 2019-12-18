@@ -1,12 +1,6 @@
 #include "TonemapMaterial.h"
-#include "../Graphics.h"
 #include "../image/Texture2D.h"
-#include "../material/Shader.h"
-#include "../util/WeakPointer.h"
-#include "StandardAttributes.h"
 #include "StandardUniforms.h"
-#include "../Engine.h"
-#include "../material/ShaderManager.h"
 
 namespace Core {
 
@@ -41,31 +35,6 @@ namespace Core {
         this->gamma = 2.2f;
     }
 
-    Bool TonemapMaterial::build() {
-        if(!ShaderMaterial<BaseMaterial>::build()) return false;
-        return true;
-    }
-
-    Int32 TonemapMaterial::getShaderLocation(StandardUniform uniform, UInt32 offset) {
-
-        Int32 uniformLocation = BaseMaterial::getShaderLocation(uniform, offset);
-        if (uniformLocation >= 0) return uniformLocation;
-        switch (uniform) {
-            case StandardUniform::Texture0:
-                return this->textureLocation;
-            case StandardUniform::DepthTexture:
-                return this->depthTextureLocation;
-            default:
-                return -1;
-        }
-    }
-
-    void TonemapMaterial::sendCustomUniformsToShader() {
-        this->shader->setUniform1f(this->exposureLocation, this->exposure);
-        this->shader->setUniform1f(this->gammaLocation, this->gamma);
-        this->shader->setUniform1i(this->toneMapTypeLocation, (Int32)this->toneMapType);
-    }
-
     void TonemapMaterial::setTexture(WeakPointer<Texture2D> texture) {
         this->texture = texture;
     }
@@ -84,6 +53,25 @@ namespace Core {
 
     void TonemapMaterial::setToneMapType(ToneMapType type) {
         this->toneMapType = type;
+    }
+
+    Int32 TonemapMaterial::getShaderLocation(StandardUniform uniform, UInt32 offset) {
+        Int32 uniformLocation = BaseMaterial::getShaderLocation(uniform, offset);
+        if (uniformLocation >= 0) return uniformLocation;
+        switch (uniform) {
+            case StandardUniform::Texture0:
+                return this->textureLocation;
+            case StandardUniform::DepthTexture:
+                return this->depthTextureLocation;
+            default:
+                return -1;
+        }
+    }
+
+    void TonemapMaterial::sendCustomUniformsToShader() {
+        this->shader->setUniform1f(this->exposureLocation, this->exposure);
+        this->shader->setUniform1f(this->gammaLocation, this->gamma);
+        this->shader->setUniform1i(this->toneMapTypeLocation, (Int32)this->toneMapType);
     }
 
     void TonemapMaterial::copyTo(WeakPointer<Material> target) {

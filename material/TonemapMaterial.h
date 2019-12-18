@@ -16,7 +16,6 @@ namespace Core {
 
     public:
         virtual ~TonemapMaterial();
-        virtual Bool build() override;
         virtual Int32 getShaderLocation(StandardUniform uniform, UInt32 offset = 0) override;
         virtual void sendCustomUniformsToShader() override;
         virtual void copyTo(WeakPointer<Material> target) override;

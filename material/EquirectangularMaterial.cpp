@@ -1,8 +1,5 @@
 #include "EquirectangularMaterial.h"
 #include "../material/Shader.h"
-#include "../util/WeakPointer.h"
-#include "StandardAttributes.h"
-#include "StandardUniforms.h"
 #include "../Engine.h"
 #include "../Graphics.h"
 #include "../image/Texture2D.h"
