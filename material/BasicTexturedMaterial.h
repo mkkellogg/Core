@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../util/WeakPointer.h"
-#include "Material.h"
+#include "BaseMaterial.h"
 
 namespace Core {
 
@@ -9,30 +9,25 @@ namespace Core {
     class Engine;
     class Texture;
 
-    class BasicTexturedMaterial : public Material {
+    class BasicTexturedMaterial : public BaseMaterial {
         friend class Engine;
 
     public:
         virtual ~BasicTexturedMaterial();
         virtual Bool build() override;
         virtual Int32 getShaderLocation(StandardAttribute attribute, UInt32 offset = 0) override;
-        virtual Int32 getShaderLocation(StandardUniform uniform, UInt32 offset = 0) override;
         virtual void sendCustomUniformsToShader() override;
+        virtual void copyTo(WeakPointer<Material> target) override;
         virtual WeakPointer<Material> clone() override;
+        virtual void bindShaderVarLocations() override;
+
         void setTexture(WeakPointer<Texture> texture);
 
     protected:
         BasicTexturedMaterial(WeakPointer<Graphics> graphics);
-        void bindShaderVarLocations();
-
-        PersistentWeakPointer<Texture> texture;
-        Int32 positionLocation;
-        Int32 normalLocation;
-        Int32 colorLocation;
-        Int32 textureLocation;
+    
         Int32 uvLocation;
-        Int32 projectionMatrixLocation;
-        Int32 viewMatrixLocation;
-        Int32 modelMatrixLocation;
+        PersistentWeakPointer<Texture> texture;
+        Int32 textureLocation;
     };
 }

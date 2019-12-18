@@ -20,7 +20,6 @@
 #include "../material/BasicTexturedMaterial.h"
 #include "../material/BasicTexturedLitMaterial.h"
 #include "../material/StandardPhysicalMaterial.h"
-#include "../material/BasicMaterial.h"
 #include "../material/MaterialLibrary.h"
 #include "../material/ShaderMaterialCharacteristic.h"
 #include "../render/MeshRenderer.h"

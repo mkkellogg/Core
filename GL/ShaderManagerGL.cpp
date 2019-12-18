@@ -1541,7 +1541,7 @@ namespace Core {
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
             + MODEL_MATRIX_DEF +
-            " uniform vec4 color;"
+            " uniform vec4 objectColor;"
             " uniform float zOffset;"
             "out vec4 vColor;\n"
             "void main() {\n"
@@ -1550,7 +1550,7 @@ namespace Core {
             "    vec4 outPos = " + PROJECTION_MATRIX + "  * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * localPos;\n"
             "    outPos.z += zOffset; \n"
             "    gl_Position = outPos; \n"
-            "    vColor = color;\n"
+            "    vColor = objectColor;\n"
             "}\n";
 
         this->BasicColored_fragment =   

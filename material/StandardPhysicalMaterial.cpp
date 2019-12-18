@@ -12,12 +12,14 @@
 
 namespace Core {
 
-    StandardPhysicalMaterial::StandardPhysicalMaterial(const std::string& vertexShader, const std::string& fragmentShader, WeakPointer<Graphics> graphics):  ShaderMaterial(vertexShader, fragmentShader, graphics)  {
-        this->setInitialParams();
+    StandardPhysicalMaterial::StandardPhysicalMaterial(const std::string& vertexShader, const std::string& fragmentShader, WeakPointer<Graphics> graphics):
+        ShaderMaterial<BaseLitMaterial>(vertexShader, fragmentShader, graphics)  {
+            this->setInitialParams();
     }
 
-    StandardPhysicalMaterial::StandardPhysicalMaterial(const std::string& builtInShaderName, WeakPointer<Graphics> graphics): ShaderMaterial(builtInShaderName, graphics) {
-        this->setInitialParams();
+    StandardPhysicalMaterial::StandardPhysicalMaterial(const std::string& builtInShaderName, WeakPointer<Graphics> graphics):
+        ShaderMaterial<BaseLitMaterial>(builtInShaderName, graphics) {
+            this->setInitialParams();
     }
 
     StandardPhysicalMaterial::StandardPhysicalMaterial(WeakPointer<Graphics> graphics): StandardPhysicalMaterial("StandardPhysical", graphics) {
@@ -40,10 +42,29 @@ namespace Core {
         this->normalMapEnabled = false;
         this->roughnessMapEnabled = false;
         this->metallicMapEnabled = false;
+
+        this->albedoUVLocation = -1;
+        this->normalUVLocation = -1;
+
+        this->albedoLocation = -1;
+        this->albedoMapLocation = -1;
+        this->normalMapLocation = -1;
+        this->roughnessMapLocation = -1;
+        this->metallicMapLocation = -1;
+
+        this->cameraPositionLocation = -1;
+        this->metallicLocation = -1;
+        this->roughnessLocation = -1;
+        this->ambientOcclusionLocation = -1;
+        this->enabledMapLocation = -1;
+
+        this->lightIrradianceMapLocation = -1;
+        this->lightSpecularIBLPreFilteredMapLocation = -1;
+        this->lightSpecularIBLBRDFMapLocation = -1;
     }
 
     Bool StandardPhysicalMaterial::build() {
-        ShaderMaterial::build();
+        ShaderMaterial<BaseLitMaterial>::build();
         this->setLit(true);
         this->setPhysical(true);
         this->setSkinningEnabled(true);
@@ -51,95 +72,28 @@ namespace Core {
     }
 
     Int32 StandardPhysicalMaterial::getShaderLocation(StandardAttribute attribute, UInt32 offset) {
+        Int32 attributeLocation = BaseMaterial::getShaderLocation(attribute, offset);
+        if (attributeLocation >= 0) return attributeLocation;
         switch (attribute) {
-            case StandardAttribute::Position:
-                return this->positionLocation;
-            case StandardAttribute::Normal:
-                return this->normalLocation;
-            case StandardAttribute::FaceNormal:
-                return this->faceNormalLocation;
-            case StandardAttribute::Tangent:
-                return this->tangentLocation;
-            case StandardAttribute::Color:
-                return this->colorLocation;
             case StandardAttribute::AlbedoUV:
                 return this->albedoUVLocation;
             case StandardAttribute::NormalUV:
                 return this->normalUVLocation;
-            case StandardAttribute::BoneIndex:
-                return this->boneIndexLocation;
-            case StandardAttribute::BoneWeight:
-                return this->boneWeightLocation;
             default:
                 return -1;
         }
     }
 
     Int32 StandardPhysicalMaterial::getShaderLocation(StandardUniform uniform, UInt32 offset) {
-
+        Int32 uniformLocation = BaseLitMaterial::getShaderLocation(uniform, offset);
+        if (uniformLocation >= 0) return uniformLocation;
         switch (uniform) {
-            case StandardUniform::ProjectionMatrix:
-                return this->projectionMatrixLocation;
-            case StandardUniform::ViewMatrix:
-                return this->viewMatrixLocation;
-            case StandardUniform::ModelMatrix:
-                return this->modelMatrixLocation;
-            case StandardUniform::ModelInverseTransposeMatrix:
-                return this->modelInverseTransposeMatrixLocation;
-            case StandardUniform::LightPosition:
-                return this->lightPositionLocation;
-            case StandardUniform::LightDirection:
-                return this->lightDirectionLocation;
-            case StandardUniform::LightRange:
-                return this->lightRangeLocation;
-            case StandardUniform::LightType:
-                return this->lightTypeLocation;
-            case StandardUniform::LightIntensity:
-                return this->lightIntensityLocation;
-            case StandardUniform::LightColor:
-                return this->lightColorLocation;
-            case StandardUniform::LightEnabled:
-                return this->lightEnabledLocation;
-            case StandardUniform::LightShadowsEnabled:
-                return this->lightShadowsEnabledLocation;
-            case StandardUniform::LightMatrix:
-                return this->lightMatrixLocation;
-            case StandardUniform::LightViewProjection:
-                return this->lightViewProjectionLocations[offset];
-            case StandardUniform::LightShadowMap:
-                return this->lightShadowMapLocations[offset];
-            case StandardUniform::LightCascadeEnd:
-                return this->lightCascadeEndLocations[offset];
-            case StandardUniform::LightShadowMapAspect:
-                return this->lightShadowMapAspectLocations[offset];
-            case StandardUniform::LightCascadeCount:
-                return this->lightCascadeCountLocation;
-            case StandardUniform::LightShadowCubeMap:
-                return this->lightShadowCubeMapLocation;
-            case StandardUniform::LightAngularShadowBias:
-                return this->lightAngularShadowBiasLocation;
-            case StandardUniform::LightConstantShadowBias:
-                return this->lightConstantShadowBiasLocation;
-            case StandardUniform::LightShadowMapSize:
-                return this->lightShadowMapSizeLocation;
-            case StandardUniform::LightShadowSoftness:
-                return this->lightShadowSoftnessLocation;
-            case StandardUniform::LightNearPlane:
-                return this->lightNearPlaneLocation;
             case StandardUniform::LightIrradianceMap:
                 return this->lightIrradianceMapLocation;
-            case StandardUniform::LightSpecularIBLPreFilteredMap:
-                return this->lightSpecularIBLPreFilteredMapLocation;
             case StandardUniform::LightSpecularIBLBRDFMap:
                 return this->lightSpecularIBLBRDFMapLocation;
-            case StandardUniform::LightCount:
-                return this->lightCountLocation;
-            case StandardUniform::CameraPosition:
-                return this->cameraPositionLocation;
-            case StandardUniform::SkinningEnabled:
-                return this->skinningEnabledLocation;
-            case StandardUniform::Bones:
-                return this->bonesLocation[offset];
+            case StandardUniform::LightSpecularIBLPreFilteredMap:
+                return this->lightSpecularIBLPreFilteredMapLocation;
             default:
                 return -1;
         }
@@ -242,74 +196,40 @@ namespace Core {
     }
 
     void StandardPhysicalMaterial::copyTo(WeakPointer<Material> target) {
-        WeakPointer<StandardPhysicalMaterial> targetMaterial = WeakPointer<Material>::dynamicPointerCast<StandardPhysicalMaterial>(target);
-        ShaderMaterial::copyTo(targetMaterial);
-        targetMaterial->albedoMap = this->albedoMap;
-        targetMaterial->normalMap = this->normalMap;
-        targetMaterial->roughnessMap = this->roughnessMap;
-        targetMaterial->metallicMap = this->metallicMap;
-        targetMaterial->albedoMapEnabled = this->albedoMapEnabled;
-        targetMaterial->normalMapEnabled = this->normalMapEnabled;
-        targetMaterial->roughnessMapEnabled = this->roughnessMapEnabled;
-        targetMaterial->metallicMapEnabled = this->metallicMapEnabled;
+        WeakPointer<StandardPhysicalMaterial> standardPhysicalMaterial = WeakPointer<Material>::dynamicPointerCast<StandardPhysicalMaterial>(target);
+        if (standardPhysicalMaterial.isValid()) {
+            BaseLitMaterial::copyTo(standardPhysicalMaterial);
+            standardPhysicalMaterial->albedo = this->albedo;
+            standardPhysicalMaterial->albedoMap = this->albedoMap;
+            standardPhysicalMaterial->normalMap = this->normalMap;
+            standardPhysicalMaterial->roughnessMap = this->roughnessMap;
+            standardPhysicalMaterial->metallicMap = this->metallicMap;
+            standardPhysicalMaterial->albedoMapEnabled = this->albedoMapEnabled;
+            standardPhysicalMaterial->normalMapEnabled = this->normalMapEnabled;
+            standardPhysicalMaterial->roughnessMapEnabled = this->roughnessMapEnabled;
+            standardPhysicalMaterial->metallicMapEnabled = this->metallicMapEnabled;
 
-        targetMaterial->positionLocation = this->positionLocation;
-        targetMaterial->normalLocation = this->normalLocation;
-        targetMaterial->faceNormalLocation = this->faceNormalLocation;
-        targetMaterial->tangentLocation = this->tangentLocation;
-        targetMaterial->colorLocation = this->colorLocation;
-        targetMaterial->albedoUVLocation = this->albedoUVLocation;
-        targetMaterial->normalUVLocation = this->normalUVLocation;
-        targetMaterial->boneIndexLocation = this->boneIndexLocation;
-        targetMaterial->boneWeightLocation = this->boneWeightLocation;
+            standardPhysicalMaterial->albedoUVLocation = this->albedoUVLocation;
+            standardPhysicalMaterial->normalUVLocation = this->normalUVLocation;
+            standardPhysicalMaterial->albedoLocation = this->albedoLocation;
+            standardPhysicalMaterial->albedoMapLocation = this->albedoMapLocation;
+            standardPhysicalMaterial->normalMapLocation = this->normalMapLocation;
+            standardPhysicalMaterial->roughnessMapLocation = this->roughnessMapLocation;
+            standardPhysicalMaterial->metallicMapLocation = this->metallicMapLocation;
+            standardPhysicalMaterial->cameraPositionLocation = this->cameraPositionLocation;
+            standardPhysicalMaterial->metallicLocation = this->metallicLocation;
+            standardPhysicalMaterial->roughnessLocation = this->roughnessLocation;
+            standardPhysicalMaterial->ambientOcclusionLocation = this->ambientOcclusionLocation;
+            standardPhysicalMaterial->enabledMapLocation = this->enabledMapLocation;
+            standardPhysicalMaterial->metallic = this->metallic;
+            standardPhysicalMaterial->roughness = this->roughness;
+            standardPhysicalMaterial->ambientOcclusion = this->ambientOcclusion;
 
-        targetMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
-        targetMaterial->viewMatrixLocation = this->viewMatrixLocation;
-        targetMaterial->modelMatrixLocation = this->modelMatrixLocation;
-        targetMaterial->modelInverseTransposeMatrixLocation = this->modelInverseTransposeMatrixLocation;
-        targetMaterial->albedoLocation = this->albedoLocation;
-        targetMaterial->albedoMapLocation = this->albedoMapLocation;
-        targetMaterial->normalMapLocation = this->normalMapLocation;
-        targetMaterial->roughnessMapLocation = this->roughnessMapLocation;
-        targetMaterial->metallicMapLocation = this->metallicMapLocation;
-        targetMaterial->lightPositionLocation = this->lightPositionLocation;
-        targetMaterial->lightDirectionLocation = this->lightDirectionLocation;
-        targetMaterial->lightRangeLocation = this->lightRangeLocation;
-        targetMaterial->lightTypeLocation = this->lightTypeLocation;
-        targetMaterial->lightIntensityLocation = this->lightIntensityLocation;
-        targetMaterial->lightColorLocation = this->lightColorLocation;
-        targetMaterial->lightEnabledLocation = this->lightEnabledLocation;
-        targetMaterial->lightShadowsEnabledLocation = this->lightShadowsEnabledLocation;
-        targetMaterial->lightMatrixLocation = this->lightMatrixLocation;
-        for (UInt32 i =0; i < Constants::MaxDirectionalCascades; i++) {
-            targetMaterial->lightViewProjectionLocations[i] = this->lightViewProjectionLocations[i];
-            targetMaterial->lightShadowMapLocations[i] = this->lightShadowMapLocations[i];
-            targetMaterial->lightCascadeEndLocations[i] = this->lightCascadeEndLocations[i];
-            targetMaterial->lightShadowMapAspectLocations[i] = this->lightShadowMapAspectLocations[i];
-        }
-        targetMaterial->lightCascadeCountLocation = this->lightCascadeCountLocation;
-        targetMaterial->lightShadowCubeMapLocation = this->lightShadowCubeMapLocation;
-        targetMaterial->lightAngularShadowBiasLocation = this->lightAngularShadowBiasLocation;
-        targetMaterial->lightConstantShadowBiasLocation = this->lightConstantShadowBiasLocation;
-        targetMaterial->lightShadowMapSizeLocation = this->lightShadowMapSizeLocation;
-        targetMaterial->lightShadowSoftnessLocation = this->lightShadowSoftnessLocation;
-        targetMaterial->lightNearPlaneLocation = this->lightNearPlaneLocation;
-        targetMaterial->lightIrradianceMapLocation = this->lightIrradianceMapLocation;
-        targetMaterial->lightSpecularIBLPreFilteredMapLocation = this->lightSpecularIBLPreFilteredMapLocation;
-        targetMaterial->lightSpecularIBLBRDFMapLocation = this->lightSpecularIBLBRDFMapLocation;
-        targetMaterial->lightCountLocation = this->lightCountLocation;
-        targetMaterial->cameraPositionLocation = this->cameraPositionLocation;
-        targetMaterial->metallicLocation = this->metallicLocation;
-        targetMaterial->roughnessLocation = this->roughnessLocation;
-        targetMaterial->ambientOcclusionLocation = this->ambientOcclusionLocation;
-        targetMaterial->enabledMapLocation = this->enabledMapLocation;
-        targetMaterial->metallic = this->metallic;
-        targetMaterial->roughness = this->roughness;
-        targetMaterial->ambientOcclusion = this->ambientOcclusion;
-
-        targetMaterial->skinningEnabledLocation = this->skinningEnabledLocation;
-        for (UInt32 i = 0; i < Constants::MaxBones; i++) {
-          targetMaterial->bonesLocation[i] = this->bonesLocation[i];
+            standardPhysicalMaterial->lightIrradianceMapLocation = this->lightIrradianceMapLocation;
+            standardPhysicalMaterial->lightSpecularIBLPreFilteredMapLocation = this->lightSpecularIBLPreFilteredMapLocation;
+            standardPhysicalMaterial->lightSpecularIBLBRDFMapLocation = this->lightSpecularIBLBRDFMapLocation;
+        } else {
+            throw InvalidArgumentException("StandardPhysicalMaterial::copyTo() -> 'target must be same material."); 
         }
     }
 
@@ -320,65 +240,22 @@ namespace Core {
     }
 
     void StandardPhysicalMaterial::bindShaderVarLocations() {
-        this->positionLocation = this->shader->getAttributeLocation(StandardAttribute::Position);
-        this->normalLocation = this->shader->getAttributeLocation(StandardAttribute::Normal);
-        this->faceNormalLocation = this->shader->getAttributeLocation(StandardAttribute::FaceNormal);
-        this->tangentLocation = this->shader->getAttributeLocation(StandardAttribute::Tangent);
-        this->colorLocation = this->shader->getAttributeLocation(StandardAttribute::Color);
+        BaseLitMaterial::bindShaderVarLocations();
+        this->cameraPositionLocation = this->shader->getUniformLocation(StandardUniform::CameraPosition);
+        this->lightIrradianceMapLocation = this->shader->getUniformLocation(StandardUniform::LightIrradianceMap);
+        this->lightSpecularIBLPreFilteredMapLocation = this->shader->getUniformLocation(StandardUniform::LightSpecularIBLPreFilteredMap);
+        this->lightSpecularIBLBRDFMapLocation = this->shader->getUniformLocation(StandardUniform::LightSpecularIBLBRDFMap);
         this->albedoUVLocation = this->shader->getAttributeLocation(StandardAttribute::AlbedoUV);
         this->normalUVLocation = this->shader->getAttributeLocation(StandardAttribute::NormalUV);
-        this->boneIndexLocation = this->shader->getAttributeLocation(StandardAttribute::BoneIndex);
-        this->boneWeightLocation = this->shader->getAttributeLocation(StandardAttribute::BoneWeight);
-
         this->albedoLocation = this->shader->getUniformLocation("albedo");
         this->albedoMapLocation = this->shader->getUniformLocation("albedoMap");
         this->normalMapLocation = this->shader->getUniformLocation("normalMap");
         this->roughnessMapLocation = this->shader->getUniformLocation("roughnessMap");
         this->metallicMapLocation = this->shader->getUniformLocation("metallicMap");
-        this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
-        this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
-        this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);
-        this->modelInverseTransposeMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelInverseTransposeMatrix);
-        this->lightPositionLocation = this->shader->getUniformLocation(StandardUniform::LightPosition);
-        this->lightDirectionLocation = this->shader->getUniformLocation(StandardUniform::LightDirection);
-        this->lightRangeLocation = this->shader->getUniformLocation(StandardUniform::LightRange);
-        this->lightTypeLocation = this->shader->getUniformLocation(StandardUniform::LightType);
-        this->lightIntensityLocation = this->shader->getUniformLocation(StandardUniform::LightIntensity);
-        this->lightColorLocation = this->shader->getUniformLocation(StandardUniform::LightColor);
-        this->lightEnabledLocation = this->shader->getUniformLocation(StandardUniform::LightEnabled);
-        this->lightShadowsEnabledLocation = this->shader->getUniformLocation(StandardUniform::LightShadowsEnabled);
-        this->lightMatrixLocation = this->shader->getUniformLocation(StandardUniform::LightMatrix);
-        for (UInt32 i =0; i < Constants::MaxDirectionalCascades; i++) {
-            this->lightViewProjectionLocations[i] = this->shader->getUniformLocation(StandardUniform::LightViewProjection, i);
-            this->lightShadowMapLocations[i] = this->shader->getUniformLocation(StandardUniform::LightShadowMap, i);
-            this->lightCascadeEndLocations[i] = this->shader->getUniformLocation(StandardUniform::LightCascadeEnd, i);
-            this->lightShadowMapAspectLocations[i] = this->shader->getUniformLocation(StandardUniform::LightShadowMapAspect, i);
-        }
-        this->lightCascadeCountLocation = this->shader->getUniformLocation(StandardUniform::LightCascadeCount);
-        this->lightShadowCubeMapLocation = this->shader->getUniformLocation(StandardUniform::LightShadowCubeMap);
-        this->lightAngularShadowBiasLocation = this->shader->getUniformLocation(StandardUniform::LightAngularShadowBias);
-        this->lightConstantShadowBiasLocation = this->shader->getUniformLocation(StandardUniform::LightConstantShadowBias);
-        this->lightShadowMapSizeLocation = this->shader->getUniformLocation(StandardUniform::LightShadowMapSize);
-        this->lightShadowSoftnessLocation = this->shader->getUniformLocation(StandardUniform::LightShadowSoftness);
-        this->lightNearPlaneLocation = this->shader->getUniformLocation(StandardUniform::LightNearPlane);
-
-        this->lightIrradianceMapLocation = this->shader->getUniformLocation(StandardUniform::LightIrradianceMap);
-        this->lightSpecularIBLPreFilteredMapLocation = this->shader->getUniformLocation(StandardUniform::LightSpecularIBLPreFilteredMap);
-        this->lightSpecularIBLBRDFMapLocation = this->shader->getUniformLocation(StandardUniform::LightSpecularIBLBRDFMap);
-
-        this->lightCountLocation = this->shader->getUniformLocation(StandardUniform::LightCount);
-
-        this->cameraPositionLocation = this->shader->getUniformLocation(StandardUniform::CameraPosition);
         this->metallicLocation = this->shader->getUniformLocation("metallic");
         this->roughnessLocation = this->shader->getUniformLocation("roughness");
         this->ambientOcclusionLocation = this->shader->getUniformLocation("ambientOcclusion");
         this->enabledMapLocation = this->shader->getUniformLocation("enabledMap");
-
-        this->skinningEnabledLocation = this->shader->getUniformLocation(StandardUniform::SkinningEnabled);
-        for (UInt32 i = 0; i < Constants::MaxBones; i++) {
-          this->bonesLocation[i] = this->shader->getUniformLocation(StandardUniform::Bones, i);
-        }
-
     }
 
     UInt32 StandardPhysicalMaterial::textureCount() {

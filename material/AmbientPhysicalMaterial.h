@@ -14,10 +14,8 @@ namespace Core {
         friend class Engine;
 
     public:
-         virtual Bool build() override;
          
     protected:
         AmbientPhysicalMaterial(WeakPointer<Graphics> graphics);
-    
     };
 }

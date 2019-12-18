@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../util/WeakPointer.h"
-#include "Material.h"
+#include "BaseMaterial.h"
 #include "../color/Color.h"
 
 namespace Core {
@@ -9,36 +9,29 @@ namespace Core {
     // forward declarations
     class Engine;
 
-    class BasicExtrusionMaterial : public Material {
+    class BasicExtrusionMaterial : public BaseMaterial {
         friend class Engine;
 
     public:
         virtual Bool build() override;
-        virtual Int32 getShaderLocation(StandardAttribute attribute, UInt32 offset = 0) override;
-        virtual Int32 getShaderLocation(StandardUniform uniform, UInt32 offset = 0) override;
         virtual void sendCustomUniformsToShader() override;
+        virtual void copyTo(WeakPointer<Material> target) override;
         virtual WeakPointer<Material> clone() override;
+        virtual void bindShaderVarLocations() override;
 
-        void setColor(Color color);
+        void setObjectColor(Color color);
         void setZOffset(Real offset);
         void setExtrusionFactor(Real extrusionFactor);
 
     private:
         BasicExtrusionMaterial(WeakPointer<Graphics> graphics);
-        void bindShaderVarLocations();
 
-        Color color;
+        Color objectColor;
         Real zOffset;
         Real extrusionFactor;
 
-        Int32 positionLocation;
-        Int32 normalLocation;
+        Int32 objectColorLocation;
         Int32 averagedNormalLocation;
-        Int32 colorLocation;
-        Int32 projectionMatrixLocation;
-        Int32 viewMatrixLocation;
-        Int32 modelMatrixLocation;
-        Int32 modelInverseTransposeMatrixLocation;
         Int32 zOffsetLocation;
         Int32 extrusionFactorLocation;
     };

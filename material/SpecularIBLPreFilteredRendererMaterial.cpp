@@ -9,9 +9,14 @@
 namespace Core {
 
     SpecularIBLPreFilteredRendererMaterial::SpecularIBLPreFilteredRendererMaterial(WeakPointer<Graphics> graphics) : SkyboxMaterial("SpecularIBLPreFilteredRenderer", graphics) {
+        this->roughnessLocation = -1;
+        this->textureResolutionLocation = -1;
         this->setPhysical(true);
         this->roughness = 0.5;
         this->textureResolution = 512;
+    }
+
+    SpecularIBLPreFilteredRendererMaterial::~SpecularIBLPreFilteredRendererMaterial() {
     }
 
     void SpecularIBLPreFilteredRendererMaterial::sendCustomUniformsToShader() {
@@ -29,12 +34,16 @@ namespace Core {
     }
 
     void SpecularIBLPreFilteredRendererMaterial::copyTo(WeakPointer<Material> target) {
-        SkyboxMaterial::copyTo(target);
-        WeakPointer<SpecularIBLPreFilteredRendererMaterial> _target = WeakPointer<Material>::dynamicPointerCast<SpecularIBLPreFilteredRendererMaterial>(target);
-        _target->roughness = this->roughness;
-        _target->roughnessLocation = this->roughnessLocation;
-        _target->textureResolution = this->textureResolution;
-        _target->textureResolutionLocation = this->textureResolutionLocation;
+        WeakPointer<SpecularIBLPreFilteredRendererMaterial> specularIBLPreFilteredRenderMat = WeakPointer<Material>::dynamicPointerCast<SpecularIBLPreFilteredRendererMaterial>(target);
+        if(specularIBLPreFilteredRenderMat.isValid()) {
+            SkyboxMaterial::copyTo(target);
+            specularIBLPreFilteredRenderMat->roughness = this->roughness;
+            specularIBLPreFilteredRenderMat->roughnessLocation = this->roughnessLocation;
+            specularIBLPreFilteredRenderMat->textureResolution = this->textureResolution;
+            specularIBLPreFilteredRenderMat->textureResolutionLocation = this->textureResolutionLocation;
+        } else {
+           throw InvalidArgumentException("SpecularIBLPreFilteredRendererMaterial::copyTo() -> 'target must be same material."); 
+        }
     }
 
     WeakPointer<Material> SpecularIBLPreFilteredRendererMaterial::clone() {

@@ -1,8 +1,6 @@
 #include "BasicCubeMaterial.h"
 #include "../material/Shader.h"
 #include "../util/WeakPointer.h"
-#include "StandardAttributes.h"
-#include "StandardUniforms.h"
 #include "../Engine.h"
 #include "../Graphics.h"
 #include "../image/CubeTexture.h"
@@ -11,7 +9,9 @@
 
 namespace Core {
 
-    BasicCubeMaterial::BasicCubeMaterial(WeakPointer<Graphics> graphics) : Material(graphics) {
+    BasicCubeMaterial::BasicCubeMaterial(WeakPointer<Graphics> graphics) : BaseMaterial(graphics) {
+        this->cubeTextureLocation = -1;
+        this->rectTextureLocation = -1;
     }
 
     BasicCubeMaterial::~BasicCubeMaterial() {
@@ -28,30 +28,6 @@ namespace Core {
         return true;
     }
 
-    Int32 BasicCubeMaterial::getShaderLocation(StandardAttribute attribute, UInt32 offset) {
-        switch (attribute) {
-            case StandardAttribute::Position:
-                return this->positionLocation;
-            case StandardAttribute::Color:
-                return this->colorLocation;
-            default:
-                return -1;
-        }
-    }
-
-    Int32 BasicCubeMaterial::getShaderLocation(StandardUniform uniform, UInt32 offset) {
-        switch (uniform) {
-            case StandardUniform::ProjectionMatrix:
-                return this->projectionMatrixLocation;
-            case StandardUniform::ViewMatrix:
-                return this->viewMatrixLocation;
-            case StandardUniform::ModelMatrix:
-                return this->modelMatrixLocation;
-            default:
-                return -1;
-        }
-    }
-
     void BasicCubeMaterial::setCubeTexture(WeakPointer<CubeTexture> texture) {
         this->cubeTexture = texture;
     }
@@ -63,34 +39,33 @@ namespace Core {
     void BasicCubeMaterial::sendCustomUniformsToShader() {
         this->shader->setTextureCube(0, this->cubeTexture->getTextureID());
         this->shader->setUniform1i(this->cubeTextureLocation, 0);
-
         this->shader->setTexture2D(1, this->rectTexture->getTextureID());
         this->shader->setUniform1i(this->rectTextureLocation, 1);
+    }
+
+    void BasicCubeMaterial::copyTo(WeakPointer<Material> target) {
+        WeakPointer<BasicCubeMaterial> basicCubeMaterial = WeakPointer<Material>::dynamicPointerCast<BasicCubeMaterial>(target);
+        if (basicCubeMaterial.isValid()) {
+            BaseMaterial::copyTo(target);
+            basicCubeMaterial->cubeTextureLocation = this->cubeTextureLocation;
+            basicCubeMaterial->rectTextureLocation = this->rectTextureLocation;
+            basicCubeMaterial->rectTexture = this->rectTexture;
+            basicCubeMaterial->cubeTexture = this->cubeTexture;
+        } else {
+            throw InvalidArgumentException("BasicCubeMaterial::copyTo() -> 'target must be same material.");
+        }
     }
 
     WeakPointer<Material> BasicCubeMaterial::clone() {
         WeakPointer<BasicCubeMaterial> newMaterial = Engine::instance()->createMaterial<BasicCubeMaterial>(false);
         this->copyTo(newMaterial);
-        newMaterial->positionLocation = this->positionLocation;
-        newMaterial->colorLocation = this->colorLocation;
-        newMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
-        newMaterial->viewMatrixLocation = this->viewMatrixLocation;
-        newMaterial->modelMatrixLocation = this->modelMatrixLocation;
-        newMaterial->cubeTextureLocation = this->cubeTextureLocation;
-        newMaterial->rectTextureLocation = this->rectTextureLocation;
-        newMaterial->rectTexture = this->rectTexture;
-        newMaterial->cubeTexture = this->cubeTexture;
         return newMaterial;
     }
 
     void BasicCubeMaterial::bindShaderVarLocations() {
-        this->positionLocation = this->shader->getAttributeLocation(StandardAttribute::Position);
-        this->colorLocation = this->shader->getAttributeLocation(StandardAttribute::Color);
+        BaseMaterial::bindShaderVarLocations();
         this->cubeTextureLocation = this->shader->getUniformLocation("cubeTexture");
         this->rectTextureLocation = this->shader->getUniformLocation("rectTexture");
-        this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
-        this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
-        this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);
     }
 
     UInt32 BasicCubeMaterial::textureCount() {

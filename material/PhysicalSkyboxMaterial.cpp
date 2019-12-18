@@ -23,10 +23,14 @@ namespace Core {
     }
 
     void PhysicalSkyboxMaterial::copyTo(WeakPointer<Material> target) {
-        SkyboxMaterial::copyTo(target);
-        WeakPointer<PhysicalSkyboxMaterial> _target = WeakPointer<Material>::dynamicPointerCast<PhysicalSkyboxMaterial>(target);
-        _target->exposureLocation = this->exposureLocation;
-        _target->exposure = this->exposure;
+        WeakPointer<PhysicalSkyboxMaterial> physicalSkyboxMaterial = WeakPointer<Material>::dynamicPointerCast<PhysicalSkyboxMaterial>(target);
+        if (physicalSkyboxMaterial.isValid()) {
+            SkyboxMaterial::copyTo(target);
+            physicalSkyboxMaterial->exposureLocation = this->exposureLocation;
+            physicalSkyboxMaterial->exposure = this->exposure;
+        } else {
+            throw InvalidArgumentException("PhysicalSkyboxMaterial::copyTo() -> 'target must be same material.");
+        }
     }
 
     WeakPointer<Material> PhysicalSkyboxMaterial::clone() {

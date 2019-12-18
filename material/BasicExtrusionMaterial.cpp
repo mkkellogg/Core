@@ -9,7 +9,12 @@
 
 namespace Core {
 
-    BasicExtrusionMaterial::BasicExtrusionMaterial(WeakPointer<Graphics> graphics) : Material(graphics) {
+    BasicExtrusionMaterial::BasicExtrusionMaterial(WeakPointer<Graphics> graphics) : BaseMaterial(graphics) {
+        this->objectColorLocation = -1;
+        this->averagedNormalLocation = -1;
+        this->zOffsetLocation = -1;
+        this->extrusionFactorLocation = -1;
+         this->zOffset = 0.0f;
     }
 
     Bool BasicExtrusionMaterial::build() {
@@ -21,72 +26,38 @@ namespace Core {
         return true;
     }
 
-    Int32 BasicExtrusionMaterial::getShaderLocation(StandardAttribute attribute, UInt32 offset) {
-        switch (attribute) {
-            case StandardAttribute::Position:
-                return this->positionLocation;
-             case StandardAttribute::Normal:
-                return this->normalLocation;
-            case StandardAttribute::AveragedNormal:
-                return this->averagedNormalLocation;
-            default:
-                return -1;
-        }
-    }
-
-    Int32 BasicExtrusionMaterial::getShaderLocation(StandardUniform uniform, UInt32 offset) {
-        switch (uniform) {
-            case StandardUniform::ProjectionMatrix:
-                return this->projectionMatrixLocation;
-            case StandardUniform::ViewMatrix:
-                return this->viewMatrixLocation;
-            case StandardUniform::ModelMatrix:
-                return this->modelMatrixLocation;
-            case StandardUniform::ModelInverseTransposeMatrix:
-                return this->modelInverseTransposeMatrixLocation;
-            default:
-                return -1;
-        }
-    }
-
     void BasicExtrusionMaterial::sendCustomUniformsToShader() {
-        this->shader->setUniform4f(this->colorLocation, this->color.r, this->color.g, this->color.b, this->color.a);
+        this->shader->setUniform4f(this->objectColorLocation, this->objectColor.r, this->objectColor.g, this->objectColor.b, this->objectColor.a);
         this->shader->setUniform1f(this->zOffsetLocation, this->zOffset);
         this->shader->setUniform1f(this->extrusionFactorLocation, this->extrusionFactor);
     }
 
+     void BasicExtrusionMaterial::copyTo(WeakPointer<Material> target) {
+        WeakPointer<BasicExtrusionMaterial> basicExtrusionMaterial = WeakPointer<Material>::dynamicPointerCast<BasicExtrusionMaterial>(target);
+        if (basicExtrusionMaterial.isValid()) {
+            BaseMaterial::copyTo(target);
+            basicExtrusionMaterial->objectColorLocation = this->objectColorLocation;
+            basicExtrusionMaterial->zOffsetLocation = this->zOffsetLocation;
+            basicExtrusionMaterial->extrusionFactorLocation = this->extrusionFactorLocation;
+        } else {
+            throw InvalidArgumentException("BasicExtrusionMaterial::copyTo() -> 'target must be same material.");
+        }
+     }
+
     WeakPointer<Material> BasicExtrusionMaterial::clone() {
         WeakPointer<BasicExtrusionMaterial> newMaterial = Engine::instance()->createMaterial<BasicExtrusionMaterial>(false);
         this->copyTo(newMaterial);
-        newMaterial->positionLocation = this->positionLocation;
-        newMaterial->normalLocation = this->normalLocation;
-        newMaterial->averagedNormalLocation = this->averagedNormalLocation;
-        newMaterial->colorLocation = this->colorLocation;
-        newMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
-        newMaterial->viewMatrixLocation = this->viewMatrixLocation;
-        newMaterial->modelMatrixLocation = this->modelMatrixLocation;
-        newMaterial->modelInverseTransposeMatrixLocation = this->modelInverseTransposeMatrixLocation;
-        newMaterial->colorLocation = this->colorLocation;
-        newMaterial->zOffsetLocation = this->zOffsetLocation;
-        newMaterial->extrusionFactorLocation = this->extrusionFactorLocation;
         return newMaterial;
     }
 
     void BasicExtrusionMaterial::bindShaderVarLocations() {
-        this->positionLocation = this->shader->getAttributeLocation(StandardAttribute::Position);
-        this->normalLocation = this->shader->getAttributeLocation(StandardAttribute::Normal);
-        this->averagedNormalLocation = this->shader->getAttributeLocation(StandardAttribute::AveragedNormal);
-        this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
-        this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
-        this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);
-        this->modelInverseTransposeMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelInverseTransposeMatrix);
-        this->colorLocation = this->shader->getUniformLocation("color");
+        this->objectColorLocation = this->shader->getUniformLocation("objectColor");
         this->extrusionFactorLocation = this->shader->getUniformLocation("extrusionFactor");
         this->zOffsetLocation = this->shader->getUniformLocation("zOffset");
     }
 
-    void BasicExtrusionMaterial::setColor(Color color) {
-        this->color = color;
+    void BasicExtrusionMaterial::setObjectColor(Color color) {
+        this->objectColor = color;
     }
 
     void BasicExtrusionMaterial::setZOffset(Real offset) {

@@ -10,7 +10,7 @@
 
 namespace Core {
 
-    EquirectangularMaterial::EquirectangularMaterial(WeakPointer<Graphics> graphics) : Material(graphics) {
+    EquirectangularMaterial::EquirectangularMaterial(WeakPointer<Graphics> graphics) : BaseMaterial(graphics) {
     }
 
     EquirectangularMaterial::~EquirectangularMaterial() {
@@ -26,30 +26,6 @@ namespace Core {
         return true;
     }
 
-    Int32 EquirectangularMaterial::getShaderLocation(StandardAttribute attribute, UInt32 offset) {
-        switch (attribute) {
-            case StandardAttribute::Position:
-                return this->positionLocation;
-            case StandardAttribute::Color:
-                return this->colorLocation;
-            default:
-                return -1;
-        }
-    }
-
-    Int32 EquirectangularMaterial::getShaderLocation(StandardUniform uniform, UInt32 offset) {
-        switch (uniform) {
-            case StandardUniform::ProjectionMatrix:
-                return this->projectionMatrixLocation;
-            case StandardUniform::ViewMatrix:
-                return this->viewMatrixLocation;
-            case StandardUniform::ModelMatrix:
-                return this->modelMatrixLocation;
-            default:
-                return -1;
-        }
-    }
-
     void EquirectangularMaterial::setTexture(WeakPointer<Texture2D> texture) {
         this->texture = texture;
     }
@@ -60,25 +36,25 @@ namespace Core {
         }
     }
 
+    void EquirectangularMaterial::copyTo(WeakPointer<Material> target) {
+        WeakPointer<EquirectangularMaterial> equirectangularMaterial = WeakPointer<Material>::dynamicPointerCast<EquirectangularMaterial>(target);
+        if (equirectangularMaterial.isValid()) {
+            BaseMaterial::copyTo(target);
+            equirectangularMaterial->textureLocation = this->textureLocation;
+        } else {
+            throw InvalidArgumentException("EquirectangularMaterial::copyTo() -> 'target must be same material.");
+        }
+    }
+
     WeakPointer<Material> EquirectangularMaterial::clone() {
         WeakPointer<EquirectangularMaterial> newMaterial = Engine::instance()->createMaterial<EquirectangularMaterial>(false);
         this->copyTo(newMaterial);
-        newMaterial->positionLocation = this->positionLocation;
-        newMaterial->colorLocation = this->colorLocation;
-        newMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
-        newMaterial->viewMatrixLocation = this->viewMatrixLocation;
-        newMaterial->modelMatrixLocation = this->modelMatrixLocation;
-        newMaterial->textureLocation = this->textureLocation;
         return newMaterial;
     }
 
     void EquirectangularMaterial::bindShaderVarLocations() {
-        this->positionLocation = this->shader->getAttributeLocation(StandardAttribute::Position);
-        this->colorLocation = this->shader->getAttributeLocation(StandardAttribute::Color);
+        BaseMaterial::bindShaderVarLocations();
         this->textureLocation = this->shader->getUniformLocation("equirectangularTexture");
-        this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
-        this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
-        this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);
     }
 
     UInt32 EquirectangularMaterial::textureCount() {

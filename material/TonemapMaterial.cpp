@@ -10,12 +10,14 @@
 
 namespace Core {
 
-    TonemapMaterial::TonemapMaterial(const std::string& vertShaderName, const std::string& fragShaderName, WeakPointer<Graphics> graphics): ShaderMaterial(vertShaderName, fragShaderName, graphics) {
-        this->setInitialParams();
+    TonemapMaterial::TonemapMaterial(const std::string& vertShaderName, const std::string& fragShaderName, WeakPointer<Graphics> graphics):
+        ShaderMaterial<BaseMaterial>(vertShaderName, fragShaderName, graphics) {
+            this->setInitialParams();
     }
 
-    TonemapMaterial::TonemapMaterial(const std::string& builtInShaderName, WeakPointer<Graphics> graphics): ShaderMaterial(builtInShaderName, graphics) {
-        this->setInitialParams();
+    TonemapMaterial::TonemapMaterial(const std::string& builtInShaderName, WeakPointer<Graphics> graphics):
+        ShaderMaterial<BaseMaterial>(builtInShaderName, graphics) {
+            this->setInitialParams();
     }
     
     TonemapMaterial::TonemapMaterial(WeakPointer<Graphics> graphics) : TonemapMaterial("Tonemap", graphics) {
@@ -27,36 +29,28 @@ namespace Core {
     }
 
     void TonemapMaterial::setInitialParams() {
+
+        this->textureLocation = -1;
+        this->depthTextureLocation = -1;
+        this->exposureLocation = -1;
+        this->gammaLocation = -1;
+        this->toneMapTypeLocation = -1;
+
         this->toneMapType = ToneMapType::Reinhard; 
         this->exposure = 1.0f;
         this->gamma = 2.2f;
     }
 
     Bool TonemapMaterial::build() {
-        if(!ShaderMaterial::build()) return false;
-        this->bindShaderVarLocations();
+        if(!ShaderMaterial<BaseMaterial>::build()) return false;
         return true;
     }
 
-    Int32 TonemapMaterial::getShaderLocation(StandardAttribute attribute, UInt32 offset) {
-        switch (attribute) {
-            case StandardAttribute::Position:
-                return this->positionLocation;
-            case StandardAttribute::Color:
-                return this->colorLocation;
-            default:
-                return -1;
-        }
-    }
-
     Int32 TonemapMaterial::getShaderLocation(StandardUniform uniform, UInt32 offset) {
+
+        Int32 uniformLocation = BaseMaterial::getShaderLocation(uniform, offset);
+        if (uniformLocation >= 0) return uniformLocation;
         switch (uniform) {
-            case StandardUniform::ProjectionMatrix:
-                return this->projectionMatrixLocation;
-            case StandardUniform::ViewMatrix:
-                return this->viewMatrixLocation;
-            case StandardUniform::ModelMatrix:
-                return this->modelMatrixLocation;
             case StandardUniform::Texture0:
                 return this->textureLocation;
             case StandardUniform::DepthTexture:
@@ -93,23 +87,23 @@ namespace Core {
     }
 
     void TonemapMaterial::copyTo(WeakPointer<Material> target) {
-        ShaderMaterial::copyTo(target);
-        WeakPointer<TonemapMaterial> _target = WeakPointer<Material>::dynamicPointerCast<TonemapMaterial>(target);
-        _target->positionLocation = this->positionLocation;
-        _target->colorLocation = this->colorLocation;
-        _target->projectionMatrixLocation = this->projectionMatrixLocation;
-        _target->viewMatrixLocation = this->viewMatrixLocation;
-        _target->modelMatrixLocation = this->modelMatrixLocation;
-        _target->textureLocation = this->textureLocation;
-        _target->depthTextureLocation = this->depthTextureLocation;
-        _target->exposureLocation = this->exposureLocation;
-        _target->gammaLocation = this->gammaLocation;
-        _target->toneMapTypeLocation = this->toneMapTypeLocation;
-        _target->texture = this->texture;
-        _target->depthTexture = this->depthTexture;
-        _target->exposure = this->exposure;
-        _target->gamma = this->gamma;
-        _target->toneMapType = this->toneMapType;
+        WeakPointer<TonemapMaterial> tonemapMaterial = WeakPointer<Material>::dynamicPointerCast<TonemapMaterial>(target);
+        if (tonemapMaterial.isValid()) {
+            BaseMaterial::copyTo(target);
+            tonemapMaterial->textureLocation = this->textureLocation;
+            tonemapMaterial->depthTextureLocation = this->depthTextureLocation;
+            tonemapMaterial->exposureLocation = this->exposureLocation;
+            tonemapMaterial->gammaLocation = this->gammaLocation;
+            tonemapMaterial->toneMapTypeLocation = this->toneMapTypeLocation;
+            
+            tonemapMaterial->texture = this->texture;
+            tonemapMaterial->depthTexture = this->depthTexture;
+            tonemapMaterial->exposure = this->exposure;
+            tonemapMaterial->gamma = this->gamma;
+            tonemapMaterial->toneMapType = this->toneMapType;
+        } else {
+            throw InvalidArgumentException("TonemapMaterial::copyTo() -> 'target must be same material.");
+        }
     }
 
     WeakPointer<Material> TonemapMaterial::clone() {
@@ -119,13 +113,9 @@ namespace Core {
     }
 
     void TonemapMaterial::bindShaderVarLocations() {
-        this->positionLocation = this->shader->getAttributeLocation(StandardAttribute::Position);
-        this->colorLocation = this->shader->getAttributeLocation(StandardAttribute::Color);
+        BaseMaterial::bindShaderVarLocations();
         this->textureLocation = this->shader->getUniformLocation(StandardUniform::Texture0);
         this->depthTextureLocation = this->shader->getUniformLocation(StandardUniform::DepthTexture);
-        this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
-        this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
-        this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);
         this->exposureLocation = this->shader->getUniformLocation("exposure");
         this->gammaLocation = this->shader->getUniformLocation("gamma");
         this->toneMapTypeLocation = this->shader->getUniformLocation("toneMapType");

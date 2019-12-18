@@ -2,7 +2,7 @@
 
 #include "../util/WeakPointer.h"
 #include "../common/Constants.h"
-#include "Material.h"
+#include "BaseMaterial.h"
 #include "../color/Color.h"
 
 namespace Core {
@@ -10,42 +10,32 @@ namespace Core {
     // forward declarations
     class Engine;
 
-    class OutlineMaterial: public Material {
+    class OutlineMaterial: public BaseMaterial {
         friend class Engine;
 
     public:
         virtual Bool build() override;
-        virtual Int32 getShaderLocation(StandardAttribute attribute, UInt32 offset = 0) override;
-        virtual Int32 getShaderLocation(StandardUniform uniform, UInt32 offset = 0) override;
         virtual void sendCustomUniformsToShader() override;
+        virtual void copyTo(WeakPointer<Material> target) override;
         virtual WeakPointer<Material> clone() override;
+        virtual void bindShaderVarLocations() override;
 
-        void setColor(Color color);
+        void setOutlineColor(Color color);
         void setEdgeWidth(Real width);
         void setPctExtend(Real extend);
         void setAbsExtend(Real extend);
 
     private:
         OutlineMaterial(WeakPointer<Graphics> graphics);
-        void bindShaderVarLocations();
 
-        Color color;
+        Color outlineColor;
         Real edgeWidth;
         Real pctExtend;
         Real absExtend;
 
-        Int32 positionLocation;
-        Int32 projectionMatrixLocation;
-        Int32 viewMatrixLocation;
-        Int32 modelMatrixLocation;
-        Int32 colorLocation;
+        Int32 outlineColorLocation;
         Int32 edgeWidthLocation;
         Int32 pctExtendLocation;
         Int32 absExtendLocation;
-
-        Int32 skinningEnabledLocation;
-        Int32 bonesLocation[Constants::MaxBones];
-        Int32 boneIndexLocation;
-        Int32 boneWeightLocation;
     };
 }

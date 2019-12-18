@@ -2,18 +2,18 @@
 #include "../Graphics.h"
 #include "../material/Shader.h"
 #include "../util/WeakPointer.h"
-#include "StandardAttributes.h"
-#include "StandardUniforms.h"
 #include "../Engine.h"
 #include "../image/CubeTexture.h"
 #include "../material/ShaderManager.h"
 
 namespace Core {
 
-    SkyboxMaterial::SkyboxMaterial(const std::string& vertShaderName, const std::string& fragShaderName, WeakPointer<Graphics> graphics): ShaderMaterial(vertShaderName, fragShaderName, graphics) {
+    SkyboxMaterial::SkyboxMaterial(const std::string& vertShaderName, const std::string& fragShaderName, WeakPointer<Graphics> graphics):
+        ShaderMaterial<BaseMaterial>(vertShaderName, fragShaderName, graphics) {
     }
 
-    SkyboxMaterial::SkyboxMaterial(const std::string& builtInShaderName, WeakPointer<Graphics> graphics): ShaderMaterial(builtInShaderName, graphics) {
+    SkyboxMaterial::SkyboxMaterial(const std::string& builtInShaderName, WeakPointer<Graphics> graphics):
+        ShaderMaterial<BaseMaterial>(builtInShaderName, graphics) {
     }
     
     SkyboxMaterial::SkyboxMaterial(WeakPointer<Graphics> graphics) : SkyboxMaterial("Skybox", graphics) {
@@ -22,35 +22,7 @@ namespace Core {
     SkyboxMaterial::~SkyboxMaterial() {
         if (this->texture.isValid()) Graphics::safeReleaseObject(this->texture);
     }
-
-    Bool SkyboxMaterial::build() {
-        if(!ShaderMaterial::build()) return false;
-        this->bindShaderVarLocations();
-        return true;
-    }
-
-    Int32 SkyboxMaterial::getShaderLocation(StandardAttribute attribute, UInt32 offset) {
-        switch (attribute) {
-            case StandardAttribute::Position:
-                return this->positionLocation;
-            case StandardAttribute::Color:
-                return this->colorLocation;
-            default:
-                return -1;
-        }
-    }
-
-    Int32 SkyboxMaterial::getShaderLocation(StandardUniform uniform, UInt32 offset) {
-        switch (uniform) {
-            case StandardUniform::ProjectionMatrix:
-                return this->projectionMatrixLocation;
-            case StandardUniform::ViewMatrix:
-                return this->viewMatrixLocation;
-            default:
-                return -1;
-        }
-    }
-
+    
     void SkyboxMaterial::setTexture(WeakPointer<CubeTexture> texture) {
         this->texture = texture;
     }
@@ -61,13 +33,13 @@ namespace Core {
     }
 
     void SkyboxMaterial::copyTo(WeakPointer<Material> target) {
-        ShaderMaterial::copyTo(target);
-        WeakPointer<SkyboxMaterial> _target = WeakPointer<Material>::dynamicPointerCast<SkyboxMaterial>(target);
-        _target->positionLocation = this->positionLocation;
-        _target->colorLocation = this->colorLocation;
-        _target->projectionMatrixLocation = this->projectionMatrixLocation;
-        _target->viewMatrixLocation = this->viewMatrixLocation;
-        _target->cubeTextureLocation = this->cubeTextureLocation;
+        WeakPointer<SkyboxMaterial> skyboxMaterial = WeakPointer<Material>::dynamicPointerCast<SkyboxMaterial>(target);
+        if(skyboxMaterial.isValid()) {
+            BaseMaterial::copyTo(skyboxMaterial);
+            skyboxMaterial->cubeTextureLocation = this->cubeTextureLocation;
+        } else {
+            throw InvalidArgumentException("SkyboxMaterial::copyTo() -> 'target must be same material.");
+        }
     }
 
     WeakPointer<Material> SkyboxMaterial::clone() {
@@ -77,11 +49,8 @@ namespace Core {
     }
 
     void SkyboxMaterial::bindShaderVarLocations() {
-        this->positionLocation = this->shader->getAttributeLocation(StandardAttribute::Position);
-        this->colorLocation = this->shader->getAttributeLocation(StandardAttribute::Color);
+        BaseMaterial::bindShaderVarLocations();
         this->cubeTextureLocation = this->shader->getUniformLocation("cubeTexture");
-        this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
-        this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
     }
 
     UInt32 SkyboxMaterial::textureCount() {

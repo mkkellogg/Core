@@ -5,7 +5,6 @@
 #include "image/CubeTexture.h"
 #include "material/Shader.h"
 #include "material/Material.h"
-#include "material/BasicMaterial.h"
 #include "render/Renderer.h"
 #include "render/MeshRenderer.h"
 #include "render/ObjectRenderer.h"

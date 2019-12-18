@@ -78,6 +78,8 @@ set(INCLUDE_FILES
     asset/AssetLoader.h
     asset/ModelLoader.h
     material/Material.h
+    material/BaseMaterial.h
+    material/BaseLitMaterial.h
     material/ShaderMaterial.h
     material/DepthOnlyMaterial.h
     material/DistanceOnlyMaterial.h
@@ -103,8 +105,8 @@ set(INCLUDE_FILES
     material/Shader.h
     material/MaterialLibrary.h
     material/ShaderMaterialCharacteristic.h
+    material/ShaderManager.h
     material/ShaderType.h
-    Demo.h
     render/RenderPath.h
     render/BaseRenderableContainer.h
     render/RenderableContainer.h
@@ -240,7 +242,8 @@ set(SOURCE_FILES
     light/AmbientLight.cpp
     light/AmbientIBLLight.cpp
     material/Material.cpp
-    material/ShaderMaterial.cpp
+    material/BaseMaterial.cpp
+    material/BaseLitMaterial.cpp
     material/DepthOnlyMaterial.cpp
     material/DistanceOnlyMaterial.cpp
     material/BasicMaterial.cpp
@@ -272,7 +275,6 @@ set(SOURCE_FILES
     util/Time.cpp
     util/String.cpp
     Engine.cpp
-    Demo.cpp
     Graphics.cpp
     GL/GraphicsGL.cpp
     GL/RendererGL.cpp

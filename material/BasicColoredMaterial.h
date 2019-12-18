@@ -2,7 +2,7 @@
 
 #include "../util/WeakPointer.h"
 #include "../common/Constants.h"
-#include "Material.h"
+#include "BaseMaterial.h"
 #include "../color/Color.h"
 
 namespace Core {
@@ -10,36 +10,26 @@ namespace Core {
     // forward declarations
     class Engine;
 
-    class BasicColoredMaterial: public Material {
+    class BasicColoredMaterial: public BaseMaterial {
         friend class Engine;
 
     public:
         virtual Bool build() override;
-        virtual Int32 getShaderLocation(StandardAttribute attribute, UInt32 offset = 0) override;
-        virtual Int32 getShaderLocation(StandardUniform uniform, UInt32 offset = 0) override;
         virtual void sendCustomUniformsToShader() override;
+        virtual void copyTo(WeakPointer<Material> target) override;
         virtual WeakPointer<Material> clone() override;
+        virtual void bindShaderVarLocations() override;
 
-        void setColor(Color color);
+        void setObjectColor(Color color);
         void setZOffset(Real offset);
 
     private:
         BasicColoredMaterial(WeakPointer<Graphics> graphics);
-        void bindShaderVarLocations();
 
-        Color color;
+        Color objectColor;
         Real zOffset;
 
-        Int32 positionLocation;
-        Int32 colorLocation;
-        Int32 projectionMatrixLocation;
-        Int32 viewMatrixLocation;
-        Int32 modelMatrixLocation;
+        Int32 objectColorLocation;
         Int32 zOffsetLocation;
-
-        Int32 skinningEnabledLocation;
-        Int32 bonesLocation[Constants::MaxBones];
-        Int32 boneIndexLocation;
-        Int32 boneWeightLocation;
     };
 }

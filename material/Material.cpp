@@ -43,6 +43,10 @@ namespace Core {
         return 0;
     }
 
+    void Material::sendCustomUniformsToShader() {
+
+    }
+
     Bool Material::getColorWriteEnabled() const {
         return this->colorWriteEnabled;
     }

@@ -3,6 +3,7 @@
 #include "../util/WeakPointer.h"
 #include "../render/ToneMapType.h"
 #include "ShaderMaterial.h"
+#include "BaseMaterial.h"
 
 namespace Core {
 
@@ -10,29 +11,29 @@ namespace Core {
     class Engine;
     class Texture2D;
 
-    class TonemapMaterial : public ShaderMaterial {
+    class TonemapMaterial : public ShaderMaterial<BaseMaterial> {
         friend class Engine;
 
     public:
         virtual ~TonemapMaterial();
         virtual Bool build() override;
-        virtual Int32 getShaderLocation(StandardAttribute attribute, UInt32 offset = 0) override;
         virtual Int32 getShaderLocation(StandardUniform uniform, UInt32 offset = 0) override;
         virtual void sendCustomUniformsToShader() override;
+        virtual void copyTo(WeakPointer<Material> target) override;
         virtual WeakPointer<Material> clone() override;
+        virtual void bindShaderVarLocations() override;
+        virtual UInt32 textureCount() override;
+
         void setExposure(Real exposure);
         void setGamma(Real gamma);
         void setTexture(WeakPointer<Texture2D> texture);
         void setDepthTexture(WeakPointer<Texture2D> depthTexture);
         void setToneMapType(ToneMapType type);
-        virtual UInt32 textureCount() override;
         
     protected:
         TonemapMaterial(WeakPointer<Graphics> graphics);
         TonemapMaterial(const std::string& builtInShaderName, WeakPointer<Graphics> graphics);
         TonemapMaterial(const std::string& vertShaderName, const std::string& fragShaderName, WeakPointer<Graphics> graphics);
-        virtual void copyTo(WeakPointer<Material> target) override;
-        virtual void bindShaderVarLocations() override;
 
         Real exposure;
         Real gamma;
@@ -40,11 +41,6 @@ namespace Core {
         PersistentWeakPointer<Texture2D> depthTexture;
         ToneMapType toneMapType;
 
-        Int32 positionLocation;
-        Int32 colorLocation;
-        Int32 projectionMatrixLocation;
-        Int32 viewMatrixLocation;
-        Int32 modelMatrixLocation;
         Int32 textureLocation;
         Int32 depthTextureLocation;
         Int32 exposureLocation;

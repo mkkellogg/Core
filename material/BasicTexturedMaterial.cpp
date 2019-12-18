@@ -10,7 +10,8 @@
 
 namespace Core {
 
-    BasicTexturedMaterial::BasicTexturedMaterial(WeakPointer<Graphics> graphics): Material(graphics) {
+    BasicTexturedMaterial::BasicTexturedMaterial(WeakPointer<Graphics> graphics): BaseMaterial(graphics) {
+        this->uvLocation = -1;
     }
 
     BasicTexturedMaterial::~BasicTexturedMaterial() {
@@ -27,28 +28,11 @@ namespace Core {
     }
 
     Int32 BasicTexturedMaterial::getShaderLocation(StandardAttribute attribute, UInt32 offset) {
+        Int32 attributeLocation = BaseMaterial::getShaderLocation(attribute, offset);
+        if (attributeLocation >= 0) return attributeLocation;
         switch (attribute) {
-            case StandardAttribute::Position:
-                return this->positionLocation;
-            case StandardAttribute::Normal:
-                return this->normalLocation;
-            case StandardAttribute::Color:
-                return this->colorLocation;
             case StandardAttribute::AlbedoUV:
                 return this->uvLocation;
-            default:
-                return -1;
-        }
-    }
-
-    Int32 BasicTexturedMaterial::getShaderLocation(StandardUniform uniform, UInt32 offset) {
-        switch (uniform) {
-            case StandardUniform::ProjectionMatrix:
-                return this->projectionMatrixLocation;
-            case StandardUniform::ViewMatrix:
-                return this->viewMatrixLocation;
-            case StandardUniform::ModelMatrix:
-                return this->modelMatrixLocation;
             default:
                 return -1;
         }
@@ -64,29 +48,27 @@ namespace Core {
         }
     }
 
+    void BasicTexturedMaterial::copyTo(WeakPointer<Material> target) {
+        WeakPointer<BasicTexturedMaterial> basicTexturedMaterial = WeakPointer<Material>::dynamicPointerCast<BasicTexturedMaterial>(target);
+        if (basicTexturedMaterial.isValid()) {
+            BaseMaterial::copyTo(target);
+            basicTexturedMaterial->texture = this->texture;
+            basicTexturedMaterial->textureLocation = this->textureLocation;
+            basicTexturedMaterial->uvLocation = this->uvLocation;
+        } else {
+            throw InvalidArgumentException("BasicTexturedMaterial::copyTo() -> 'target must be same material.");
+        }
+    }
+
     WeakPointer<Material> BasicTexturedMaterial::clone() {
         WeakPointer<BasicTexturedMaterial> newMaterial = Engine::instance()->createMaterial<BasicTexturedMaterial>(false);
         this->copyTo(newMaterial);
-        newMaterial->texture = this->texture;
-        newMaterial->positionLocation = this->positionLocation;
-        newMaterial->normalLocation = this->normalLocation;
-        newMaterial->colorLocation = this->colorLocation;
-        newMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
-        newMaterial->viewMatrixLocation = this->viewMatrixLocation;
-        newMaterial->modelMatrixLocation = this->modelMatrixLocation;
-        newMaterial->uvLocation = this->uvLocation;
-        newMaterial->textureLocation = this->textureLocation;
         return newMaterial;
     }
 
     void BasicTexturedMaterial::bindShaderVarLocations() {
-        this->positionLocation = this->shader->getAttributeLocation(StandardAttribute::Position);
-        this->normalLocation = this->shader->getAttributeLocation(StandardAttribute::Normal);
-        this->colorLocation = this->shader->getAttributeLocation(StandardAttribute::Color);
+        BaseMaterial::bindShaderVarLocations();
         this->uvLocation = this->shader->getAttributeLocation(StandardAttribute::AlbedoUV);
         this->textureLocation = this->shader->getUniformLocation("twoDtexture");
-        this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
-        this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
-        this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);
     }
 }

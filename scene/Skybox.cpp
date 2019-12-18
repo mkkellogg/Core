@@ -2,7 +2,6 @@
 #include "../material/StandardAttributes.h"
 #include "../material/SkyboxMaterial.h"
 #include "../material/PhysicalSkyboxMaterial.h"
-#include "../material/BasicMaterial.h"
 #include "../geometry/Mesh.h"
 #include "../render/MeshRenderer.h"
 
