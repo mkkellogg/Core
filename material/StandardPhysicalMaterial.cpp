@@ -199,10 +199,15 @@ namespace Core {
         if (standardPhysicalMaterial.isValid()) {
             BaseLitMaterial::copyTo(standardPhysicalMaterial);
             standardPhysicalMaterial->albedo = this->albedo;
+            standardPhysicalMaterial->metallic = this->metallic;
+            standardPhysicalMaterial->roughness = this->roughness;
+            standardPhysicalMaterial->ambientOcclusion = this->ambientOcclusion;
+
             standardPhysicalMaterial->albedoMap = this->albedoMap;
             standardPhysicalMaterial->normalMap = this->normalMap;
             standardPhysicalMaterial->roughnessMap = this->roughnessMap;
             standardPhysicalMaterial->metallicMap = this->metallicMap;
+            
             standardPhysicalMaterial->albedoMapEnabled = this->albedoMapEnabled;
             standardPhysicalMaterial->normalMapEnabled = this->normalMapEnabled;
             standardPhysicalMaterial->roughnessMapEnabled = this->roughnessMapEnabled;
@@ -220,10 +225,6 @@ namespace Core {
             standardPhysicalMaterial->roughnessLocation = this->roughnessLocation;
             standardPhysicalMaterial->ambientOcclusionLocation = this->ambientOcclusionLocation;
             standardPhysicalMaterial->enabledMapLocation = this->enabledMapLocation;
-            standardPhysicalMaterial->metallic = this->metallic;
-            standardPhysicalMaterial->roughness = this->roughness;
-            standardPhysicalMaterial->ambientOcclusion = this->ambientOcclusion;
-
             standardPhysicalMaterial->lightIrradianceMapLocation = this->lightIrradianceMapLocation;
             standardPhysicalMaterial->lightSpecularIBLPreFilteredMapLocation = this->lightSpecularIBLPreFilteredMapLocation;
             standardPhysicalMaterial->lightSpecularIBLBRDFMapLocation = this->lightSpecularIBLBRDFMapLocation;
