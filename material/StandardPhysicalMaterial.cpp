@@ -141,6 +141,8 @@ namespace Core {
                 return this->lightSpecularIBLBRDFMapLocation;
             case StandardUniform::LightSpecularIBLPreFilteredMap:
                 return this->lightSpecularIBLPreFilteredMapLocation;
+            case StandardUniform::CameraPosition:
+                return this->cameraPositionLocation;
             default:
                 return -1;
         }
