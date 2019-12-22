@@ -14,6 +14,7 @@ namespace Core {
     class Engine;
     class Camera;
     class Material;
+    class Shader;
     class AttributeArrayBase;
     class Mesh;
     
@@ -36,6 +37,7 @@ namespace Core {
                                         StandardAttribute setAttribute, WeakPointer<AttributeArrayBase> array, Bool force = false);
         void disableShaderAttribute(WeakPointer<Mesh> mesh, WeakPointer<Material> material, StandardAttribute attribute,
                                     WeakPointer<AttributeArrayBase> array);
+        void setSkinningVars(WeakPointer<Mesh> mesh, WeakPointer<Material> material, WeakPointer<Shader> shader);
         void drawMesh(WeakPointer<Mesh> mesh);
 
         PersistentWeakPointer<Material> material;

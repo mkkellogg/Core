@@ -30,6 +30,38 @@ namespace Core {
         }
     }
 
+    void MeshRenderer::setSkinningVars(WeakPointer<Mesh> mesh, WeakPointer<Material> material, WeakPointer<Shader> shader) {
+        Int32 skinningEnabledLocation = material->getShaderLocation(StandardUniform::SkinningEnabled);
+        if (skinningEnabledLocation >= 0) shader->setUniform1i(skinningEnabledLocation, 0.0);
+        if (material->isSkinningEnabled()) {
+            std::shared_ptr<MeshContainer> thisContainer = std::dynamic_pointer_cast<MeshContainer>(this->owner.lock());
+            if (thisContainer && thisContainer->hasVertexBoneMap(mesh->getObjectID())) {
+                if (skinningEnabledLocation >= 0) shader->setUniform1i(skinningEnabledLocation, 1.0);
+                WeakPointer<VertexBoneMap> vertexBoneMap = thisContainer->getVertexBoneMap(mesh->getObjectID());
+                this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::BoneIndex, StandardAttribute::BoneIndex, vertexBoneMap->getIndices(), true);
+                this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::BoneWeight, StandardAttribute::BoneWeight, vertexBoneMap->getWeights(), true);
+
+                Matrix4x4 rootTransformInverse = this->owner->getTransform().getWorldMatrix();
+                rootTransformInverse.invert();
+
+                Matrix4x4 temp;
+                WeakPointer<Skeleton> skeleton = thisContainer->getSkeleton();
+                for(UInt32 i = 0; i < skeleton->getNodeCount(); i++) {
+                    Skeleton::SkeletonNode * node = skeleton->getNodeFromList(i);
+                    if (node->BoneIndex >= 0) {
+                        Int32 bonesLocation = material->getShaderLocation(StandardUniform::Bones, node->BoneIndex);
+                        if (bonesLocation >= 0) {
+                            temp.copy(skeleton->getBone(node->BoneIndex)->OffsetMatrix);
+                            temp.preMultiply(node->getFullTransform());
+                            temp.preMultiply(rootTransformInverse);
+                            shader->setUniformMatrix4(bonesLocation, temp);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     Bool MeshRenderer::forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh, const std::vector<WeakPointer<Light>>& lights,
                                            Bool matchPhysicalPropertiesWithLighting) {
         WeakPointer<Material> material;
@@ -81,41 +113,7 @@ namespace Core {
         else
             this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::AlbedoUV, StandardAttribute::NormalUV, mesh->getVertexAlbedoUVs());
 
-        Int32 skinningEnabledLocation = material->getShaderLocation(StandardUniform::SkinningEnabled);
-        if (skinningEnabledLocation >= 0) shader->setUniform1i(skinningEnabledLocation, 0.0);
-        if (material->isSkinningEnabled()) {
-            std::shared_ptr<MeshContainer> thisContainer = std::dynamic_pointer_cast<MeshContainer>(this->owner.lock());
-            if (thisContainer) {
-                if (thisContainer->hasVertexBoneMap(mesh->getObjectID())) {
-                    if (skinningEnabledLocation >= 0) shader->setUniform1i(skinningEnabledLocation, 1.0);
-                    WeakPointer<VertexBoneMap> vertexBoneMap = thisContainer->getVertexBoneMap(mesh->getObjectID());
-                    this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::BoneIndex, StandardAttribute::BoneIndex, vertexBoneMap->getIndices(), true);
-                    this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::BoneWeight, StandardAttribute::BoneWeight, vertexBoneMap->getWeights(), true);
-
-                    WeakPointer<Skeleton> skeleton = thisContainer->getSkeleton();
-                    Tree<Skeleton::SkeletonNode*>::TreeNode * rootNode = skeleton->getRootNode();
-                    WeakPointer<Object3D> rootTarget = ((Object3DSkeletonNode *)rootNode->Data)->Target;
-
-                    Matrix4x4 rootTransformInverse = this->owner->getTransform().getWorldMatrix();
-                    rootTransformInverse.invert();
-
-                    Matrix4x4 temp;
-                    for(UInt32 i = 0; i < skeleton->getNodeCount(); i++) {
-                        Skeleton::SkeletonNode * node = skeleton->getNodeFromList(i);
-                        if (node->BoneIndex >= 0) {
-                            Int32 bonesLocation = material->getShaderLocation(StandardUniform::Bones, node->BoneIndex);
-                            if (bonesLocation >= 0) {
-                                Bone * bone = skeleton->getBone(node->BoneIndex);
-                                temp.copy(bone->OffsetMatrix);
-                                temp.preMultiply(node->getFullTransform());
-                                temp.preMultiply(rootTransformInverse);
-                                shader->setUniformMatrix4(bonesLocation, temp);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        this->setSkinningVars(mesh, material, shader);
 
         Int32 cameraPositionLoc = material->getShaderLocation(StandardUniform::CameraPosition);
         Int32 projectionLoc = material->getShaderLocation(StandardUniform::ProjectionMatrix);
