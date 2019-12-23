@@ -20,6 +20,7 @@ namespace Core {
         this->viewMatrixLocation = -1;
         this->modelMatrixLocation = -1;
         this->modelInverseTransposeMatrixLocation = -1;
+        this->cameraPositionLocation = -1;
 
         this->skinningEnabledLocation = -1;
         for (UInt32 i = 0; i < Constants::MaxBones; i++) this->bonesLocation[i] = -1;
@@ -63,6 +64,8 @@ namespace Core {
                 return this->modelMatrixLocation;
             case StandardUniform::ModelInverseTransposeMatrix:
                 return this->modelInverseTransposeMatrixLocation;
+            case StandardUniform::CameraPosition:
+                return this->cameraPositionLocation;
             case StandardUniform::SkinningEnabled:
                 return this->skinningEnabledLocation;
             case StandardUniform::Bones:
@@ -86,7 +89,7 @@ namespace Core {
             baseMaterial->viewMatrixLocation = this->viewMatrixLocation;
             baseMaterial->modelMatrixLocation = this->modelMatrixLocation;
             baseMaterial->modelInverseTransposeMatrixLocation = this->modelInverseTransposeMatrixLocation;
-
+            baseMaterial->cameraPositionLocation = this->cameraPositionLocation;
             baseMaterial->boneIndexLocation = this->boneIndexLocation;
             baseMaterial->boneWeightLocation = this->boneWeightLocation;
             baseMaterial->skinningEnabledLocation = this->skinningEnabledLocation;
@@ -109,6 +112,7 @@ namespace Core {
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
         this->modelMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelMatrix);
         this->modelInverseTransposeMatrixLocation = this->shader->getUniformLocation(StandardUniform::ModelInverseTransposeMatrix);
+        this->cameraPositionLocation = this->shader->getUniformLocation(StandardUniform::CameraPosition);
         this->boneIndexLocation = this->shader->getAttributeLocation(StandardAttribute::BoneIndex);
         this->boneWeightLocation = this->shader->getAttributeLocation(StandardAttribute::BoneWeight);
         this->skinningEnabledLocation = this->shader->getUniformLocation(StandardUniform::SkinningEnabled);

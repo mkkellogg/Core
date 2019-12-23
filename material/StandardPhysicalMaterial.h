@@ -73,7 +73,6 @@ namespace Core {
         Int32 roughnessMapLocation;
         Int32 metallicMapLocation;
 
-        Int32 cameraPositionLocation;
         Int32 metallicLocation;
         Int32 roughnessLocation;
         Int32 ambientOcclusionLocation;

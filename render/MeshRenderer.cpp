@@ -188,7 +188,6 @@ namespace Core {
                 Int32 lightTypeLoc = material->getShaderLocation(StandardUniform::LightType, 0);
                 Int32 lightIntensityLoc = material->getShaderLocation(StandardUniform::LightIntensity, 0);
                 Int32 lightColorLoc = material->getShaderLocation(StandardUniform::LightColor, 0);
-            
                 Int32 lightMatrixLoc = material->getShaderLocation(StandardUniform::LightMatrix, 0);
                 Int32 lightAngularShadowBiasLoc = material->getShaderLocation(StandardUniform::LightAngularShadowBias, 0);
                 Int32 lightConstantShadowBiasLoc = material->getShaderLocation(StandardUniform::LightConstantShadowBias, 0);

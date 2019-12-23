@@ -51,7 +51,6 @@ namespace Core {
         this->roughnessMapLocation = -1;
         this->metallicMapLocation = -1;
 
-        this->cameraPositionLocation = -1;
         this->metallicLocation = -1;
         this->roughnessLocation = -1;
         this->ambientOcclusionLocation = -1;
@@ -141,8 +140,6 @@ namespace Core {
                 return this->lightSpecularIBLBRDFMapLocation;
             case StandardUniform::LightSpecularIBLPreFilteredMap:
                 return this->lightSpecularIBLPreFilteredMapLocation;
-            case StandardUniform::CameraPosition:
-                return this->cameraPositionLocation;
             default:
                 return -1;
         }
@@ -222,7 +219,6 @@ namespace Core {
             standardPhysicalMaterial->normalMapLocation = this->normalMapLocation;
             standardPhysicalMaterial->roughnessMapLocation = this->roughnessMapLocation;
             standardPhysicalMaterial->metallicMapLocation = this->metallicMapLocation;
-            standardPhysicalMaterial->cameraPositionLocation = this->cameraPositionLocation;
             standardPhysicalMaterial->metallicLocation = this->metallicLocation;
             standardPhysicalMaterial->roughnessLocation = this->roughnessLocation;
             standardPhysicalMaterial->ambientOcclusionLocation = this->ambientOcclusionLocation;
@@ -243,7 +239,6 @@ namespace Core {
 
     void StandardPhysicalMaterial::bindShaderVarLocations() {
         BaseLitMaterial::bindShaderVarLocations();
-        this->cameraPositionLocation = this->shader->getUniformLocation(StandardUniform::CameraPosition);
         this->lightIrradianceMapLocation = this->shader->getUniformLocation(StandardUniform::LightIrradianceMap);
         this->lightSpecularIBLPreFilteredMapLocation = this->shader->getUniformLocation(StandardUniform::LightSpecularIBLPreFilteredMap);
         this->lightSpecularIBLBRDFMapLocation = this->shader->getUniformLocation(StandardUniform::LightSpecularIBLBRDFMap);
