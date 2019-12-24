@@ -133,12 +133,12 @@ namespace Core {
         }
 
         if (viewMatrixLoc >= 0) {
-            Matrix4x4 viewMatrix = viewDescriptor.viewInverseMatrix;
+            const Matrix4x4& viewMatrix = viewDescriptor.viewInverseMatrix;
             shader->setUniformMatrix4(viewMatrixLoc, viewMatrix);
         }
 
         if (modelMatrixLoc >= 0) {
-            Matrix4x4 modelmatrix = this->owner->getTransform().getWorldMatrix();
+            const Matrix4x4& modelmatrix = this->owner->getTransform().getWorldMatrix();
             shader->setUniformMatrix4(modelMatrixLoc, modelmatrix);
         }
 
@@ -150,7 +150,7 @@ namespace Core {
         }
 
         if (viewInverseTransposeMatrixLoc >= 0) {
-            Matrix4x4 viewInverseTransposeMatrix = viewDescriptor.viewInverseTransposeMatrix;
+            const Matrix4x4& viewInverseTransposeMatrix = viewDescriptor.viewInverseTransposeMatrix;
             shader->setUniformMatrix4(viewInverseTransposeMatrixLoc, viewInverseTransposeMatrix);
         }
 
