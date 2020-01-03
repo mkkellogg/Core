@@ -40,7 +40,11 @@ namespace Core {
             glBindBuffer(GL_ARRAY_BUFFER, this->bufferID);
             glEnableVertexAttribArray(location);
             if (this->type == GL_INT || this->type == GL_UNSIGNED_INT) {
+#ifdef __APPLE__
+                glVertexAttribIPointerEXT(location, this->componentCount, this->type, this->stride, 0);
+#else
                 glVertexAttribIPointer(location, this->componentCount, this->type, this->stride, 0);
+#endif
             } else {
                 glVertexAttribPointer(location, this->componentCount, this->type, this->normalize, this->stride, 0);
             }
