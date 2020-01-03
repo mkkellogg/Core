@@ -473,12 +473,9 @@ namespace Core {
         std::vector<WeakPointer<Object3D>> emptyObjectList;
 
         probeCam->setRenderTarget(reflectionProbe->getSceneRenderTarget());
-        if (reflectionProbe->isSkyboxOnly()) {
-            this->render(probeCam, emptyObjectList, renderLights, WeakPointer<Material>::nullPtr(), false);
-        }
-        else {
-            this->render(probeCam, renderObjects, renderLights, WeakPointer<Material>::nullPtr(), false);
-        }
+
+        std::vector<WeakPointer<Object3D>>& probeRenderObjects = reflectionProbe->isSkyboxOnly() ? emptyObjectList : renderObjects;
+        this->render(probeCam, probeRenderObjects, renderLights, WeakPointer<Material>::nullPtr(), false);
         reflectionProbe->getSceneRenderTarget()->getColorTexture()->updateMipMaps();
 
         if(!specularOnly) {
