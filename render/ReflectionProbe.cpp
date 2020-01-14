@@ -17,6 +17,7 @@ namespace Core {
         this->needsFullUpdate = false;
         this->needsSpecularUpdate = false;
         this->skyboxOnly = true;
+        this->renderWithPhysical = false;
     }
 
     ReflectionProbe::~ReflectionProbe() {
@@ -141,6 +142,14 @@ namespace Core {
 
     void ReflectionProbe::setSkyboxOnly(Bool skyboxOnly) {
         this->skyboxOnly = skyboxOnly;
+    }
+
+    void ReflectionProbe::setRenderWithPhysical(Bool renderWithPhysical) {
+        this->renderWithPhysical = renderWithPhysical;
+    }
+
+    Bool ReflectionProbe::getRenderWithPhysical() {
+        return renderWithPhysical;
     }
 
     Bool ReflectionProbe::isSkyboxOnly() {

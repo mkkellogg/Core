@@ -31,6 +31,8 @@ namespace Core {
         void setSkybox(Skybox& skybox);
         void setSkyboxOnly(Bool skyboxOnly);
         Bool isSkyboxOnly();
+        void setRenderWithPhysical(Bool renderWithPhysical);
+        Bool getRenderWithPhysical();
         WeakPointer<Camera> getRenderCamera();
         WeakPointer<Object3D> getSkyboxObject();
         WeakPointer<RenderTargetCube> getSceneRenderTarget();
@@ -45,6 +47,7 @@ namespace Core {
         Bool needsFullUpdate;
         Bool needsSpecularUpdate;
         Bool skyboxOnly;
+        Bool renderWithPhysical;
         PersistentWeakPointer<RenderTargetCube> sceneRenderTarget;
         PersistentWeakPointer<RenderTargetCube> irradianceMap;
         PersistentWeakPointer<RenderTargetCube> specularIBLPreFilteredMap;

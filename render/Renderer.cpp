@@ -70,11 +70,13 @@ namespace Core {
         static std::vector<WeakPointer<Light>> nonIBLLightList;
         static std::vector<WeakPointer<ReflectionProbe>> reflectionProbeList;
         static std::vector<WeakPointer<Object3D>> emptyObjectList;
+        static std::vector<WeakPointer<Object3D>> staticObjects;
         objectList.resize(0);
         cameraList.resize(0);
         lightList.resize(0);
         nonIBLLightList.resize(0);
         reflectionProbeList.resize(0);
+        staticObjects.resize(0);
 
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         this->processScene(rootObject, objectList);
@@ -123,19 +125,41 @@ namespace Core {
 
         std::sort(lightList.begin(), lightList.end(), Renderer::compareLights);
         std::sort(nonIBLLightList.begin(), nonIBLLightList.end(), Renderer::compareLights);
-        
-        this->renderShadowMaps(lightList, LightType::Point, objectList);
-        for (auto camera : cameraList) {
-            this->renderShadowMaps(lightList, LightType::Directional, objectList, camera);
+
+        for (UInt32 i = 0; i < objectList.size(); i++) {
+            WeakPointer<Object3D> object = objectList[i];
+            if (object->isStatic()) staticObjects.push_back(object);
         }
+        
+
 
         for (auto reflectionProbe : reflectionProbeList) {
             if (reflectionProbe->getNeedsFullUpdate() || reflectionProbe->getNeedsSpecularUpdate()) {
+
+                this->renderShadowMaps(lightList, LightType::Point, staticObjects);
+                this->renderShadowMaps(lightList, LightType::Directional, staticObjects, reflectionProbe->getRenderCamera());
+
                 Bool specularOnly = !reflectionProbe->getNeedsFullUpdate();
-                this->renderReflectionProbe(reflectionProbe, specularOnly, objectList, nonIBLLightList);
+
+                this->renderReflectionProbe(reflectionProbe, specularOnly, emptyObjectList, nonIBLLightList);
+                if (!reflectionProbe->isSkyboxOnly()) {
+                    if (reflectionProbe->getRenderWithPhysical()) {
+                        this->renderReflectionProbe(reflectionProbe, specularOnly, staticObjects, lightList);
+                    } else {
+                        this->renderReflectionProbe(reflectionProbe, specularOnly, staticObjects, nonIBLLightList);
+                    }
+                }
+
                 if (specularOnly) reflectionProbe->setNeedsSpecularUpdate(false);
                 else reflectionProbe->setNeedsFullUpdate(false);
             }
+        }
+
+
+
+        this->renderShadowMaps(lightList, LightType::Point, objectList);
+        for (auto camera : cameraList) {
+            this->renderShadowMaps(lightList, LightType::Directional, objectList, camera);
         }
 
         for (auto camera : cameraList) {
@@ -470,12 +494,10 @@ namespace Core {
                                          std::vector<WeakPointer<Object3D>>& renderObjects, std::vector<WeakPointer<Light>>& renderLights) {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         WeakPointer<Camera> probeCam = reflectionProbe->getRenderCamera();
-        std::vector<WeakPointer<Object3D>> emptyObjectList;
 
         probeCam->setRenderTarget(reflectionProbe->getSceneRenderTarget());
 
-        std::vector<WeakPointer<Object3D>>& probeRenderObjects = reflectionProbe->isSkyboxOnly() ? emptyObjectList : renderObjects;
-        this->render(probeCam, probeRenderObjects, renderLights, WeakPointer<Material>::nullPtr(), false);
+        this->render(probeCam, renderObjects, renderLights, WeakPointer<Material>::nullPtr(), true);
         reflectionProbe->getSceneRenderTarget()->getColorTexture()->updateMipMaps();
 
         if(!specularOnly) {
