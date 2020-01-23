@@ -131,8 +131,6 @@ namespace Core {
             if (object->isStatic()) staticObjects.push_back(object);
         }
         
-
-
         for (auto reflectionProbe : reflectionProbeList) {
             if (reflectionProbe->getNeedsFullUpdate() || reflectionProbe->getNeedsSpecularUpdate()) {
 
@@ -154,8 +152,6 @@ namespace Core {
                 else reflectionProbe->setNeedsFullUpdate(false);
             }
         }
-
-
 
         this->renderShadowMaps(lightList, LightType::Point, objectList);
         for (auto camera : cameraList) {
