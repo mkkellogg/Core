@@ -6,22 +6,34 @@ namespace Core {
     public:
 
         enum class BlendingMode {
-            None,
-            Additive,
-            Custom,
+            None = 0,
+            Standard = 1,
+            Additive = 2,
+            Subtractive = 3,
+            Multiply = 4,
+            Custom = 5
         };
 
-        enum class BlendingMethod {
-            One,
-            SrcAlpha,
-            OneMinusSrcAlpha,
-            DstAlpha,
-            OneMinusDstAlpha,
-            Zero,
-            DstColor,
-            OneMinusDstColor,
-            SrcColor,
-            OneMinusSrcColor
+        enum class BlendingEquation {
+            Add = 0,
+            Subtract = 1,
+            ReverseSubtract = 2,
+            Min = 3,
+            Max = 4
+        };
+
+        enum class BlendingFactor {
+            Zero = 0,
+            One = 1,
+            SrcColor = 2,
+            OneMinusSrcColor = 3,
+            SrcAlpha = 4,
+            OneMinusSrcAlpha = 5,
+            DstAlpha = 6,
+            OneMinusDstAlpha = 7,
+            DstColor = 8,
+            OneMinusDstColor = 9,
+            SrcAlphaSaturate = 10
         };
 
         enum class CullFace {

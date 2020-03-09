@@ -107,6 +107,7 @@ set(INCLUDE_FILES
     material/ShaderMaterialCharacteristic.h
     material/ShaderManager.h
     material/ShaderType.h
+    render/EngineRenderQueue.h
     render/RenderPath.h
     render/BaseRenderableContainer.h
     render/RenderableContainer.h

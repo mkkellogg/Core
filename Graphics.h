@@ -72,7 +72,8 @@ namespace Core {
         virtual ShaderManager& getShaderManager() = 0;
 
         virtual void setBlendingEnabled(Bool enabled) = 0;
-        virtual void setBlendingFunction(RenderState::BlendingMethod source, RenderState::BlendingMethod dest) = 0;
+        virtual void setBlendingEquation(RenderState::BlendingEquation) = 0;
+        virtual void setBlendingFactors(RenderState::BlendingFactor source, RenderState::BlendingFactor dest) = 0;
 
         virtual WeakPointer<RenderTarget2D> createRenderTarget2D(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
                                                                  const TextureAttributes& colorTextureAttributes,

@@ -3,6 +3,7 @@
 #include "Material.h"
 #include "Shader.h"
 #include "../Graphics.h"
+#include "../render/EngineRenderQueue.h"
 #include "../common/debug.h"
 
 namespace Core {
@@ -10,11 +11,14 @@ namespace Core {
     Material::Material(WeakPointer<Graphics> graphics): graphics(graphics) {
         this->ready = false;
         this->colorWriteEnabled = true;
-        this->blendingMode = RenderState::BlendingMode::Additive;
-        this->srcBlendingMethod = RenderState::BlendingMethod::One;
-        this->destBlendingMethod = RenderState::BlendingMethod::Zero;
+
+        this->blendingMode = RenderState::BlendingMode::None;
+        this->blendingEquation = RenderState::BlendingEquation::Add;
+        this->srcBlendingFactor = RenderState::BlendingFactor::One;
+        this->destBlendingFactor = RenderState::BlendingFactor::Zero;
         this->renderStyle = RenderStyle::Fill;
-        this->transparent = false;
+        this->renderQueueID = (UInt16)EngineRenderQueue::Geometry;
+
         this->lit = false;
         this->physical = false;
         this->skinningEnabled = false;
@@ -55,20 +59,28 @@ namespace Core {
         this->colorWriteEnabled = enabled;
     }
 
-    RenderState::BlendingMethod Material::getSourceBlendingMethod() const {
-        return this->srcBlendingMethod;
+    RenderState::BlendingEquation Material::getBlendingEquation() const {
+        return this->blendingEquation;
     }
 
-    void Material::setSourceBlendingMethod(RenderState::BlendingMethod method) {
-        this->srcBlendingMethod = method;
+    void Material::setBlendingEquation(RenderState::BlendingEquation equation) {
+        this->blendingEquation = equation;
     }
 
-    RenderState::BlendingMethod Material::getDestBlendingMethod() const {
-        return this->destBlendingMethod;
+    RenderState::BlendingFactor Material::getSourceBlendingFactor() const {
+        return this->srcBlendingFactor;
     }
 
-    void Material::setDestBlendingMethod(RenderState::BlendingMethod method) {
-        this->destBlendingMethod = method;
+    void Material::setSourceBlendingFactor(RenderState::BlendingFactor factor) {
+        this->srcBlendingFactor = factor;
+    }
+
+    RenderState::BlendingFactor Material::getDestBlendingFactor() const {
+        return this->destBlendingFactor;
+    }
+
+    void Material::setDestBlendingFactor(RenderState::BlendingFactor factor) {
+        this->destBlendingFactor = factor;
     }
 
     RenderStyle Material::getRenderStyle() const {
@@ -87,12 +99,12 @@ namespace Core {
         this->blendingMode = mode;
     }
 
-    Bool Material::isTransparent() const {
-        return this->transparent;
+    UInt16 Material::getRenderQueueID() const {
+        return this->renderQueueID;
     }
 
-    void Material::setTransparent(Bool transparent) {
-        this->transparent = transparent;
+    void Material::setRenderQueueID(UInt16 renderQueueID) {
+        this->renderQueueID = renderQueueID;
     }
 
     Bool Material::isLit() const {
@@ -235,10 +247,10 @@ namespace Core {
 
         target->colorWriteEnabled = this->colorWriteEnabled;
         target->blendingMode = this->blendingMode;
-        target->srcBlendingMethod = this->srcBlendingMethod;
-        target->destBlendingMethod = this->destBlendingMethod;
+        target->srcBlendingFactor = this->srcBlendingFactor;
+        target->destBlendingFactor = this->destBlendingFactor;
         target->renderStyle = this->renderStyle;
-        target->transparent = this->transparent;
+        target->renderQueueID = this->renderQueueID;
         target->lit = this->lit;
         target->physical = this->physical;
         target->skinningEnabled = this->skinningEnabled;

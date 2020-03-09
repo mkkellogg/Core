@@ -30,16 +30,18 @@ namespace Core {
 
         Bool getColorWriteEnabled() const;
         void setColorWriteEnabled(Bool enabled);
-        RenderState::BlendingMethod getSourceBlendingMethod() const;
-        void setSourceBlendingMethod(RenderState::BlendingMethod method);
-        RenderState::BlendingMethod getDestBlendingMethod() const;
-        void setDestBlendingMethod(RenderState::BlendingMethod method);
+        RenderState::BlendingEquation getBlendingEquation() const;
+        void setBlendingEquation(RenderState::BlendingEquation equation);
+        RenderState::BlendingFactor getSourceBlendingFactor() const;
+        void setSourceBlendingFactor(RenderState::BlendingFactor factor);
+        RenderState::BlendingFactor getDestBlendingFactor() const;
+        void setDestBlendingFactor(RenderState::BlendingFactor factor);
         RenderStyle getRenderStyle() const;
         void setRenderStyle(RenderStyle style);
         RenderState::BlendingMode getBlendingMode() const;
         void setBlendingMode(RenderState::BlendingMode mode);
-        Bool isTransparent() const;
-        void setTransparent(Bool transparent);
+        UInt16 getRenderQueueID() const;
+        void setRenderQueueID(UInt16 renderQueueID);
         Bool isLit() const;
         void setLit(Bool lit);
         Bool isPhysical() const;
@@ -88,11 +90,12 @@ namespace Core {
     private:
         Bool colorWriteEnabled;
         RenderState::BlendingMode blendingMode;
-        RenderState::BlendingMethod srcBlendingMethod;
-        RenderState::BlendingMethod destBlendingMethod;
+        RenderState::BlendingEquation blendingEquation;
+        RenderState::BlendingFactor srcBlendingFactor;
+        RenderState::BlendingFactor destBlendingFactor;
         RenderStyle renderStyle;
         Bool ready;
-        Bool transparent;
+        UInt16 renderQueueID;
         Bool lit;
         Bool physical;
         Bool skinningEnabled;

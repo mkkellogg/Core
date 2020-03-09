@@ -76,9 +76,12 @@ namespace Core {
 
         this->graphics->setColorWriteEnabled(material->getColorWriteEnabled());
         this->graphics->setRenderStyle(material->getRenderStyle());
-        if (material->getBlendingMode() == RenderState::BlendingMode::Custom) {
+        if (material->getBlendingMode() != RenderState::BlendingMode::None) {
             graphics->setBlendingEnabled(true);
-            graphics->setBlendingFunction(material->getSourceBlendingMethod(), material->getDestBlendingMethod());
+            if (material->getBlendingMode() == RenderState::BlendingMode::Custom) {
+                graphics->setBlendingEquation(material->getBlendingEquation());
+            }
+            graphics->setBlendingFactors(material->getSourceBlendingFactor(), material->getDestBlendingFactor());
         }
         else {
             graphics->setBlendingEnabled(false);
@@ -175,12 +178,12 @@ namespace Core {
                     if (lightType == LightType::Ambient && material->isPhysical()) continue;
                 }
 
-                if (material->getBlendingMode() == RenderState::BlendingMode::Additive) {
+                if (material->getBlendingMode() == RenderState::BlendingMode::None) {
                     if (renderedCount == 0) {
                         graphics->setBlendingEnabled(false);
                     } else {
                         graphics->setBlendingEnabled(true);
-                        graphics->setBlendingFunction(RenderState::BlendingMethod::One, RenderState::BlendingMethod::One);
+                        graphics->setBlendingFactors(RenderState::BlendingFactor::One, RenderState::BlendingFactor::One);
                     }
                 }
 

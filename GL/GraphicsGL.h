@@ -57,7 +57,8 @@ namespace Core {
         ShaderManager& getShaderManager() override;
 
         void setBlendingEnabled(Bool enabled) override;
-        void setBlendingFunction(RenderState::BlendingMethod source, RenderState::BlendingMethod dest) override;
+        void setBlendingEquation(RenderState::BlendingEquation) override;
+        void setBlendingFactors(RenderState::BlendingFactor source, RenderState::BlendingFactor dest) override;
 
         WeakPointer<RenderTarget2D> createRenderTarget2D(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
                                                      const TextureAttributes& colorTextureAttributes, 
@@ -101,7 +102,8 @@ namespace Core {
         static GLint getGLDepthFunction(RenderState::DepthFunction function);
         static GLenum getGLCubeTarget(CubeTextureSide side);
         static GLuint convertAttributeType(AttributeType type);
-        static GLenum getGLBlendProperty(RenderState::BlendingMethod property);
+        static GLenum getGLBlendingEquation(RenderState::BlendingEquation equation);
+        static GLenum getGLBlendingFactor(RenderState::BlendingFactor factor);
         static GLint getGLTextureFormat(TextureFormat format);
         static GLenum getGLPixelFormat(TextureFormat format);
         static GLenum getGLPixelType(TextureFormat format);

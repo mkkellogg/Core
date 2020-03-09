@@ -159,8 +159,12 @@ namespace Core {
         else glDisable(GL_BLEND);
     }
 
-    void GraphicsGL::setBlendingFunction(RenderState::BlendingMethod source, RenderState::BlendingMethod dest) {
-        glBlendFunc(getGLBlendProperty(source), getGLBlendProperty(dest));
+    void GraphicsGL::setBlendingEquation(RenderState::BlendingEquation equation) {
+        glBlendEquation(getGLBlendingEquation(equation));
+    }
+
+    void GraphicsGL::setBlendingFactors(RenderState::BlendingFactor source, RenderState::BlendingFactor dest) {
+        glBlendFunc(getGLBlendingFactor(source), getGLBlendingFactor(dest));
     }
 
     WeakPointer<RenderTarget2D> GraphicsGL::createRenderTarget2D(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
@@ -493,28 +497,46 @@ namespace Core {
 
         return target;
     }
+            
+    GLenum GraphicsGL::getGLBlendingEquation(RenderState::BlendingEquation equation) {
+        switch (equation) {
+            case RenderState::BlendingEquation::Add:
+                return GL_FUNC_ADD;
+            case RenderState::BlendingEquation::Subtract:
+                return GL_FUNC_SUBTRACT;
+            case RenderState::BlendingEquation::ReverseSubtract:
+                return GL_FUNC_REVERSE_SUBTRACT;
+            case RenderState::BlendingEquation::Min:
+                return GL_MIN;
+            case RenderState::BlendingEquation::Max:
+                return GL_MAX;
+            default:
+                return (GLenum)0xFFFFFFFF;
+        }
+        return (GLenum)0xFFFFFFFF;
+    }
 
-    GLenum GraphicsGL::getGLBlendProperty(RenderState::BlendingMethod property) {
-        switch (property) {
-            case RenderState::BlendingMethod::SrcAlpha:
+    GLenum GraphicsGL::getGLBlendingFactor(RenderState::BlendingFactor factor) {
+        switch (factor) {
+            case RenderState::BlendingFactor::SrcAlpha:
                 return GL_SRC_ALPHA;
-            case RenderState::BlendingMethod::OneMinusSrcAlpha:
+            case RenderState::BlendingFactor::OneMinusSrcAlpha:
                 return GL_ONE_MINUS_SRC_ALPHA;
-            case RenderState::BlendingMethod::DstAlpha:
+            case RenderState::BlendingFactor::DstAlpha:
                 return GL_DST_ALPHA;
-            case RenderState::BlendingMethod::OneMinusDstAlpha:
+            case RenderState::BlendingFactor::OneMinusDstAlpha:
                 return GL_ONE_MINUS_DST_ALPHA;
-            case RenderState::BlendingMethod::One:
+            case RenderState::BlendingFactor::One:
                 return GL_ONE;
-            case RenderState::BlendingMethod::Zero:
+            case RenderState::BlendingFactor::Zero:
                 return GL_ZERO;
-            case RenderState::BlendingMethod::DstColor:
+            case RenderState::BlendingFactor::DstColor:
                 return GL_DST_COLOR;
-            case RenderState::BlendingMethod::OneMinusDstColor:
+            case RenderState::BlendingFactor::OneMinusDstColor:
                 return GL_ONE_MINUS_DST_COLOR;
-            case RenderState::BlendingMethod::SrcColor:
+            case RenderState::BlendingFactor::SrcColor:
                 return GL_SRC_COLOR;
-            case RenderState::BlendingMethod::OneMinusSrcColor:
+            case RenderState::BlendingFactor::OneMinusSrcColor:
                 return GL_ONE_MINUS_SRC_COLOR;
             default:
                 return (GLenum)0xFFFFFFFF;
