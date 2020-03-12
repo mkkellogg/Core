@@ -124,6 +124,7 @@ set(INCLUDE_FILES
     render/RenderTarget.h
     render/RenderTarget2D.h
     render/RenderTargetCube.h
+    render/RenderQueueManager.h
     render/RenderQueue.h
     render/MaterialGroupedRenderQueue.h
     render/ViewDescriptor.h
@@ -233,6 +234,7 @@ set(SOURCE_FILES
     render/RenderTarget2D.cpp
     render/RenderTargetCube.cpp
     render/RenderQueue.cpp
+    render/RenderQueueManager.cpp
     render/MaterialGroupedRenderQueue.cpp
     render/MeshOutlinePostProcessor.cpp
     render/ReflectionProbe.cpp

@@ -11,6 +11,7 @@
 #include "../render/BaseRenderableContainer.h"
 #include "../render/MeshRenderer.h"
 #include "../render/RenderableContainer.h"
+#include "../render/EngineRenderQueue.h"
 #include "../scene/Scene.h"
 #include "../scene/Skybox.h"
 #include "../image/TextureAttr.h"
@@ -262,9 +263,21 @@ namespace Core {
         this->clearActiveRenderTarget(viewDescriptor);
 
         this->renderSkybox(viewDescriptor);
-        for (auto object : objectList) {
-            this->renderObjectDirect(object, viewDescriptor, lightList, matchPhysicalPropertiesWithLighting);
+        renderQueueManager.clearAll();
+        this->sortObjectsIntoRenderQueues(objectList, this->renderQueueManager, viewDescriptor);
+
+        UInt32 renderQueueCount = this->renderQueueManager.getRenderQueueCount();
+        for (UInt32 q = 0; q < renderQueueCount; q++) {
+            RenderQueue& queue = this->renderQueueManager.getRenderQueue(q);
+            UInt32 itemCount = queue.getItemCount();
+            for (UInt32 i = 0; i < itemCount; i++) {
+                RenderQueue::RenderItem& item = queue.getRenderItem(i);
+                item.ObjectRenderer->forwardRender(viewDescriptor, lightList, matchPhysicalPropertiesWithLighting);
+            }
         }
+        /*for (auto object : objectList) {
+            this->renderObjectDirect(object, viewDescriptor, lightList, matchPhysicalPropertiesWithLighting);
+        }*/
 
         if (viewDescriptor.indirectHDREnabled) {
             this->tonemapMaterial->setToneMapType(viewDescriptor.hdrToneMapType);
@@ -516,6 +529,26 @@ namespace Core {
         graphics->renderFullScreenQuad(specularIBLBRDFMap, -1, reflectionProbe->getSpecularIBLBRDFRendererMaterial());
         
         reflectionProbe->setNeedsFullUpdate(false);
+    }
+
+    void Renderer::sortObjectsIntoRenderQueues(std::vector<WeakPointer<Object3D>>& objects, RenderQueueManager& renderQueueManager, ViewDescriptor& viewDescriptor) {
+        for(UInt32 i = 0; i < objects.size(); i++) {
+            WeakPointer<Object3D> object= objects[i];
+            std::shared_ptr<Object3D> objectShared = object.lock();
+            std::shared_ptr<BaseRenderableContainer> containerPtr = std::dynamic_pointer_cast<BaseRenderableContainer>(objectShared);
+            if (containerPtr) {
+                WeakPointer<BaseObjectRenderer> objectRenderer = containerPtr->getBaseRenderer();
+                if (objectRenderer.isValid()) {
+                    UInt32 renderQueueID = (UInt32)EngineRenderQueue::Geometry;
+                    if (viewDescriptor.overrideMaterial.isValid()) {
+                        renderQueueID = viewDescriptor.overrideMaterial->getRenderQueueID();
+                    } else {
+                        renderQueueID = objectRenderer->getRenderQueueID();
+                    }
+                    renderQueueManager.addItemToQueue(renderQueueID, objectRenderer);
+                }
+            }
+        }
     }
 
     Bool Renderer::isShadowCastingCapableLight(WeakPointer<Light> light) {

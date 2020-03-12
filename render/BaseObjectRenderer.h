@@ -21,6 +21,7 @@ namespace Core {
         virtual Bool forwardRender(const ViewDescriptor& viewDescriptor, const std::vector<WeakPointer<Light>>& lights,
                                    Bool matchPhysicalPropertiesWithLighting);
         virtual Bool supportsRenderPath(RenderPath renderPath);
+        virtual UInt32 getRenderQueueID() const = 0;
         Bool castsShadows();
         void setCastShadows(Bool castShadows);
 

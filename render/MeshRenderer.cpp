@@ -439,6 +439,10 @@ namespace Core {
         return false;
     }
 
+    UInt32 MeshRenderer::getRenderQueueID() const {
+        this->material->getRenderQueueID();
+    }
+
     void MeshRenderer::setMaterial(WeakPointer<Material> material) {
         this->material = material;
     }

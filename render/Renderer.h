@@ -5,6 +5,7 @@
 #include "../base/CoreObject.h"
 #include "RenderBuffer.h"
 #include "RenderState.h"
+#include "RenderQueueManager.h"
 #include "../geometry/Vector2.h"
 #include "../geometry/Vector4.h"
 #include "../scene/Transform.h"
@@ -78,8 +79,12 @@ namespace Core {
         void renderReflectionProbe(WeakPointer<ReflectionProbe> reflectionProbe, Bool specularOnly,
                                    std::vector<WeakPointer<Object3D>>& renderObjects, std::vector<WeakPointer<Light>>& renderLights);
         
+        void sortObjectsIntoRenderQueues(std::vector<WeakPointer<Object3D>>& objects, RenderQueueManager& renderQueueManager, ViewDescriptor& viewDescriptor);
+
         static Bool isShadowCastingCapableLight(WeakPointer<Light> light);
         static Bool compareLights (WeakPointer<Light> a, WeakPointer<Light> b);
+
+        RenderQueueManager renderQueueManager;
 
         PersistentWeakPointer<DepthOnlyMaterial> depthMaterial;
         PersistentWeakPointer<DistanceOnlyMaterial> distanceMaterial;
