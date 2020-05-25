@@ -15,6 +15,9 @@ namespace Core {
         virtual ~ShaderManagerGL();
         ShaderManagerGL();
 
+        std::string Common_vertex;
+        std::string Common_fragment;
+
         std::string Test_vertex;
         std::string Test_fragment;
 
@@ -55,10 +58,12 @@ namespace Core {
         std::string Physical_Lighting_Single_fragment;
 
         std::string Physical_Lighting_Multi_vertex;
+        std::string Physical_Lighting_Header_Multi_fragment;
         std::string Physical_Lighting_Multi_fragment;
 
         std::string StandardPhysical_vertex;
         std::string StandardPhysical_fragment;
+        std::string StandardPhysicalMulti_fragment;
 
         std::string AmbientPhysical_vertex;
         std::string AmbientPhysical_fragment;
