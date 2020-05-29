@@ -31,6 +31,9 @@ namespace Core {
         std::string Outline_geometry;
         std::string Outline_fragment;
 
+        std::string Lighting_Common_vertex;
+        std::string Lighting_Common_fragment;
+
         std::string Lighting_Header_Single_vertex;
         std::string Lighting_Header_Single_fragment;
 
@@ -58,11 +61,14 @@ namespace Core {
         std::string Physical_Lighting_Single_fragment;
 
         std::string Physical_Lighting_Multi_vertex;
-        std::string Physical_Lighting_Header_Multi_fragment;
-        std::string Physical_Lighting_Multi_fragment;
+        std::string Physical_Lighting_Multi_Once_fragment;
+        std::string Physical_Lighting_Multi_Per_Light_fragment;
 
+        std::string StandardPhysicalVars_fragment;
+        std::string StandardPhysicalMain_fragment;
         std::string StandardPhysical_vertex;
         std::string StandardPhysical_fragment;
+        std::string StandardPhysicalMulti_vertex;
         std::string StandardPhysicalMulti_fragment;
 
         std::string AmbientPhysical_vertex;

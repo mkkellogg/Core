@@ -43,7 +43,7 @@ namespace Core {
              uniform == StandardUniform::LightShadowMap ||
              uniform == StandardUniform::LightCascadeEnd || 
              uniform == StandardUniform::LightShadowMapAspect) && 
-             offset >= Constants::MaxDirectionalCascades) {
+             offset >= Constants::MaxDirectionalCascades * this->maxLightCount()) {
             throw InvalidArgumentException("BasicLitMaterial::getShaderLocation() -> invalid offset.");
         }
 

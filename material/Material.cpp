@@ -17,6 +17,7 @@ namespace Core {
         this->srcBlendingFactor = RenderState::BlendingFactor::One;
         this->destBlendingFactor = RenderState::BlendingFactor::Zero;
         this->renderStyle = RenderStyle::Fill;
+        this->renderPath = RenderPath::Forward;
         this->renderQueueID = (UInt16)EngineRenderQueue::Geometry;
 
         this->lit = false;
@@ -91,6 +92,14 @@ namespace Core {
         this->renderStyle = style;
     }
 
+    RenderPath Material::getRenderPath() const {
+        return this->renderPath;
+    }
+
+    void Material::setRenderPath(RenderPath path) {
+        this->renderPath = path;
+    }
+
     RenderState::BlendingMode Material::getBlendingMode() const {
         return this->blendingMode;
     }
@@ -113,6 +122,10 @@ namespace Core {
 
     void Material::setLit(Bool lit) {
         this->lit = lit;
+    }
+
+    UInt32 Material::maxLightCount() const {
+        return 1;
     }
 
     Bool Material::isPhysical() const {

@@ -17,6 +17,7 @@
 #include "../animation/Bone.h"
 #include "../animation/Object3DSkeletonNode.h"
 #include "RenderException.h"
+#include "RenderPath.h"
 
 namespace Core {
 
@@ -64,6 +65,7 @@ namespace Core {
 
     Bool MeshRenderer::forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh, const std::vector<WeakPointer<Light>>& lights,
                                            Bool matchPhysicalPropertiesWithLighting) {
+        Matrix4x4 tempMatrix;
         WeakPointer<Material> material;
         if (viewDescriptor.overrideMaterial.isValid()) {
             material = viewDescriptor.overrideMaterial;
@@ -159,14 +161,16 @@ namespace Core {
 
         UInt32 currentTextureSlot = material->textureCount();
 
-        Int32 lightEnabledLoc = material->getShaderLocation(StandardUniform::LightEnabled);
-        Int32 lightShadowsEnabledLoc = material->getShaderLocation(StandardUniform::LightShadowsEnabled);
+        RenderPath renderPath = material->getRenderPath();
+
+        Int32 lightCountLoc = material->getShaderLocation(StandardUniform::LightCount);
+        if (renderPath != RenderPath::SinglePassMultiLight) {
+            if (lightCountLoc >= 0) shader->setUniform1i(lightCountLoc, 1);
+        } else {
+            if (lightCountLoc >= 0) shader->setUniform1i(lightCountLoc, lights.size());
+        }
 
         if (lights.size() > 0 && material->isLit()) {
-
-            if (lightEnabledLoc >= 0) {
-                shader->setUniform1i(lightEnabledLoc, 1);
-            }
 
             UInt32 renderedCount = 0;
             for (UInt32 i = 0; i < lights.size(); i++) {
@@ -178,30 +182,33 @@ namespace Core {
                     if (lightType == LightType::Ambient && material->isPhysical()) continue;
                 }
 
-                if (material->getBlendingMode() == RenderState::BlendingMode::None) {
-                    if (renderedCount == 0) {
-                        graphics->setBlendingEnabled(false);
-                    } else {
-                        graphics->setBlendingEnabled(true);
-                        graphics->setBlendingFactors(RenderState::BlendingFactor::One, RenderState::BlendingFactor::One);
+                if (renderPath != RenderPath::SinglePassMultiLight) {
+                    if (material->getBlendingMode() == RenderState::BlendingMode::None) {
+                        if (renderedCount == 0) {
+                            graphics->setBlendingEnabled(false);
+                        } else {
+                            graphics->setBlendingEnabled(true);
+                            graphics->setBlendingFactors(RenderState::BlendingFactor::One, RenderState::BlendingFactor::One);
+                        }
                     }
                 }
 
-                Int32 lightRangeLoc = material->getShaderLocation(StandardUniform::LightRange, 0);
-                Int32 lightTypeLoc = material->getShaderLocation(StandardUniform::LightType, 0);
-                Int32 lightIntensityLoc = material->getShaderLocation(StandardUniform::LightIntensity, 0);
-                Int32 lightColorLoc = material->getShaderLocation(StandardUniform::LightColor, 0);
-                Int32 lightMatrixLoc = material->getShaderLocation(StandardUniform::LightMatrix, 0);
-                Int32 lightAngularShadowBiasLoc = material->getShaderLocation(StandardUniform::LightAngularShadowBias, 0);
-                Int32 lightConstantShadowBiasLoc = material->getShaderLocation(StandardUniform::LightConstantShadowBias, 0);
-                Int32 lightShadowMapSizeLoc = material->getShaderLocation(StandardUniform::LightShadowMapSize, 0);
-                Int32 lightShadowSoftnessLoc = material->getShaderLocation(StandardUniform::LightShadowSoftness, 0);
-                Int32 lightNearPlaneLoc = material->getShaderLocation(StandardUniform::LightNearPlane, 0);
-                Int32 lightCountLoc = material->getShaderLocation(StandardUniform::LightCount, 0);
+                Int32 lightShaderVarLocOffset = renderPath != RenderPath::SinglePassMultiLight ? 0 : i;
 
-                if (lightCountLoc >= 0) {
-                    shader->setUniform1i(lightCountLoc, 1);
-                }
+                Int32 lightEnabledLoc = material->getShaderLocation(StandardUniform::LightEnabled, lightShaderVarLocOffset);
+                if (lightEnabledLoc >= 0) shader->setUniform1i(lightEnabledLoc, 1);
+
+                Int32 lightShadowsEnabledLoc = material->getShaderLocation(StandardUniform::LightShadowsEnabled, lightShaderVarLocOffset);
+                Int32 lightRangeLoc = material->getShaderLocation(StandardUniform::LightRange, lightShaderVarLocOffset);
+                Int32 lightTypeLoc = material->getShaderLocation(StandardUniform::LightType, lightShaderVarLocOffset);
+                Int32 lightIntensityLoc = material->getShaderLocation(StandardUniform::LightIntensity, lightShaderVarLocOffset);
+                Int32 lightColorLoc = material->getShaderLocation(StandardUniform::LightColor, lightShaderVarLocOffset);
+                Int32 lightMatrixLoc = material->getShaderLocation(StandardUniform::LightMatrix, lightShaderVarLocOffset);
+                Int32 lightAngularShadowBiasLoc = material->getShaderLocation(StandardUniform::LightAngularShadowBias, lightShaderVarLocOffset);
+                Int32 lightConstantShadowBiasLoc = material->getShaderLocation(StandardUniform::LightConstantShadowBias, lightShaderVarLocOffset);
+                Int32 lightShadowMapSizeLoc = material->getShaderLocation(StandardUniform::LightShadowMapSize, lightShaderVarLocOffset);
+                Int32 lightShadowSoftnessLoc = material->getShaderLocation(StandardUniform::LightShadowSoftness, lightShaderVarLocOffset);
+                Int32 lightNearPlaneLoc = material->getShaderLocation(StandardUniform::LightNearPlane, lightShaderVarLocOffset);
 
                 if (lightColorLoc >= 0) {
                     Color color = light->getColor();
@@ -217,12 +224,14 @@ namespace Core {
                 }
 
                 if (lightMatrixLoc >= 0) {
-                    shader->setUniformMatrix4(lightMatrixLoc, light->getOwner()->getTransform().getConstInverseWorldMatrix());
+                    tempMatrix.copy(light->getOwner()->getTransform().getWorldMatrix());
+                    tempMatrix.invert();
+                    shader->setUniformMatrix4(lightMatrixLoc, tempMatrix);
                 }
 
-                Int32 irradianceMapLoc = material->getShaderLocation(StandardUniform::LightIrradianceMap);
-                Int32 specularIBLPreFilteredMapLoc = material->getShaderLocation(StandardUniform::LightSpecularIBLPreFilteredMap);
-                Int32 specularIBLBRDFMapLoc = material->getShaderLocation(StandardUniform::LightSpecularIBLBRDFMap);
+                Int32 irradianceMapLoc = material->getShaderLocation(StandardUniform::LightIrradianceMap, lightShaderVarLocOffset);
+                Int32 specularIBLPreFilteredMapLoc = material->getShaderLocation(StandardUniform::LightSpecularIBLPreFilteredMap, lightShaderVarLocOffset);
+                Int32 specularIBLBRDFMapLoc = material->getShaderLocation(StandardUniform::LightSpecularIBLBRDFMap, lightShaderVarLocOffset);
 
                 if (lightType == LightType::AmbientIBL) {
                     WeakPointer<AmbientIBLLight> ambientIBLLight = WeakPointer<Light>::dynamicPointerCast<AmbientIBLLight>(light);
@@ -231,12 +240,12 @@ namespace Core {
                         shader->setTextureCube(currentTextureSlot, irradianceMapLoc, ambientIBLLight->getIrradianceMap()->getTextureID());
                         currentTextureSlot++;
                     }
-                    
+
                     if (specularIBLPreFilteredMapLoc >= 0) {
                         shader->setTextureCube(currentTextureSlot, specularIBLPreFilteredMapLoc, ambientIBLLight->getSpecularIBLPreFilteredMap()->getTextureID());
                         currentTextureSlot++;
                     }
-                    
+
                     if (specularIBLBRDFMapLoc >= 0) {
                         shader->setTexture2D(currentTextureSlot, specularIBLBRDFMapLoc, ambientIBLLight->getSpecularIBLBRDFMap()->getTextureID());
                         currentTextureSlot++;
@@ -246,12 +255,12 @@ namespace Core {
                         shader->setTextureCube(currentTextureSlot, irradianceMapLoc, this->graphics->getPlaceHolderCubeTexture()->getTextureID());
                         currentTextureSlot++;
                     }
-                    
+
                     if (specularIBLPreFilteredMapLoc >= 0) {
                         shader->setTextureCube(currentTextureSlot, specularIBLPreFilteredMapLoc, this->graphics->getPlaceHolderCubeTexture()->getTextureID());
                         currentTextureSlot++;
                     }
-                    
+    
                     if (specularIBLBRDFMapLoc >= 0) {
                         shader->setTexture2D(currentTextureSlot, specularIBLBRDFMapLoc, this->graphics->getPlaceHolderTexture2D()->getTextureID());
                         currentTextureSlot++;
@@ -278,7 +287,7 @@ namespace Core {
                     }
                 }
 
-                Int32 lightShadowCubeMapLoc = material->getShaderLocation(StandardUniform::LightShadowCubeMap);
+                Int32 lightShadowCubeMapLoc = material->getShaderLocation(StandardUniform::LightShadowCubeMap, lightShaderVarLocOffset);
                 if (lightType == LightType::Point) {
 
                     WeakPointer<PointLight> pointLight = WeakPointer<Light>::dynamicPointerCast<PointLight>(light);
@@ -291,7 +300,7 @@ namespace Core {
                         shader->setUniform1f(lightNearPlaneLoc, PointLight::NearPlane);
                     }
 
-                    Int32 lightPositionLoc = material->getShaderLocation(StandardUniform::LightPosition);
+                    Int32 lightPositionLoc = material->getShaderLocation(StandardUniform::LightPosition, lightShaderVarLocOffset);
                     if (lightPositionLoc >= 0) {
                         Point3r pos;
                         pointLight->getOwner()->getTransform().applyTransformationTo(pos);
@@ -315,12 +324,11 @@ namespace Core {
                         currentTextureSlot++;
                     }
                 }
-                
-                
+
                 if (lightType == LightType::Directional) {
                     WeakPointer<DirectionalLight> directionalLight = WeakPointer<Light>::dynamicPointerCast<DirectionalLight>(light);
 
-                    Int32 lightDirectionLoc = material->getShaderLocation(StandardUniform::LightDirection);
+                    Int32 lightDirectionLoc = material->getShaderLocation(StandardUniform::LightDirection, lightShaderVarLocOffset);
                     if (lightDirectionLoc >= 0) {
                         Vector3r dir = Vector3r::Forward;
                         directionalLight->getOwner()->getTransform().applyTransformationTo(dir);
@@ -329,7 +337,7 @@ namespace Core {
 
                     UInt32 cascadeCount = directionalLight->getCascadeCount();
 
-                    Int32 cascadeCountLoc = material->getShaderLocation(StandardUniform::LightCascadeCount);
+                    Int32 cascadeCountLoc = material->getShaderLocation(StandardUniform::LightCascadeCount, lightShaderVarLocOffset);
                     if (cascadeCountLoc >= 0) {
                         shader->setUniform1i(cascadeCountLoc, cascadeCount);
                     }
@@ -339,7 +347,8 @@ namespace Core {
                     } 
 
                     for (UInt32 l = 0; l < cascadeCount; l++) {
-                        Int32 shadowMapLoc = material->getShaderLocation(StandardUniform::LightShadowMap, l);
+                        Int32 lightCascadeShaderVarLocOffset = lightShaderVarLocOffset * Constants::MaxDirectionalCascades + l;
+                        Int32 shadowMapLoc = material->getShaderLocation(StandardUniform::LightShadowMap, lightCascadeShaderVarLocOffset);
                         if (shadowMapLoc >= 0) {
                             if (directionalLight->getShadowsEnabled()) {
                                 shader->setTexture2D(currentTextureSlot, shadowMapLoc, directionalLight->getShadowMap(l)->getDepthTexture()->getTextureID());
@@ -349,17 +358,17 @@ namespace Core {
                             currentTextureSlot++;
                         } 
 
-                        Int32 viewProjectionLoc = material->getShaderLocation(StandardUniform::LightViewProjection, l);
+                        Int32 viewProjectionLoc = material->getShaderLocation(StandardUniform::LightViewProjection, lightCascadeShaderVarLocOffset);
                         if (viewProjectionLoc >= 0) {
                             shader->setUniformMatrix4(viewProjectionLoc, directionalLight->getViewProjectionMatrix(l));
                         }
 
-                        Int32 cascadeEndLoc = material->getShaderLocation(StandardUniform::LightCascadeEnd, l);
+                        Int32 cascadeEndLoc = material->getShaderLocation(StandardUniform::LightCascadeEnd, lightCascadeShaderVarLocOffset);
                         if (cascadeEndLoc >= 0) {
                             shader->setUniform1f(cascadeEndLoc, directionalLight->getCascadeBoundary(l + 1));
                         }
 
-                        Int32 lightShadowMapAspectLoc = material->getShaderLocation(StandardUniform::LightShadowMapAspect, l);
+                        Int32 lightShadowMapAspectLoc = material->getShaderLocation(StandardUniform::LightShadowMapAspect, lightCascadeShaderVarLocOffset);
                         if (lightShadowMapAspectLoc >= 0) {
                             DirectionalLight::OrthoProjection& proj = directionalLight->getProjection(l);
                             Real aspect = Math::abs((proj.right - proj.left) / (proj.top - proj.bottom));
@@ -368,7 +377,8 @@ namespace Core {
                     }
 
                     for (UInt32 l = cascadeCount; l < Constants::MaxDirectionalCascades; l++) {
-                        Int32 shadowMapLoc = material->getShaderLocation(StandardUniform::LightShadowMap, l);
+                        Int32 lightCascadeShaderVarLocOffset = lightShaderVarLocOffset * Constants::MaxDirectionalCascades + l;
+                        Int32 shadowMapLoc = material->getShaderLocation(StandardUniform::LightShadowMap, lightCascadeShaderVarLocOffset);
                         if (shadowMapLoc >= 0) {
                             shader->setTexture2D(currentTextureSlot, shadowMapLoc, this->graphics->getPlaceHolderTexture2D()->getTextureID());
                             currentTextureSlot++;
@@ -376,14 +386,21 @@ namespace Core {
                     }
                 } else {
                     for (UInt32 l = 0; l < Constants::MaxDirectionalCascades; l++) {
-                        Int32 shadowMapLoc = material->getShaderLocation(StandardUniform::LightShadowMap, l);
+                        Int32 lightCascadeShaderVarLocOffset = lightShaderVarLocOffset * Constants::MaxDirectionalCascades + l;
+                        Int32 shadowMapLoc = material->getShaderLocation(StandardUniform::LightShadowMap, lightCascadeShaderVarLocOffset);
                         if (shadowMapLoc >= 0) {
                             shader->setTexture2D(currentTextureSlot, shadowMapLoc, this->graphics->getPlaceHolderTexture2D()->getTextureID());
                             currentTextureSlot++;
                         }
                     }
                 }
-                renderedCount++;
+                if (renderPath != RenderPath::SinglePassMultiLight) {
+                    renderedCount++;
+                    this->drawMesh(mesh);
+                }
+            }
+    
+            if (renderPath == RenderPath::SinglePassMultiLight) {
                 this->drawMesh(mesh);
             }
 
@@ -392,9 +409,12 @@ namespace Core {
                 throw RenderException("MeshRenderer::render() -> Rendering lit material with no lights!");    
             }
 
-            if (lightEnabledLoc >= 0) {
-                shader->setUniform1i(lightEnabledLoc, 0);
-            }
+            Int32 lightEnabledLoc = material->getShaderLocation(StandardUniform::LightEnabled, 0);
+            Int32 lightShadowsEnabledLoc = material->getShaderLocation(StandardUniform::LightShadowsEnabled, 0);
+
+            if (lightEnabledLoc >= 0) shader->setUniform1i(lightEnabledLoc, 0);
+            if (lightShadowsEnabledLoc >= 0) shader->setUniform1i(lightShadowsEnabledLoc, 0);
+
             this->drawMesh(mesh);
         }
 

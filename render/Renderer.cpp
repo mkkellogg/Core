@@ -70,7 +70,6 @@ namespace Core {
         static std::vector<WeakPointer<Light>> lightList;
         static std::vector<WeakPointer<Light>> nonIBLLightList;
         static std::vector<WeakPointer<ReflectionProbe>> reflectionProbeList;
-        static std::vector<WeakPointer<Object3D>> emptyObjectList;
         static std::vector<WeakPointer<Object3D>> staticObjects;
         objectList.resize(0);
         cameraList.resize(0);
@@ -80,9 +79,33 @@ namespace Core {
         staticObjects.resize(0);
 
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-        this->processScene(rootObject, objectList);
+        this->collectSceneObjectsAndComputeTransforms(rootObject, objectList);
+        this->collectSceneObjectComponents(objectList, cameraList, reflectionProbeList, nonIBLLightList, lightList);
 
-        for (WeakPointer<Object3D> object : objectList) {
+        std::sort(lightList.begin(), lightList.end(), Renderer::compareLights);
+        std::sort(nonIBLLightList.begin(), nonIBLLightList.end(), Renderer::compareLights);
+
+        for (UInt32 i = 0; i < objectList.size(); i++) {
+            WeakPointer<Object3D> object = objectList[i];
+            if (object->isStatic()) staticObjects.push_back(object);
+        }
+
+        this->renderReflectionProbes(reflectionProbeList, staticObjects, nonIBLLightList, lightList);
+
+        this->renderShadowMaps(lightList, LightType::Point, objectList);
+        for (auto camera : cameraList) {
+            this->renderShadowMaps(lightList, LightType::Directional, objectList, camera);
+        }
+
+        for (auto camera : cameraList) {
+            this->render(camera, objectList, lightList, overrideMaterial, true);
+        }
+    }
+
+    void Renderer::collectSceneObjectComponents(std::vector<WeakPointer<Object3D>>& sceneObjects, std::vector<WeakPointer<Camera>>& cameraList,
+                                                std::vector<WeakPointer<ReflectionProbe>>& reflectionProbeList, std::vector<WeakPointer<Light>>& nonIBLLightList,
+                                                std::vector<WeakPointer<Light>>& lightList) {
+        for (WeakPointer<Object3D> object : sceneObjects) {
             for (SceneObjectIterator<Object3DComponent> compItr = object->beginIterateComponents(); compItr != object->endIterateComponents(); ++compItr) {
                 WeakPointer<Object3DComponent> comp = (*compItr);
                 WeakPointer<Camera> camera = WeakPointer<Object3DComponent>::dynamicPointerCast<Camera>(comp);
@@ -123,15 +146,11 @@ namespace Core {
                 }
             }
         }
+    }
 
-        std::sort(lightList.begin(), lightList.end(), Renderer::compareLights);
-        std::sort(nonIBLLightList.begin(), nonIBLLightList.end(), Renderer::compareLights);
-
-        for (UInt32 i = 0; i < objectList.size(); i++) {
-            WeakPointer<Object3D> object = objectList[i];
-            if (object->isStatic()) staticObjects.push_back(object);
-        }
-        
+    void Renderer::renderReflectionProbes(std::vector<WeakPointer<ReflectionProbe>>& reflectionProbeList, std::vector<WeakPointer<Object3D>> staticObjects,
+                                          std::vector<WeakPointer<Light>>& nonIBLLightList, std::vector<WeakPointer<Light>>& lightList) {
+        static std::vector<WeakPointer<Object3D>> emptyObjectList;
         for (auto reflectionProbe : reflectionProbeList) {
             if (reflectionProbe->getNeedsFullUpdate() || reflectionProbe->getNeedsSpecularUpdate()) {
 
@@ -153,15 +172,6 @@ namespace Core {
                 else reflectionProbe->setNeedsFullUpdate(false);
             }
         }
-
-        this->renderShadowMaps(lightList, LightType::Point, objectList);
-        for (auto camera : cameraList) {
-            this->renderShadowMaps(lightList, LightType::Directional, objectList, camera);
-        }
-
-        for (auto camera : cameraList) {
-            this->render(camera, objectList, lightList, overrideMaterial, true);
-        }
     }
 
     void Renderer::renderObjectBasic(WeakPointer<Object3D> rootObject, WeakPointer<Camera> camera,
@@ -172,7 +182,7 @@ namespace Core {
         Matrix4x4 baseTransformation;
         rootObject->getTransform().getAncestorWorldMatrix(baseTransformation);
 
-        this->processScene(rootObject, objectList, baseTransformation);
+        this->collectSceneObjectsAndComputeTransforms(rootObject, objectList, baseTransformation);
         this->render(camera, objectList, overrideMaterial, matchPhysicalPropertiesWithLighting);
     }
 
@@ -472,30 +482,27 @@ namespace Core {
         viewDescriptor.clearRenderBuffers = clearBuffers;
     }
 
-    void Renderer::processScene(WeakPointer<Scene> scene, std::vector<WeakPointer<Object3D>>& outObjects) {
-        processScene(scene->getRoot(), outObjects);
+    void Renderer::collectSceneObjectsAndComputeTransforms(WeakPointer<Scene> scene, std::vector<WeakPointer<Object3D>>& outObjects) {
+        collectSceneObjectsAndComputeTransforms(scene->getRoot(), outObjects);
     }
 
-    void Renderer::processScene(WeakPointer<Object3D> object, std::vector<WeakPointer<Object3D>>& outObjects) {
+    void Renderer::collectSceneObjectsAndComputeTransforms(WeakPointer<Object3D> object, std::vector<WeakPointer<Object3D>>& outObjects) {
         Matrix4x4 rootTransform;
-        processScene(object, outObjects, rootTransform);
+        collectSceneObjectsAndComputeTransforms(object, outObjects, rootTransform);
     }
 
-    void Renderer::processScene(WeakPointer<Object3D> object, std::vector<WeakPointer<Object3D>>& outObjects, const Matrix4x4& curTransform) {
+    void Renderer::collectSceneObjectsAndComputeTransforms(WeakPointer<Object3D> object, std::vector<WeakPointer<Object3D>>& outObjects, const Matrix4x4& curTransform) {
 
         if (!object->isActive()) return;
         Matrix4x4 nextTransform = curTransform;
         Transform& objTransform = object->getTransform();
         nextTransform.multiply(objTransform.getLocalMatrix());
         objTransform.getWorldMatrix().copy(nextTransform);
-        Matrix4x4& inverseWorld = objTransform.getInverseWorldMatrix();
-        inverseWorld.copy(nextTransform);
-        inverseWorld.invert();
         outObjects.push_back(object);
 
         for (SceneObjectIterator<Object3D> itr = object->beginIterateChildren(); itr != object->endIterateChildren(); ++itr) {
             WeakPointer<Object3D> obj = *itr;
-            this->processScene(obj, outObjects, nextTransform);
+            this->collectSceneObjectsAndComputeTransforms(obj, outObjects, nextTransform);
         }
     }
 

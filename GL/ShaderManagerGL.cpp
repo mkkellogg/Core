@@ -131,7 +131,7 @@ const std::string MAX_LIGHTS_DEF = "const int MAX_LIGHTS = " + MAX_LIGHTS + ";\n
 const std::string MAX_POINT_LIGHTS_DEF = "const int MAX_POINT_LIGHTS = " + MAX_POINT_LIGHTS + ";\n";
 const std::string MAX_DIRECTIONAL_LIGHTS_DEF = "const int MAX_DIRECTIONAL_LIGHTS = " + MAX_DIRECTIONAL_LIGHTS + ";\n";
 const std::string POINT_LIGHT_COUNT_DEF = "uniform int " + POINT_LIGHT_COUNT + ";\n";
-const std::string DIRECTIONAL_LIGHT_DEF = "unfirm int " + DIRECTIONAL_LIGHT_COUNT + ";\n";
+const std::string DIRECTIONAL_LIGHT_DEF = "uniform int " + DIRECTIONAL_LIGHT_COUNT + ";\n";
 const std::string AMBIENTL_LIGHT_DEF = "unfirm int " + AMBIENT_LIGHT_COUNT + ";\n";
 const std::string AMBIENTL_IBL_LIGHT_DEF = "unfirm int " + AMBIENT_IBL_LIGHT_COUNT + ";\n";
 const std::string LIGHT_COUNT_DEF = "uniform int " + LIGHT_COUNT + ";\n";
@@ -193,6 +193,9 @@ namespace Core {
         this->setShaderSource(ShaderType::Geometry, "Outline", ShaderManagerGL::Outline_geometry);
         this->setShaderSource(ShaderType::Fragment, "Outline", ShaderManagerGL::Outline_fragment);
 
+        this->setShaderSource(ShaderType::Vertex, "LightingCommon", ShaderManagerGL::Lighting_Common_vertex);
+        this->setShaderSource(ShaderType::Fragment, "LightingCommon", ShaderManagerGL::Lighting_Common_fragment);
+
         this->setShaderSource(ShaderType::Vertex, "LightingHeaderSingle", ShaderManagerGL::Lighting_Header_Single_vertex);
         this->setShaderSource(ShaderType::Fragment, "LightingHeaderSingle", ShaderManagerGL::Lighting_Header_Single_fragment);
 
@@ -217,16 +220,19 @@ namespace Core {
         this->setShaderSource(ShaderType::Fragment, "PhysicalLightingSingle", ShaderManagerGL::Physical_Lighting_Single_fragment);
 
         this->setShaderSource(ShaderType::Vertex, "PhysicalLightingMulti", ShaderManagerGL::Physical_Lighting_Multi_vertex);
-        this->setShaderSource(ShaderType::Fragment, "PhysicalLightingHeaderMulti", ShaderManagerGL::Physical_Lighting_Header_Multi_fragment);
-        this->setShaderSource(ShaderType::Fragment, "PhysicalLightingMulti", ShaderManagerGL::Physical_Lighting_Multi_fragment);
+        this->setShaderSource(ShaderType::Fragment, "PhysicalLightingHeaderMulti", ShaderManagerGL::Physical_Lighting_Multi_Once_fragment);
+        this->setShaderSource(ShaderType::Fragment, "PhysicalLightingMulti", ShaderManagerGL::Physical_Lighting_Multi_Per_Light_fragment);
 
         this->setShaderSource(ShaderType::Vertex, "PhysicalLighting", ShaderManagerGL::Physical_Lighting_vertex);
         this->setShaderSource(ShaderType::Fragment, "PhysicalLighting", ShaderManagerGL::Physical_Lighting_fragment);
 
+        this->setShaderSource(ShaderType::Fragment, "StandardPhysicalVars", ShaderManagerGL::StandardPhysicalVars_fragment);
+        this->setShaderSource(ShaderType::Fragment, "StandardPhysicalMain", ShaderManagerGL::StandardPhysicalMain_fragment);
+
         this->setShaderSource(ShaderType::Vertex, "StandardPhysical", ShaderManagerGL::StandardPhysical_vertex);
         this->setShaderSource(ShaderType::Fragment, "StandardPhysical", ShaderManagerGL::StandardPhysical_fragment);
 
-        this->setShaderSource(ShaderType::Vertex, "StandardPhysicalMulti", ShaderManagerGL::StandardPhysical_vertex);
+        this->setShaderSource(ShaderType::Vertex, "StandardPhysicalMulti", ShaderManagerGL::StandardPhysicalMulti_vertex);
         this->setShaderSource(ShaderType::Fragment, "StandardPhysicalMulti", ShaderManagerGL::StandardPhysicalMulti_fragment);
 
         this->setShaderSource(ShaderType::Vertex, "AmbientPhysical", ShaderManagerGL::AmbientPhysical_vertex);
@@ -484,6 +490,16 @@ namespace Core {
             "   out_color = rColor;\n"
             "}\n";
 
+        this->Lighting_Common_vertex = "";
+
+        this->Lighting_Common_fragment =
+            "const int AMBIENT_LIGHT = 0;\n"
+            "const int AMBIENT_IBL_LIGHT = 1;\n"
+            "const int DIRECTIONAL_LIGHT = 2;\n"
+            "const int POINT_LIGHT = 3;\n"
+            "const int SPOT_LIGHT = 4;\n"
+            "const int PLANAR_LIGHT = 5;\n";
+
         this->Lighting_Header_Multi_vertex =
             MAX_CASCADES_DEF
             + MAX_LIGHTS_DEF
@@ -583,11 +599,11 @@ namespace Core {
             "_core_viewSpacePosZ[i] = abs(viewSpacePos.z);"
             "}";
 
-        this->Lighting_Dir_Cascade_fragment = "vec3 calcDirShadowFactorCoordsSingleIndex@cascadeIndex(vec2 uv, float fragDepth, float angularBias) { \n"
+        this->Lighting_Dir_Cascade_fragment = "vec3 calcDirShadowFactorCoordsSingleIndex_@lightIndex_@cascadeIndex(vec2 uv, float fragDepth, float angularBias) { \n"
             "   return vec3(uv.xy, fragDepth - angularBias - " + LIGHT_CONSTANT_SHADOW_BIAS + "[@lightIndex]); \n"
             "} \n"
 
-            "float calcDirShadowFactor@cascadeIndex(float angularBias, vec4 fragPos)\n"
+            "float calcDirShadowFactor_@lightIndex_@cascadeIndex(float angularBias, vec4 fragPos)\n"
             "{ \n"
             "    int offset = @lightIndex * " + MAX_CASCADES + " + @cascadeIndex;\n"
             "    vec4 lightSpacePos = _core_lightSpacePos[offset]; \n"
@@ -610,7 +626,7 @@ namespace Core {
 #ifdef MANUAL_2D_SHADOWS
             "                float shadowDepth = clamp(texture(" + LIGHT_SHADOW_MAP + "[@cascadeIndex], coords2D).r, 0.0, 1.0); \n"
 #else
-            "                vec3 coords = calcDirShadowFactorCoordsSingleIndex@cascadeIndex(coords2D, z, angularBias); \n"
+            "                vec3 coords = calcDirShadowFactorCoordsSingleIndex_@lightIndex_@cascadeIndex(coords2D, z, angularBias); \n"
             "                float shadowDepth = clamp(texture(" + LIGHT_SHADOW_MAP + "[@cascadeIndex], coords), 0.0, 1.0); \n"
 #endif
             "                shadowFactor += (1.0-shadowDepth); \n"
@@ -623,7 +639,7 @@ namespace Core {
 #ifdef MANUAL_2D_SHADOWS
             "        float shadowDepth = clamp(texture(" + LIGHT_SHADOW_MAP + "[@cascadeIndex], uv).r, 0.0, 1.0); \n"
 #else
-            "        vec3 coords = calcDirShadowFactorCoordsSingleIndex@cascadeIndex(uv, z, angularBias); \n"
+            "        vec3 coords = calcDirShadowFactorCoordsSingleIndex_@lightIndex_@cascadeIndex(uv, z, angularBias); \n"
             "        float shadowDepth = clamp(texture(" + LIGHT_SHADOW_MAP + "[@cascadeIndex], coords), 0.0, 1.0); \n"
 #endif
             "        shadowFactor += (1.0-shadowDepth); \n"
@@ -636,12 +652,6 @@ namespace Core {
             "#include \"LightingDirCascade(lightIndex=@lightIndex,cascadeIndex=0)\"\n"
             "#include \"LightingDirCascade(lightIndex=@lightIndex,cascadeIndex=1)\"\n"
             "#include \"LightingDirCascade(lightIndex=@lightIndex,cascadeIndex=2)\"\n"
-            "const int AMBIENT_LIGHT = 0;\n"
-            "const int AMBIENT_IBL_LIGHT = 1;\n"
-            "const int DIRECTIONAL_LIGHT = 2;\n"
-            "const int POINT_LIGHT = 3;\n"
-            "const int SPOT_LIGHT = 4;\n"
-            "const int PLANAR_LIGHT = 5;\n"
 
             "vec4 getDirLightColor@lightIndex(vec4 worldPos, float bias) { \n"
             "    float shadowFactor = 0.0;\n"
@@ -659,11 +669,11 @@ namespace Core {
             "      int offset1 = @lightIndex * " + MAX_CASCADES + " + 1;\n"
             "      int offset2 = @lightIndex * " + MAX_CASCADES + " + 2;\n"
             "      if (_core_viewSpacePosZ[@lightIndex] <= " + LIGHT_CASCADE_END + "[offset0]) { \n"
-            "          shadowFactor = calcDirShadowFactor0(bias, worldPos); \n"
+            "          shadowFactor = calcDirShadowFactor_@lightIndex_0(bias, worldPos); \n"
             "      } else if (_core_viewSpacePosZ[@lightIndex] <= " + LIGHT_CASCADE_END + "[offset1]) { \n"
-            "          shadowFactor = calcDirShadowFactor1(bias, worldPos); \n"
+            "          shadowFactor = calcDirShadowFactor_@lightIndex_1(bias, worldPos); \n"
             "      } else if (_core_viewSpacePosZ[@lightIndex] <= " + LIGHT_CASCADE_END + "[offset2]) { \n"
-            "          shadowFactor = calcDirShadowFactor2(bias, worldPos); \n"
+            "          shadowFactor = calcDirShadowFactor_@lightIndex_2(bias, worldPos); \n"
             "      } \n"
             "    } \n"
 
@@ -774,6 +784,7 @@ namespace Core {
             "\n";
 
         this->PhysicalCommon_fragment =
+            "const float MAX_REFLECTION_LOD = " + MAX_IBL_LOD_LEVELS + "; \n"
             "const int TONE_MAP_REINHARD = 0; \n"
             "const int TONE_MAP_EXPOSURE = 1; \n"
             "vec3 toneMapReinhard(vec3 color) { \n"
@@ -881,10 +892,11 @@ namespace Core {
             "#include \"LightingHeaderMulti\" \n"
             "#include \"Lighting\" \n";
 
-        this->Physical_Lighting_Header_Multi_fragment =
-            "#include \"LightingHeaderMulti\" \n";
+        this->Physical_Lighting_Multi_Once_fragment =
+            "#include \"LightingHeaderMulti\" \n"
+            "#include \"PhysicalCommon\" \n";
    
-        this->Physical_Lighting_Multi_fragment =
+        this->Physical_Lighting_Multi_Per_Light_fragment =
             "#include \"Lighting(lightIndex=@lightIndex)\" \n"
             "#include \"PhysicalLighting(lightIndex=@lightIndex)\" \n";
 
@@ -892,7 +904,6 @@ namespace Core {
             "\n";
 
         this->Physical_Lighting_fragment =
-            "const float MAX_REFLECTION_LOD = " + MAX_IBL_LOD_LEVELS + "; \n"
             "vec4 litColorPhysical@lightIndex(in vec4 albedo, in vec4 worldPos, in vec3 worldNormal, in vec4 cameraPos, in float metallic, in float roughness, in float ao) {\n"
             "    if (" + LIGHT_ENABLED + "[@lightIndex] != 0) {\n"
             "        vec3 V = normalize(vec3(cameraPos - worldPos)); \n "
@@ -997,12 +1008,8 @@ namespace Core {
             "    TRANSFER_LIGHTING(localPos, gl_Position, viewSpacePos) \n"
             "}\n";
 
-        this->StandardPhysical_fragment =   
-            "#version 330\n"
-            "precision highp float;\n"
-            "#include \"Common\" \n"
-            "#include \"PhysicalLightingSingle\"\n"
-            + CAMERA_POSITION_DEF +
+        this->StandardPhysicalVars_fragment =
+            CAMERA_POSITION_DEF +
             "uniform int enabledMap; \n"
             "uniform vec4 albedo; \n"
             "uniform sampler2D albedoMap; \n"
@@ -1019,8 +1026,9 @@ namespace Core {
             "in vec2 vAlbedoUV;\n"
             "in vec2 vNormalUV;\n"
             "in vec4 vWorldPos;\n"
-            "out vec4 out_color;\n"
-            "void main() {\n"
+            "out vec4 out_color;\n";
+
+        this->StandardPhysicalMain_fragment =
             "   int albedoMapEnabled = enabledMap & 1; \n"
             "   int normalMapEnabled = enabledMap & 2; \n"
             "   int roughnessMapEnabled = enabledMap & 4; \n"
@@ -1050,66 +1058,82 @@ namespace Core {
             "      _metallic = fullMetallic.r; \n"
             "   } else { \n"
             "       _metallic = metallic; \n"
-            "   } \n"
+            "   } \n"; 
+
+        this->StandardPhysical_fragment =   
+            "#version 330\n"
+            "precision highp float;\n"
+            "#include \"Common\" \n"
+            "#include \"LightingCommon\" \n"
+            "#include \"PhysicalLightingSingle\"\n"
+            "#include \"StandardPhysicalVars\" \n"
+            "void main() {\n"
+            "   #include \"StandardPhysicalMain\" \n"
             "   out_color = litColorPhysical0(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
+            "}\n";
+
+        this->StandardPhysicalMulti_vertex =  
+            "#version 330\n"
+            "precision highp float;\n"
+            "#include \"Common\" \n"
+            "#include \"PhysicalLightingMulti\" \n"
+            "#include \"VertexSkinning\" \n"
+            + POSITION_DEF
+            + TANGENT_DEF
+            + COLOR_DEF
+            + NORMAL_DEF
+            + FACE_NORMAL_DEF
+            + ALBEDO_UV_DEF
+            + NORMAL_UV_DEF
+            + PROJECTION_MATRIX_DEF
+            + VIEW_MATRIX_DEF
+            + MODEL_MATRIX_DEF
+            + MODEL_INVERSE_TRANSPOSE_MATRIX_DEF +
+            "out vec4 vColor;\n"
+            "out vec3 vNormal;\n"
+            "out vec3 vTangent;\n"
+            "out vec3 vFaceNormal;\n"
+            "out vec2 vAlbedoUV;\n"
+            "out vec2 vNormalUV;\n"
+            "out vec4 vWorldPos;\n"
+            "void main() {\n"
+            "    vec4 localPos = " + POSITION + "; \n"
+            "    vec4 localNormal = " + NORMAL + "; \n"
+            "    vec4 localFaceNormal = " + FACE_NORMAL + "; \n"
+            "    calculateSkinnedPositionAndNormals(localPos, localNormal, localFaceNormal); \n"
+            "    vWorldPos = " +  MODEL_MATRIX + " * localPos;\n"
+            "    vec4 viewSpacePos = " + VIEW_MATRIX + " * vWorldPos;\n"
+            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * vWorldPos;\n"
+            "    vAlbedoUV = " + ALBEDO_UV + ";\n"
+            "    vNormalUV = " + NORMAL_UV + ";\n"
+            "    vColor = " + COLOR + ";\n"
+            "    vec4 eNormal = localNormal;\n"
+            "    vNormal = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * eNormal);\n"
+            "    vec4 eTangent = " + TANGENT + ";\n"
+            "    vTangent = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * eTangent);\n"
+            "    vFaceNormal = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * localFaceNormal);\n"
+            "    TRANSFER_LIGHTING(localPos, gl_Position, viewSpacePos) \n"
             "}\n";
 
         this->StandardPhysicalMulti_fragment =   
             "#version 330\n"
             "precision highp float;\n"
             "#include \"Common\" \n"
+            "#include \"LightingCommon\" \n"
             "#include \"PhysicalLightingHeaderMulti\"\n"
             "#include \"PhysicalLightingMulti(lightIndex=0)\"\n"
-            + CAMERA_POSITION_DEF +
-            "uniform int enabledMap; \n"
-            "uniform vec4 albedo; \n"
-            "uniform sampler2D albedoMap; \n"
-            "uniform sampler2D normalMap; \n"
-            "uniform sampler2D roughnessMap; \n"
-            "uniform sampler2D metallicMap; \n"
-            "uniform float metallic; \n"
-            "uniform float roughness; \n"
-            "uniform float ambientOcclusion; \n"
-            "in vec4 vColor;\n"
-            "in vec3 vNormal;\n"
-            "in vec3 vTangent;\n"
-            "in vec3 vFaceNormal;\n"
-            "in vec2 vAlbedoUV;\n"
-            "in vec2 vNormalUV;\n"
-            "in vec4 vWorldPos;\n"
-            "out vec4 out_color;\n"
+            "#include \"PhysicalLightingMulti(lightIndex=1)\"\n"
+         //   "#include \"PhysicalLightingMulti(lightIndex=2)\"\n"
+         //   "#include \"PhysicalLightingMulti(lightIndex=3)\"\n"
+            "#include \"StandardPhysicalVars\" \n"
             "void main() {\n"
-            "   int albedoMapEnabled = enabledMap & 1; \n"
-            "   int normalMapEnabled = enabledMap & 2; \n"
-            "   int roughnessMapEnabled = enabledMap & 4; \n"
-            "   int metallicMapEnabled = enabledMap & 8; \n"
-            "   vec4 _albedo; \n"
-            "   if (albedoMapEnabled != 0) { \n"
-            "       _albedo = texture(albedoMap, vAlbedoUV); \n"
-            "   } else { \n"
-            "      _albedo = albedo; \n"
-            "   } \n"
-            "   vec3 _normal; \n"
-            "   if (normalMapEnabled != 0) { \n"
-            "      _normal = calcMappedNormal(texture(normalMap, vNormalUV).xyz, vNormal, vTangent); \n"
-            "   } else { \n"
-            "       _normal = normalize(vNormal); \n"
-            "   } \n"
-            "   float _roughness; \n"
-            "   if (roughnessMapEnabled != 0) { \n"
-            "       vec3 fullRoughness = texture(roughnessMap, vAlbedoUV).rgb; \n"
-            "      _roughness = fullRoughness.r; \n"
-            "   } else { \n"
-            "       _roughness = roughness; \n"
-            "   } \n"
-            "   float _metallic; \n"
-            "   if (metallicMapEnabled != 0) { \n"
-            "      vec4 fullMetallic = texture(metallicMap, vAlbedoUV); \n"
-            "      _metallic = fullMetallic.r; \n"
-            "   } else { \n"
-            "       _metallic = metallic; \n"
-            "   } \n"
-            "   out_color = litColorPhysical0(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
+            "   #include \"StandardPhysicalMain\" \n"
+            "   vec4 curColor = vec4(0.0, 0.0, 0.0, 0.0); \n"
+            "   if (" + LIGHT_COUNT + " >= 1) curColor += litColorPhysical0(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
+            "   if (" + LIGHT_COUNT + " >= 2) curColor += litColorPhysical1(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
+       //     "   if (" + LIGHT_COUNT + " >= 3) curColor += litColorPhysical2(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
+       //     "   if (" + LIGHT_COUNT + " >= 4) curColor += litColorPhysical3(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
+            "   out_color = curColor;"
             "}\n";
 
         this->AmbientPhysical_vertex =  
@@ -1154,6 +1178,7 @@ namespace Core {
             "#version 330\n"
             "precision highp float;\n"
             "#include \"Common\" \n"
+            "#include \"LightingCommon\" \n"
             "#include \"PhysicalLightingSingle\"\n"
             + CAMERA_POSITION_DEF +
             "uniform int enabledMap; \n"
@@ -1337,6 +1362,7 @@ namespace Core {
             "#version 330\n"
             "precision highp float;\n"
             "#include \"Common\" \n"
+            "#include \"LightingCommon\" \n"
             "#include \"PhysicalLightingSingle\" \n"
             "out vec4 out_color; \n"
             "in vec4 localPos; \n"
@@ -1402,6 +1428,7 @@ namespace Core {
             "#version 330\n"
             "precision highp float;\n"
             "#include \"Common\"\n"
+            "#include \"LightingCommon\" \n"
             "#include \"PhysicalLightingSingle\" \n"
             "out vec2 out_color; \n"
             "in vec2 vUV; \n"
@@ -1665,6 +1692,7 @@ namespace Core {
             "#version 330\n"
             "precision highp float;\n"
             "#include \"Common\"\n"
+            "#include \"LightingCommon\" \n"
             "#include \"LightingSingle\"\n"
             + CAMERA_POSITION_DEF +
             "in vec4 vColor;\n"
@@ -1750,6 +1778,7 @@ namespace Core {
             "#version 330\n"
             "precision highp float;\n"
             "#include \"Common\"\n"
+            "#include \"LightingCommon\" \n"
             "#include \"PhysicalLightingSingle\"\n"
             + CAMERA_POSITION_DEF + 
             "uniform int albedoMapEnabled; \n"

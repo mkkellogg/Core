@@ -98,6 +98,7 @@ set(INCLUDE_FILES
     material/SpecularIBLBRDFRendererMaterial.h
     material/EquirectangularMaterial.h
     material/StandardPhysicalMaterial.h
+    material/StandardPhysicalMaterialMultiLight.h
     material/AmbientPhysicalMaterial.h
     material/TonemapMaterial.h
     material/StandardUniforms.h
@@ -264,6 +265,7 @@ set(SOURCE_FILES
     material/SpecularIBLBRDFRendererMaterial.cpp
     material/EquirectangularMaterial.cpp
     material/StandardPhysicalMaterial.cpp
+    material/StandardPhysicalMaterialMultiLight.cpp
     material/AmbientPhysicalMaterial.cpp
     material/TonemapMaterial.cpp
     material/Shader.cpp

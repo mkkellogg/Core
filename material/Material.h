@@ -8,6 +8,7 @@
 #include "StandardUniforms.h"
 #include "../render/RenderStyle.h"
 #include "../render/RenderState.h"
+#include "../render/RenderPath.h"
 
 namespace Core {
 
@@ -38,12 +39,15 @@ namespace Core {
         void setDestBlendingFactor(RenderState::BlendingFactor factor);
         RenderStyle getRenderStyle() const;
         void setRenderStyle(RenderStyle style);
+        RenderPath getRenderPath() const;
+        void setRenderPath(RenderPath path);
         RenderState::BlendingMode getBlendingMode() const;
         void setBlendingMode(RenderState::BlendingMode mode);
         UInt16 getRenderQueueID() const;
         void setRenderQueueID(UInt16 renderQueueID);
         Bool isLit() const;
         void setLit(Bool lit);
+        virtual UInt32 maxLightCount() const;
         Bool isPhysical() const;
         void setPhysical(Bool physical);
         Bool isSkinningEnabled() const;
@@ -94,6 +98,7 @@ namespace Core {
         RenderState::BlendingFactor srcBlendingFactor;
         RenderState::BlendingFactor destBlendingFactor;
         RenderStyle renderStyle;
+        RenderPath renderPath;
         Bool ready;
         UInt16 renderQueueID;
         Bool lit;
