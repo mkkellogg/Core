@@ -56,9 +56,11 @@ namespace Core {
         this->ambientOcclusionLocation = -1;
         this->enabledMapLocation = -1;
 
-        this->lightIrradianceMapLocation = -1;
-        this->lightSpecularIBLPreFilteredMapLocation = -1;
-        this->lightSpecularIBLBRDFMapLocation = -1;
+        for (UInt32 i = 0; i < Constants::MaxShaderLights; i++) { 
+            this->lightIrradianceMapLocation[i] = -1;
+            this->lightSpecularIBLPreFilteredMapLocation[i] = -1;
+            this->lightSpecularIBLBRDFMapLocation[i] = -1;
+        }
     }
 
     void StandardPhysicalMaterial::setMetallic(Real metallic) {
@@ -135,11 +137,11 @@ namespace Core {
         if (uniformLocation >= 0) return uniformLocation;
         switch (uniform) {
             case StandardUniform::LightIrradianceMap:
-                return this->lightIrradianceMapLocation;
+                return this->lightIrradianceMapLocation[offset];
             case StandardUniform::LightSpecularIBLBRDFMap:
-                return this->lightSpecularIBLBRDFMapLocation;
+                return this->lightSpecularIBLBRDFMapLocation[offset];
             case StandardUniform::LightSpecularIBLPreFilteredMap:
-                return this->lightSpecularIBLPreFilteredMapLocation;
+                return this->lightSpecularIBLPreFilteredMapLocation[offset];
             default:
                 return -1;
         }
@@ -223,9 +225,11 @@ namespace Core {
             standardPhysicalMaterial->roughnessLocation = this->roughnessLocation;
             standardPhysicalMaterial->ambientOcclusionLocation = this->ambientOcclusionLocation;
             standardPhysicalMaterial->enabledMapLocation = this->enabledMapLocation;
-            standardPhysicalMaterial->lightIrradianceMapLocation = this->lightIrradianceMapLocation;
-            standardPhysicalMaterial->lightSpecularIBLPreFilteredMapLocation = this->lightSpecularIBLPreFilteredMapLocation;
-            standardPhysicalMaterial->lightSpecularIBLBRDFMapLocation = this->lightSpecularIBLBRDFMapLocation;
+            for (UInt32 i = 0; i < Constants::MaxShaderLights; i++) { 
+                standardPhysicalMaterial->lightIrradianceMapLocation[i] = this->lightIrradianceMapLocation[i];
+                standardPhysicalMaterial->lightSpecularIBLPreFilteredMapLocation[i] = this->lightSpecularIBLPreFilteredMapLocation[i];
+                standardPhysicalMaterial->lightSpecularIBLBRDFMapLocation[i] = this->lightSpecularIBLBRDFMapLocation[i];
+            }
         } else {
             throw InvalidArgumentException("StandardPhysicalMaterial::copyTo() -> 'target must be same material."); 
         }
@@ -239,9 +243,12 @@ namespace Core {
 
     void StandardPhysicalMaterial::bindShaderVarLocations() {
         BaseLitMaterial::bindShaderVarLocations();
-        this->lightIrradianceMapLocation = this->shader->getUniformLocation(StandardUniform::LightIrradianceMap);
-        this->lightSpecularIBLPreFilteredMapLocation = this->shader->getUniformLocation(StandardUniform::LightSpecularIBLPreFilteredMap);
-        this->lightSpecularIBLBRDFMapLocation = this->shader->getUniformLocation(StandardUniform::LightSpecularIBLBRDFMap);
+        for (UInt32 i = 0; i < this->maxLightCount(); i++) { 
+            this->lightIrradianceMapLocation[i] = this->shader->getUniformLocation(StandardUniform::LightIrradianceMap, i);
+            this->lightSpecularIBLPreFilteredMapLocation[i] = this->shader->getUniformLocation(StandardUniform::LightSpecularIBLPreFilteredMap, i);
+            this->lightSpecularIBLBRDFMapLocation[i] = this->shader->getUniformLocation(StandardUniform::LightSpecularIBLBRDFMap, i);
+        }
+
         this->albedoUVLocation = this->shader->getAttributeLocation(StandardAttribute::AlbedoUV);
         this->normalUVLocation = this->shader->getAttributeLocation(StandardAttribute::NormalUV);
         this->albedoLocation = this->shader->getUniformLocation("albedo");

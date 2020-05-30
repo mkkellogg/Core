@@ -163,16 +163,14 @@ namespace Core {
 
         RenderPath renderPath = material->getRenderPath();
 
-        Int32 lightCountLoc = material->getShaderLocation(StandardUniform::LightCount);
-        if (renderPath != RenderPath::SinglePassMultiLight) {
-            if (lightCountLoc >= 0) shader->setUniform1i(lightCountLoc, 1);
-        } else {
-            if (lightCountLoc >= 0) shader->setUniform1i(lightCountLoc, lights.size());
-        }
-
         if (lights.size() > 0 && material->isLit()) {
 
-            UInt32 renderedCount = 0;
+            Int32 lightCountLoc = material->getShaderLocation(StandardUniform::LightCount);
+            if (renderPath != RenderPath::SinglePassMultiLight) {
+                if (lightCountLoc >= 0) shader->setUniform1i(lightCountLoc, 1);
+            }
+            UInt32 renderPassCount = 0;
+
             for (UInt32 i = 0; i < lights.size(); i++) {
 
                 WeakPointer<Light> light = lights[i];
@@ -181,10 +179,11 @@ namespace Core {
                 if (matchPhysicalPropertiesWithLighting) {
                     if (lightType == LightType::Ambient && material->isPhysical()) continue;
                 }
+                if (renderPath == RenderPath::SinglePassMultiLight  && renderPassCount >= material->maxLightCount()) continue;
 
                 if (renderPath != RenderPath::SinglePassMultiLight) {
                     if (material->getBlendingMode() == RenderState::BlendingMode::None) {
-                        if (renderedCount == 0) {
+                        if (renderPassCount == 0) {
                             graphics->setBlendingEnabled(false);
                         } else {
                             graphics->setBlendingEnabled(true);
@@ -193,7 +192,7 @@ namespace Core {
                     }
                 }
 
-                Int32 lightShaderVarLocOffset = renderPath != RenderPath::SinglePassMultiLight ? 0 : i;
+                Int32 lightShaderVarLocOffset = renderPath != RenderPath::SinglePassMultiLight ? 0 : renderPassCount;
 
                 Int32 lightEnabledLoc = material->getShaderLocation(StandardUniform::LightEnabled, lightShaderVarLocOffset);
                 if (lightEnabledLoc >= 0) shader->setUniform1i(lightEnabledLoc, 1);
@@ -395,12 +394,13 @@ namespace Core {
                     }
                 }
                 if (renderPath != RenderPath::SinglePassMultiLight) {
-                    renderedCount++;
                     this->drawMesh(mesh);
                 }
+                renderPassCount++;
             }
     
             if (renderPath == RenderPath::SinglePassMultiLight) {
+                if (lightCountLoc >= 0) shader->setUniform1i(lightCountLoc, renderPassCount);
                 this->drawMesh(mesh);
             }
 

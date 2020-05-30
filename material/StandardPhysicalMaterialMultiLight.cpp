@@ -16,6 +16,24 @@ namespace Core {
     }
 
     UInt32 StandardPhysicalMaterialMultiLight::maxLightCount() const {
-        return 4;
+        return 2;
+    }
+
+    void StandardPhysicalMaterialMultiLight::copyAttributesFromStandardPhysicalMaterial(WeakPointer<StandardPhysicalMaterial> source) {
+
+        this->albedo.set(source->albedo.r, source->albedo.g, source->albedo.b, source->albedo.a);
+        this->metallic = source->metallic;
+        this->roughness = source->roughness;
+        this->ambientOcclusion = source->ambientOcclusion;
+
+        this->albedoMapEnabled = source->albedoMapEnabled;
+        this->normalMapEnabled = source->normalMapEnabled;
+        this->roughnessMapEnabled = source->roughnessMapEnabled;
+        this->metallicMapEnabled = source->metallicMapEnabled;
+
+        this->albedoMap = source->albedoMap;
+        this->normalMap = source->normalMap;
+        this->roughnessMap = source->roughnessMap;
+        this->metallicMap = source->metallicMap;
     }
 }

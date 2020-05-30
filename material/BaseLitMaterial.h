@@ -22,26 +22,26 @@ namespace Core {
     protected:
         BaseLitMaterial(WeakPointer<Graphics> graphics);
 
-        Int32 lightPositionLocation;
-        Int32 lightDirectionLocation;
-        Int32 lightViewProjectionLocations[Constants::MaxDirectionalCascades];
-        Int32 lightShadowMapLocations[Constants::MaxDirectionalCascades];
-        Int32 lightCascadeEndLocations[Constants::MaxDirectionalCascades];
-        Int32 lightShadowMapAspectLocations[Constants::MaxDirectionalCascades];
-        Int32 lightCascadeCountLocation;
-        Int32 lightRangeLocation;
-        Int32 lightTypeLocation;
-        Int32 lightIntensityLocation;
-        Int32 lightColorLocation;
-        Int32 lightEnabledLocation;
-        Int32 lightShadowsEnabledLocation;
-        Int32 lightMatrixLocation;
-        Int32 lightShadowCubeMapLocation;
-        Int32 lightAngularShadowBiasLocation;
-        Int32 lightConstantShadowBiasLocation;
-        Int32 lightShadowMapSizeLocation;
-        Int32 lightShadowSoftnessLocation;
-        Int32 lightNearPlaneLocation;
+        Int32 lightPositionLocation[Constants::MaxShaderLights];
+        Int32 lightDirectionLocation[Constants::MaxShaderLights];
+        Int32 lightViewProjectionLocations[Constants::MaxDirectionalCascades * Constants::MaxShaderLights];
+        Int32 lightShadowMapLocations[Constants::MaxDirectionalCascades * Constants::MaxShaderLights];
+        Int32 lightCascadeEndLocations[Constants::MaxDirectionalCascades * Constants::MaxShaderLights];
+        Int32 lightShadowMapAspectLocations[Constants::MaxDirectionalCascades * Constants::MaxShaderLights];
+        Int32 lightCascadeCountLocation[Constants::MaxShaderLights];
+        Int32 lightRangeLocation[Constants::MaxShaderLights];
+        Int32 lightTypeLocation[Constants::MaxShaderLights];
+        Int32 lightIntensityLocation[Constants::MaxShaderLights];
+        Int32 lightColorLocation[Constants::MaxShaderLights];
+        Int32 lightEnabledLocation[Constants::MaxShaderLights];
+        Int32 lightShadowsEnabledLocation[Constants::MaxShaderLights];
+        Int32 lightMatrixLocation[Constants::MaxShaderLights];
+        Int32 lightShadowCubeMapLocation[Constants::MaxShaderLights];
+        Int32 lightAngularShadowBiasLocation[Constants::MaxShaderLights];
+        Int32 lightConstantShadowBiasLocation[Constants::MaxShaderLights];
+        Int32 lightShadowMapSizeLocation[Constants::MaxShaderLights];
+        Int32 lightShadowSoftnessLocation[Constants::MaxShaderLights];
+        Int32 lightNearPlaneLocation[Constants::MaxShaderLights];
         Int32 lightCountLocation;
     };
 }

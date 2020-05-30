@@ -605,12 +605,12 @@ namespace Core {
 
             "float calcDirShadowFactor_@lightIndex_@cascadeIndex(float angularBias, vec4 fragPos)\n"
             "{ \n"
-            "    int offset = @lightIndex * " + MAX_CASCADES + " + @cascadeIndex;\n"
-            "    vec4 lightSpacePos = _core_lightSpacePos[offset]; \n"
+            "    int cascadeOffset = @lightIndex * " + MAX_CASCADES + " + @cascadeIndex;\n"
+            "    vec4 lightSpacePos = _core_lightSpacePos[cascadeOffset]; \n"
             "    vec3 projCoords = lightSpacePos.xyz / lightSpacePos.w; \n"
             "    vec3 uvCoords = (projCoords * 0.5) + vec3(0.5, 0.5, 0.5); \n"
             "    float px = 1.0 / " + LIGHT_SHADOW_MAP_SIZE + "[@lightIndex]; \n"
-            "    float py =  " + LIGHT_SHADOW_MAP_ASPECT + "[@cascadeIndex] / " + LIGHT_SHADOW_MAP_SIZE + "[@lightIndex]; \n"
+            "    float py =  " + LIGHT_SHADOW_MAP_ASPECT + "[cascadeOffset] / " + LIGHT_SHADOW_MAP_SIZE + "[@lightIndex]; \n"
 
             "    float shadowFactor = 0.0; \n"
             "    vec2 uv = uvCoords.xy; \n"
@@ -624,10 +624,10 @@ namespace Core {
             "            for (int x = -" + LIGHT_SHADOW_SOFTNESS + "[@lightIndex]; x <= " + LIGHT_SHADOW_SOFTNESS + "[@lightIndex] ; x++) { \n"
             "                vec2 coords2D = vec2(uv.x + x * px, uv.y + y * py); \n"
 #ifdef MANUAL_2D_SHADOWS
-            "                float shadowDepth = clamp(texture(" + LIGHT_SHADOW_MAP + "[@cascadeIndex], coords2D).r, 0.0, 1.0); \n"
+            "                float shadowDepth = clamp(texture(" + LIGHT_SHADOW_MAP + "[cascadeOffset], coords2D).r, 0.0, 1.0); \n"
 #else
             "                vec3 coords = calcDirShadowFactorCoordsSingleIndex_@lightIndex_@cascadeIndex(coords2D, z, angularBias); \n"
-            "                float shadowDepth = clamp(texture(" + LIGHT_SHADOW_MAP + "[@cascadeIndex], coords), 0.0, 1.0); \n"
+            "                float shadowDepth = clamp(texture(" + LIGHT_SHADOW_MAP + "[cascadeOffset], coords), 0.0, 1.0); \n"
 #endif
             "                shadowFactor += (1.0-shadowDepth); \n"
             "            } \n"
@@ -637,10 +637,10 @@ namespace Core {
             "    } \n"
             "    else { \n"
 #ifdef MANUAL_2D_SHADOWS
-            "        float shadowDepth = clamp(texture(" + LIGHT_SHADOW_MAP + "[@cascadeIndex], uv).r, 0.0, 1.0); \n"
+            "        float shadowDepth = clamp(texture(" + LIGHT_SHADOW_MAP + "[cascadeOffset], uv).r, 0.0, 1.0); \n"
 #else
             "        vec3 coords = calcDirShadowFactorCoordsSingleIndex_@lightIndex_@cascadeIndex(uv, z, angularBias); \n"
-            "        float shadowDepth = clamp(texture(" + LIGHT_SHADOW_MAP + "[@cascadeIndex], coords), 0.0, 1.0); \n"
+            "        float shadowDepth = clamp(texture(" + LIGHT_SHADOW_MAP + "[cascadeOffset], coords), 0.0, 1.0); \n"
 #endif
             "        shadowFactor += (1.0-shadowDepth); \n"
             "    } \n"
@@ -1123,14 +1123,14 @@ namespace Core {
             "#include \"PhysicalLightingHeaderMulti\"\n"
             "#include \"PhysicalLightingMulti(lightIndex=0)\"\n"
             "#include \"PhysicalLightingMulti(lightIndex=1)\"\n"
-         //   "#include \"PhysicalLightingMulti(lightIndex=2)\"\n"
+        //    "#include \"PhysicalLightingMulti(lightIndex=2)\"\n"
          //   "#include \"PhysicalLightingMulti(lightIndex=3)\"\n"
             "#include \"StandardPhysicalVars\" \n"
             "void main() {\n"
             "   #include \"StandardPhysicalMain\" \n"
             "   vec4 curColor = vec4(0.0, 0.0, 0.0, 0.0); \n"
-            "   if (" + LIGHT_COUNT + " >= 1) curColor += litColorPhysical0(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
-            "   if (" + LIGHT_COUNT + " >= 2) curColor += litColorPhysical1(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
+              "   if (" + LIGHT_COUNT + " >= 1) curColor += litColorPhysical0(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
+              "   if (" + LIGHT_COUNT + " >= 2) curColor += litColorPhysical1(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
        //     "   if (" + LIGHT_COUNT + " >= 3) curColor += litColorPhysical2(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
        //     "   if (" + LIGHT_COUNT + " >= 4) curColor += litColorPhysical3(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
             "   out_color = curColor;"
