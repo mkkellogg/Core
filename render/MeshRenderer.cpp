@@ -179,7 +179,7 @@ namespace Core {
                 if (matchPhysicalPropertiesWithLighting) {
                     if (lightType == LightType::Ambient && material->isPhysical()) continue;
                 }
-                if (renderPath == RenderPath::SinglePassMultiLight  && renderPassCount >= material->maxLightCount()) continue;
+                if (renderPath == RenderPath::SinglePassMultiLight && (renderPassCount >= material->maxLightCount() || renderPassCount >= Constants::MaxShaderLights)) continue;
 
                 if (renderPath != RenderPath::SinglePassMultiLight) {
                     if (material->getBlendingMode() == RenderState::BlendingMode::None) {
