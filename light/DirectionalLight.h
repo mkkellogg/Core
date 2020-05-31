@@ -55,6 +55,7 @@ namespace Core {
         std::vector<Real> cascadeBoundaries;
         UInt32 cascadeCount;
         Real shadowMapBoundaryPadding;
+        Real shadowMapBoundaryHorizontalPadding;
     };
 }
 

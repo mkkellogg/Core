@@ -22,6 +22,7 @@ namespace Core {
         // [cascadeBoundaries] gets 1 extra
         this->cascadeBoundaries.push_back(0.0f);
         this->shadowMapBoundaryPadding = 300.0f;
+        this->shadowMapBoundaryHorizontalPadding = 5.0f;
     }
 
     DirectionalLight::~DirectionalLight() {
@@ -144,10 +145,10 @@ namespace Core {
 
                 OrthoProjection& oProj = this->projections[i - 1];
 
-                oProj.right = maxX;
-                oProj.left = minX;
-                oProj.bottom = minY;
-                oProj.top = maxY;
+                oProj.right = maxX + this->shadowMapBoundaryHorizontalPadding;
+                oProj.left = minX - this->shadowMapBoundaryHorizontalPadding;
+                oProj.bottom = minY - this->shadowMapBoundaryHorizontalPadding * aspectRatio;
+                oProj.top = maxY + this->shadowMapBoundaryHorizontalPadding * aspectRatio;
                 oProj.far = maxZ + this->shadowMapBoundaryPadding;
                 oProj.near = minZ - this->shadowMapBoundaryPadding;
 
