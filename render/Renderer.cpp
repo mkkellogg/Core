@@ -1,6 +1,7 @@
 #include <vector>
 #include <algorithm>
 #include "../Engine.h"
+#include "../common/Constants.h"
 #include "Camera.h"
 #include "Renderer.h"
 #include "ViewDescriptor.h"
@@ -18,6 +19,7 @@
 #include "../image/Texture.h"
 #include "../image/Texture2D.h"
 #include "../material/DepthOnlyMaterial.h"
+#include "../material/NormalsMaterial.h"
 #include "../material/BasicColoredMaterial.h"
 #include "../material/DistanceOnlyMaterial.h"
 #include "../material/TonemapMaterial.h"
@@ -48,6 +50,10 @@ namespace Core {
             this->depthMaterial = Engine::instance()->createMaterial<DepthOnlyMaterial>();
             this->depthMaterial->setLit(false);
         }
+         if (!this->normalsMaterial.isValid()) {
+            this->normalsMaterial = Engine::instance()->createMaterial<NormalsMaterial>();
+            this->normalsMaterial->setLit(false);
+        }
         if (!this->distanceMaterial.isValid()) {
             this->distanceMaterial = Engine::instance()->createMaterial<DistanceOnlyMaterial>();
             this->distanceMaterial->setLit(false);
@@ -57,6 +63,18 @@ namespace Core {
             this->tonemapMaterial->setExposure(1.0f);
             this->tonemapMaterial->setLit(false);
         }
+
+        const Vector2u depthNormalsRenderTargetSize(Constants::EffectsBuffer2DSize, Constants::EffectsBuffer2DSize);
+        TextureAttributes hdrColorAttributes;
+        hdrColorAttributes.Format = TextureFormat::RGBA16F;
+        hdrColorAttributes.FilterMode = TextureFilter::Point;
+        hdrColorAttributes.MipLevels = 0;
+        hdrColorAttributes.WrapMode = TextureWrap::Clamp;
+        TextureAttributes hdrDepthAttributes;
+        hdrDepthAttributes.IsDepthTexture = true;
+        this->depthNormalsRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTarget2D(true, true, false, hdrColorAttributes,
+                                                                                                hdrDepthAttributes, depthNormalsRenderTargetSize);
+
         return true;
     }
 
@@ -536,6 +554,16 @@ namespace Core {
         graphics->renderFullScreenQuad(specularIBLBRDFMap, -1, reflectionProbe->getSpecularIBLBRDFRendererMaterial());
         
         reflectionProbe->setNeedsFullUpdate(false);
+    }
+
+    void Renderer::renderDepthAndNormals(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects) {
+        WeakPointer<RenderTarget> saveRenderTarget = camera->getRenderTarget();
+        Bool saveHdrEnabled = camera->isHDREnabled();
+        camera->setRenderTarget(this->depthNormalsRenderTarget);
+        camera->setHDREnabled(false);
+        this->render(camera, objects, this->normalsMaterial, false);
+        camera->setRenderTarget(saveRenderTarget);
+        camera->setHDREnabled(saveHdrEnabled);
     }
 
     void Renderer::sortObjectsIntoRenderQueues(std::vector<WeakPointer<Object3D>>& objects, RenderQueueManager& renderQueueManager, ViewDescriptor& viewDescriptor) {

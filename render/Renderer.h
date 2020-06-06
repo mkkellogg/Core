@@ -22,6 +22,7 @@ namespace Core {
     class Light;
     class ViewDescriptor;
     class DepthOnlyMaterial;
+    class NormalsMaterial;
     class DistanceOnlyMaterial;
     class TonemapMaterial;
     class Material;
@@ -83,7 +84,8 @@ namespace Core {
                                     std::vector<WeakPointer<Light>>& nonIBLLightList, std::vector<WeakPointer<Light>>& lightList);
         void renderReflectionProbe(WeakPointer<ReflectionProbe> reflectionProbe, Bool specularOnly,
                                    std::vector<WeakPointer<Object3D>>& renderObjects, std::vector<WeakPointer<Light>>& renderLights);
-        
+        void renderDepthAndNormals(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects);
+
         void sortObjectsIntoRenderQueues(std::vector<WeakPointer<Object3D>>& objects, RenderQueueManager& renderQueueManager, ViewDescriptor& viewDescriptor);
 
         static Bool isShadowCastingCapableLight(WeakPointer<Light> light);
@@ -92,6 +94,7 @@ namespace Core {
         RenderQueueManager renderQueueManager;
 
         PersistentWeakPointer<DepthOnlyMaterial> depthMaterial;
+        PersistentWeakPointer<NormalsMaterial> normalsMaterial;
         PersistentWeakPointer<DistanceOnlyMaterial> distanceMaterial;
         PersistentWeakPointer<Object3D> reflectionProbeObject;
         PersistentWeakPointer<TonemapMaterial> tonemapMaterial;
@@ -100,5 +103,7 @@ namespace Core {
         PersistentWeakPointer<Object3D> perspectiveShadowMapCameraObject;
         PersistentWeakPointer<Camera> orthoShadowMapCamera;
         PersistentWeakPointer<Object3D> orthoShadowMapCameraObject;
+
+        PersistentWeakPointer<RenderTarget2D> depthNormalsRenderTarget;
     };
 }

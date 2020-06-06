@@ -119,6 +119,12 @@ namespace Core {
         std::string BasicCube_vertex;
         std::string BasicCube_fragment;
 
+        std::string Normals_vertex;
+        std::string Normals_fragment;
+
+        std::string ScreenSpaceAmbientOcclusion_vertex;
+        std::string ScreenSpaceAmbientOcclusion_fragment;
+
         void init();
 
     protected:

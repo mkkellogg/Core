@@ -19,6 +19,7 @@ const std::string BONE_WEIGHT = _an(Core::StandardAttribute::BoneWeight);
 
 const std::string MODEL_MATRIX = _un(Core::StandardUniform::ModelMatrix);
 const std::string MODEL_INVERSE_TRANSPOSE_MATRIX = _un(Core::StandardUniform::ModelInverseTransposeMatrix);
+const std::string VIEW_INVERSE_TRANSPOSE_MATRIX = _un(Core::StandardUniform::ViewInverseTransposeMatrix);
 const std::string VIEW_MATRIX = _un(Core::StandardUniform::ViewMatrix);
 const std::string PROJECTION_MATRIX = _un(Core::StandardUniform::ProjectionMatrix);
 const std::string CAMERA_POSITION = _un(Core::StandardUniform::CameraPosition);
@@ -77,6 +78,7 @@ const std::string BONE_WEIGHT_DEF = "in vec4 " + BONE_WEIGHT + ";\n";
 
 const std::string MODEL_MATRIX_DEF = "uniform mat4 " + MODEL_MATRIX + ";\n";
 const std::string MODEL_INVERSE_TRANSPOSE_MATRIX_DEF = "uniform mat4 " + MODEL_INVERSE_TRANSPOSE_MATRIX + ";\n";
+const std::string VIEW_INVERSE_TRANSPOSE_MATRIX_DEF = "uniform mat4 " + VIEW_INVERSE_TRANSPOSE_MATRIX + ";\n";
 const std::string VIEW_MATRIX_DEF = "uniform mat4 " + VIEW_MATRIX + ";\n";
 const std::string PROJECTION_MATRIX_DEF = "uniform mat4 " + PROJECTION_MATRIX + ";\n";
 const std::string CAMERA_POSITION_DEF = "uniform vec4 " + CAMERA_POSITION + ";\n";
@@ -282,6 +284,12 @@ namespace Core {
 
         this->setShaderSource(ShaderType::Vertex, "BasicCube", ShaderManagerGL::BasicCube_vertex);
         this->setShaderSource(ShaderType::Fragment, "BasicCube", ShaderManagerGL::BasicCube_fragment);
+
+        this->setShaderSource(ShaderType::Vertex, "Normals", ShaderManagerGL::Normals_vertex);
+        this->setShaderSource(ShaderType::Fragment, "Normals", ShaderManagerGL::Normals_fragment);
+
+        this->setShaderSource(ShaderType::Vertex, "ScreenSpaceAmbientOcclusion", ShaderManagerGL::ScreenSpaceAmbientOcclusion_vertex);
+        this->setShaderSource(ShaderType::Fragment, "ScreenSpaceAmbientOcclusion", ShaderManagerGL::ScreenSpaceAmbientOcclusion_fragment);
     }
 
     ShaderManagerGL::ShaderManagerGL() {
@@ -1837,11 +1845,60 @@ namespace Core {
             "out vec4 out_color;\n"
             "void main() {\n"
             "    vec3 textureColor = texture(cubeTexture, vUV).rgb;\n"
-            //"    vec2 textureColor = texture(rectTexture, vUV.xy).rg;\n"
-           // "    textureColor = toneMapReinhard(textureColor); \n"
-           // "    textureColor = gammaCorrectBasic(textureColor); \n"
             "    out_color = vec4(textureColor, 1.0);\n"
-            //"    out_color = textureColor;\n"
+            "}\n";
+
+        this->Normals_vertex =  
+            "#version 330\n"
+            + POSITION_DEF
+            + NORMAL_DEF
+            + PROJECTION_MATRIX_DEF
+            + VIEW_MATRIX_DEF
+            + MODEL_MATRIX_DEF
+            + MODEL_INVERSE_TRANSPOSE_MATRIX_DEF
+            + VIEW_INVERSE_TRANSPOSE_MATRIX_DEF +
+            "uniform int viewSpace; \n"
+            "out vec3 vNormal;\n"
+            "void main() {\n"
+            "    vec4 eNormal = " + NORMAL + ";\n"
+            "    if (viewSpace == 1) vNormal = vec3(" + VIEW_INVERSE_TRANSPOSE_MATRIX + " * " + MODEL_INVERSE_TRANSPOSE_MATRIX + " * eNormal);\n"
+            "    else vNormal = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * eNormal);\n"
+            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
+            "}\n";
+
+        this->Normals_fragment =  
+            "#version 330\n"
+            "precision mediump float;\n"
+            "#include \"Common\" \n"
+            "in vec3 vNormal;\n"
+            "out vec4 out_color;\n"
+            "void main() {\n"
+            "    out_color = vec4(vNormal, 1.0);\n"
+            "}\n";
+
+        this->ScreenSpaceAmbientOcclusion_vertex =  
+            "#version 330\n"
+            + POSITION_DEF
+            + PROJECTION_MATRIX_DEF
+            + VIEW_MATRIX_DEF
+            + MODEL_MATRIX_DEF
+            + MODEL_INVERSE_TRANSPOSE_MATRIX_DEF
+            + VIEW_INVERSE_TRANSPOSE_MATRIX_DEF +
+            "out vec3 vNormal;\n"
+            "void main() {\n"
+            "    vec4 eNormal = " + NORMAL + ";\n"
+            "    vNormal = vec3(" +  VIEW_INVERSE_TRANSPOSE_MATRIX + " * " + MODEL_INVERSE_TRANSPOSE_MATRIX + " * eNormal);\n"
+            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
+            "}\n";
+
+        this->ScreenSpaceAmbientOcclusion_fragment =  
+            "#version 330\n"
+            "precision mediump float;\n"
+            "#include \"Common\" \n"
+            "in vec3 vNormal;\n"
+            "out vec4 out_color;\n"
+            "void main() {\n"
+            "    out_color = vec4(vNormal, 1.0);\n"
             "}\n";
     }
 

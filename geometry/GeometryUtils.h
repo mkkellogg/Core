@@ -13,7 +13,7 @@ namespace Core {
 
     class GeometryUtils {
     public:
-       static  WeakPointer<Mesh> createGrid(Real width, Real height, UInt32 hSubDivisions, UInt32 vSubDivisions,
+       static  WeakPointer<Mesh> createGridMesh(Real width, Real height, UInt32 hSubDivisions, UInt32 vSubDivisions,
                                             Real hTexToWorld, Real vTexToWorld);
      
         static WeakPointer<Mesh> buildBoxMesh(Real length, Real width, Real depth, Color color);

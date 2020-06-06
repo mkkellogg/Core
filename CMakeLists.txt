@@ -90,6 +90,7 @@ set(INCLUDE_FILES
     material/BasicTexturedMaterial.h
     material/BasicTexturedLitMaterial.h
     material/BasicCubeMaterial.h
+    material/NormalsMaterial.h
     material/OutlineMaterial.h
     material/SkyboxMaterial.h
     material/PhysicalSkyboxMaterial.h
@@ -257,6 +258,7 @@ set(SOURCE_FILES
     material/BasicTexturedMaterial.cpp
     material/BasicTexturedLitMaterial.cpp
     material/BasicCubeMaterial.cpp
+    material/NormalsMaterial.cpp
     material/OutlineMaterial.cpp
     material/SkyboxMaterial.cpp
     material/PhysicalSkyboxMaterial.cpp

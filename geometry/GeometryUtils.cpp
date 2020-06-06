@@ -12,7 +12,7 @@
 
 namespace Core {
 
-    WeakPointer<Mesh> GeometryUtils::createGrid(Real width, Real height, UInt32 hCells, UInt32 vCells, Real hWorldToTex, Real vWorldToTex) {
+    WeakPointer<Mesh> GeometryUtils::createGridMesh(Real width, Real height, UInt32 hCells, UInt32 vCells, Real hWorldToTex, Real vWorldToTex) {
         Real halfWidth = width / 2.0f;
         Real halfHeight = height / 2.0f;
 
