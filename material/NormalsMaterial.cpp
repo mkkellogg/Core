@@ -26,6 +26,17 @@ namespace Core {
         this->shader->setUniform1i(this->viewSpaceLocation, this->convertNormalsToViewSpace ? 1 : 0);
     }
 
+    void NormalsMaterial::copyTo(WeakPointer<Material> target) {
+        WeakPointer<NormalsMaterial> normalsMaterial = WeakPointer<Material>::dynamicPointerCast<NormalsMaterial>(target);
+        if (normalsMaterial.isValid()) {
+            BaseMaterial::copyTo(target);
+            normalsMaterial->viewSpaceLocation = this->viewSpaceLocation;
+            normalsMaterial->convertNormalsToViewSpace = this->convertNormalsToViewSpace;
+        } else {
+            throw InvalidArgumentException("NormalsMaterial::copyTo() -> 'target must be same material.");
+        }
+    }
+
     WeakPointer<Material> NormalsMaterial::clone() {
         WeakPointer<NormalsMaterial> newMaterial = Engine::instance()->createMaterial<NormalsMaterial>(false);
         this->copyTo(newMaterial);

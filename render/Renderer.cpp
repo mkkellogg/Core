@@ -1,5 +1,8 @@
 #include <vector>
 #include <algorithm>
+#include <iostream>
+#include <random>
+
 #include "../Engine.h"
 #include "../common/Constants.h"
 #include "Camera.h"
@@ -20,6 +23,7 @@
 #include "../image/Texture2D.h"
 #include "../material/DepthOnlyMaterial.h"
 #include "../material/NormalsMaterial.h"
+#include "../material/PositionsAndNormalsMaterial.h"
 #include "../material/BasicColoredMaterial.h"
 #include "../material/DistanceOnlyMaterial.h"
 #include "../material/TonemapMaterial.h"
@@ -50,9 +54,13 @@ namespace Core {
             this->depthMaterial = Engine::instance()->createMaterial<DepthOnlyMaterial>();
             this->depthMaterial->setLit(false);
         }
-         if (!this->normalsMaterial.isValid()) {
+        if (!this->normalsMaterial.isValid()) {
             this->normalsMaterial = Engine::instance()->createMaterial<NormalsMaterial>();
             this->normalsMaterial->setLit(false);
+        }
+        if (!this->positionsNormalsMaterial.isValid()) {
+            this->positionsNormalsMaterial = Engine::instance()->createMaterial<PositionsAndNormalsMaterial>();
+            this->positionsNormalsMaterial->setLit(false);
         }
         if (!this->distanceMaterial.isValid()) {
             this->distanceMaterial = Engine::instance()->createMaterial<DistanceOnlyMaterial>();
@@ -65,15 +73,29 @@ namespace Core {
         }
 
         const Vector2u depthNormalsRenderTargetSize(Constants::EffectsBuffer2DSize, Constants::EffectsBuffer2DSize);
-        TextureAttributes hdrColorAttributes;
-        hdrColorAttributes.Format = TextureFormat::RGBA16F;
-        hdrColorAttributes.FilterMode = TextureFilter::Point;
-        hdrColorAttributes.MipLevels = 0;
-        hdrColorAttributes.WrapMode = TextureWrap::Clamp;
-        TextureAttributes hdrDepthAttributes;
-        hdrDepthAttributes.IsDepthTexture = true;
-        this->depthNormalsRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTarget2D(true, true, false, hdrColorAttributes,
-                                                                                                hdrDepthAttributes, depthNormalsRenderTargetSize);
+        TextureAttributes depthNormalsColorAttributes;
+        depthNormalsColorAttributes.Format = TextureFormat::RGBA16F;
+        depthNormalsColorAttributes.FilterMode = TextureFilter::Point;
+        depthNormalsColorAttributes.MipLevels = 0;
+        depthNormalsColorAttributes.WrapMode = TextureWrap::Clamp;
+        TextureAttributes depthNormalsDepthAttributes;
+        depthNormalsDepthAttributes.IsDepthTexture = true;
+        this->depthNormalsRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTarget2D(true, true, false, depthNormalsColorAttributes,
+                                                                                                       depthNormalsDepthAttributes, depthNormalsRenderTargetSize);
+
+        const Vector2u positionsNormalsRenderTargetSize(Constants::EffectsBuffer2DSize, Constants::EffectsBuffer2DSize);
+        TextureAttributes positionsNormalsColorAttributes;
+        positionsNormalsColorAttributes.Format = TextureFormat::RGBA16F;
+        positionsNormalsColorAttributes.FilterMode = TextureFilter::Point;
+        positionsNormalsColorAttributes.MipLevels = 0;
+        positionsNormalsColorAttributes.WrapMode = TextureWrap::Clamp;
+        TextureAttributes positionsNormalsDepthAttributes;
+        positionsNormalsDepthAttributes.IsDepthTexture = true;
+        this->positionsNormalsRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTarget2D(true, true, false, positionsNormalsColorAttributes,
+                                                                                                           positionsNormalsDepthAttributes, positionsNormalsRenderTargetSize);
+        this->positionsNormalsRenderTarget->addColorTexture(positionsNormalsColorAttributes);
+
+        this->initializeSSAO();
 
         return true;
     }
@@ -564,6 +586,67 @@ namespace Core {
         this->render(camera, objects, this->normalsMaterial, false);
         camera->setRenderTarget(saveRenderTarget);
         camera->setHDREnabled(saveHdrEnabled);
+    }
+
+    void Renderer::renderPositionsAndNormals(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects) {
+        WeakPointer<RenderTarget> saveRenderTarget = camera->getRenderTarget();
+        Bool saveHdrEnabled = camera->isHDREnabled();
+        camera->setRenderTarget(this->positionsNormalsRenderTarget);
+        camera->setHDREnabled(false);
+        this->render(camera, objects, this->positionsNormalsMaterial, false);
+        camera->setRenderTarget(saveRenderTarget);
+        camera->setHDREnabled(saveHdrEnabled);
+    }
+
+    void Renderer::initializeSSAO() {
+
+        std::uniform_real_distribution<Real> randomFloats(0.0f, 1.0f); // generates random floats between 0.0 and 1.0
+        std::default_random_engine generator;
+
+        // generate sample kernel
+        for (UInt32 i = 0; i < Constants::SSAOSamples; ++i) {
+            Vector3r sample(randomFloats(generator) * 2.0f - 1.0f, randomFloats(generator) * 2.0f - 1.0f, randomFloats(generator));
+            sample.normalize();
+            sample = sample * randomFloats(generator);
+            Real scale = Real(i) / Constants::SSAOSamples;
+
+            // scale samples s.t. they're more aligned to center of kernel
+            Real t = scale * scale;
+            scale =  (1.0 - t) * 0.1f + t ;  //lerp(0.1f, 1.0f, scale * scale);
+            sample = sample * scale;
+            this->ssaoKernel.push_back(sample);
+        }
+
+        // generate noise texture
+        Byte ssaoNoiseData[16 * 4];
+        UInt32 offset = 0;
+        for (unsigned int i = 0; i < 16; i++) {
+            ssaoNoiseData[offset] = randomFloats(generator) * 2.0 - 1.0;
+            ssaoNoiseData[offset] = randomFloats(generator) * 2.0 - 1.0;
+            ssaoNoiseData[offset] = 0.0f;
+            ssaoNoiseData[offset] = 0.0f;
+            offset +=4;
+        }
+
+        TextureAttributes noiseTextureAttributes;
+        noiseTextureAttributes.Format = TextureFormat::RGBA32F;
+        noiseTextureAttributes.FilterMode = TextureFilter::Point;
+        noiseTextureAttributes.MipLevels = 0;
+        noiseTextureAttributes.WrapMode = TextureWrap::Clamp;
+        this->ssaoNoise = Engine::instance()->getGraphicsSystem()->createTexture2D(noiseTextureAttributes);
+        this->ssaoNoise->buildFromData(4, 4, ssaoNoiseData);
+
+        const Vector2u ssaoRenderTargetSize(Constants::EffectsBuffer2DSize, Constants::EffectsBuffer2DSize);
+        TextureAttributes ssaoColorAttributes;
+        ssaoColorAttributes.Format = TextureFormat::RGBA16F;
+        ssaoColorAttributes.FilterMode = TextureFilter::Point;
+        ssaoColorAttributes.MipLevels = 0;
+        ssaoColorAttributes.WrapMode = TextureWrap::Clamp;
+        TextureAttributes ssaoDepthAttributes;
+        ssaoDepthAttributes.IsDepthTexture = true;
+        this->ssaoRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTarget2D(true, true, false, ssaoColorAttributes,
+                                                                                               ssaoDepthAttributes, ssaoRenderTargetSize);
+
     }
 
     void Renderer::sortObjectsIntoRenderQueues(std::vector<WeakPointer<Object3D>>& objects, RenderQueueManager& renderQueueManager, ViewDescriptor& viewDescriptor) {

@@ -288,6 +288,9 @@ namespace Core {
         this->setShaderSource(ShaderType::Vertex, "Normals", ShaderManagerGL::Normals_vertex);
         this->setShaderSource(ShaderType::Fragment, "Normals", ShaderManagerGL::Normals_fragment);
 
+        this->setShaderSource(ShaderType::Vertex, "PositionsAndNormals", ShaderManagerGL::PositionsAndNormals_vertex);
+        this->setShaderSource(ShaderType::Fragment, "PositionsAndNormals", ShaderManagerGL::PositionsAndNormals_fragment);
+
         this->setShaderSource(ShaderType::Vertex, "ScreenSpaceAmbientOcclusion", ShaderManagerGL::ScreenSpaceAmbientOcclusion_vertex);
         this->setShaderSource(ShaderType::Fragment, "ScreenSpaceAmbientOcclusion", ShaderManagerGL::ScreenSpaceAmbientOcclusion_fragment);
     }
@@ -1876,29 +1879,104 @@ namespace Core {
             "    out_color = vec4(vNormal, 1.0);\n"
             "}\n";
 
-        this->ScreenSpaceAmbientOcclusion_vertex =  
-            "#version 330\n"
+        this->PositionsAndNormals_vertex =  
+           "#version 330\n"
             + POSITION_DEF
+            + NORMAL_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
             + MODEL_MATRIX_DEF
             + MODEL_INVERSE_TRANSPOSE_MATRIX_DEF
             + VIEW_INVERSE_TRANSPOSE_MATRIX_DEF +
+            "uniform int viewSpace; \n"
+            "out vec3 vPosition;\n"
             "out vec3 vNormal;\n"
             "void main() {\n"
+            "    if (viewSpace == 1) vPosition = vec3(" + VIEW_MATRIX + " * " + MODEL_MATRIX + " * " + POSITION + ");\n"
+            "    else vPosition = vec3(" + MODEL_MATRIX + " * " + POSITION + ");\n"
             "    vec4 eNormal = " + NORMAL + ";\n"
-            "    vNormal = vec3(" +  VIEW_INVERSE_TRANSPOSE_MATRIX + " * " + MODEL_INVERSE_TRANSPOSE_MATRIX + " * eNormal);\n"
+            "    if (viewSpace == 1) vNormal = vec3(" + VIEW_INVERSE_TRANSPOSE_MATRIX + " * " + MODEL_INVERSE_TRANSPOSE_MATRIX + " * eNormal);\n"
+            "    else vNormal = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * eNormal);\n"
             "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
+            "}\n";
+
+        this->PositionsAndNormals_fragment =  
+            "#version 330\n"
+            "precision mediump float;\n"
+            "#include \"Common\" \n"
+            "in vec3 vPosition;\n"
+            "in vec3 vNormal;\n"
+            "layout (location = 0) out vec4 out_position; \n"
+            "layout (location = 1) out vec4 out_normal; \n"
+            "void main() {\n"
+            "    out_position = vec4(vPosition, 1.0);\n"
+            "    out_normal = vec4(vNormal, 1.0);\n"
+            "}\n";
+
+        this->ScreenSpaceAmbientOcclusion_vertex =  
+            "#version 330\n"
+            + POSITION_DEF
+            + ALBEDO_UV_DEF
+            + PROJECTION_MATRIX_DEF
+            + VIEW_MATRIX_DEF
+            + MODEL_MATRIX_DEF +
+            "out vec2 vUV;\n"
+            "void main() {\n"
+            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    vUV = " + ALBEDO_UV + ";\n"
             "}\n";
 
         this->ScreenSpaceAmbientOcclusion_fragment =  
             "#version 330\n"
-            "precision mediump float;\n"
-            "#include \"Common\" \n"
-            "in vec3 vNormal;\n"
-            "out vec4 out_color;\n"
+            "out float out_color;\n"
+            "in vec2 vUV;\n"
+
+            "uniform sampler2D viewPositions;\n"
+            "uniform sampler2D viewNormals;\n"
+            "uniform sampler2D noise;\n"
+            "uniform vec3 samples[" + std::to_string(Constants::SSAOSamples) + "];\n"
+            "uniform mat4 projection;\n"
+
+            // parameters (you'd probably want to use them as uniforms to more easily tweak the effect)
+            "int kernelSize = " + std::to_string(Constants::SSAOSamples) + ";\n"
+            "float radius = 0.5;\n"
+            "float bias = 0.025;\n"
+
+            // tile noise texture over screen based on screen dimensions divided by noise size
+            "const vec2 noiseScale = vec2(800.0/4.0, 600.0/4.0); \n"
+
             "void main() {\n"
-            "    out_color = vec4(vNormal, 1.0);\n"
+                // get input for SSAO algorithm
+                "vec3 fragPos = texture(viewPositions, vUV).xyz;\n"
+                "vec3 normal = normalize(texture(viewNormals, vUV).rgb);\n"
+                "vec3 randomVec = normalize(texture(noise, vUV * noiseScale).xyz);\n"
+                // create TBN change-of-basis matrix: from tangent-space to view-space
+                "vec3 tangent = normalize(randomVec - normal * dot(randomVec, normal));\n"
+                "vec3 bitangent = cross(normal, tangent);\n"
+                "mat3 TBN = mat3(tangent, bitangent, normal);\n"
+                // iterate over the sample kernel and calculate occlusion factor
+                "float occlusion = 0.0;\n"
+                "for(int i = 0; i < kernelSize; ++i) \n"
+                "{\n"
+                    // get sample position
+                    "vec3 sample = TBN * samples[i]; \n" // from tangent to view-space
+                    "sample = fragPos + sample * radius; \n"
+                    
+                    // project sample position (to sample texture) (to get position on screen/texture)
+                    "vec4 offset = vec4(sample, 1.0);\n"
+                    "offset = projection * offset;\n" // from view to clip-space
+                    "offset.xyz /= offset.w;\n" // perspective divide
+                    "offset.xyz = offset.xyz * 0.5 + 0.5;\n" // transform to range 0.0 - 1.0
+                    
+                    // get sample depth
+                    "float sampleDepth = texture(gPosition, offset.xy).z;\n" // get depth value of kernel sample
+                    
+                    // range check & accumulate
+                    "float rangeCheck = smoothstep(0.0, 1.0, radius / abs(fragPos.z - sampleDepth));\n"
+                    "occlusion += (sampleDepth >= sample.z + bias ? 1.0 : 0.0) * rangeCheck;\n"
+                "}\n"
+                "occlusion = 1.0 - (occlusion / kernelSize);\n"
+                "out_color = occlusion;\n"
             "}\n";
     }
 

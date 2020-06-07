@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "../common/complextypes.h"
 #include "../common/debug.h"
 #include "../base/CoreObject.h"
@@ -23,6 +25,7 @@ namespace Core {
     class ViewDescriptor;
     class DepthOnlyMaterial;
     class NormalsMaterial;
+    class PositionsAndNormalsMaterial;
     class DistanceOnlyMaterial;
     class TonemapMaterial;
     class Material;
@@ -30,6 +33,7 @@ namespace Core {
     class RenderTarget2D;
     class ReflectionProbe;
     class Skybox;
+    class Texture2D;
 
     class Renderer : public CoreObject {
     public:
@@ -85,6 +89,8 @@ namespace Core {
         void renderReflectionProbe(WeakPointer<ReflectionProbe> reflectionProbe, Bool specularOnly,
                                    std::vector<WeakPointer<Object3D>>& renderObjects, std::vector<WeakPointer<Light>>& renderLights);
         void renderDepthAndNormals(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects);
+        void renderPositionsAndNormals(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects);
+        void initializeSSAO();
 
         void sortObjectsIntoRenderQueues(std::vector<WeakPointer<Object3D>>& objects, RenderQueueManager& renderQueueManager, ViewDescriptor& viewDescriptor);
 
@@ -95,15 +101,20 @@ namespace Core {
 
         PersistentWeakPointer<DepthOnlyMaterial> depthMaterial;
         PersistentWeakPointer<NormalsMaterial> normalsMaterial;
+        PersistentWeakPointer<PositionsAndNormalsMaterial> positionsNormalsMaterial;
         PersistentWeakPointer<DistanceOnlyMaterial> distanceMaterial;
         PersistentWeakPointer<Object3D> reflectionProbeObject;
         PersistentWeakPointer<TonemapMaterial> tonemapMaterial;
-
         PersistentWeakPointer<Camera> perspectiveShadowMapCamera;
         PersistentWeakPointer<Object3D> perspectiveShadowMapCameraObject;
         PersistentWeakPointer<Camera> orthoShadowMapCamera;
         PersistentWeakPointer<Object3D> orthoShadowMapCameraObject;
 
         PersistentWeakPointer<RenderTarget2D> depthNormalsRenderTarget;
+        PersistentWeakPointer<RenderTarget2D> positionsNormalsRenderTarget;
+
+        PersistentWeakPointer<RenderTarget2D> ssaoRenderTarget;
+        WeakPointer<Texture2D> ssaoNoise;
+        std::vector<Vector3r> ssaoKernel;
     };
 }

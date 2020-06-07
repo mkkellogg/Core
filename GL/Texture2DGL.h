@@ -18,6 +18,7 @@ namespace Core {
 
         void buildFromImage(WeakPointer<StandardImage> imageData) override;
         void buildFromImage(WeakPointer<HDRImage> imageData) override;
+        void buildFromData(UInt32 width, UInt32 height, Byte* data) override;
         void buildEmpty(UInt32 width, UInt32 height) override;
         void updateMipMaps() override;
 

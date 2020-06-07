@@ -122,6 +122,9 @@ namespace Core {
         std::string Normals_vertex;
         std::string Normals_fragment;
 
+        std::string PositionsAndNormals_vertex;
+        std::string PositionsAndNormals_fragment;
+
         std::string ScreenSpaceAmbientOcclusion_vertex;
         std::string ScreenSpaceAmbientOcclusion_fragment;
 
