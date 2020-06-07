@@ -19,6 +19,7 @@ namespace Core {
         this->shader = shaderManager.getShader("PositionsAndNormals");
         graphics->activateShader(this->shader);
         this->bindShaderVarLocations();
+        this->setSkinningEnabled(true);
         return true;
     }
 

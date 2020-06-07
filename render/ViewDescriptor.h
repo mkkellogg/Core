@@ -32,6 +32,7 @@ namespace Core {
         ToneMapType hdrToneMapType = ToneMapType::Reinhard;
         Real hdrExposure = 1.0f;
         Real hdrGamma = 2.2f;
+        Bool ssaoEnabled = false;
     };
 
 }

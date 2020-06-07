@@ -22,9 +22,6 @@ namespace Core {
         Real left = -halfWidth;
         Real bottom = -halfHeight;
 
-        Real textureCellWidth = hWorldToTex / cellWidth;
-        Real textureCellHeight = vWorldToTex / cellHeight;
-
         std::vector<Real> positions;
         std::vector<Real> normals;
         std::vector<Real> uvs;
@@ -37,8 +34,8 @@ namespace Core {
                 Real bx = xOffset + left;
                 Real by = yOffset + bottom;
 
-                Real uvX = xOffset / hWorldToTex;
-                Real uvY = yOffset / vWorldToTex;
+                Real uvX = xOffset / width * hWorldToTex;
+                Real uvY = yOffset / height * vWorldToTex;
 
                 positions.push_back(bx);
                 positions.push_back(by);

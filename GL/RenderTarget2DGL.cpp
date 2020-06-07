@@ -57,11 +57,13 @@ namespace Core {
 
     Bool RenderTarget2DGL::addColorTexture(TextureAttributes attributes) {
         if (this->activeColorTextures < RenderTarget::MaxRenderTargetOutputTargets - 1) {
+            glBindFramebuffer(GL_FRAMEBUFFER, this->fboID);
             this->colorTextureAttributes[this->activeColorTextures] = attributes;
             this->mipLevel[this->activeColorTextures] = 0;
             this->colorBufferIsTexture[this->activeColorTextures] = true;
             this->initColorTexture(this->activeColorTextures);
             this->activeColorTextures++;
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
         }
     }
 

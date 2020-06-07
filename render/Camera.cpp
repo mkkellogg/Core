@@ -198,7 +198,7 @@ namespace Core {
         this->skyboxEnabled = enabled;
     }
 
-    Bool Camera::isSkyboxEnabled() {
+    Bool Camera::isSkyboxEnabled() const {
         return this->skyboxEnabled;
     }
 
@@ -206,7 +206,7 @@ namespace Core {
         this->hdrEnabled = enabled;
     }
 
-    Bool Camera::isHDREnabled() {
+    Bool Camera::isHDREnabled() const {
         return this->hdrEnabled;
     }
     
@@ -219,11 +219,11 @@ namespace Core {
         this->hdrExposure = exposure;
     }
 
-    ToneMapType Camera::getHDRToneMapType() {
+    ToneMapType Camera::getHDRToneMapType() const {
         return this->hdrToneMapType;
     }
 
-    Real Camera::getHDRExposure() {
+    Real Camera::getHDRExposure() const {
         return this->hdrExposure;
     }
 
@@ -231,9 +231,17 @@ namespace Core {
         this->hdrGamma = gamma;
     }
 
-    Real Camera::getHDRGamma() {
+    Real Camera::getHDRGamma() const {
         return this->hdrGamma;
     }
+
+   void Camera::setSSAOEnabled(Bool enabled) {
+       this->ssaoEnabled = enabled;
+   }
+
+   Bool Camera::isSSAOEnabled() const {
+       return this->ssaoEnabled;
+   }
 
     void Camera::buildPerspectiveProjectionMatrix(Real fov, Real ratio, Real nearP, Real farP, Matrix4x4& out) {
         // convert fov to radians

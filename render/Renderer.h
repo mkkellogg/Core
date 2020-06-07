@@ -25,6 +25,7 @@ namespace Core {
     class ViewDescriptor;
     class DepthOnlyMaterial;
     class NormalsMaterial;
+    class SSAOMaterial;
     class PositionsAndNormalsMaterial;
     class DistanceOnlyMaterial;
     class TonemapMaterial;
@@ -50,7 +51,7 @@ namespace Core {
         void renderObjectDirect(WeakPointer<Object3D> object, WeakPointer<Camera> camera, std::vector<WeakPointer<Light>>& lightList,
                                 WeakPointer<Material> overrideMaterial = WeakPointer<Material>::nullPtr(),
                                 Bool matchPhysicalPropertiesWithLighting = true);
-
+        WeakPointer<Texture2D> getSSAOTexture();
     protected:
         Renderer();
         void renderStandard(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
@@ -88,8 +89,9 @@ namespace Core {
                                     std::vector<WeakPointer<Light>>& nonIBLLightList, std::vector<WeakPointer<Light>>& lightList);
         void renderReflectionProbe(WeakPointer<ReflectionProbe> reflectionProbe, Bool specularOnly,
                                    std::vector<WeakPointer<Object3D>>& renderObjects, std::vector<WeakPointer<Light>>& renderLights);
-        void renderDepthAndNormals(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects);
-        void renderPositionsAndNormals(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects);
+        void renderSSAO(ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objects);
+        void renderDepthAndNormals(ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objects);
+        void renderPositionsAndNormals(ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objects);
         void initializeSSAO();
 
         void sortObjectsIntoRenderQueues(std::vector<WeakPointer<Object3D>>& objects, RenderQueueManager& renderQueueManager, ViewDescriptor& viewDescriptor);
@@ -114,6 +116,7 @@ namespace Core {
         PersistentWeakPointer<RenderTarget2D> positionsNormalsRenderTarget;
 
         PersistentWeakPointer<RenderTarget2D> ssaoRenderTarget;
+        PersistentWeakPointer<SSAOMaterial> ssaoMaterial;
         WeakPointer<Texture2D> ssaoNoise;
         std::vector<Vector3r> ssaoKernel;
     };

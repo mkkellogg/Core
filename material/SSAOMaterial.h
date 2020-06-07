@@ -19,6 +19,7 @@ namespace Core {
     public:
         virtual ~SSAOMaterial();
         virtual Bool build() override;
+        virtual Int32 getShaderLocation(StandardAttribute attribute, UInt32 offset = 0) override;
         virtual void sendCustomUniformsToShader() override;
         virtual WeakPointer<Material> clone() override;
         virtual void bindShaderVarLocations() override;
@@ -37,6 +38,7 @@ namespace Core {
         Int32 noiseLocation;
         Int32 samplesLocation[Constants::SSAOSamples];
         Int32 projectionLocation;
+        Int32 albedoUVLocation;
 
         PersistentWeakPointer<Texture> viewPositions;
         PersistentWeakPointer<Texture> viewNormals;

@@ -88,6 +88,7 @@ set(INCLUDE_FILES
     material/BasicColoredMaterial.h
     material/BasicLitMaterial.h
     material/BasicTexturedMaterial.h
+    material/BasicTexturedFullScreenQuadMaterial.h
     material/BasicTexturedLitMaterial.h
     material/BasicCubeMaterial.h
     material/NormalsMaterial.h
@@ -258,6 +259,7 @@ set(SOURCE_FILES
     material/BasicColoredMaterial.cpp
     material/BasicLitMaterial.cpp
     material/BasicTexturedMaterial.cpp
+    material/BasicTexturedFullScreenQuadMaterial.cpp
     material/BasicTexturedLitMaterial.cpp
     material/BasicCubeMaterial.cpp
     material/NormalsMaterial.cpp

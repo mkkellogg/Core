@@ -23,6 +23,7 @@
 #include "../image/Texture2D.h"
 #include "../material/DepthOnlyMaterial.h"
 #include "../material/NormalsMaterial.h"
+#include "../material/SSAOMaterial.h"
 #include "../material/PositionsAndNormalsMaterial.h"
 #include "../material/BasicColoredMaterial.h"
 #include "../material/DistanceOnlyMaterial.h"
@@ -61,6 +62,7 @@ namespace Core {
         if (!this->positionsNormalsMaterial.isValid()) {
             this->positionsNormalsMaterial = Engine::instance()->createMaterial<PositionsAndNormalsMaterial>();
             this->positionsNormalsMaterial->setLit(false);
+            this->positionsNormalsMaterial->setConvertToViewSpace(true);
         }
         if (!this->distanceMaterial.isValid()) {
             this->distanceMaterial = Engine::instance()->createMaterial<DistanceOnlyMaterial>();
@@ -306,6 +308,12 @@ namespace Core {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         WeakPointer<RenderTarget> currentRenderTarget = graphics->getCurrentRenderTarget();
 
+        if (viewDescriptor.ssaoEnabled) {
+            viewDescriptor.ssaoEnabled = false;
+            this->renderSSAO(viewDescriptor, objectList);
+            viewDescriptor.ssaoEnabled = true;
+        }
+
         WeakPointer<RenderTarget> nextRenderTarget = viewDescriptor.indirectHDREnabled ? viewDescriptor.hdrRenderTarget : viewDescriptor.renderTarget;
         graphics->activateRenderTarget(nextRenderTarget);       
         this->setViewportAndMipLevelForRenderTarget(nextRenderTarget, viewDescriptor.cubeFace);
@@ -508,6 +516,7 @@ namespace Core {
         viewDescriptor.cameraPosition.set(0.0f, 0.0f, 0.0f);
         viewDescriptor.cubeFace = -1;
         viewDescriptor.viewMatrix.transform(viewDescriptor.cameraPosition);
+        viewDescriptor.ssaoEnabled = camera->isSSAOEnabled();
        
     }
 
@@ -578,24 +587,87 @@ namespace Core {
         reflectionProbe->setNeedsFullUpdate(false);
     }
 
-    void Renderer::renderDepthAndNormals(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects) {
-        WeakPointer<RenderTarget> saveRenderTarget = camera->getRenderTarget();
-        Bool saveHdrEnabled = camera->isHDREnabled();
-        camera->setRenderTarget(this->depthNormalsRenderTarget);
-        camera->setHDREnabled(false);
-        this->render(camera, objects, this->normalsMaterial, false);
-        camera->setRenderTarget(saveRenderTarget);
-        camera->setHDREnabled(saveHdrEnabled);
+    void Renderer::renderSSAO(ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objects) {
+        static std::vector<WeakPointer<Light>> emptyLightList;
+
+        this->renderPositionsAndNormals(viewDescriptor, objects);
+        this->ssaoMaterial->setViewPositions(this->positionsNormalsRenderTarget->getColorTexture(0));
+        this->ssaoMaterial->setViewNormals(this->positionsNormalsRenderTarget->getColorTexture(1));
+        this->ssaoMaterial->setProjection(viewDescriptor.projectionMatrix);
+
+        WeakPointer<RenderTarget> saveRenderTarget = viewDescriptor.renderTarget;
+        WeakPointer<RenderTarget> saveHDRRenderTarget = viewDescriptor.hdrRenderTarget;
+        Bool saveIndirectHDREnabled = viewDescriptor.indirectHDREnabled;
+        WeakPointer<Material> saveOverrideMaterial = viewDescriptor.overrideMaterial;
+        Bool saveSSAOEnabled = viewDescriptor.ssaoEnabled;
+
+        viewDescriptor.indirectHDREnabled = false;
+        viewDescriptor.hdrRenderTarget = WeakPointer<RenderTarget2D>::nullPtr();
+        viewDescriptor.renderTarget = this->ssaoRenderTarget;
+        viewDescriptor.overrideMaterial = this->ssaoMaterial;
+        viewDescriptor.ssaoEnabled = false;
+
+        Engine::instance()->getGraphicsSystem()->renderFullScreenQuad(this->ssaoRenderTarget, -1, this->ssaoMaterial);
+
+        viewDescriptor.indirectHDREnabled = saveIndirectHDREnabled;
+        viewDescriptor.hdrRenderTarget = saveHDRRenderTarget;
+        viewDescriptor.renderTarget = saveRenderTarget;
+        viewDescriptor.overrideMaterial = saveOverrideMaterial;
+        viewDescriptor.ssaoEnabled = saveSSAOEnabled;
     }
 
-    void Renderer::renderPositionsAndNormals(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects) {
-        WeakPointer<RenderTarget> saveRenderTarget = camera->getRenderTarget();
-        Bool saveHdrEnabled = camera->isHDREnabled();
-        camera->setRenderTarget(this->positionsNormalsRenderTarget);
-        camera->setHDREnabled(false);
-        this->render(camera, objects, this->positionsNormalsMaterial, false);
-        camera->setRenderTarget(saveRenderTarget);
-        camera->setHDREnabled(saveHdrEnabled);
+    WeakPointer<Texture2D> Renderer::getSSAOTexture() {
+        WeakPointer<Texture2D> tex2D = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->ssaoRenderTarget->getColorTexture());
+        //WeakPointer<Texture2D> tex2D = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->positionsNormalsRenderTarget->getColorTexture(0));
+        return tex2D;
+    }
+
+    void Renderer::renderDepthAndNormals(ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objects) {
+        static std::vector<WeakPointer<Light>> emptyLightList;
+
+        WeakPointer<RenderTarget> saveRenderTarget = viewDescriptor.renderTarget;
+        WeakPointer<RenderTarget> saveHDRRenderTarget = viewDescriptor.hdrRenderTarget;
+        Bool saveIndirectHDREnabled = viewDescriptor.indirectHDREnabled;
+        WeakPointer<Material> saveOverrideMaterial = viewDescriptor.overrideMaterial;
+        Bool saveSSAOEnabled = viewDescriptor.ssaoEnabled;
+
+        viewDescriptor.indirectHDREnabled = false;
+        viewDescriptor.hdrRenderTarget = WeakPointer<RenderTarget2D>::nullPtr();
+        viewDescriptor.renderTarget = this->depthNormalsRenderTarget;
+        viewDescriptor.overrideMaterial = this->normalsMaterial;
+        viewDescriptor.ssaoEnabled = false;
+
+        this->render(viewDescriptor, objects, emptyLightList, false);
+       
+        viewDescriptor.indirectHDREnabled = saveIndirectHDREnabled;
+        viewDescriptor.hdrRenderTarget = saveHDRRenderTarget;
+        viewDescriptor.renderTarget = saveRenderTarget;
+        viewDescriptor.overrideMaterial = saveOverrideMaterial;
+        viewDescriptor.ssaoEnabled = saveSSAOEnabled;
+    }
+
+    void Renderer::renderPositionsAndNormals(ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objects) {
+        static std::vector<WeakPointer<Light>> emptyLightList;
+
+        WeakPointer<RenderTarget> saveRenderTarget = viewDescriptor.renderTarget;
+        WeakPointer<RenderTarget> saveHDRRenderTarget = viewDescriptor.hdrRenderTarget;
+        Bool saveIndirectHDREnabled = viewDescriptor.indirectHDREnabled;
+        WeakPointer<Material> saveOverrideMaterial = viewDescriptor.overrideMaterial;
+        Bool saveSSAOEnabled = viewDescriptor.ssaoEnabled;
+
+        viewDescriptor.indirectHDREnabled = false;
+        viewDescriptor.hdrRenderTarget = WeakPointer<RenderTarget2D>::nullPtr();
+        viewDescriptor.renderTarget = this->positionsNormalsRenderTarget;
+        viewDescriptor.overrideMaterial = this->positionsNormalsMaterial;
+        viewDescriptor.ssaoEnabled = false;
+
+        this->render(viewDescriptor, objects, emptyLightList, false);
+
+        viewDescriptor.indirectHDREnabled = saveIndirectHDREnabled;
+        viewDescriptor.hdrRenderTarget = saveHDRRenderTarget;
+        viewDescriptor.renderTarget = saveRenderTarget;
+        viewDescriptor.overrideMaterial = saveOverrideMaterial;
+        viewDescriptor.ssaoEnabled = saveSSAOEnabled;
     }
 
     void Renderer::initializeSSAO() {
@@ -619,13 +691,12 @@ namespace Core {
 
         // generate noise texture
         Byte ssaoNoiseData[16 * 4];
-        UInt32 offset = 0;
         for (unsigned int i = 0; i < 16; i++) {
+            UInt32 offset = i * 4;
             ssaoNoiseData[offset] = randomFloats(generator) * 2.0 - 1.0;
-            ssaoNoiseData[offset] = randomFloats(generator) * 2.0 - 1.0;
-            ssaoNoiseData[offset] = 0.0f;
-            ssaoNoiseData[offset] = 0.0f;
-            offset +=4;
+            ssaoNoiseData[offset + 1] = randomFloats(generator) * 2.0 - 1.0;
+            ssaoNoiseData[offset + 2] = 0.0f;
+            ssaoNoiseData[offset + 3] = 0.0f;
         }
 
         TextureAttributes noiseTextureAttributes;
@@ -638,7 +709,7 @@ namespace Core {
 
         const Vector2u ssaoRenderTargetSize(Constants::EffectsBuffer2DSize, Constants::EffectsBuffer2DSize);
         TextureAttributes ssaoColorAttributes;
-        ssaoColorAttributes.Format = TextureFormat::RGBA16F;
+        ssaoColorAttributes.Format = TextureFormat::R32F;
         ssaoColorAttributes.FilterMode = TextureFilter::Point;
         ssaoColorAttributes.MipLevels = 0;
         ssaoColorAttributes.WrapMode = TextureWrap::Clamp;
@@ -646,6 +717,13 @@ namespace Core {
         ssaoDepthAttributes.IsDepthTexture = true;
         this->ssaoRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTarget2D(true, true, false, ssaoColorAttributes,
                                                                                                ssaoDepthAttributes, ssaoRenderTargetSize);
+
+        if (!this->ssaoMaterial.isValid()) {
+            this->ssaoMaterial = Engine::instance()->createMaterial<SSAOMaterial>();
+            this->ssaoMaterial->setLit(false);
+            this->ssaoMaterial->setSamples(this->ssaoKernel);
+            this->ssaoMaterial->setNoise(this->ssaoNoise);
+        }
 
     }
 

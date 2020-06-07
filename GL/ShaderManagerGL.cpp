@@ -279,6 +279,9 @@ namespace Core {
         this->setShaderSource(ShaderType::Vertex, "BasicTextured", ShaderManagerGL::BasicTextured_vertex);
         this->setShaderSource(ShaderType::Fragment, "BasicTextured", ShaderManagerGL::BasicTextured_fragment);
 
+        this->setShaderSource(ShaderType::Vertex, "BasicTexturedFullScreenQuad", ShaderManagerGL::BasicTexturedFullScreenQuad_vertex);
+        this->setShaderSource(ShaderType::Fragment, "BasicTexturedFullScreenQuad", ShaderManagerGL::BasicTexturedFullScreenQuad_fragment);
+
         this->setShaderSource(ShaderType::Vertex, "BasicTexturedLit", ShaderManagerGL::BasicTexturedLit_vertex);
         this->setShaderSource(ShaderType::Fragment, "BasicTexturedLit", ShaderManagerGL::BasicTexturedLit_fragment);
 
@@ -1506,12 +1509,12 @@ namespace Core {
             "    out_color = integratedBRDF; \n"
             "} \n";
 
-
         std::string BONE_TRANSFORM_DEF = 
             "    mat4 boneTransform = " + BONES + "[" + BONE_INDEX + ".x] * " + BONE_WEIGHT + ".x;\n"
             "    boneTransform += " + BONES + "[" + BONE_INDEX + ".y] * " + BONE_WEIGHT + ".y;\n"
             "    boneTransform += " + BONES + "[" + BONE_INDEX + ".z] * " + BONE_WEIGHT + ".z; \n"
             "    boneTransform += " + BONES + "[" + BONE_INDEX + ".w] * " + BONE_WEIGHT + ".w; \n";
+
         this->VertexSkinning_vertex =  
             SKINNING_ENABLED_DEF
             + BONES_DEF 
@@ -1746,6 +1749,35 @@ namespace Core {
             "    out_color = textureColor;\n"
             "}\n";
 
+        this->BasicTexturedFullScreenQuad_vertex =  
+            "#version 330\n"
+            + POSITION_DEF
+            + COLOR_DEF 
+            + ALBEDO_UV_DEF
+            + PROJECTION_MATRIX_DEF
+            + VIEW_MATRIX_DEF
+            + MODEL_MATRIX_DEF +
+            "out vec4 vColor;\n"
+            "out vec3 vNormal;\n"
+            "out vec2 vUV;\n"
+            "void main() {\n"
+            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    vUV = " + ALBEDO_UV + "; \n"
+            "    vColor = " + COLOR + ";\n"
+            "}\n";
+
+        this->BasicTexturedFullScreenQuad_fragment =   
+            "#version 330\n"
+            "precision mediump float;\n"
+            "uniform sampler2D twoDtexture; \n"
+            "in vec4 vColor;\n"
+            "in vec2 vUV;\n"
+            "out vec4 out_color;\n"
+            "void main() {\n"
+            "    vec4 textureColor = texture(twoDtexture, vUV);\n"
+            "    out_color = textureColor;\n"
+            "}\n";
+
         this->BasicTexturedLit_vertex =  
             "#version 330\n"
             "precision highp float;\n"
@@ -1881,8 +1913,10 @@ namespace Core {
 
         this->PositionsAndNormals_vertex =  
            "#version 330\n"
+            "#include \"VertexSkinning\" \n"
             + POSITION_DEF
             + NORMAL_DEF
+            + FACE_NORMAL_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
             + MODEL_MATRIX_DEF
@@ -1892,12 +1926,16 @@ namespace Core {
             "out vec3 vPosition;\n"
             "out vec3 vNormal;\n"
             "void main() {\n"
-            "    if (viewSpace == 1) vPosition = vec3(" + VIEW_MATRIX + " * " + MODEL_MATRIX + " * " + POSITION + ");\n"
-            "    else vPosition = vec3(" + MODEL_MATRIX + " * " + POSITION + ");\n"
-            "    vec4 eNormal = " + NORMAL + ";\n"
+            "    vec4 localPos = " + POSITION + "; \n"
+            "    vec4 localNormal = " + NORMAL + "; \n"
+            "    vec4 localFaceNormal = " + FACE_NORMAL + "; \n"
+            "    calculateSkinnedPositionAndNormals(localPos, localNormal, localFaceNormal); \n"
+            "    if (viewSpace == 1) vPosition = vec3(" + VIEW_MATRIX + " * " + MODEL_MATRIX + " * localPos);\n"
+            "    else vPosition = vec3(" + MODEL_MATRIX + " * localPos);\n"
+            "    vec4 eNormal = localNormal;\n"
             "    if (viewSpace == 1) vNormal = vec3(" + VIEW_INVERSE_TRANSPOSE_MATRIX + " * " + MODEL_INVERSE_TRANSPOSE_MATRIX + " * eNormal);\n"
             "    else vNormal = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * eNormal);\n"
-            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * localPos;\n"
             "}\n";
 
         this->PositionsAndNormals_fragment =  
@@ -1922,8 +1960,9 @@ namespace Core {
             + MODEL_MATRIX_DEF +
             "out vec2 vUV;\n"
             "void main() {\n"
-            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
-            "    vUV = " + ALBEDO_UV + ";\n"
+            "    vec4 localPos = " + POSITION + "; \n"
+            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * localPos;\n"
+            "    vUV = " + ALBEDO_UV + "; \n"
             "}\n";
 
         this->ScreenSpaceAmbientOcclusion_fragment =  
@@ -1943,7 +1982,7 @@ namespace Core {
             "float bias = 0.025;\n"
 
             // tile noise texture over screen based on screen dimensions divided by noise size
-            "const vec2 noiseScale = vec2(800.0/4.0, 600.0/4.0); \n"
+            "const vec2 noiseScale = vec2(1024.0/4.0, 768.0/4.0); \n"
 
             "void main() {\n"
                 // get input for SSAO algorithm
@@ -1969,14 +2008,15 @@ namespace Core {
                     "offset.xyz = offset.xyz * 0.5 + 0.5;\n" // transform to range 0.0 - 1.0
                     
                     // get sample depth
-                    "float sampleDepth = texture(gPosition, offset.xy).z;\n" // get depth value of kernel sample
+                    "float sampleDepth = texture(viewPositions, offset.xy).z;\n" // get depth value of kernel sample
                     
                     // range check & accumulate
                     "float rangeCheck = smoothstep(0.0, 1.0, radius / abs(fragPos.z - sampleDepth));\n"
                     "occlusion += (sampleDepth >= sample.z + bias ? 1.0 : 0.0) * rangeCheck;\n"
                 "}\n"
                 "occlusion = 1.0 - (occlusion / kernelSize);\n"
-                "out_color = occlusion;\n"
+           //     "out_color = occlusion;\n"
+              "out_color = length(texture(viewNormals, vUV).xyz) / 100.0;\n"
             "}\n";
     }
 

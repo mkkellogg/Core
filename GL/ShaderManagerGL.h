@@ -113,6 +113,9 @@ namespace Core {
         std::string BasicTextured_vertex;
         std::string BasicTextured_fragment;
 
+        std::string BasicTexturedFullScreenQuad_vertex;
+        std::string BasicTexturedFullScreenQuad_fragment;
+
         std::string BasicTexturedLit_vertex;
         std::string BasicTexturedLit_fragment;
 
