@@ -65,11 +65,15 @@ namespace Core {
         return depthTexture;
     }
 
+    UInt32 RenderTarget::getColorTextureCount() const {
+        return this->activeColorTextures;
+    }
+
     /*
      * Get a reference to the color texture.
      */
     WeakPointer<Texture> RenderTarget::getColorTexture(UInt32 index) {
-        if (index > this->activeColorTextures) {
+        if (index >= this->activeColorTextures) {
             throw OutOfRangeException("RenderTarget::getColorTexture -> Output color target index is out of range.");
         }
         return colorTexture[index];

@@ -25,6 +25,7 @@ namespace Core {
         virtual Bool init() = 0;
         Bool hasBuffer(RenderBufferType bufferType) const;
         WeakPointer<Texture> getDepthTexture();
+        UInt32 getColorTextureCount() const;
         WeakPointer<Texture> getColorTexture(UInt32 index = 0);
         virtual Bool addColorTexture(TextureAttributes) = 0;
         Vector2u getSize();

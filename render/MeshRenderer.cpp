@@ -155,7 +155,8 @@ namespace Core {
         }
 
         if (viewInverseTransposeMatrixLoc >= 0) {
-            const Matrix4x4& viewInverseTransposeMatrix = viewDescriptor.viewInverseTransposeMatrix;
+            Matrix4x4 viewInverseTransposeMatrix = viewDescriptor.viewMatrix;
+            viewInverseTransposeMatrix.transpose();
             shader->setUniformMatrix4(viewInverseTransposeMatrixLoc, viewInverseTransposeMatrix);
         }
 

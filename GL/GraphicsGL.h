@@ -110,6 +110,7 @@ namespace Core {
         static GLenum getGLRenderStyle(RenderStyle style);
         static GLenum getGLStencilFunction(RenderState::StencilFunction function);
         static GLenum getGLStencilAction(RenderState::StencilAction action);
+        static GLint getColorAttachmentID(UInt32 index);
 
     protected:
 

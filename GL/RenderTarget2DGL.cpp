@@ -6,6 +6,7 @@
 #include "../image/Texture.h"
 #include "Texture2DGL.h"
 #include "CubeTextureGL.h"
+#include "GraphicsGL.h"
 
 namespace Core {
 
@@ -35,6 +36,7 @@ namespace Core {
         // generate a color texture attachment
         // TODO: For now we are only supporting a texture type color attachment
         if (this->hasColorBuffer) {
+            // TODO: Make this use 'initColorTexture()'
             this->colorTexture[0] = Engine::instance()->createTexture2D(this->colorTextureAttributes[0]);
             this->buildAndVerifyTexture(this->colorTexture[0]);
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->colorTexture[0]->getTextureID(), 0);
@@ -63,14 +65,15 @@ namespace Core {
             this->colorBufferIsTexture[this->activeColorTextures] = true;
             this->initColorTexture(this->activeColorTextures);
             this->activeColorTextures++;
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            this->completeFramebuffer();
         }
     }
 
     Bool RenderTarget2DGL::initColorTexture(UInt32 index) {
         this->colorTexture[index] = Engine::instance()->createTexture2D(this->colorTextureAttributes[index]);
         this->buildAndVerifyTexture(this->colorTexture[index]);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->colorTexture[index]->getTextureID(), 0);
+        GLint attachment = GraphicsGL::getColorAttachmentID(index);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, this->colorTexture[index]->getTextureID(), 0);
         return true;
     }
 

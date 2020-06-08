@@ -25,6 +25,7 @@ namespace Core {
     class ViewDescriptor;
     class DepthOnlyMaterial;
     class NormalsMaterial;
+    class PositionsMaterial;
     class SSAOMaterial;
     class PositionsAndNormalsMaterial;
     class DistanceOnlyMaterial;
@@ -103,6 +104,7 @@ namespace Core {
 
         PersistentWeakPointer<DepthOnlyMaterial> depthMaterial;
         PersistentWeakPointer<NormalsMaterial> normalsMaterial;
+        PersistentWeakPointer<PositionsMaterial> positionsMaterial;
         PersistentWeakPointer<PositionsAndNormalsMaterial> positionsNormalsMaterial;
         PersistentWeakPointer<DistanceOnlyMaterial> distanceMaterial;
         PersistentWeakPointer<Object3D> reflectionProbeObject;
@@ -113,6 +115,7 @@ namespace Core {
         PersistentWeakPointer<Object3D> orthoShadowMapCameraObject;
 
         PersistentWeakPointer<RenderTarget2D> depthNormalsRenderTarget;
+        PersistentWeakPointer<RenderTarget2D> depthPositionsRenderTarget;
         PersistentWeakPointer<RenderTarget2D> positionsNormalsRenderTarget;
 
         PersistentWeakPointer<RenderTarget2D> ssaoRenderTarget;

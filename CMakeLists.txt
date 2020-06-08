@@ -92,6 +92,7 @@ set(INCLUDE_FILES
     material/BasicTexturedLitMaterial.h
     material/BasicCubeMaterial.h
     material/NormalsMaterial.h
+    material/PositionsMaterial.h
     material/PositionsAndNormalsMaterial.h
     material/SSAOMaterial.h
     material/OutlineMaterial.h
@@ -263,6 +264,7 @@ set(SOURCE_FILES
     material/BasicTexturedLitMaterial.cpp
     material/BasicCubeMaterial.cpp
     material/NormalsMaterial.cpp
+    material/PositionsMaterial.cpp
     material/PositionsAndNormalsMaterial.cpp
     material/SSAOMaterial.cpp
     material/OutlineMaterial.cpp

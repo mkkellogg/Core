@@ -23,6 +23,7 @@
 #include "../image/Texture2D.h"
 #include "../material/DepthOnlyMaterial.h"
 #include "../material/NormalsMaterial.h"
+#include "../material/PositionsMaterial.h"
 #include "../material/SSAOMaterial.h"
 #include "../material/PositionsAndNormalsMaterial.h"
 #include "../material/BasicColoredMaterial.h"
@@ -58,6 +59,12 @@ namespace Core {
         if (!this->normalsMaterial.isValid()) {
             this->normalsMaterial = Engine::instance()->createMaterial<NormalsMaterial>();
             this->normalsMaterial->setLit(false);
+            this->normalsMaterial->setConvertToViewSpace(true);
+        }
+        if (!this->positionsMaterial.isValid()) {
+            this->positionsMaterial = Engine::instance()->createMaterial<PositionsMaterial>();
+            this->positionsMaterial->setLit(false);
+            this->positionsMaterial->setConvertToViewSpace(true);
         }
         if (!this->positionsNormalsMaterial.isValid()) {
             this->positionsNormalsMaterial = Engine::instance()->createMaterial<PositionsAndNormalsMaterial>();
@@ -84,6 +91,17 @@ namespace Core {
         depthNormalsDepthAttributes.IsDepthTexture = true;
         this->depthNormalsRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTarget2D(true, true, false, depthNormalsColorAttributes,
                                                                                                        depthNormalsDepthAttributes, depthNormalsRenderTargetSize);
+
+        const Vector2u depthPositionsRenderTargetSize(Constants::EffectsBuffer2DSize, Constants::EffectsBuffer2DSize);
+        TextureAttributes depthPositionsColorAttributes;
+        depthPositionsColorAttributes.Format = TextureFormat::RGBA16F;
+        depthPositionsColorAttributes.FilterMode = TextureFilter::Point;
+        depthPositionsColorAttributes.MipLevels = 0;
+        depthPositionsColorAttributes.WrapMode = TextureWrap::Clamp;
+        TextureAttributes depthPositionsDepthAttributes;
+        depthPositionsDepthAttributes.IsDepthTexture = true;
+        this->depthPositionsRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTarget2D(true, true, false, depthPositionsColorAttributes,
+                                                                                                         depthPositionsDepthAttributes, depthPositionsRenderTargetSize);
 
         const Vector2u positionsNormalsRenderTargetSize(Constants::EffectsBuffer2DSize, Constants::EffectsBuffer2DSize);
         TextureAttributes positionsNormalsColorAttributes;
@@ -378,8 +396,6 @@ namespace Core {
                 skyboxView.viewMatrix.setTranslation(0.0f, 0.0f, 0.0f);
                 skyboxView.viewInverseMatrix.copy(skyboxView.viewMatrix);
                 skyboxView.viewInverseMatrix.invert();
-                skyboxView.viewInverseTransposeMatrix.copy(skyboxView.viewInverseMatrix);
-                skyboxView.viewInverseTransposeMatrix.transpose();
                 objectRenderer->forwardRender(skyboxView, dummyLights, true);
             }
         }
@@ -526,8 +542,6 @@ namespace Core {
         viewDescriptor.viewMatrix.copy(worldMatrix);
         viewDescriptor.viewInverseMatrix.copy(viewDescriptor.viewMatrix);
         viewDescriptor.viewInverseMatrix.invert();
-        viewDescriptor.viewInverseTransposeMatrix.copy(viewDescriptor.viewInverseMatrix);
-        viewDescriptor.viewInverseTransposeMatrix.transpose();
         viewDescriptor.clearRenderBuffers = clearBuffers;
     }
 
@@ -591,8 +605,10 @@ namespace Core {
         static std::vector<WeakPointer<Light>> emptyLightList;
 
         this->renderPositionsAndNormals(viewDescriptor, objects);
-        this->ssaoMaterial->setViewPositions(this->positionsNormalsRenderTarget->getColorTexture(0));
-        this->ssaoMaterial->setViewNormals(this->positionsNormalsRenderTarget->getColorTexture(1));
+        this->ssaoMaterial->setViewPositions(this->depthPositionsRenderTarget->getColorTexture(0));
+        this->ssaoMaterial->setViewNormals(this->depthNormalsRenderTarget->getColorTexture(0));
+        //this->ssaoMaterial->setViewPositions(this->positionsNormalsRenderTarget->getColorTexture(0));
+        //this->ssaoMaterial->setViewNormals(this->positionsNormalsRenderTarget->getColorTexture(1));
         this->ssaoMaterial->setProjection(viewDescriptor.projectionMatrix);
 
         WeakPointer<RenderTarget> saveRenderTarget = viewDescriptor.renderTarget;
@@ -618,7 +634,7 @@ namespace Core {
 
     WeakPointer<Texture2D> Renderer::getSSAOTexture() {
         WeakPointer<Texture2D> tex2D = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->ssaoRenderTarget->getColorTexture());
-        //WeakPointer<Texture2D> tex2D = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->positionsNormalsRenderTarget->getColorTexture(0));
+        //WeakPointer<Texture2D> tex2D = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->depthPositionsRenderTarget->getColorTexture(0));
         return tex2D;
     }
 
@@ -657,11 +673,19 @@ namespace Core {
 
         viewDescriptor.indirectHDREnabled = false;
         viewDescriptor.hdrRenderTarget = WeakPointer<RenderTarget2D>::nullPtr();
-        viewDescriptor.renderTarget = this->positionsNormalsRenderTarget;
-        viewDescriptor.overrideMaterial = this->positionsNormalsMaterial;
         viewDescriptor.ssaoEnabled = false;
 
+        viewDescriptor.renderTarget = this->depthNormalsRenderTarget;
+        viewDescriptor.overrideMaterial = this->normalsMaterial;
         this->render(viewDescriptor, objects, emptyLightList, false);
+
+        viewDescriptor.renderTarget = this->depthPositionsRenderTarget;
+        viewDescriptor.overrideMaterial = this->positionsMaterial;
+        this->render(viewDescriptor, objects, emptyLightList, false);
+
+        /*viewDescriptor.renderTarget = this->positionsNormalsRenderTarget;
+        viewDescriptor.overrideMaterial = this->positionsNormalsMaterial;
+        this->render(viewDescriptor, objects, emptyLightList, false);*/
 
         viewDescriptor.indirectHDREnabled = saveIndirectHDREnabled;
         viewDescriptor.hdrRenderTarget = saveHDRRenderTarget;

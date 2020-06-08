@@ -291,6 +291,9 @@ namespace Core {
         this->setShaderSource(ShaderType::Vertex, "Normals", ShaderManagerGL::Normals_vertex);
         this->setShaderSource(ShaderType::Fragment, "Normals", ShaderManagerGL::Normals_fragment);
 
+        this->setShaderSource(ShaderType::Vertex, "Positions", ShaderManagerGL::Positions_vertex);
+        this->setShaderSource(ShaderType::Fragment, "Positions", ShaderManagerGL::Positions_fragment);
+
         this->setShaderSource(ShaderType::Vertex, "PositionsAndNormals", ShaderManagerGL::PositionsAndNormals_vertex);
         this->setShaderSource(ShaderType::Fragment, "PositionsAndNormals", ShaderManagerGL::PositionsAndNormals_fragment);
 
@@ -1885,8 +1888,10 @@ namespace Core {
 
         this->Normals_vertex =  
             "#version 330\n"
+            "#include \"VertexSkinning\" \n"
             + POSITION_DEF
             + NORMAL_DEF
+            + FACE_NORMAL_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
             + MODEL_MATRIX_DEF
@@ -1895,10 +1900,14 @@ namespace Core {
             "uniform int viewSpace; \n"
             "out vec3 vNormal;\n"
             "void main() {\n"
-            "    vec4 eNormal = " + NORMAL + ";\n"
+            "    vec4 localPos = " + POSITION + "; \n"
+            "    vec4 localNormal = " + NORMAL + "; \n"
+            "    vec4 localFaceNormal = " + FACE_NORMAL + "; \n"
+            "    calculateSkinnedPositionAndNormals(localPos, localNormal, localFaceNormal); \n"
+            "    vec4 eNormal =  localNormal;\n"
             "    if (viewSpace == 1) vNormal = vec3(" + VIEW_INVERSE_TRANSPOSE_MATRIX + " * " + MODEL_INVERSE_TRANSPOSE_MATRIX + " * eNormal);\n"
             "    else vNormal = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * eNormal);\n"
-            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * " + POSITION + ";\n"
+            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * localPos;\n"
             "}\n";
 
         this->Normals_fragment =  
@@ -1906,13 +1915,44 @@ namespace Core {
             "precision mediump float;\n"
             "#include \"Common\" \n"
             "in vec3 vNormal;\n"
-            "out vec4 out_color;\n"
+            "layout (location = 0) out vec4 out_normal; \n"
             "void main() {\n"
-            "    out_color = vec4(vNormal, 1.0);\n"
+            "    out_normal = vec4(normalize(vNormal), 1.0);\n"
+            "}\n";
+
+        this->Positions_vertex =  
+            "#version 330\n"
+            "#include \"VertexSkinning\" \n"
+            + POSITION_DEF
+            + NORMAL_DEF
+            + FACE_NORMAL_DEF
+            + PROJECTION_MATRIX_DEF
+            + VIEW_MATRIX_DEF
+            + MODEL_MATRIX_DEF +
+            "uniform int viewSpace; \n"
+            "out vec3 vPosition;\n"
+            "void main() {\n"
+            "    vec4 localPos = " + POSITION + "; \n"
+            "    vec4 localNormal = " + NORMAL + "; \n"
+            "    vec4 localFaceNormal = " + FACE_NORMAL + "; \n"
+            "    calculateSkinnedPositionAndNormals(localPos, localNormal, localFaceNormal); \n"
+            "    if (viewSpace == 1) vPosition = vec3(" + VIEW_MATRIX + " * " + MODEL_MATRIX + " * localPos);\n"
+            "    else vPosition = vec3(" + MODEL_MATRIX + " * localPos);\n"
+            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * localPos;\n"
+            "}\n";
+
+        this->Positions_fragment =  
+            "#version 330\n"
+            "precision mediump float;\n"
+            "#include \"Common\" \n"
+            "in vec3 vPosition;\n"
+            "layout (location = 0) out vec4 out_position; \n"
+            "void main() {\n"
+            "    out_position = vec4(vPosition, 1.0);\n"
             "}\n";
 
         this->PositionsAndNormals_vertex =  
-           "#version 330\n"
+            "#version 330\n"
             "#include \"VertexSkinning\" \n"
             + POSITION_DEF
             + NORMAL_DEF
@@ -2015,8 +2055,8 @@ namespace Core {
                     "occlusion += (sampleDepth >= sample.z + bias ? 1.0 : 0.0) * rangeCheck;\n"
                 "}\n"
                 "occlusion = 1.0 - (occlusion / kernelSize);\n"
-           //     "out_color = occlusion;\n"
-              "out_color = length(texture(viewNormals, vUV).xyz) / 100.0;\n"
+                "out_color = occlusion;\n"
+                "out_color = max(texture(viewNormals, vUV).x, 0.0); //length(texture(viewNormals, vUV).xyz);\n"
             "}\n";
     }
 

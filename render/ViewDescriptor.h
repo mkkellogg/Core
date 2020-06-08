@@ -19,7 +19,6 @@ namespace Core {
         Point3r cameraPosition;
         Matrix4x4 viewMatrix;
         Matrix4x4 viewInverseMatrix;
-        Matrix4x4 viewInverseTransposeMatrix;
         Matrix4x4 projectionMatrix;
         PersistentWeakPointer<Material> overrideMaterial;
         PersistentWeakPointer<RenderTarget> renderTarget;

@@ -34,6 +34,7 @@ namespace Core {
         Int32 viewMatrixLocation;
         Int32 modelMatrixLocation;
         Int32 modelInverseTransposeMatrixLocation;
+        Int32 viewInverseTransposeMatrixLocation;
         Int32 cameraPositionLocation;
 
         Int32 skinningEnabledLocation;

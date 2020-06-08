@@ -7,7 +7,7 @@
 namespace Core {
 
     NormalsMaterial::NormalsMaterial(WeakPointer<Graphics> graphics) : BaseMaterial(graphics) {
-        this->convertNormalsToViewSpace = false;
+        this->convertToViewSpace = false;
     }
 
     NormalsMaterial::~NormalsMaterial() {
@@ -19,11 +19,12 @@ namespace Core {
         this->shader = shaderManager.getShader("Normals");
         graphics->activateShader(this->shader);
         this->bindShaderVarLocations();
+        this->setSkinningEnabled(true);
         return true;
     }
 
     void NormalsMaterial::sendCustomUniformsToShader() {
-        this->shader->setUniform1i(this->viewSpaceLocation, this->convertNormalsToViewSpace ? 1 : 0);
+        this->shader->setUniform1i(this->viewSpaceLocation, this->convertToViewSpace ? 1 : 0);
     }
 
     void NormalsMaterial::copyTo(WeakPointer<Material> target) {
@@ -31,7 +32,7 @@ namespace Core {
         if (normalsMaterial.isValid()) {
             BaseMaterial::copyTo(target);
             normalsMaterial->viewSpaceLocation = this->viewSpaceLocation;
-            normalsMaterial->convertNormalsToViewSpace = this->convertNormalsToViewSpace;
+            normalsMaterial->convertToViewSpace = this->convertToViewSpace;
         } else {
             throw InvalidArgumentException("NormalsMaterial::copyTo() -> 'target must be same material.");
         }
@@ -48,7 +49,7 @@ namespace Core {
         this->viewSpaceLocation = this->shader->getUniformLocation("viewSpace");
     }
 
-    void NormalsMaterial::setConvertNormalsToViewSpace(Bool convertNormalsToViewSpace) {
-        this->convertNormalsToViewSpace = convertNormalsToViewSpace;
+    void NormalsMaterial::setConvertToViewSpace(Bool convertToViewSpace) {
+        this->convertToViewSpace = convertToViewSpace;
     }
 }

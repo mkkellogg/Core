@@ -125,6 +125,9 @@ namespace Core {
         std::string Normals_vertex;
         std::string Normals_fragment;
 
+        std::string Positions_vertex;
+        std::string Positions_fragment;
+
         std::string PositionsAndNormals_vertex;
         std::string PositionsAndNormals_fragment;
 

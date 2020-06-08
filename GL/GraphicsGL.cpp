@@ -169,7 +169,8 @@ namespace Core {
 
     WeakPointer<RenderTarget2D> GraphicsGL::createRenderTarget2D(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
                                                                  const TextureAttributes& colorTextureAttributes, 
-                                                                 const TextureAttributes& depthTextureAttributes, const Vector2u& size) {
+                                                                 const TextureAttributes& depthTextureAttributes,
+                                                                 const Vector2u& size) {
 
         RenderTarget2DGL* renderTargetPtr = new(std::nothrow) RenderTarget2DGL(hasColor, hasDepth, enableStencilBuffer,
                                                                                colorTextureAttributes, depthTextureAttributes, size);
@@ -279,15 +280,18 @@ namespace Core {
                 throw Exception("GraphicsGL::activateRenderTarget2DMipLevel -> Current render target is not a valid OpenGL render target.");
             }
 
-            WeakPointer<Texture> colorTexture = currentTarget2DGL->getColorTexture();
-            if (colorTexture.isValid()) {
-                Texture2DGL * texGL = dynamic_cast<Texture2DGL*>(colorTexture.get());
-                if (texGL == nullptr) {
-                    throw InvalidArgumentException("GraphicsGL::activateRenderTarget2DMipLevel -> Render target texture is not a valid OpenGL texture.");
-                }
+            for (UInt32 i = 0; i < currentTarget2DGL->getColorTextureCount(); i++) {
+                WeakPointer<Texture> colorTexture = currentTarget2DGL->getColorTexture(i);
+                if (colorTexture.isValid()) {
+                    Texture2DGL * texGL = dynamic_cast<Texture2DGL*>(colorTexture.get());
+                    if (texGL == nullptr) {
+                        throw InvalidArgumentException("GraphicsGL::activateRenderTarget2DMipLevel -> Render target texture is not a valid OpenGL texture.");
+                    }
 
-                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texGL->getTextureID(), mipLevel);
-                return true;
+                    GLint attachment = GraphicsGL::getColorAttachmentID(i);
+                    glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, texGL->getTextureID(), mipLevel);
+                    return true;
+                }
             }
             return false;            
         }
@@ -302,12 +306,15 @@ namespace Core {
                 throw Exception("GraphicsGL::activateCubeRenderTargetSide -> Current render target is not a valid OpenGL render target.");
             }
 
-            CubeTextureGL * texGL = dynamic_cast<CubeTextureGL*>(currentTargetCubeGL->getColorTexture().get());
-            if (texGL == nullptr) {
-                throw InvalidArgumentException("GraphicsGL::activateCubeRenderTargetSide -> Render target texture is not a valid OpenGL texture.");
-            }
+            for (UInt32 i = 0; i < currentTargetCubeGL->getColorTextureCount(); i++) {
+                CubeTextureGL * texGL = dynamic_cast<CubeTextureGL*>(currentTargetCubeGL->getColorTexture(i).get());
+                if (texGL == nullptr) {
+                    throw InvalidArgumentException("GraphicsGL::activateCubeRenderTargetSide -> Render target texture is not a valid OpenGL texture.");
+                }
 
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, getGLCubeTarget(side), texGL->getTextureID(), mipLevel);
+                GLint attachment = GraphicsGL::getColorAttachmentID(i);
+                glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, getGLCubeTarget(side), texGL->getTextureID(), mipLevel);
+            }
 
             return true;
         }
@@ -703,6 +710,20 @@ namespace Core {
             break;
         }
         return GL_KEEP;
+    }
+
+    GLint GraphicsGL::getColorAttachmentID(UInt32 index) {
+        switch(index) {
+            case 0:
+                return GL_COLOR_ATTACHMENT0;
+            case 1:
+                return GL_COLOR_ATTACHMENT1;
+            case 2: 
+                return GL_COLOR_ATTACHMENT2;
+            case 3:
+                return GL_COLOR_ATTACHMENT3;
+        }
+        return -1;
     }
 
     std::shared_ptr<RendererGL> GraphicsGL::createRenderer() {
