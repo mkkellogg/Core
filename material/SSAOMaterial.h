@@ -22,6 +22,7 @@ namespace Core {
         virtual Int32 getShaderLocation(StandardAttribute attribute, UInt32 offset = 0) override;
         virtual void sendCustomUniformsToShader() override;
         virtual WeakPointer<Material> clone() override;
+        virtual void copyTo(WeakPointer<Material> targetMaterial) override;
         virtual void bindShaderVarLocations() override;
 
         void setViewPositions(WeakPointer<Texture> positions);
@@ -29,6 +30,9 @@ namespace Core {
         void setNoise(WeakPointer<Texture> noise);
         void setSamples(const std::vector<Vector3r>& samples);
         void setProjection(const Matrix4x4& projection);
+        void setRadius(Real radius);
+        void setScreenWidth(Real screenWidth);
+        void setScreenHeight(Real screenHeight);
 
     private:
         SSAOMaterial(WeakPointer<Graphics> graphics);
@@ -38,6 +42,9 @@ namespace Core {
         Int32 noiseLocation;
         Int32 samplesLocation[Constants::SSAOSamples];
         Int32 projectionLocation;
+        Int32 radiusLocation;
+        Int32 screenWidthLocation;
+        Int32 screenHeightLocation;
         Int32 albedoUVLocation;
 
         PersistentWeakPointer<Texture> viewPositions;
@@ -45,5 +52,8 @@ namespace Core {
         PersistentWeakPointer<Texture> noise;
         std::vector<Vector3r> samples;
         Matrix4x4 projection;
+        Real radius;
+        Real screenWidth;
+        Real screenHeight;
     };
 }

@@ -95,6 +95,7 @@ set(INCLUDE_FILES
     material/PositionsMaterial.h
     material/PositionsAndNormalsMaterial.h
     material/SSAOMaterial.h
+    material/SSAOBlurMaterial.h
     material/OutlineMaterial.h
     material/SkyboxMaterial.h
     material/PhysicalSkyboxMaterial.h
@@ -267,6 +268,7 @@ set(SOURCE_FILES
     material/PositionsMaterial.cpp
     material/PositionsAndNormalsMaterial.cpp
     material/SSAOMaterial.cpp
+    material/SSAOBlurMaterial.cpp
     material/OutlineMaterial.cpp
     material/SkyboxMaterial.cpp
     material/PhysicalSkyboxMaterial.cpp

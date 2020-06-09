@@ -297,8 +297,11 @@ namespace Core {
         this->setShaderSource(ShaderType::Vertex, "PositionsAndNormals", ShaderManagerGL::PositionsAndNormals_vertex);
         this->setShaderSource(ShaderType::Fragment, "PositionsAndNormals", ShaderManagerGL::PositionsAndNormals_fragment);
 
-        this->setShaderSource(ShaderType::Vertex, "ScreenSpaceAmbientOcclusion", ShaderManagerGL::ScreenSpaceAmbientOcclusion_vertex);
-        this->setShaderSource(ShaderType::Fragment, "ScreenSpaceAmbientOcclusion", ShaderManagerGL::ScreenSpaceAmbientOcclusion_fragment);
+        this->setShaderSource(ShaderType::Vertex, "SSAO", ShaderManagerGL::SSAO_vertex);
+        this->setShaderSource(ShaderType::Fragment, "SSAO", ShaderManagerGL::SSAO_fragment);
+
+        this->setShaderSource(ShaderType::Vertex, "SSAOBlur", ShaderManagerGL::SSAOBlur_vertex);
+        this->setShaderSource(ShaderType::Fragment, "SSAOBlur", ShaderManagerGL::SSAOBlur_fragment);
     }
 
     ShaderManagerGL::ShaderManagerGL() {
@@ -1991,7 +1994,7 @@ namespace Core {
             "    out_normal = vec4(vNormal, 1.0);\n"
             "}\n";
 
-        this->ScreenSpaceAmbientOcclusion_vertex =  
+        this->SSAO_vertex =  
             "#version 330\n"
             + POSITION_DEF
             + ALBEDO_UV_DEF
@@ -2005,7 +2008,7 @@ namespace Core {
             "    vUV = " + ALBEDO_UV + "; \n"
             "}\n";
 
-        this->ScreenSpaceAmbientOcclusion_fragment =  
+        this->SSAO_fragment =  
             "#version 330\n"
             "out float out_color;\n"
             "in vec2 vUV;\n"
@@ -2015,20 +2018,22 @@ namespace Core {
             "uniform sampler2D noise;\n"
             "uniform vec3 samples[" + std::to_string(Constants::SSAOSamples) + "];\n"
             "uniform mat4 projection;\n"
+            "uniform float radius; \n"
+            "uniform float screenWidth; \n"
+            "uniform float screenHeight; \n"
+
+            "float eRadius = radius; \n"
 
             // parameters (you'd probably want to use them as uniforms to more easily tweak the effect)
-            "int kernelSize = " + std::to_string(Constants::SSAOSamples) + ";\n"
-            "float radius = 0.5;\n"
-            "float bias = 0.025;\n"
-
-            // tile noise texture over screen based on screen dimensions divided by noise size
-            "const vec2 noiseScale = vec2(1024.0/4.0, 768.0/4.0); \n"
+            "const int kernelSize = " + std::to_string(Constants::SSAOSamples) + ";\n"
+            "const float bias = 0.05;\n"
 
             "void main() {\n"
                 // get input for SSAO algorithm
                 "vec3 fragPos = texture(viewPositions, vUV).xyz;\n"
                 "vec3 normal = normalize(texture(viewNormals, vUV).rgb);\n"
-                "vec3 randomVec = normalize(texture(noise, vUV * noiseScale).xyz);\n"
+                "vec3 randomVec = normalize(texture(noise, vUV * vec2(screenWidth/4.0, screenHeight/4.0)).xyz);\n"
+               // "vec3 randomVec = normalize(noise3(2.0));\n"
                 // create TBN change-of-basis matrix: from tangent-space to view-space
                 "vec3 tangent = normalize(randomVec - normal * dot(randomVec, normal));\n"
                 "vec3 bitangent = cross(normal, tangent);\n"
@@ -2039,7 +2044,7 @@ namespace Core {
                 "{\n"
                     // get sample position
                     "vec3 sample = TBN * samples[i]; \n" // from tangent to view-space
-                    "sample = fragPos + sample * radius; \n"
+                    "sample = fragPos + sample * eRadius; \n"
                     
                     // project sample position (to sample texture) (to get position on screen/texture)
                     "vec4 offset = vec4(sample, 1.0);\n"
@@ -2051,13 +2056,47 @@ namespace Core {
                     "float sampleDepth = texture(viewPositions, offset.xy).z;\n" // get depth value of kernel sample
                     
                     // range check & accumulate
-                    "float rangeCheck = smoothstep(0.0, 1.0, radius / abs(fragPos.z - sampleDepth));\n"
+                    "float rangeCheck = smoothstep(0.0, 1.0, eRadius / abs(fragPos.z - sampleDepth));\n"
                     "occlusion += (sampleDepth >= sample.z + bias ? 1.0 : 0.0) * rangeCheck;\n"
                 "}\n"
                 "occlusion = 1.0 - (occlusion / kernelSize);\n"
                 "out_color = occlusion;\n"
-                "out_color = max(texture(viewNormals, vUV).x, 0.0); //length(texture(viewNormals, vUV).xyz);\n"
+               // "out_color = max(texture(viewNormals, vUV).x, 0.0); //length(texture(viewNormals, vUV).xyz);\n"
             "}\n";
+
+        this->SSAOBlur_vertex =  
+            "#version 330\n"
+            + POSITION_DEF
+            + ALBEDO_UV_DEF
+            + PROJECTION_MATRIX_DEF
+            + VIEW_MATRIX_DEF
+            + MODEL_MATRIX_DEF +
+            "out vec2 vUV;\n"
+            "void main() {\n"
+            "    vec4 localPos = " + POSITION + "; \n"
+            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * localPos;\n"
+            "    vUV = " + ALBEDO_UV + "; \n"
+            "}\n";
+
+        this->SSAOBlur_fragment =  
+            "#version 330 core \n"
+            "out float out_color; \n"
+            "in vec2 vUV; \n"
+            "uniform sampler2D ssaoInput; \n"
+            "void main()  \n"
+            "{ \n"
+            "    vec2 texelSize = 1.0 / vec2(textureSize(ssaoInput, 0)); \n"
+            "    float result = 0.0; \n"
+            "    for (int x = -2; x < 2; ++x)  \n"
+            "    { \n"
+            "        for (int y = -2; y < 2; ++y)  \n"
+            "        { \n"
+            "            vec2 offset = vec2(float(x), float(y)) * texelSize; \n"
+            "            result += texture(ssaoInput, vUV + offset).r; \n"
+            "        } \n"
+            "    } \n"
+            "    out_color = result / (4.0 * 4.0); \n"
+            "}   \n";
     }
 
 }

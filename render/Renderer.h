@@ -27,6 +27,7 @@ namespace Core {
     class NormalsMaterial;
     class PositionsMaterial;
     class SSAOMaterial;
+    class SSAOBlurMaterial;
     class PositionsAndNormalsMaterial;
     class DistanceOnlyMaterial;
     class TonemapMaterial;
@@ -120,6 +121,8 @@ namespace Core {
 
         PersistentWeakPointer<RenderTarget2D> ssaoRenderTarget;
         PersistentWeakPointer<SSAOMaterial> ssaoMaterial;
+        PersistentWeakPointer<RenderTarget2D> ssaoBlurRenderTarget;
+        PersistentWeakPointer<SSAOBlurMaterial> ssaoBlurMaterial;
         WeakPointer<Texture2D> ssaoNoise;
         std::vector<Vector3r> ssaoKernel;
     };

@@ -131,8 +131,11 @@ namespace Core {
         std::string PositionsAndNormals_vertex;
         std::string PositionsAndNormals_fragment;
 
-        std::string ScreenSpaceAmbientOcclusion_vertex;
-        std::string ScreenSpaceAmbientOcclusion_fragment;
+        std::string SSAO_vertex;
+        std::string SSAO_fragment;
+
+        std::string SSAOBlur_vertex;
+        std::string SSAOBlur_fragment;
 
         void init();
 

@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <iostream>
 #include <random>
+#include <ctime>
 
 #include "../Engine.h"
 #include "../common/Constants.h"
@@ -25,6 +26,7 @@
 #include "../material/NormalsMaterial.h"
 #include "../material/PositionsMaterial.h"
 #include "../material/SSAOMaterial.h"
+#include "../material/SSAOBlurMaterial.h"
 #include "../material/PositionsAndNormalsMaterial.h"
 #include "../material/BasicColoredMaterial.h"
 #include "../material/DistanceOnlyMaterial.h"
@@ -607,6 +609,10 @@ namespace Core {
         this->renderPositionsAndNormals(viewDescriptor, objects);
         this->ssaoMaterial->setViewPositions(this->depthPositionsRenderTarget->getColorTexture(0));
         this->ssaoMaterial->setViewNormals(this->depthNormalsRenderTarget->getColorTexture(0));
+        this->ssaoMaterial->setRadius(1.0);
+        Vector2u ssaoRenderTargetSize = this->ssaoRenderTarget->getSize();
+        this->ssaoMaterial->setScreenWidth(ssaoRenderTargetSize.x);
+        this->ssaoMaterial->setScreenHeight(ssaoRenderTargetSize.y);
         //this->ssaoMaterial->setViewPositions(this->positionsNormalsRenderTarget->getColorTexture(0));
         //this->ssaoMaterial->setViewNormals(this->positionsNormalsRenderTarget->getColorTexture(1));
         this->ssaoMaterial->setProjection(viewDescriptor.projectionMatrix);
@@ -624,6 +630,8 @@ namespace Core {
         viewDescriptor.ssaoEnabled = false;
 
         Engine::instance()->getGraphicsSystem()->renderFullScreenQuad(this->ssaoRenderTarget, -1, this->ssaoMaterial);
+        ssaoBlurMaterial->setSSAOInput(this->ssaoRenderTarget->getColorTexture(0));
+        Engine::instance()->getGraphicsSystem()->renderFullScreenQuad(this->ssaoBlurRenderTarget, -1, this->ssaoBlurMaterial);
 
         viewDescriptor.indirectHDREnabled = saveIndirectHDREnabled;
         viewDescriptor.hdrRenderTarget = saveHDRRenderTarget;
@@ -633,7 +641,7 @@ namespace Core {
     }
 
     WeakPointer<Texture2D> Renderer::getSSAOTexture() {
-        WeakPointer<Texture2D> tex2D = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->ssaoRenderTarget->getColorTexture());
+        WeakPointer<Texture2D> tex2D = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->ssaoBlurRenderTarget->getColorTexture());
         //WeakPointer<Texture2D> tex2D = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->depthPositionsRenderTarget->getColorTexture(0));
         return tex2D;
     }
@@ -714,7 +722,7 @@ namespace Core {
         }
 
         // generate noise texture
-        Byte ssaoNoiseData[16 * 4];
+        Real ssaoNoiseData[16 * 4];
         for (unsigned int i = 0; i < 16; i++) {
             UInt32 offset = i * 4;
             ssaoNoiseData[offset] = randomFloats(generator) * 2.0 - 1.0;
@@ -729,7 +737,7 @@ namespace Core {
         noiseTextureAttributes.MipLevels = 0;
         noiseTextureAttributes.WrapMode = TextureWrap::Clamp;
         this->ssaoNoise = Engine::instance()->getGraphicsSystem()->createTexture2D(noiseTextureAttributes);
-        this->ssaoNoise->buildFromData(4, 4, ssaoNoiseData);
+        this->ssaoNoise->buildFromData(4, 4, (Byte*)ssaoNoiseData);
 
         const Vector2u ssaoRenderTargetSize(Constants::EffectsBuffer2DSize, Constants::EffectsBuffer2DSize);
         TextureAttributes ssaoColorAttributes;
@@ -741,12 +749,19 @@ namespace Core {
         ssaoDepthAttributes.IsDepthTexture = true;
         this->ssaoRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTarget2D(true, true, false, ssaoColorAttributes,
                                                                                                ssaoDepthAttributes, ssaoRenderTargetSize);
+        this->ssaoBlurRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTarget2D(true, true, false, ssaoColorAttributes,
+                                                                                               ssaoDepthAttributes, ssaoRenderTargetSize);
 
         if (!this->ssaoMaterial.isValid()) {
             this->ssaoMaterial = Engine::instance()->createMaterial<SSAOMaterial>();
             this->ssaoMaterial->setLit(false);
             this->ssaoMaterial->setSamples(this->ssaoKernel);
             this->ssaoMaterial->setNoise(this->ssaoNoise);
+        }
+
+        if (!this->ssaoBlurMaterial.isValid()) {
+            this->ssaoBlurMaterial = Engine::instance()->createMaterial<SSAOBlurMaterial>();
+            this->ssaoBlurMaterial->setLit(false);
         }
 
     }
