@@ -50,8 +50,10 @@ namespace Core {
         DepthTexture = 38,
         SkinningEnabled = 39,
         Bones = 40,
-        _Count = 41,  // Must always be last in the list (before _None)
-        _None = 42,
+        SSAOMap = 41,
+        SSAOEnabled = 42,
+        _Count = 43,  // Must always be last in the list (before _None)
+        _None = 44,
     };
 
     class StandardUniforms {

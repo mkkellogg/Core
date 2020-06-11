@@ -131,6 +131,9 @@ namespace Core {
         std::string PositionsAndNormals_vertex;
         std::string PositionsAndNormals_fragment;
 
+        std::string ApplySSAO_vertex;
+        std::string ApplySSAO_fragment;
+
         std::string SSAO_vertex;
         std::string SSAO_fragment;
 

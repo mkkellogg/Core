@@ -12,6 +12,7 @@ namespace Core {
     class RenderTarget;
     class RenderTarget2D;
     class Skybox;
+    class Texture2D;
 
     class ViewDescriptor {
     public:
@@ -32,6 +33,9 @@ namespace Core {
         Real hdrExposure = 1.0f;
         Real hdrGamma = 2.2f;
         Bool ssaoEnabled = false;
+        WeakPointer<Texture2D> ssaoMap;
+        Real ssaoRadius = 1.5f;
+        Real ssaoBias = 0.05f;
     };
 
 }

@@ -25,6 +25,9 @@ namespace Core {
         this->hdrToneMapType = ToneMapType::Reinhard;
         this->hdrExposure = 1.0f;
         this->hdrGamma = 2.2f;
+        this->ssaoEnabled = false;
+        this->ssaoRadius = 1.5f;
+        this->ssaoBias = 0.05f;
     }
 
     Camera::~Camera() {
@@ -235,13 +238,29 @@ namespace Core {
         return this->hdrGamma;
     }
 
-   void Camera::setSSAOEnabled(Bool enabled) {
-       this->ssaoEnabled = enabled;
-   }
+    void Camera::setSSAOEnabled(Bool enabled) {
+        this->ssaoEnabled = enabled;
+    }
 
-   Bool Camera::isSSAOEnabled() const {
-       return this->ssaoEnabled;
-   }
+    Bool Camera::isSSAOEnabled() const {
+        return this->ssaoEnabled;
+    }
+
+    void Camera::setSSAORadius(Real radius) {
+        this->ssaoRadius = radius;
+    }
+
+    Real Camera::getSSAORadius() {
+        return this->ssaoRadius;
+    }
+
+    void Camera::setSSAOBias(Real bias) {
+        this->ssaoBias = bias;
+    }
+
+    Real Camera::getSSAOBias() {
+        return this->ssaoBias;
+    }
 
     void Camera::buildPerspectiveProjectionMatrix(Real fov, Real ratio, Real nearP, Real farP, Matrix4x4& out) {
         // convert fov to radians

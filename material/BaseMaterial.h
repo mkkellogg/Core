@@ -36,6 +36,8 @@ namespace Core {
         Int32 modelInverseTransposeMatrixLocation;
         Int32 viewInverseTransposeMatrixLocation;
         Int32 cameraPositionLocation;
+        Int32 ssaoMapLocation;
+        Int32 ssaoEnabledLocation;
 
         Int32 skinningEnabledLocation;
         Int32 bonesLocation[Constants::MaxBones];

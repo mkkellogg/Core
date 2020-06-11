@@ -63,8 +63,8 @@ namespace Core {
         }
     }
 
-    Bool MeshRenderer::forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh, const std::vector<WeakPointer<Light>>& lights,
-                                           Bool matchPhysicalPropertiesWithLighting) {
+    Bool MeshRenderer::forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh, Bool isStatic,
+                                           const std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting) {
         Matrix4x4 tempMatrix;
         WeakPointer<Material> material;
         if (viewDescriptor.overrideMaterial.isValid()) {
@@ -126,6 +126,7 @@ namespace Core {
         Int32 modelMatrixLoc = material->getShaderLocation(StandardUniform::ModelMatrix);
         Int32 modelInverseTransposeMatrixLoc = material->getShaderLocation(StandardUniform::ModelInverseTransposeMatrix);
         Int32 viewInverseTransposeMatrixLoc = material->getShaderLocation(StandardUniform::ViewInverseTransposeMatrix);
+        Int32 ssaoMapLoc = material->getShaderLocation(StandardUniform::SSAOMap);
 
         if (cameraPositionLoc >= 0) {
             shader->setUniform4f(cameraPositionLoc, viewDescriptor.cameraPosition.x, viewDescriptor.cameraPosition.y,
@@ -160,7 +161,21 @@ namespace Core {
             shader->setUniformMatrix4(viewInverseTransposeMatrixLoc, viewInverseTransposeMatrix);
         }
 
+//this->graphics->getPlaceHolderTexture2D()->getTextureID()
+        Int32 ssaoEnabledLoc = material->getShaderLocation(StandardUniform::SSAOEnabled);
         UInt32 currentTextureSlot = material->textureCount();
+        if (ssaoMapLoc >= 0) {
+            if (isStatic && viewDescriptor.ssaoEnabled && viewDescriptor.ssaoMap.isValid()) {
+                shader->setTexture2D(currentTextureSlot, ssaoMapLoc, viewDescriptor.ssaoMap->getTextureID());
+                if (ssaoEnabledLoc >= 0) shader->setUniform1i(ssaoEnabledLoc, 1.0);
+            } else {
+                shader->setTexture2D(currentTextureSlot, ssaoMapLoc, this->graphics->getPlaceHolderTexture2D()->getTextureID());
+                if (ssaoEnabledLoc >= 0) shader->setUniform1i(ssaoEnabledLoc, 0.0);
+            }
+            currentTextureSlot++;
+        } else {
+            if (ssaoEnabledLoc >= 0) shader->setUniform1i(ssaoEnabledLoc, 0.0);
+        }
 
         RenderPath renderPath = material->getRenderPath();
 
@@ -448,7 +463,7 @@ namespace Core {
         if (thisContainer) {
             auto renderables = thisContainer->getRenderables();
             for (auto mesh : renderables) {
-                this->forwardRenderObject(viewDescriptor, mesh, lights, matchPhysicalPropertiesWithLighting);
+                this->forwardRenderObject(viewDescriptor, mesh, thisContainer->isStatic(), lights, matchPhysicalPropertiesWithLighting);
             }
         }
 

@@ -27,6 +27,8 @@ const std::string TEXTURE0 = _un(Core::StandardUniform::Texture0);
 const std::string DEPTH_TEXTURE = _un(Core::StandardUniform::DepthTexture);
 const std::string BONES = _un(Core::StandardUniform::Bones);
 const std::string SKINNING_ENABLED = _un(Core::StandardUniform::SkinningEnabled);
+const std::string SSAO_MAP = _un(Core::StandardUniform::SSAOMap);
+const std::string SSAO_ENABLED = _un(Core::StandardUniform::SSAOEnabled);
 
 const std::string MAX_BONES = std::to_string(Core::Constants::MaxBones);
 const std::string MAX_CASCADES = std::to_string(Core::Constants::MaxDirectionalCascades);
@@ -86,6 +88,8 @@ const std::string TEXTURE0_DEF = "uniform sampler2D " + TEXTURE0 + ";\n";
 const std::string DEPTH_TEXTURE_DEF = "uniform sampler2D " + DEPTH_TEXTURE + ";\n";
 const std::string BONES_DEF = "uniform mat4 " + BONES + "[" + MAX_BONES + "];\n";
 const std::string SKINNING_ENABLED_DEF = "uniform int " + SKINNING_ENABLED + ";\n";
+const std::string SSAO_MAP_DEF = "uniform sampler2D " + SSAO_MAP + ";\n";
+const std::string SSAO_ENABLED_DEF = "uniform int " + SSAO_ENABLED + ";\n";
 
 // ------------------------------------
 // Single-pass lighting definitions
@@ -296,6 +300,9 @@ namespace Core {
 
         this->setShaderSource(ShaderType::Vertex, "PositionsAndNormals", ShaderManagerGL::PositionsAndNormals_vertex);
         this->setShaderSource(ShaderType::Fragment, "PositionsAndNormals", ShaderManagerGL::PositionsAndNormals_fragment);
+
+        this->setShaderSource(ShaderType::Vertex, "ApplySSAO", ShaderManagerGL::ApplySSAO_vertex);
+        this->setShaderSource(ShaderType::Fragment, "ApplySSAO", ShaderManagerGL::ApplySSAO_fragment);
 
         this->setShaderSource(ShaderType::Vertex, "SSAO", ShaderManagerGL::SSAO_vertex);
         this->setShaderSource(ShaderType::Fragment, "SSAO", ShaderManagerGL::SSAO_fragment);
@@ -1009,6 +1016,7 @@ namespace Core {
             "out vec2 vAlbedoUV;\n"
             "out vec2 vNormalUV;\n"
             "out vec4 vWorldPos;\n"
+            "out vec4 vClipPos; \n"
             "void main() {\n"
             "    vec4 localPos = " + POSITION + "; \n"
             "    vec4 localNormal = " + NORMAL + "; \n"
@@ -1017,6 +1025,7 @@ namespace Core {
             "    vWorldPos = " +  MODEL_MATRIX + " * localPos;\n"
             "    vec4 viewSpacePos = " + VIEW_MATRIX + " * vWorldPos;\n"
             "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * vWorldPos;\n"
+            "    vClipPos = " + PROJECTION_MATRIX + " * viewSpacePos; \n"
             "    vAlbedoUV = " + ALBEDO_UV + ";\n"
             "    vNormalUV = " + NORMAL_UV + ";\n"
             "    vColor = " + COLOR + ";\n"
@@ -1029,7 +1038,9 @@ namespace Core {
             "}\n";
 
         this->StandardPhysicalVars_fragment =
-            CAMERA_POSITION_DEF +
+            CAMERA_POSITION_DEF
+            + SSAO_MAP_DEF
+            + SSAO_ENABLED_DEF +
             "uniform int enabledMap; \n"
             "uniform vec4 albedo; \n"
             "uniform sampler2D albedoMap; \n"
@@ -1046,6 +1057,7 @@ namespace Core {
             "in vec2 vAlbedoUV;\n"
             "in vec2 vNormalUV;\n"
             "in vec4 vWorldPos;\n"
+            "in vec4 vClipPos;\n"
             "out vec4 out_color;\n";
 
         this->StandardPhysicalMain_fragment =
@@ -1087,10 +1099,13 @@ namespace Core {
             "#include \"LightingCommon\" \n"
             "#include \"PhysicalLightingSingle\"\n"
             "#include \"StandardPhysicalVars\" \n"
+            "#include \"ApplySSAO(lightIndex=0)\" \n"
             "void main() {\n"
             "   #include \"StandardPhysicalMain\" \n"
-            "   out_color = litColorPhysical0(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
-            "}\n";
+            "   vec4 finalColor = litColorPhysical0(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
+            "   checkAndApplySSAO0(vClipPos, finalColor); \n"
+            "   out_color = finalColor; \n"
+            "} \n";
 
         this->StandardPhysicalMulti_vertex =  
             "#version 330\n"
@@ -1116,6 +1131,7 @@ namespace Core {
             "out vec2 vAlbedoUV;\n"
             "out vec2 vNormalUV;\n"
             "out vec4 vWorldPos;\n"
+            "out vec4 vClipPos;\n"
             "void main() {\n"
             "    vec4 localPos = " + POSITION + "; \n"
             "    vec4 localNormal = " + NORMAL + "; \n"
@@ -1123,6 +1139,7 @@ namespace Core {
             "    calculateSkinnedPositionAndNormals(localPos, localNormal, localFaceNormal); \n"
             "    vWorldPos = " +  MODEL_MATRIX + " * localPos;\n"
             "    vec4 viewSpacePos = " + VIEW_MATRIX + " * vWorldPos;\n"
+            "    vClipPos = " + PROJECTION_MATRIX + " * viewSpacePos; \n"
             "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * vWorldPos;\n"
             "    vAlbedoUV = " + ALBEDO_UV + ";\n"
             "    vNormalUV = " + NORMAL_UV + ";\n"
@@ -1143,16 +1160,18 @@ namespace Core {
             "#include \"PhysicalLightingHeaderMulti\"\n"
             "#include \"PhysicalLightingMulti(lightIndex=0)\"\n"
             "#include \"PhysicalLightingMulti(lightIndex=1)\"\n"
-        //    "#include \"PhysicalLightingMulti(lightIndex=2)\"\n"
-         //   "#include \"PhysicalLightingMulti(lightIndex=3)\"\n"
+            "#include \"PhysicalLightingMulti(lightIndex=2)\"\n"
+            "#include \"PhysicalLightingMulti(lightIndex=3)\"\n"
             "#include \"StandardPhysicalVars\" \n"
+            "#include \"ApplySSAO(lightIndex=0)\" \n"
             "void main() {\n"
             "   #include \"StandardPhysicalMain\" \n"
             "   vec4 curColor = vec4(0.0, 0.0, 0.0, 0.0); \n"
-              "   if (" + LIGHT_COUNT + " >= 1 && " + MAX_LIGHTS + " >= 1) curColor += litColorPhysical0(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
-              "   if (" + LIGHT_COUNT + " >= 2 && " + MAX_LIGHTS + " >= 2) curColor += litColorPhysical1(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
-       //     "   if (" + LIGHT_COUNT + " >= 3 && " + MAX_LIGHTS + " >= 3) curColor += litColorPhysical2(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
-       //     "   if (" + LIGHT_COUNT + " >= 4 && " + MAX_LIGHTS + " >= 4) curColor += litColorPhysical3(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
+            "   if (" + LIGHT_COUNT + " >= 1 && " + MAX_LIGHTS + " >= 1) curColor += litColorPhysical0(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
+            "   checkAndApplySSAO0(vClipPos, curColor); \n"
+            "   if (" + LIGHT_COUNT + " >= 2 && " + MAX_LIGHTS + " >= 2) curColor += litColorPhysical1(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
+            "   if (" + LIGHT_COUNT + " >= 3 && " + MAX_LIGHTS + " >= 3) curColor += litColorPhysical2(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
+            "   if (" + LIGHT_COUNT + " >= 4 && " + MAX_LIGHTS + " >= 4) curColor += litColorPhysical3(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
             "   out_color = curColor;"
             "}\n";
 
@@ -1994,6 +2013,17 @@ namespace Core {
             "    out_normal = vec4(vNormal, 1.0);\n"
             "}\n";
 
+        this->ApplySSAO_vertex = "";
+
+        this->ApplySSAO_fragment = 
+            "void checkAndApplySSAO@lightIndex(in vec4 clipPos, inout vec4 outColor) { \n"
+            "   if (" + SSAO_ENABLED + " == 1 && " + LIGHT_TYPE + "[@lightIndex] == AMBIENT_IBL_LIGHT || " + LIGHT_TYPE + "[@lightIndex] == AMBIENT_LIGHT) { \n"
+            "      vec2 ndcPos = clipPos.xy / clipPos.w; \n"
+            "      vec2 ssaoSampleCoords = vec2(ndcPos.x / 2.0 + 0.5, ndcPos.y / 2.0 + 0.5); \n"
+            "      outColor *= texture(" + SSAO_MAP + ", ssaoSampleCoords).r; \n"
+            "   } \n"
+            "} \n";
+
         this->SSAO_vertex =  
             "#version 330\n"
             + POSITION_DEF
@@ -2019,6 +2049,7 @@ namespace Core {
             "uniform vec3 samples[" + std::to_string(Constants::SSAOSamples) + "];\n"
             "uniform mat4 projection;\n"
             "uniform float radius; \n"
+            "uniform float bias; \n"
             "uniform float screenWidth; \n"
             "uniform float screenHeight; \n"
 
@@ -2026,7 +2057,7 @@ namespace Core {
 
             // parameters (you'd probably want to use them as uniforms to more easily tweak the effect)
             "const int kernelSize = " + std::to_string(Constants::SSAOSamples) + ";\n"
-            "const float bias = 0.05;\n"
+            //"const float bias = 0.05;\n"
 
             "void main() {\n"
                 // get input for SSAO algorithm

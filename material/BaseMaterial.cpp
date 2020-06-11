@@ -27,6 +27,8 @@ namespace Core {
         for (UInt32 i = 0; i < Constants::MaxBones; i++) this->bonesLocation[i] = -1;
         this->boneIndexLocation = -1;
         this->boneWeightLocation = -1;
+        this->ssaoEnabledLocation = -1;
+        this->ssaoMapLocation = -1;
     }
 
     BaseMaterial::~BaseMaterial() {
@@ -73,6 +75,10 @@ namespace Core {
                 return this->skinningEnabledLocation;
             case StandardUniform::Bones:
                 return this->bonesLocation[offset];
+            case StandardUniform::SSAOMap:
+                return this->ssaoMapLocation;
+            case StandardUniform::SSAOEnabled:
+                return this->ssaoEnabledLocation;
             default:
                 return -1;
         }
@@ -100,6 +106,8 @@ namespace Core {
             for (UInt32 i = 0; i < Constants::MaxBones; i++) {
                 baseMaterial->bonesLocation[i] = this->bonesLocation[i];
             }
+            baseMaterial->ssaoMapLocation = this->ssaoMapLocation;
+            baseMaterial->ssaoEnabledLocation = this->ssaoEnabledLocation;
         } else {
             throw InvalidArgumentException("BaseMaterial::copyTo() -> 'target must be same material.");
         }
@@ -124,5 +132,7 @@ namespace Core {
         for (UInt32 i = 0; i < Constants::MaxBones; i++) {
           this->bonesLocation[i] = this->shader->getUniformLocation(StandardUniform::Bones, i);
         }
+        this->ssaoMapLocation = this->shader->getUniformLocation(StandardUniform::SSAOMap);
+        this->ssaoEnabledLocation = this->shader->getUniformLocation(StandardUniform::SSAOEnabled);
     }
 }

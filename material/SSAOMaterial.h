@@ -31,6 +31,7 @@ namespace Core {
         void setSamples(const std::vector<Vector3r>& samples);
         void setProjection(const Matrix4x4& projection);
         void setRadius(Real radius);
+        void setBias(Real bias);
         void setScreenWidth(Real screenWidth);
         void setScreenHeight(Real screenHeight);
 
@@ -43,6 +44,7 @@ namespace Core {
         Int32 samplesLocation[Constants::SSAOSamples];
         Int32 projectionLocation;
         Int32 radiusLocation;
+        Int32 biasLocation;
         Int32 screenWidthLocation;
         Int32 screenHeightLocation;
         Int32 albedoUVLocation;
@@ -53,6 +55,7 @@ namespace Core {
         std::vector<Vector3r> samples;
         Matrix4x4 projection;
         Real radius;
+        Real bias;
         Real screenWidth;
         Real screenHeight;
     };

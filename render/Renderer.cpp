@@ -132,13 +132,13 @@ namespace Core {
         static std::vector<WeakPointer<Light>> lightList;
         static std::vector<WeakPointer<Light>> nonIBLLightList;
         static std::vector<WeakPointer<ReflectionProbe>> reflectionProbeList;
-        static std::vector<WeakPointer<Object3D>> staticObjects;
+        static std::vector<WeakPointer<Object3D>> renderProbeObjects;
         objectList.resize(0);
         cameraList.resize(0);
         lightList.resize(0);
         nonIBLLightList.resize(0);
         reflectionProbeList.resize(0);
-        staticObjects.resize(0);
+        renderProbeObjects.resize(0);
 
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         this->collectSceneObjectsAndComputeTransforms(rootObject, objectList);
@@ -147,12 +147,13 @@ namespace Core {
         std::sort(lightList.begin(), lightList.end(), Renderer::compareLights);
         std::sort(nonIBLLightList.begin(), nonIBLLightList.end(), Renderer::compareLights);
 
-        for (UInt32 i = 0; i < objectList.size(); i++) {
+        // TODO: Decide how to classify objects as either contributors to ambient light or not
+        /*for (UInt32 i = 0; i < objectList.size(); i++) {
             WeakPointer<Object3D> object = objectList[i];
-            if (object->isStatic()) staticObjects.push_back(object);
-        }
+            if (object->isStatic()) renderProbeObjects.push_back(object);
+        }*/
 
-        this->renderReflectionProbes(reflectionProbeList, staticObjects, nonIBLLightList, lightList);
+        this->renderReflectionProbes(reflectionProbeList, renderProbeObjects, nonIBLLightList, lightList);
 
         this->renderShadowMaps(lightList, LightType::Point, objectList);
         for (auto camera : cameraList) {
@@ -210,32 +211,6 @@ namespace Core {
         }
     }
 
-    void Renderer::renderReflectionProbes(std::vector<WeakPointer<ReflectionProbe>>& reflectionProbeList, std::vector<WeakPointer<Object3D>> staticObjects,
-                                          std::vector<WeakPointer<Light>>& nonIBLLightList, std::vector<WeakPointer<Light>>& lightList) {
-        static std::vector<WeakPointer<Object3D>> emptyObjectList;
-        for (auto reflectionProbe : reflectionProbeList) {
-            if (reflectionProbe->getNeedsFullUpdate() || reflectionProbe->getNeedsSpecularUpdate()) {
-
-                this->renderShadowMaps(lightList, LightType::Point, staticObjects);
-                this->renderShadowMaps(lightList, LightType::Directional, staticObjects, reflectionProbe->getRenderCamera());
-
-                Bool specularOnly = !reflectionProbe->getNeedsFullUpdate();
-
-                this->renderReflectionProbe(reflectionProbe, specularOnly, emptyObjectList, nonIBLLightList);
-                if (!reflectionProbe->isSkyboxOnly()) {
-                    if (reflectionProbe->getRenderWithPhysical()) {
-                        this->renderReflectionProbe(reflectionProbe, specularOnly, staticObjects, lightList);
-                    } else {
-                        this->renderReflectionProbe(reflectionProbe, specularOnly, staticObjects, nonIBLLightList);
-                    }
-                }
-
-                if (specularOnly) reflectionProbe->setNeedsSpecularUpdate(false);
-                else reflectionProbe->setNeedsFullUpdate(false);
-            }
-        }
-    }
-
     void Renderer::renderObjectBasic(WeakPointer<Object3D> rootObject, WeakPointer<Camera> camera,
                                      WeakPointer<Material> overrideMaterial, Bool matchPhysicalPropertiesWithLighting) {
         static std::vector<WeakPointer<Object3D>> objectList;
@@ -248,7 +223,7 @@ namespace Core {
         this->render(camera, objectList, overrideMaterial, matchPhysicalPropertiesWithLighting);
     }
 
-    void Renderer::render(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
+    void Renderer::render(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects,
                           WeakPointer<Material> overrideMaterial, Bool matchPhysicalPropertiesWithLighting) {
         static std::vector<WeakPointer<Light>> lightList;   
         this->render(camera, objects, lightList, overrideMaterial, matchPhysicalPropertiesWithLighting);                 
@@ -331,6 +306,8 @@ namespace Core {
         if (viewDescriptor.ssaoEnabled) {
             viewDescriptor.ssaoEnabled = false;
             this->renderSSAO(viewDescriptor, objectList);
+            WeakPointer<Texture2D> ssaoMap = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->ssaoBlurRenderTarget->getColorTexture());
+            viewDescriptor.ssaoMap = ssaoMap;
             viewDescriptor.ssaoEnabled = true;
         }
 
@@ -535,6 +512,9 @@ namespace Core {
         viewDescriptor.cubeFace = -1;
         viewDescriptor.viewMatrix.transform(viewDescriptor.cameraPosition);
         viewDescriptor.ssaoEnabled = camera->isSSAOEnabled();
+        viewDescriptor.ssaoMap = WeakPointer<Texture2D>::nullPtr();
+        viewDescriptor.ssaoRadius = camera->getSSAORadius();
+        viewDescriptor.ssaoBias = camera->getSSAOBias();
        
     }
 
@@ -568,6 +548,32 @@ namespace Core {
         for (SceneObjectIterator<Object3D> itr = object->beginIterateChildren(); itr != object->endIterateChildren(); ++itr) {
             WeakPointer<Object3D> obj = *itr;
             this->collectSceneObjectsAndComputeTransforms(obj, outObjects, nextTransform);
+        }
+    }
+
+    void Renderer::renderReflectionProbes(std::vector<WeakPointer<ReflectionProbe>>& reflectionProbeList, std::vector<WeakPointer<Object3D>> renderProbeObjects,
+                                          std::vector<WeakPointer<Light>>& nonIBLLightList, std::vector<WeakPointer<Light>>& lightList) {
+        static std::vector<WeakPointer<Object3D>> emptyObjectList;
+        for (auto reflectionProbe : reflectionProbeList) {
+            if (reflectionProbe->getNeedsFullUpdate() || reflectionProbe->getNeedsSpecularUpdate()) {
+
+                this->renderShadowMaps(lightList, LightType::Point, renderProbeObjects);
+                this->renderShadowMaps(lightList, LightType::Directional, renderProbeObjects, reflectionProbe->getRenderCamera());
+
+                Bool specularOnly = !reflectionProbe->getNeedsFullUpdate();
+
+                this->renderReflectionProbe(reflectionProbe, specularOnly, emptyObjectList, nonIBLLightList);
+                if (!reflectionProbe->isSkyboxOnly()) {
+                    if (reflectionProbe->getRenderWithPhysical()) {
+                        this->renderReflectionProbe(reflectionProbe, specularOnly, renderProbeObjects, lightList);
+                    } else {
+                        this->renderReflectionProbe(reflectionProbe, specularOnly, renderProbeObjects, nonIBLLightList);
+                    }
+                }
+
+                if (specularOnly) reflectionProbe->setNeedsSpecularUpdate(false);
+                else reflectionProbe->setNeedsFullUpdate(false);
+            }
         }
     }
 
@@ -609,7 +615,8 @@ namespace Core {
         this->renderPositionsAndNormals(viewDescriptor, objects);
         this->ssaoMaterial->setViewPositions(this->depthPositionsRenderTarget->getColorTexture(0));
         this->ssaoMaterial->setViewNormals(this->depthNormalsRenderTarget->getColorTexture(0));
-        this->ssaoMaterial->setRadius(1.0);
+        this->ssaoMaterial->setRadius(viewDescriptor.ssaoRadius);
+        this->ssaoMaterial->setBias(viewDescriptor.ssaoBias);
         Vector2u ssaoRenderTargetSize = this->ssaoRenderTarget->getSize();
         this->ssaoMaterial->setScreenWidth(ssaoRenderTargetSize.x);
         this->ssaoMaterial->setScreenHeight(ssaoRenderTargetSize.y);

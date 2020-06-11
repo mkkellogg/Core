@@ -51,6 +51,7 @@ namespace Core {
         }
         this->shader->setUniformMatrix4(this->projectionLocation, this->projection);
         this->shader->setUniform1f(this->radiusLocation, this->radius);
+        this->shader->setUniform1f(this->biasLocation, this->bias);
         this->shader->setUniform1f(this->screenWidthLocation, this->screenWidth);
         this->shader->setUniform1f(this->screenHeightLocation, this->screenHeight);
     }
@@ -74,6 +75,7 @@ namespace Core {
             }
             ssaoMaterial->projectionLocation = this->projectionLocation;
             ssaoMaterial->radiusLocation = this->radiusLocation;
+            ssaoMaterial->biasLocation = this->biasLocation;
             ssaoMaterial->screenWidthLocation = this->screenWidthLocation;
             ssaoMaterial->screenHeightLocation = this->screenHeightLocation;
             ssaoMaterial->albedoUVLocation = this->albedoUVLocation;
@@ -99,6 +101,7 @@ namespace Core {
         }
         this->projectionLocation = this->shader->getUniformLocation("projection");
         this->radiusLocation = this->shader->getUniformLocation("radius");
+        this->biasLocation = this->shader->getUniformLocation("bias");
         this->screenWidthLocation = this->shader->getUniformLocation("screenWidth");
         this->screenHeightLocation = this->shader->getUniformLocation("screenHeight");
         this->albedoUVLocation = this->shader->getAttributeLocation(StandardAttribute::AlbedoUV);
@@ -126,6 +129,10 @@ namespace Core {
 
     void SSAOMaterial::setRadius(Real radius) {
         this->radius = radius;
+    }
+
+    void SSAOMaterial::setBias(Real bias) {
+        this->bias = bias;
     }
 
     void SSAOMaterial::setScreenWidth(Real screenWidth) {
