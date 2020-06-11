@@ -62,15 +62,21 @@ namespace Core {
         Skybox& getSkybox();
         void setSkybox(Skybox& skybox);
         void setSkyboxEnabled(Bool enabled);
-        Bool isSkyboxEnabled();
+        Bool isSkyboxEnabled() const;
         void setHDREnabled(Bool enabled);
-        Bool isHDREnabled();
+        Bool isHDREnabled() const;
         void setHDRToneMapTypeReinhard();
         void setHDRToneMapTypeExposure(Real exposure);
-        ToneMapType getHDRToneMapType();
-        Real getHDRExposure();
+        ToneMapType getHDRToneMapType() const;
+        Real getHDRExposure() const;
         void setHDRGamma(Real gamma);
-        Real getHDRGamma();
+        Real getHDRGamma() const;
+        void setSSAOEnabled(Bool enabled);
+        Bool isSSAOEnabled() const;
+        void setSSAORadius(Real radius);
+        Real getSSAORadius();
+        void setSSAOBias(Real bias);
+        Real getSSAOBias();
 
         static void buildPerspectiveProjectionMatrix(Real fov, Real aspectRatio, Real near, Real far, Matrix4x4& out);
         static void buildOrthographicProjectionMatrix(Real top, Real bottom, Real left, Real right, Real near, Real far, Matrix4x4& matrix);
@@ -110,5 +116,9 @@ namespace Core {
         ToneMapType hdrToneMapType;
         Real hdrExposure;
         Real hdrGamma;
+
+        Bool ssaoEnabled;
+        Real ssaoRadius;
+        Real ssaoBias;
     };
 }

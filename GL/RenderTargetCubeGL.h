@@ -26,8 +26,9 @@ namespace Core {
         friend class GraphicsGL;
     public:
         virtual ~RenderTargetCubeGL();
-        Bool init() override;
-        virtual void destroyColorBuffer() override;
+        virtual Bool init() override;
+        virtual Bool addColorTexture(TextureAttributes attributes) override;
+        virtual void destroyColorBuffer(UInt32 index = 0) override;
         virtual void destroyDepthBuffer() override;
 
     private:
@@ -35,5 +36,6 @@ namespace Core {
         RenderTargetCubeGL(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
                            const TextureAttributes& colorTextureAttributes, 
                            const TextureAttributes& depthTextureAttributes, Vector2u size);
+        Bool initColorTexture(UInt32 index);
     };
 }

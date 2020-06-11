@@ -88,8 +88,14 @@ set(INCLUDE_FILES
     material/BasicColoredMaterial.h
     material/BasicLitMaterial.h
     material/BasicTexturedMaterial.h
+    material/BasicTexturedFullScreenQuadMaterial.h
     material/BasicTexturedLitMaterial.h
     material/BasicCubeMaterial.h
+    material/NormalsMaterial.h
+    material/PositionsMaterial.h
+    material/PositionsAndNormalsMaterial.h
+    material/SSAOMaterial.h
+    material/SSAOBlurMaterial.h
     material/OutlineMaterial.h
     material/SkyboxMaterial.h
     material/PhysicalSkyboxMaterial.h
@@ -98,6 +104,7 @@ set(INCLUDE_FILES
     material/SpecularIBLBRDFRendererMaterial.h
     material/EquirectangularMaterial.h
     material/StandardPhysicalMaterial.h
+    material/StandardPhysicalMaterialMultiLight.h
     material/AmbientPhysicalMaterial.h
     material/TonemapMaterial.h
     material/StandardUniforms.h
@@ -254,8 +261,14 @@ set(SOURCE_FILES
     material/BasicColoredMaterial.cpp
     material/BasicLitMaterial.cpp
     material/BasicTexturedMaterial.cpp
+    material/BasicTexturedFullScreenQuadMaterial.cpp
     material/BasicTexturedLitMaterial.cpp
     material/BasicCubeMaterial.cpp
+    material/NormalsMaterial.cpp
+    material/PositionsMaterial.cpp
+    material/PositionsAndNormalsMaterial.cpp
+    material/SSAOMaterial.cpp
+    material/SSAOBlurMaterial.cpp
     material/OutlineMaterial.cpp
     material/SkyboxMaterial.cpp
     material/PhysicalSkyboxMaterial.cpp
@@ -264,6 +277,7 @@ set(SOURCE_FILES
     material/SpecularIBLBRDFRendererMaterial.cpp
     material/EquirectangularMaterial.cpp
     material/StandardPhysicalMaterial.cpp
+    material/StandardPhysicalMaterialMultiLight.cpp
     material/AmbientPhysicalMaterial.cpp
     material/TonemapMaterial.cpp
     material/Shader.cpp

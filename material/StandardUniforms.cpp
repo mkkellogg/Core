@@ -51,7 +51,9 @@ namespace Core {
             "TEXTURE0",
             "DEPTH_TEXTURE",
             "SKINNING_ENABLED",
-            "BONES"
+            "BONES",
+            "SSAOMAP",
+            "SSAOENABLED"
         };
 
         nameToUniform =
@@ -96,7 +98,9 @@ namespace Core {
             {uniformNames[(UInt16)StandardUniform::Texture0], StandardUniform::Texture0},
             {uniformNames[(UInt16)StandardUniform::DepthTexture], StandardUniform::DepthTexture},
             {uniformNames[(UInt16)StandardUniform::SkinningEnabled], StandardUniform::SkinningEnabled},
-            {uniformNames[(UInt16)StandardUniform::Bones], StandardUniform::Bones}
+            {uniformNames[(UInt16)StandardUniform::Bones], StandardUniform::Bones},
+            {uniformNames[(UInt16)StandardUniform::SSAOMap], StandardUniform::SSAOMap},
+            {uniformNames[(UInt16)StandardUniform::SSAOEnabled], StandardUniform::SSAOEnabled}
         };
     }
 

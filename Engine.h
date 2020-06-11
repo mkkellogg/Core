@@ -126,12 +126,12 @@ namespace Core {
 
         template <typename T>
         WeakPointer<typename std::enable_if<std::is_base_of<Material, T>::value, T>::type> createMaterial(Bool build = true) {
-            std::shared_ptr<T> spMateiral = std::shared_ptr<T>(new T(this->graphics));
+            std::shared_ptr<T> spMaterial = std::shared_ptr<T>(new T(this->graphics));
             if (build) {
-                spMateiral->build();
+                spMaterial->build();
             }
-            this->objectManager.addReference(spMateiral, CoreObjectReferenceManager::OwnerType::Single);
-            return spMateiral;
+            this->objectManager.addReference(spMaterial, CoreObjectReferenceManager::OwnerType::Single);
+            return spMaterial;
         }
 
         WeakPointer<Texture2D> createTexture2D(const TextureAttributes& attributes);

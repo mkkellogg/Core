@@ -29,6 +29,10 @@ namespace Core {
         }
         this->setupTexture(imageData->getWidth(), imageData->getHeight(), imageData->getImageBytes());
     }
+
+    void Texture2DGL::buildFromData(UInt32 width, UInt32 height, Byte* data) {
+        this->setupTexture(width, height, data);
+    }
       
     void Texture2DGL::buildEmpty(UInt32 width, UInt32 height) {
         this->setupTexture(width, height, nullptr);

@@ -99,7 +99,7 @@ namespace Core {
         static WeakPointer<Object3D> renderCameraObject;
         static WeakPointer<Camera> renderCamera;
         if (!initialized) {
-            fullScreenQuadMesh = GeometryUtils::createGrid(2.0f, 2.0f, 2, 2, 1.0f, 1.0f);
+            fullScreenQuadMesh = GeometryUtils::createGridMesh(2.0f, 2.0f, 2, 2, 1.0f, 1.0f);
             fullScreenQuadObject = GeometryUtils::buildMeshContainer(fullScreenQuadMesh, material, "");
             renderCameraObject = Engine::instance()->createObject3D();
             renderCameraObject->getTransform().translate(0.0f, 0.0f, 4.0f);

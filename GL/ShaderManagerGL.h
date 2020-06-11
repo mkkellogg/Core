@@ -15,6 +15,9 @@ namespace Core {
         virtual ~ShaderManagerGL();
         ShaderManagerGL();
 
+        std::string Common_vertex;
+        std::string Common_fragment;
+
         std::string Test_vertex;
         std::string Test_fragment;
 
@@ -27,6 +30,9 @@ namespace Core {
         std::string Outline_vertex;
         std::string Outline_geometry;
         std::string Outline_fragment;
+
+        std::string Lighting_Common_vertex;
+        std::string Lighting_Common_fragment;
 
         std::string Lighting_Header_Single_vertex;
         std::string Lighting_Header_Single_fragment;
@@ -55,10 +61,15 @@ namespace Core {
         std::string Physical_Lighting_Single_fragment;
 
         std::string Physical_Lighting_Multi_vertex;
-        std::string Physical_Lighting_Multi_fragment;
+        std::string Physical_Lighting_Multi_Once_fragment;
+        std::string Physical_Lighting_Multi_Per_Light_fragment;
 
+        std::string StandardPhysicalVars_fragment;
+        std::string StandardPhysicalMain_fragment;
         std::string StandardPhysical_vertex;
         std::string StandardPhysical_fragment;
+        std::string StandardPhysicalMulti_vertex;
+        std::string StandardPhysicalMulti_fragment;
 
         std::string AmbientPhysical_vertex;
         std::string AmbientPhysical_fragment;
@@ -102,11 +113,32 @@ namespace Core {
         std::string BasicTextured_vertex;
         std::string BasicTextured_fragment;
 
+        std::string BasicTexturedFullScreenQuad_vertex;
+        std::string BasicTexturedFullScreenQuad_fragment;
+
         std::string BasicTexturedLit_vertex;
         std::string BasicTexturedLit_fragment;
 
         std::string BasicCube_vertex;
         std::string BasicCube_fragment;
+
+        std::string Normals_vertex;
+        std::string Normals_fragment;
+
+        std::string Positions_vertex;
+        std::string Positions_fragment;
+
+        std::string PositionsAndNormals_vertex;
+        std::string PositionsAndNormals_fragment;
+
+        std::string ApplySSAO_vertex;
+        std::string ApplySSAO_fragment;
+
+        std::string SSAO_vertex;
+        std::string SSAO_fragment;
+
+        std::string SSAOBlur_vertex;
+        std::string SSAOBlur_fragment;
 
         void init();
 

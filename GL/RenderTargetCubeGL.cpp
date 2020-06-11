@@ -17,7 +17,10 @@ namespace Core {
     }
 
     RenderTargetCubeGL::~RenderTargetCubeGL() {
-       if(this->depthTexture) Graphics::safeReleaseObject(this->depthTexture);
+        for (UInt32 i = 0; i < this->activeColorTextures; i++) {
+            this->destroyColorBuffer(i);
+        }
+        this->destroyDepthBuffer();
     }
 
     /*
@@ -30,16 +33,7 @@ namespace Core {
         // generate a color texture attachment
         // TODO: For now we are only supporting a texture type color attachment
         if (this->hasColorBuffer) {
-            this->colorTexture = Engine::instance()->createCubeTexture(this->colorTextureAttributes);
-            this->buildAndVerifyTexture(this->colorTexture);
-
-            GLuint colorTexID = this->colorTexture->getTextureID();
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X, colorTexID, 0);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, colorTexID, 0);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, colorTexID, 0);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, colorTexID, 0);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, colorTexID, 0);
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, colorTexID, 0);
+            this->initColorTexture(0);
         }
 
         // generate a depth texture attachment
@@ -59,12 +53,40 @@ namespace Core {
         return true;
     }
 
-    void RenderTargetCubeGL::destroyColorBuffer() {
+    Bool RenderTargetCubeGL::addColorTexture(TextureAttributes attributes) {
+        if (this->activeColorTextures < RenderTarget::MaxRenderTargetOutputTargets - 1) {
+            this->colorTextureAttributes[this->activeColorTextures] = attributes;
+            this->mipLevel[this->activeColorTextures] = 0;
+            this->colorBufferIsTexture[this->activeColorTextures] = true;
+            this->initColorTexture(this->activeColorTextures);
+            this->activeColorTextures++;
+        }
+    }
+
+    Bool RenderTargetCubeGL::initColorTexture(UInt32 index) {
+        this->colorTexture[index] = Engine::instance()->createCubeTexture(this->colorTextureAttributes[index]);
+        this->buildAndVerifyTexture(this->colorTexture[index]);
+
+        GLuint colorTexID = this->colorTexture[index]->getTextureID();
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X, colorTexID, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_X, colorTexID, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_Y, colorTexID, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, colorTexID, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, colorTexID, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, colorTexID, 0);
+
+        return true;
+    }
+
+    void RenderTargetCubeGL::destroyColorBuffer(UInt32 index) {
+        if (index > this->activeColorTextures) {
+            throw OutOfRangeException("RenderTargetCubeGL::destroyColorBuffer -> Output color target index is out of range.");
+        }
         if (this->hasColorBuffer) {
-            if (this->colorTexture) {
-                WeakPointer<CubeTexture> texture = WeakPointer<Texture>::dynamicPointerCast<CubeTexture>(this->colorTexture);
+            if (this->colorTexture[index]) {
+                WeakPointer<CubeTexture> texture = WeakPointer<Texture>::dynamicPointerCast<CubeTexture>(this->colorTexture[index]);
                 Graphics::safeReleaseObject(texture);
-                this->colorTexture = WeakPointer<Texture>::nullPtr();
+                this->colorTexture[index] = WeakPointer<Texture>::nullPtr();
             }
         }
     }

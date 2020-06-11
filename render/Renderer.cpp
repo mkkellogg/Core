@@ -1,6 +1,11 @@
 #include <vector>
 #include <algorithm>
+#include <iostream>
+#include <random>
+#include <ctime>
+
 #include "../Engine.h"
+#include "../common/Constants.h"
 #include "Camera.h"
 #include "Renderer.h"
 #include "ViewDescriptor.h"
@@ -18,6 +23,11 @@
 #include "../image/Texture.h"
 #include "../image/Texture2D.h"
 #include "../material/DepthOnlyMaterial.h"
+#include "../material/NormalsMaterial.h"
+#include "../material/PositionsMaterial.h"
+#include "../material/SSAOMaterial.h"
+#include "../material/SSAOBlurMaterial.h"
+#include "../material/PositionsAndNormalsMaterial.h"
 #include "../material/BasicColoredMaterial.h"
 #include "../material/DistanceOnlyMaterial.h"
 #include "../material/TonemapMaterial.h"
@@ -48,6 +58,21 @@ namespace Core {
             this->depthMaterial = Engine::instance()->createMaterial<DepthOnlyMaterial>();
             this->depthMaterial->setLit(false);
         }
+        if (!this->normalsMaterial.isValid()) {
+            this->normalsMaterial = Engine::instance()->createMaterial<NormalsMaterial>();
+            this->normalsMaterial->setLit(false);
+            this->normalsMaterial->setConvertToViewSpace(true);
+        }
+        if (!this->positionsMaterial.isValid()) {
+            this->positionsMaterial = Engine::instance()->createMaterial<PositionsMaterial>();
+            this->positionsMaterial->setLit(false);
+            this->positionsMaterial->setConvertToViewSpace(true);
+        }
+        if (!this->positionsNormalsMaterial.isValid()) {
+            this->positionsNormalsMaterial = Engine::instance()->createMaterial<PositionsAndNormalsMaterial>();
+            this->positionsNormalsMaterial->setLit(false);
+            this->positionsNormalsMaterial->setConvertToViewSpace(true);
+        }
         if (!this->distanceMaterial.isValid()) {
             this->distanceMaterial = Engine::instance()->createMaterial<DistanceOnlyMaterial>();
             this->distanceMaterial->setLit(false);
@@ -57,6 +82,43 @@ namespace Core {
             this->tonemapMaterial->setExposure(1.0f);
             this->tonemapMaterial->setLit(false);
         }
+
+        const Vector2u depthNormalsRenderTargetSize(Constants::EffectsBuffer2DSize, Constants::EffectsBuffer2DSize);
+        TextureAttributes depthNormalsColorAttributes;
+        depthNormalsColorAttributes.Format = TextureFormat::RGBA16F;
+        depthNormalsColorAttributes.FilterMode = TextureFilter::Point;
+        depthNormalsColorAttributes.MipLevels = 0;
+        depthNormalsColorAttributes.WrapMode = TextureWrap::Clamp;
+        TextureAttributes depthNormalsDepthAttributes;
+        depthNormalsDepthAttributes.IsDepthTexture = true;
+        this->depthNormalsRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTarget2D(true, true, false, depthNormalsColorAttributes,
+                                                                                                       depthNormalsDepthAttributes, depthNormalsRenderTargetSize);
+
+        const Vector2u depthPositionsRenderTargetSize(Constants::EffectsBuffer2DSize, Constants::EffectsBuffer2DSize);
+        TextureAttributes depthPositionsColorAttributes;
+        depthPositionsColorAttributes.Format = TextureFormat::RGBA16F;
+        depthPositionsColorAttributes.FilterMode = TextureFilter::Point;
+        depthPositionsColorAttributes.MipLevels = 0;
+        depthPositionsColorAttributes.WrapMode = TextureWrap::Clamp;
+        TextureAttributes depthPositionsDepthAttributes;
+        depthPositionsDepthAttributes.IsDepthTexture = true;
+        this->depthPositionsRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTarget2D(true, true, false, depthPositionsColorAttributes,
+                                                                                                         depthPositionsDepthAttributes, depthPositionsRenderTargetSize);
+
+        const Vector2u positionsNormalsRenderTargetSize(Constants::EffectsBuffer2DSize, Constants::EffectsBuffer2DSize);
+        TextureAttributes positionsNormalsColorAttributes;
+        positionsNormalsColorAttributes.Format = TextureFormat::RGBA16F;
+        positionsNormalsColorAttributes.FilterMode = TextureFilter::Point;
+        positionsNormalsColorAttributes.MipLevels = 0;
+        positionsNormalsColorAttributes.WrapMode = TextureWrap::Clamp;
+        TextureAttributes positionsNormalsDepthAttributes;
+        positionsNormalsDepthAttributes.IsDepthTexture = true;
+        this->positionsNormalsRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTarget2D(true, true, false, positionsNormalsColorAttributes,
+                                                                                                           positionsNormalsDepthAttributes, positionsNormalsRenderTargetSize);
+        this->positionsNormalsRenderTarget->addColorTexture(positionsNormalsColorAttributes);
+
+        this->initializeSSAO();
+
         return true;
     }
 
@@ -70,19 +132,43 @@ namespace Core {
         static std::vector<WeakPointer<Light>> lightList;
         static std::vector<WeakPointer<Light>> nonIBLLightList;
         static std::vector<WeakPointer<ReflectionProbe>> reflectionProbeList;
-        static std::vector<WeakPointer<Object3D>> emptyObjectList;
-        static std::vector<WeakPointer<Object3D>> staticObjects;
+        static std::vector<WeakPointer<Object3D>> renderProbeObjects;
         objectList.resize(0);
         cameraList.resize(0);
         lightList.resize(0);
         nonIBLLightList.resize(0);
         reflectionProbeList.resize(0);
-        staticObjects.resize(0);
+        renderProbeObjects.resize(0);
 
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-        this->processScene(rootObject, objectList);
+        this->collectSceneObjectsAndComputeTransforms(rootObject, objectList);
+        this->collectSceneObjectComponents(objectList, cameraList, reflectionProbeList, nonIBLLightList, lightList);
 
-        for (WeakPointer<Object3D> object : objectList) {
+        std::sort(lightList.begin(), lightList.end(), Renderer::compareLights);
+        std::sort(nonIBLLightList.begin(), nonIBLLightList.end(), Renderer::compareLights);
+
+        // TODO: Decide how to classify objects as either contributors to ambient light or not
+        /*for (UInt32 i = 0; i < objectList.size(); i++) {
+            WeakPointer<Object3D> object = objectList[i];
+            if (object->isStatic()) renderProbeObjects.push_back(object);
+        }*/
+
+        this->renderReflectionProbes(reflectionProbeList, renderProbeObjects, nonIBLLightList, lightList);
+
+        this->renderShadowMaps(lightList, LightType::Point, objectList);
+        for (auto camera : cameraList) {
+            this->renderShadowMaps(lightList, LightType::Directional, objectList, camera);
+        }
+
+        for (auto camera : cameraList) {
+            this->render(camera, objectList, lightList, overrideMaterial, true);
+        }
+    }
+
+    void Renderer::collectSceneObjectComponents(std::vector<WeakPointer<Object3D>>& sceneObjects, std::vector<WeakPointer<Camera>>& cameraList,
+                                                std::vector<WeakPointer<ReflectionProbe>>& reflectionProbeList, std::vector<WeakPointer<Light>>& nonIBLLightList,
+                                                std::vector<WeakPointer<Light>>& lightList) {
+        for (WeakPointer<Object3D> object : sceneObjects) {
             for (SceneObjectIterator<Object3DComponent> compItr = object->beginIterateComponents(); compItr != object->endIterateComponents(); ++compItr) {
                 WeakPointer<Object3DComponent> comp = (*compItr);
                 WeakPointer<Camera> camera = WeakPointer<Object3DComponent>::dynamicPointerCast<Camera>(comp);
@@ -123,45 +209,6 @@ namespace Core {
                 }
             }
         }
-
-        std::sort(lightList.begin(), lightList.end(), Renderer::compareLights);
-        std::sort(nonIBLLightList.begin(), nonIBLLightList.end(), Renderer::compareLights);
-
-        for (UInt32 i = 0; i < objectList.size(); i++) {
-            WeakPointer<Object3D> object = objectList[i];
-            if (object->isStatic()) staticObjects.push_back(object);
-        }
-        
-        for (auto reflectionProbe : reflectionProbeList) {
-            if (reflectionProbe->getNeedsFullUpdate() || reflectionProbe->getNeedsSpecularUpdate()) {
-
-                this->renderShadowMaps(lightList, LightType::Point, staticObjects);
-                this->renderShadowMaps(lightList, LightType::Directional, staticObjects, reflectionProbe->getRenderCamera());
-
-                Bool specularOnly = !reflectionProbe->getNeedsFullUpdate();
-
-                this->renderReflectionProbe(reflectionProbe, specularOnly, emptyObjectList, nonIBLLightList);
-                if (!reflectionProbe->isSkyboxOnly()) {
-                    if (reflectionProbe->getRenderWithPhysical()) {
-                        this->renderReflectionProbe(reflectionProbe, specularOnly, staticObjects, lightList);
-                    } else {
-                        this->renderReflectionProbe(reflectionProbe, specularOnly, staticObjects, nonIBLLightList);
-                    }
-                }
-
-                if (specularOnly) reflectionProbe->setNeedsSpecularUpdate(false);
-                else reflectionProbe->setNeedsFullUpdate(false);
-            }
-        }
-
-        this->renderShadowMaps(lightList, LightType::Point, objectList);
-        for (auto camera : cameraList) {
-            this->renderShadowMaps(lightList, LightType::Directional, objectList, camera);
-        }
-
-        for (auto camera : cameraList) {
-            this->render(camera, objectList, lightList, overrideMaterial, true);
-        }
     }
 
     void Renderer::renderObjectBasic(WeakPointer<Object3D> rootObject, WeakPointer<Camera> camera,
@@ -172,11 +219,11 @@ namespace Core {
         Matrix4x4 baseTransformation;
         rootObject->getTransform().getAncestorWorldMatrix(baseTransformation);
 
-        this->processScene(rootObject, objectList, baseTransformation);
+        this->collectSceneObjectsAndComputeTransforms(rootObject, objectList, baseTransformation);
         this->render(camera, objectList, overrideMaterial, matchPhysicalPropertiesWithLighting);
     }
 
-    void Renderer::render(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
+    void Renderer::render(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects,
                           WeakPointer<Material> overrideMaterial, Bool matchPhysicalPropertiesWithLighting) {
         static std::vector<WeakPointer<Light>> lightList;   
         this->render(camera, objects, lightList, overrideMaterial, matchPhysicalPropertiesWithLighting);                 
@@ -256,6 +303,14 @@ namespace Core {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         WeakPointer<RenderTarget> currentRenderTarget = graphics->getCurrentRenderTarget();
 
+        if (viewDescriptor.ssaoEnabled) {
+            viewDescriptor.ssaoEnabled = false;
+            this->renderSSAO(viewDescriptor, objectList);
+            WeakPointer<Texture2D> ssaoMap = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->ssaoBlurRenderTarget->getColorTexture());
+            viewDescriptor.ssaoMap = ssaoMap;
+            viewDescriptor.ssaoEnabled = true;
+        }
+
         WeakPointer<RenderTarget> nextRenderTarget = viewDescriptor.indirectHDREnabled ? viewDescriptor.hdrRenderTarget : viewDescriptor.renderTarget;
         graphics->activateRenderTarget(nextRenderTarget);       
         this->setViewportAndMipLevelForRenderTarget(nextRenderTarget, viewDescriptor.cubeFace);
@@ -320,8 +375,6 @@ namespace Core {
                 skyboxView.viewMatrix.setTranslation(0.0f, 0.0f, 0.0f);
                 skyboxView.viewInverseMatrix.copy(skyboxView.viewMatrix);
                 skyboxView.viewInverseMatrix.invert();
-                skyboxView.viewInverseTransposeMatrix.copy(skyboxView.viewInverseMatrix);
-                skyboxView.viewInverseTransposeMatrix.transpose();
                 objectRenderer->forwardRender(skyboxView, dummyLights, true);
             }
         }
@@ -458,6 +511,10 @@ namespace Core {
         viewDescriptor.cameraPosition.set(0.0f, 0.0f, 0.0f);
         viewDescriptor.cubeFace = -1;
         viewDescriptor.viewMatrix.transform(viewDescriptor.cameraPosition);
+        viewDescriptor.ssaoEnabled = camera->isSSAOEnabled();
+        viewDescriptor.ssaoMap = WeakPointer<Texture2D>::nullPtr();
+        viewDescriptor.ssaoRadius = camera->getSSAORadius();
+        viewDescriptor.ssaoBias = camera->getSSAOBias();
        
     }
 
@@ -467,35 +524,56 @@ namespace Core {
         viewDescriptor.viewMatrix.copy(worldMatrix);
         viewDescriptor.viewInverseMatrix.copy(viewDescriptor.viewMatrix);
         viewDescriptor.viewInverseMatrix.invert();
-        viewDescriptor.viewInverseTransposeMatrix.copy(viewDescriptor.viewInverseMatrix);
-        viewDescriptor.viewInverseTransposeMatrix.transpose();
         viewDescriptor.clearRenderBuffers = clearBuffers;
     }
 
-    void Renderer::processScene(WeakPointer<Scene> scene, std::vector<WeakPointer<Object3D>>& outObjects) {
-        processScene(scene->getRoot(), outObjects);
+    void Renderer::collectSceneObjectsAndComputeTransforms(WeakPointer<Scene> scene, std::vector<WeakPointer<Object3D>>& outObjects) {
+        collectSceneObjectsAndComputeTransforms(scene->getRoot(), outObjects);
     }
 
-    void Renderer::processScene(WeakPointer<Object3D> object, std::vector<WeakPointer<Object3D>>& outObjects) {
+    void Renderer::collectSceneObjectsAndComputeTransforms(WeakPointer<Object3D> object, std::vector<WeakPointer<Object3D>>& outObjects) {
         Matrix4x4 rootTransform;
-        processScene(object, outObjects, rootTransform);
+        collectSceneObjectsAndComputeTransforms(object, outObjects, rootTransform);
     }
 
-    void Renderer::processScene(WeakPointer<Object3D> object, std::vector<WeakPointer<Object3D>>& outObjects, const Matrix4x4& curTransform) {
+    void Renderer::collectSceneObjectsAndComputeTransforms(WeakPointer<Object3D> object, std::vector<WeakPointer<Object3D>>& outObjects, const Matrix4x4& curTransform) {
 
         if (!object->isActive()) return;
         Matrix4x4 nextTransform = curTransform;
         Transform& objTransform = object->getTransform();
         nextTransform.multiply(objTransform.getLocalMatrix());
         objTransform.getWorldMatrix().copy(nextTransform);
-        Matrix4x4& inverseWorld = objTransform.getInverseWorldMatrix();
-        inverseWorld.copy(nextTransform);
-        inverseWorld.invert();
         outObjects.push_back(object);
 
         for (SceneObjectIterator<Object3D> itr = object->beginIterateChildren(); itr != object->endIterateChildren(); ++itr) {
             WeakPointer<Object3D> obj = *itr;
-            this->processScene(obj, outObjects, nextTransform);
+            this->collectSceneObjectsAndComputeTransforms(obj, outObjects, nextTransform);
+        }
+    }
+
+    void Renderer::renderReflectionProbes(std::vector<WeakPointer<ReflectionProbe>>& reflectionProbeList, std::vector<WeakPointer<Object3D>> renderProbeObjects,
+                                          std::vector<WeakPointer<Light>>& nonIBLLightList, std::vector<WeakPointer<Light>>& lightList) {
+        static std::vector<WeakPointer<Object3D>> emptyObjectList;
+        for (auto reflectionProbe : reflectionProbeList) {
+            if (reflectionProbe->getNeedsFullUpdate() || reflectionProbe->getNeedsSpecularUpdate()) {
+
+                this->renderShadowMaps(lightList, LightType::Point, renderProbeObjects);
+                this->renderShadowMaps(lightList, LightType::Directional, renderProbeObjects, reflectionProbe->getRenderCamera());
+
+                Bool specularOnly = !reflectionProbe->getNeedsFullUpdate();
+
+                this->renderReflectionProbe(reflectionProbe, specularOnly, emptyObjectList, nonIBLLightList);
+                if (!reflectionProbe->isSkyboxOnly()) {
+                    if (reflectionProbe->getRenderWithPhysical()) {
+                        this->renderReflectionProbe(reflectionProbe, specularOnly, renderProbeObjects, lightList);
+                    } else {
+                        this->renderReflectionProbe(reflectionProbe, specularOnly, renderProbeObjects, nonIBLLightList);
+                    }
+                }
+
+                if (specularOnly) reflectionProbe->setNeedsSpecularUpdate(false);
+                else reflectionProbe->setNeedsFullUpdate(false);
+            }
         }
     }
 
@@ -529,6 +607,170 @@ namespace Core {
         graphics->renderFullScreenQuad(specularIBLBRDFMap, -1, reflectionProbe->getSpecularIBLBRDFRendererMaterial());
         
         reflectionProbe->setNeedsFullUpdate(false);
+    }
+
+    void Renderer::renderSSAO(ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objects) {
+        static std::vector<WeakPointer<Light>> emptyLightList;
+
+        this->renderPositionsAndNormals(viewDescriptor, objects);
+        this->ssaoMaterial->setViewPositions(this->depthPositionsRenderTarget->getColorTexture(0));
+        this->ssaoMaterial->setViewNormals(this->depthNormalsRenderTarget->getColorTexture(0));
+        this->ssaoMaterial->setRadius(viewDescriptor.ssaoRadius);
+        this->ssaoMaterial->setBias(viewDescriptor.ssaoBias);
+        Vector2u ssaoRenderTargetSize = this->ssaoRenderTarget->getSize();
+        this->ssaoMaterial->setScreenWidth(ssaoRenderTargetSize.x);
+        this->ssaoMaterial->setScreenHeight(ssaoRenderTargetSize.y);
+        //this->ssaoMaterial->setViewPositions(this->positionsNormalsRenderTarget->getColorTexture(0));
+        //this->ssaoMaterial->setViewNormals(this->positionsNormalsRenderTarget->getColorTexture(1));
+        this->ssaoMaterial->setProjection(viewDescriptor.projectionMatrix);
+
+        WeakPointer<RenderTarget> saveRenderTarget = viewDescriptor.renderTarget;
+        WeakPointer<RenderTarget> saveHDRRenderTarget = viewDescriptor.hdrRenderTarget;
+        Bool saveIndirectHDREnabled = viewDescriptor.indirectHDREnabled;
+        WeakPointer<Material> saveOverrideMaterial = viewDescriptor.overrideMaterial;
+        Bool saveSSAOEnabled = viewDescriptor.ssaoEnabled;
+
+        viewDescriptor.indirectHDREnabled = false;
+        viewDescriptor.hdrRenderTarget = WeakPointer<RenderTarget2D>::nullPtr();
+        viewDescriptor.renderTarget = this->ssaoRenderTarget;
+        viewDescriptor.overrideMaterial = this->ssaoMaterial;
+        viewDescriptor.ssaoEnabled = false;
+
+        Engine::instance()->getGraphicsSystem()->renderFullScreenQuad(this->ssaoRenderTarget, -1, this->ssaoMaterial);
+        ssaoBlurMaterial->setSSAOInput(this->ssaoRenderTarget->getColorTexture(0));
+        Engine::instance()->getGraphicsSystem()->renderFullScreenQuad(this->ssaoBlurRenderTarget, -1, this->ssaoBlurMaterial);
+
+        viewDescriptor.indirectHDREnabled = saveIndirectHDREnabled;
+        viewDescriptor.hdrRenderTarget = saveHDRRenderTarget;
+        viewDescriptor.renderTarget = saveRenderTarget;
+        viewDescriptor.overrideMaterial = saveOverrideMaterial;
+        viewDescriptor.ssaoEnabled = saveSSAOEnabled;
+    }
+
+    WeakPointer<Texture2D> Renderer::getSSAOTexture() {
+        WeakPointer<Texture2D> tex2D = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->ssaoBlurRenderTarget->getColorTexture());
+        //WeakPointer<Texture2D> tex2D = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->depthPositionsRenderTarget->getColorTexture(0));
+        return tex2D;
+    }
+
+    void Renderer::renderDepthAndNormals(ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objects) {
+        static std::vector<WeakPointer<Light>> emptyLightList;
+
+        WeakPointer<RenderTarget> saveRenderTarget = viewDescriptor.renderTarget;
+        WeakPointer<RenderTarget> saveHDRRenderTarget = viewDescriptor.hdrRenderTarget;
+        Bool saveIndirectHDREnabled = viewDescriptor.indirectHDREnabled;
+        WeakPointer<Material> saveOverrideMaterial = viewDescriptor.overrideMaterial;
+        Bool saveSSAOEnabled = viewDescriptor.ssaoEnabled;
+
+        viewDescriptor.indirectHDREnabled = false;
+        viewDescriptor.hdrRenderTarget = WeakPointer<RenderTarget2D>::nullPtr();
+        viewDescriptor.renderTarget = this->depthNormalsRenderTarget;
+        viewDescriptor.overrideMaterial = this->normalsMaterial;
+        viewDescriptor.ssaoEnabled = false;
+
+        this->render(viewDescriptor, objects, emptyLightList, false);
+       
+        viewDescriptor.indirectHDREnabled = saveIndirectHDREnabled;
+        viewDescriptor.hdrRenderTarget = saveHDRRenderTarget;
+        viewDescriptor.renderTarget = saveRenderTarget;
+        viewDescriptor.overrideMaterial = saveOverrideMaterial;
+        viewDescriptor.ssaoEnabled = saveSSAOEnabled;
+    }
+
+    void Renderer::renderPositionsAndNormals(ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objects) {
+        static std::vector<WeakPointer<Light>> emptyLightList;
+
+        WeakPointer<RenderTarget> saveRenderTarget = viewDescriptor.renderTarget;
+        WeakPointer<RenderTarget> saveHDRRenderTarget = viewDescriptor.hdrRenderTarget;
+        Bool saveIndirectHDREnabled = viewDescriptor.indirectHDREnabled;
+        WeakPointer<Material> saveOverrideMaterial = viewDescriptor.overrideMaterial;
+        Bool saveSSAOEnabled = viewDescriptor.ssaoEnabled;
+
+        viewDescriptor.indirectHDREnabled = false;
+        viewDescriptor.hdrRenderTarget = WeakPointer<RenderTarget2D>::nullPtr();
+        viewDescriptor.ssaoEnabled = false;
+
+        viewDescriptor.renderTarget = this->depthNormalsRenderTarget;
+        viewDescriptor.overrideMaterial = this->normalsMaterial;
+        this->render(viewDescriptor, objects, emptyLightList, false);
+
+        viewDescriptor.renderTarget = this->depthPositionsRenderTarget;
+        viewDescriptor.overrideMaterial = this->positionsMaterial;
+        this->render(viewDescriptor, objects, emptyLightList, false);
+
+        /*viewDescriptor.renderTarget = this->positionsNormalsRenderTarget;
+        viewDescriptor.overrideMaterial = this->positionsNormalsMaterial;
+        this->render(viewDescriptor, objects, emptyLightList, false);*/
+
+        viewDescriptor.indirectHDREnabled = saveIndirectHDREnabled;
+        viewDescriptor.hdrRenderTarget = saveHDRRenderTarget;
+        viewDescriptor.renderTarget = saveRenderTarget;
+        viewDescriptor.overrideMaterial = saveOverrideMaterial;
+        viewDescriptor.ssaoEnabled = saveSSAOEnabled;
+    }
+
+    void Renderer::initializeSSAO() {
+
+        std::uniform_real_distribution<Real> randomFloats(0.0f, 1.0f); // generates random floats between 0.0 and 1.0
+        std::default_random_engine generator;
+
+        // generate sample kernel
+        for (UInt32 i = 0; i < Constants::SSAOSamples; ++i) {
+            Vector3r sample(randomFloats(generator) * 2.0f - 1.0f, randomFloats(generator) * 2.0f - 1.0f, randomFloats(generator));
+            sample.normalize();
+            sample = sample * randomFloats(generator);
+            Real scale = Real(i) / Constants::SSAOSamples;
+
+            // scale samples s.t. they're more aligned to center of kernel
+            Real t = scale * scale;
+            scale =  (1.0 - t) * 0.1f + t ;  //lerp(0.1f, 1.0f, scale * scale);
+            sample = sample * scale;
+            this->ssaoKernel.push_back(sample);
+        }
+
+        // generate noise texture
+        Real ssaoNoiseData[16 * 4];
+        for (unsigned int i = 0; i < 16; i++) {
+            UInt32 offset = i * 4;
+            ssaoNoiseData[offset] = randomFloats(generator) * 2.0 - 1.0;
+            ssaoNoiseData[offset + 1] = randomFloats(generator) * 2.0 - 1.0;
+            ssaoNoiseData[offset + 2] = 0.0f;
+            ssaoNoiseData[offset + 3] = 0.0f;
+        }
+
+        TextureAttributes noiseTextureAttributes;
+        noiseTextureAttributes.Format = TextureFormat::RGBA32F;
+        noiseTextureAttributes.FilterMode = TextureFilter::Point;
+        noiseTextureAttributes.MipLevels = 0;
+        noiseTextureAttributes.WrapMode = TextureWrap::Clamp;
+        this->ssaoNoise = Engine::instance()->getGraphicsSystem()->createTexture2D(noiseTextureAttributes);
+        this->ssaoNoise->buildFromData(4, 4, (Byte*)ssaoNoiseData);
+
+        const Vector2u ssaoRenderTargetSize(Constants::EffectsBuffer2DSize, Constants::EffectsBuffer2DSize);
+        TextureAttributes ssaoColorAttributes;
+        ssaoColorAttributes.Format = TextureFormat::R32F;
+        ssaoColorAttributes.FilterMode = TextureFilter::Point;
+        ssaoColorAttributes.MipLevels = 0;
+        ssaoColorAttributes.WrapMode = TextureWrap::Clamp;
+        TextureAttributes ssaoDepthAttributes;
+        ssaoDepthAttributes.IsDepthTexture = true;
+        this->ssaoRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTarget2D(true, true, false, ssaoColorAttributes,
+                                                                                               ssaoDepthAttributes, ssaoRenderTargetSize);
+        this->ssaoBlurRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTarget2D(true, true, false, ssaoColorAttributes,
+                                                                                               ssaoDepthAttributes, ssaoRenderTargetSize);
+
+        if (!this->ssaoMaterial.isValid()) {
+            this->ssaoMaterial = Engine::instance()->createMaterial<SSAOMaterial>();
+            this->ssaoMaterial->setLit(false);
+            this->ssaoMaterial->setSamples(this->ssaoKernel);
+            this->ssaoMaterial->setNoise(this->ssaoNoise);
+        }
+
+        if (!this->ssaoBlurMaterial.isValid()) {
+            this->ssaoBlurMaterial = Engine::instance()->createMaterial<SSAOBlurMaterial>();
+            this->ssaoBlurMaterial->setLit(false);
+        }
+
     }
 
     void Renderer::sortObjectsIntoRenderQueues(std::vector<WeakPointer<Object3D>>& objects, RenderQueueManager& renderQueueManager, ViewDescriptor& viewDescriptor) {

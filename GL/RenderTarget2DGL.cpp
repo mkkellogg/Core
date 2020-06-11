@@ -6,6 +6,7 @@
 #include "../image/Texture.h"
 #include "Texture2DGL.h"
 #include "CubeTextureGL.h"
+#include "GraphicsGL.h"
 
 namespace Core {
 
@@ -18,8 +19,10 @@ namespace Core {
     }
 
     RenderTarget2DGL::~RenderTarget2DGL() {
-       if(this->colorTexture) Graphics::safeReleaseObject(this->colorTexture);
-       if(this->depthTexture) Graphics::safeReleaseObject(this->depthTexture);
+        for (UInt32 i = 0; i < this->activeColorTextures; i++) {
+            this->destroyColorBuffer(i);
+        }
+        this->destroyDepthBuffer();
     }
 
     /*
@@ -33,10 +36,10 @@ namespace Core {
         // generate a color texture attachment
         // TODO: For now we are only supporting a texture type color attachment
         if (this->hasColorBuffer) {
-            this->colorTexture = Engine::instance()->createTexture2D(this->colorTextureAttributes);
-            this->buildAndVerifyTexture(this->colorTexture);
-
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->colorTexture->getTextureID(), 0);
+            // TODO: Make this use 'initColorTexture()'
+            this->colorTexture[0] = Engine::instance()->createTexture2D(this->colorTextureAttributes[0]);
+            this->buildAndVerifyTexture(this->colorTexture[0]);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->colorTexture[0]->getTextureID(), 0);
         }
 
         // generate a depth texture attachment
@@ -44,7 +47,6 @@ namespace Core {
         if (this->hasDepthBuffer && !this->enableStencilBuffer) {
             this->depthTexture = Engine::instance()->createTexture2D(this->depthTextureAttributes);
             this->buildAndVerifyTexture(this->depthTexture);
-            
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, this->depthTexture->getTextureID(), 0);
         }
         else if (this->hasDepthBuffer && this->enableStencilBuffer) {
@@ -55,12 +57,35 @@ namespace Core {
         return true;
     }
 
-    void RenderTarget2DGL::destroyColorBuffer() {
+    Bool RenderTarget2DGL::addColorTexture(TextureAttributes attributes) {
+        if (this->activeColorTextures < RenderTarget::MaxRenderTargetOutputTargets - 1) {
+            glBindFramebuffer(GL_FRAMEBUFFER, this->fboID);
+            this->colorTextureAttributes[this->activeColorTextures] = attributes;
+            this->mipLevel[this->activeColorTextures] = 0;
+            this->colorBufferIsTexture[this->activeColorTextures] = true;
+            this->initColorTexture(this->activeColorTextures);
+            this->activeColorTextures++;
+            this->completeFramebuffer();
+        }
+    }
+
+    Bool RenderTarget2DGL::initColorTexture(UInt32 index) {
+        this->colorTexture[index] = Engine::instance()->createTexture2D(this->colorTextureAttributes[index]);
+        this->buildAndVerifyTexture(this->colorTexture[index]);
+        GLint attachment = GraphicsGL::getColorAttachmentID(index);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, this->colorTexture[index]->getTextureID(), 0);
+        return true;
+    }
+
+    void RenderTarget2DGL::destroyColorBuffer(UInt32 index) {
+        if (index > this->activeColorTextures) {
+            throw OutOfRangeException("RenderTarget2DGL::destroyColorBuffer -> Output color target index is out of range.");
+        }
         if (this->hasColorBuffer) {
-            if (this->colorTexture) {
-                WeakPointer<Texture2D> texture = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->colorTexture);
+            if (this->colorTexture[index]) {
+                WeakPointer<Texture2D> texture = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->colorTexture[index]);
                 Graphics::safeReleaseObject(texture);
-                this->colorTexture = WeakPointer<Texture>::nullPtr();
+                this->colorTexture[index] = WeakPointer<Texture>::nullPtr();
             }
         }
     }

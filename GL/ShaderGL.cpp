@@ -45,16 +45,32 @@ namespace Core {
         return (Int32)glGetUniformLocation(this->glProgram, var.c_str());
     }
 
+    Int32 ShaderGL::getUniformLocation(const std::string &var, UInt32 index) const {
+        return this->getUniformLocation(var + "[" + std::to_string(index) + "]");
+    }
+
     Int32 ShaderGL::getAttributeLocation(const std::string &var) const {
         return (Int32)glGetAttribLocation(this->glProgram, var.c_str());
+    }
+
+    Int32 ShaderGL::getAttributeLocation(const std::string &var, UInt32 index) const {
+        return this->getAttributeLocation(var + "[" + std::to_string(index) + "]");
     }
 
     Int32 ShaderGL::getUniformLocation(const char var[]) const {
         return (Int32)glGetUniformLocation(this->glProgram, var);
     }
 
+    Int32 ShaderGL::getUniformLocation(const char var[], UInt32 index) const {
+        return this->getUniformLocation(std::string(var), index);
+    }
+
     Int32 ShaderGL::getAttributeLocation(const char var[]) const {
         return (Int32)glGetAttribLocation(this->glProgram, var);
+    }
+
+    Int32 ShaderGL::getAttributeLocation(const char var[], UInt32 index) const {
+        return this->getAttributeLocation(std::string(var), index);
     }
 
     Int32 ShaderGL::getUniformLocation(StandardUniform uniform) const {
@@ -62,7 +78,7 @@ namespace Core {
     }
 
     Int32 ShaderGL::getUniformLocation(StandardUniform uniform, UInt32 index) const {
-        return this->getUniformLocation(StandardUniforms::getUniformName(uniform) + "[" + std::to_string(index) + "]");
+        return this->getUniformLocation(StandardUniforms::getUniformName(uniform), index);
     }
 
     Int32 ShaderGL::getAttributeLocation(StandardAttribute attribute) const {
@@ -70,7 +86,7 @@ namespace Core {
     }
 
     Int32 ShaderGL::getAttributeLocation(StandardAttribute attribute, UInt32 index) const {
-        return this->getAttributeLocation(StandardAttributes::getAttributeName(attribute) + "[" + std::to_string(index) + "]");
+        return this->getAttributeLocation(StandardAttributes::getAttributeName(attribute), index);
     }
 
 
@@ -118,6 +134,10 @@ namespace Core {
 
     void ShaderGL::setUniform1f(UInt32 location, Real val) {
         glUniform1f(location, val);
+    }
+
+    void ShaderGL::setUniform3f(UInt32 location, Real x, Real y, Real z) {
+        glUniform3f(location, x, y, z);
     }
 
     void ShaderGL::setUniform4f(UInt32 location, Real x, Real y, Real z, Real w) {

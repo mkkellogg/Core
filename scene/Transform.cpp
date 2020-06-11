@@ -31,14 +31,6 @@ namespace Core {
         return this->worldMatrix;
     }
 
-    Matrix4x4& Transform::getInverseWorldMatrix() {
-        return this->inverseWorldMatrix;
-    }
-
-    const Matrix4x4& Transform::getConstInverseWorldMatrix() const {
-        return this->inverseWorldMatrix;
-    }
-
     /*
      * Copy this Transform object's local matrix into [dest].
      */

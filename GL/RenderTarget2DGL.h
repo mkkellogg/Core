@@ -26,8 +26,9 @@ namespace Core {
         friend class GraphicsGL;
     public:
         virtual ~RenderTarget2DGL();
-        Bool init() override;
-        virtual void destroyColorBuffer() override;
+        virtual Bool init() override;
+        virtual Bool addColorTexture(TextureAttributes attributes) override;
+        virtual void destroyColorBuffer(UInt32 index = 0) override;
         virtual void destroyDepthBuffer() override;
 
     protected:
@@ -36,5 +37,6 @@ namespace Core {
                          const TextureAttributes& colorTextureAttributes, 
                          const TextureAttributes& depthTextureAttributes, Vector2u size,
                          Int32 initialFBOID = 0);
+        Bool initColorTexture(UInt32 index);
     };
 }

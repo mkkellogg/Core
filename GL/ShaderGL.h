@@ -21,9 +21,13 @@ namespace Core {
         Bool build() override;
         UInt32 getProgram() const override;
         Int32 getUniformLocation(const std::string& var) const override;
+        Int32 getUniformLocation(const std::string& var, UInt32 index) const override;
         Int32 getAttributeLocation(const std::string& var) const override;
+        Int32 getAttributeLocation(const std::string& var, UInt32 index) const override;
         Int32 getUniformLocation(const char var[]) const override;
+        Int32 getUniformLocation(const char var[], UInt32 index) const override;
         Int32 getAttributeLocation(const char var[]) const override;
+        Int32 getAttributeLocation(const char var[], UInt32 index) const override;
         Int32 getUniformLocation(StandardUniform uniform) const override;
         Int32 getUniformLocation(StandardUniform uniform, UInt32 index) const override;
         Int32 getAttributeLocation(StandardAttribute attribute) const override;
@@ -35,6 +39,7 @@ namespace Core {
         void setTextureCube(UInt32 samplerSlot, UInt32 uniformLocation, UInt32 textureID) override;
         void setUniform1i(UInt32 location, Int32 val) override;
         void setUniform1f(UInt32 location, Real val) override;
+        void setUniform3f(UInt32 location, Real x, Real y, Real z) override;
         void setUniform4f(UInt32 location, Real x, Real y, Real z, Real w) override;
         void setUniformMatrix4(UInt32 location, const Real* data) override;
         void setUniformMatrix4(UInt32 location, const Matrix4x4& data) override;

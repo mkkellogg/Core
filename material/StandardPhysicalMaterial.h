@@ -14,6 +14,7 @@ namespace Core {
 
     class StandardPhysicalMaterial : public ShaderMaterial<BaseLitMaterial> {
         friend class Engine;
+        friend class StandardPhysicalMaterialMultiLight;
 
     public:
         virtual ~StandardPhysicalMaterial();
@@ -78,9 +79,9 @@ namespace Core {
         Int32 ambientOcclusionLocation;
         Int32 enabledMapLocation;
 
-        Int32 lightIrradianceMapLocation;
-        Int32 lightSpecularIBLPreFilteredMapLocation;
-        Int32 lightSpecularIBLBRDFMapLocation;
+        Int32 lightIrradianceMapLocation[Constants::MaxShaderLights];
+        Int32 lightSpecularIBLPreFilteredMapLocation[Constants::MaxShaderLights];
+        Int32 lightSpecularIBLBRDFMapLocation[Constants::MaxShaderLights];
     
     private:
         void setInitialParams();

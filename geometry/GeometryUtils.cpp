@@ -12,7 +12,7 @@
 
 namespace Core {
 
-    WeakPointer<Mesh> GeometryUtils::createGrid(Real width, Real height, UInt32 hCells, UInt32 vCells, Real hWorldToTex, Real vWorldToTex) {
+    WeakPointer<Mesh> GeometryUtils::createGridMesh(Real width, Real height, UInt32 hCells, UInt32 vCells, Real hWorldToTex, Real vWorldToTex) {
         Real halfWidth = width / 2.0f;
         Real halfHeight = height / 2.0f;
 
@@ -21,9 +21,6 @@ namespace Core {
 
         Real left = -halfWidth;
         Real bottom = -halfHeight;
-
-        Real textureCellWidth = hWorldToTex / cellWidth;
-        Real textureCellHeight = vWorldToTex / cellHeight;
 
         std::vector<Real> positions;
         std::vector<Real> normals;
@@ -37,8 +34,8 @@ namespace Core {
                 Real bx = xOffset + left;
                 Real by = yOffset + bottom;
 
-                Real uvX = xOffset / hWorldToTex;
-                Real uvY = yOffset / vWorldToTex;
+                Real uvX = xOffset / width * hWorldToTex;
+                Real uvY = yOffset / height * vWorldToTex;
 
                 positions.push_back(bx);
                 positions.push_back(by);

@@ -20,7 +20,7 @@ namespace Core {
         virtual void copyTo(WeakPointer<Material> target) override;
         virtual WeakPointer<Material> clone() override;
         virtual UInt32 textureCount() override;
-        virtual void bindShaderVarLocations();
+        virtual void bindShaderVarLocations() override;
 
         void setCubeTexture(WeakPointer<CubeTexture> texture);
         void setRectTexture(WeakPointer<Texture2D> texture);
