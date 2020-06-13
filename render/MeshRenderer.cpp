@@ -161,7 +161,6 @@ namespace Core {
             shader->setUniformMatrix4(viewInverseTransposeMatrixLoc, viewInverseTransposeMatrix);
         }
 
-//this->graphics->getPlaceHolderTexture2D()->getTextureID()
         Int32 ssaoEnabledLoc = material->getShaderLocation(StandardUniform::SSAOEnabled);
         UInt32 currentTextureSlot = material->textureCount();
         if (ssaoMapLoc >= 0) {

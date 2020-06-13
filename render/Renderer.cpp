@@ -242,16 +242,33 @@ namespace Core {
             this->renderCube(camera, objects, lights, overrideMaterial, matchPhysicalPropertiesWithLighting);
         }
         else {
-            this->renderStandard(camera, objects, lights, overrideMaterial, matchPhysicalPropertiesWithLighting);
+
+            // TODO: Decided if only static object should be involved in rendering SSAO texture
+            /*static std::vector<WeakPointer<Object3D>> staticObjects;
+            staticObjects.resize(0);
+            for (UInt32 i = 0; i < objects.size(); i++) {
+                WeakPointer<Object3D> object = objects[i];
+                if (object->isStatic()) staticObjects.push_back(object);
+            }*/
+
+            WeakPointer<Texture2D> ssaoMap = WeakPointer<Texture2D>::nullPtr();
+            if (camera->isSSAOEnabled()) {
+                this->renderSSAO(camera, objects);
+                ssaoMap = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->ssaoBlurRenderTarget->getColorTexture());
+            }
+
+            this->renderStandard(camera, objects, lights, overrideMaterial, matchPhysicalPropertiesWithLighting, ssaoMap);
         }
     }
 
     void Renderer::renderStandard(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects,
                                   std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial,
-                                  Bool matchPhysicalPropertiesWithLighting) {
+                                  Bool matchPhysicalPropertiesWithLighting, WeakPointer<Texture2D> ssaoMap) {
         ViewDescriptor viewDescriptor;
         this->getViewDescriptorForCamera(camera, viewDescriptor);
         viewDescriptor.overrideMaterial = overrideMaterial;
+        viewDescriptor.ssaoMap = ssaoMap;
+        viewDescriptor.ssaoEnabled = ssaoMap.isValid();
         render(viewDescriptor, objects, lights, matchPhysicalPropertiesWithLighting);
     }
 
@@ -302,14 +319,6 @@ namespace Core {
                           std::vector<WeakPointer<Light>>& lightList, Bool matchPhysicalPropertiesWithLighting) {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         WeakPointer<RenderTarget> currentRenderTarget = graphics->getCurrentRenderTarget();
-
-        if (viewDescriptor.ssaoEnabled) {
-            viewDescriptor.ssaoEnabled = false;
-            this->renderSSAO(viewDescriptor, objectList);
-            WeakPointer<Texture2D> ssaoMap = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->ssaoBlurRenderTarget->getColorTexture());
-            viewDescriptor.ssaoMap = ssaoMap;
-            viewDescriptor.ssaoEnabled = true;
-        }
 
         WeakPointer<RenderTarget> nextRenderTarget = viewDescriptor.indirectHDREnabled ? viewDescriptor.hdrRenderTarget : viewDescriptor.renderTarget;
         graphics->activateRenderTarget(nextRenderTarget);       
@@ -609,8 +618,11 @@ namespace Core {
         reflectionProbe->setNeedsFullUpdate(false);
     }
 
-    void Renderer::renderSSAO(ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objects) {
+    void Renderer::renderSSAO(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects) {
         static std::vector<WeakPointer<Light>> emptyLightList;
+
+        ViewDescriptor viewDescriptor;
+        this->getViewDescriptorForCamera(camera, viewDescriptor);
 
         this->renderPositionsAndNormals(viewDescriptor, objects);
         this->ssaoMaterial->setViewPositions(this->depthPositionsRenderTarget->getColorTexture(0));
@@ -628,13 +640,11 @@ namespace Core {
         WeakPointer<RenderTarget> saveHDRRenderTarget = viewDescriptor.hdrRenderTarget;
         Bool saveIndirectHDREnabled = viewDescriptor.indirectHDREnabled;
         WeakPointer<Material> saveOverrideMaterial = viewDescriptor.overrideMaterial;
-        Bool saveSSAOEnabled = viewDescriptor.ssaoEnabled;
 
         viewDescriptor.indirectHDREnabled = false;
         viewDescriptor.hdrRenderTarget = WeakPointer<RenderTarget2D>::nullPtr();
         viewDescriptor.renderTarget = this->ssaoRenderTarget;
         viewDescriptor.overrideMaterial = this->ssaoMaterial;
-        viewDescriptor.ssaoEnabled = false;
 
         Engine::instance()->getGraphicsSystem()->renderFullScreenQuad(this->ssaoRenderTarget, -1, this->ssaoMaterial);
         ssaoBlurMaterial->setSSAOInput(this->ssaoRenderTarget->getColorTexture(0));
@@ -644,7 +654,6 @@ namespace Core {
         viewDescriptor.hdrRenderTarget = saveHDRRenderTarget;
         viewDescriptor.renderTarget = saveRenderTarget;
         viewDescriptor.overrideMaterial = saveOverrideMaterial;
-        viewDescriptor.ssaoEnabled = saveSSAOEnabled;
     }
 
     WeakPointer<Texture2D> Renderer::getSSAOTexture() {
@@ -666,7 +675,6 @@ namespace Core {
         viewDescriptor.hdrRenderTarget = WeakPointer<RenderTarget2D>::nullPtr();
         viewDescriptor.renderTarget = this->depthNormalsRenderTarget;
         viewDescriptor.overrideMaterial = this->normalsMaterial;
-        viewDescriptor.ssaoEnabled = false;
 
         this->render(viewDescriptor, objects, emptyLightList, false);
        
@@ -674,7 +682,6 @@ namespace Core {
         viewDescriptor.hdrRenderTarget = saveHDRRenderTarget;
         viewDescriptor.renderTarget = saveRenderTarget;
         viewDescriptor.overrideMaterial = saveOverrideMaterial;
-        viewDescriptor.ssaoEnabled = saveSSAOEnabled;
     }
 
     void Renderer::renderPositionsAndNormals(ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objects) {
@@ -688,7 +695,6 @@ namespace Core {
 
         viewDescriptor.indirectHDREnabled = false;
         viewDescriptor.hdrRenderTarget = WeakPointer<RenderTarget2D>::nullPtr();
-        viewDescriptor.ssaoEnabled = false;
 
         viewDescriptor.renderTarget = this->depthNormalsRenderTarget;
         viewDescriptor.overrideMaterial = this->normalsMaterial;
@@ -706,7 +712,6 @@ namespace Core {
         viewDescriptor.hdrRenderTarget = saveHDRRenderTarget;
         viewDescriptor.renderTarget = saveRenderTarget;
         viewDescriptor.overrideMaterial = saveOverrideMaterial;
-        viewDescriptor.ssaoEnabled = saveSSAOEnabled;
     }
 
     void Renderer::initializeSSAO() {

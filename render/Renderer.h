@@ -58,7 +58,7 @@ namespace Core {
         Renderer();
         void renderStandard(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
                             std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial,
-                            Bool matchPhysicalPropertiesWithLighting);
+                            Bool matchPhysicalPropertiesWithLighting, WeakPointer<Texture2D> ssaoMap = WeakPointer<Texture2D>::nullPtr());
         void renderCube(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
                         std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial,
                         Bool matchPhysicalPropertiesWithLighting);
@@ -91,7 +91,7 @@ namespace Core {
                                     std::vector<WeakPointer<Light>>& nonIBLLightList, std::vector<WeakPointer<Light>>& lightList);
         void renderReflectionProbe(WeakPointer<ReflectionProbe> reflectionProbe, Bool specularOnly,
                                    std::vector<WeakPointer<Object3D>>& renderObjects, std::vector<WeakPointer<Light>>& renderLights);
-        void renderSSAO(ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objects);
+        void renderSSAO(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects);
         void renderDepthAndNormals(ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objects);
         void renderPositionsAndNormals(ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objects);
         void initializeSSAO();
