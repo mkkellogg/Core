@@ -20,6 +20,7 @@ Light-weight, C/C++ based, 3D rendering library built on OpenGL. Ultimately inte
   - Animation blending
 * Scene-graph API
 * Render-to-texture capability
+* Screen-space ambient occlusion
 
 ## External dependencies:
 
