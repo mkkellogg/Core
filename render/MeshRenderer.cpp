@@ -31,6 +31,35 @@ namespace Core {
         }
     }
 
+    void MeshRenderer::setRenderStateForMaterial(WeakPointer<Material> material) {
+        this->graphics->setColorWriteEnabled(material->getColorWriteEnabled());
+        this->graphics->setRenderStyle(material->getRenderStyle());
+        if (material->getBlendingMode() != RenderState::BlendingMode::None) {
+            graphics->setBlendingEnabled(true);
+            if (material->getBlendingMode() == RenderState::BlendingMode::Custom) {
+                graphics->setBlendingEquation(material->getBlendingEquation());
+            }
+            graphics->setBlendingFactors(material->getSourceBlendingFactor(), material->getDestBlendingFactor());
+        }
+        else {
+            graphics->setBlendingEnabled(false);
+        }
+        
+        graphics->setDepthWriteEnabled(material->getDepthWriteEnabled());
+        graphics->setDepthTestEnabled(material->getDepthTestEnabled());
+        graphics->setDepthFunction(material->getDepthFunction());
+
+        graphics->setFaceCullingEnabled(material->getFaceCullingEnabled());
+        graphics->setCullFace(material->getCullFace());
+
+        graphics->setStencilTestEnabled(material->getStencilTestEnabled());
+        graphics->setStencilWriteMask(material->getStencilWriteMask());
+        if (material->getStencilTestEnabled()) {
+            graphics->setStencilFunction(material->getStencilComparisonFunction(), material->getStencilRef(), material->getStencilReadMask());
+            graphics->setStencilOperation(material->getStencilFailActionStencil(), material->getStencilFailActionDepth(), material->getStencilAllPassAction());
+        }
+    }
+
     void MeshRenderer::setSkinningVars(WeakPointer<Mesh> mesh, WeakPointer<Material> material, WeakPointer<Shader> shader) {
         Int32 skinningEnabledLocation = material->getShaderLocation(StandardUniform::SkinningEnabled);
         if (skinningEnabledLocation >= 0) shader->setUniform1i(skinningEnabledLocation, 0.0);
@@ -66,43 +95,12 @@ namespace Core {
     Bool MeshRenderer::forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh, Bool isStatic,
                                            const std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting) {
         Matrix4x4 tempMatrix;
-        WeakPointer<Material> material;
-        if (viewDescriptor.overrideMaterial.isValid()) {
-            material = viewDescriptor.overrideMaterial;
-        } else {
-            material = this->material;
-        }
-
+        WeakPointer<Material> material = viewDescriptor.overrideMaterial.isValid() ? viewDescriptor.overrideMaterial : this->material;
         WeakPointer<Shader> shader = material->getShader();
         this->graphics->activateShader(shader);
 
-        this->graphics->setColorWriteEnabled(material->getColorWriteEnabled());
-        this->graphics->setRenderStyle(material->getRenderStyle());
-        if (material->getBlendingMode() != RenderState::BlendingMode::None) {
-            graphics->setBlendingEnabled(true);
-            if (material->getBlendingMode() == RenderState::BlendingMode::Custom) {
-                graphics->setBlendingEquation(material->getBlendingEquation());
-            }
-            graphics->setBlendingFactors(material->getSourceBlendingFactor(), material->getDestBlendingFactor());
-        }
-        else {
-            graphics->setBlendingEnabled(false);
-        }
+        this->setRenderStateForMaterial(material);
         
-        graphics->setDepthWriteEnabled(material->getDepthWriteEnabled());
-        graphics->setDepthTestEnabled(material->getDepthTestEnabled());
-        graphics->setDepthFunction(material->getDepthFunction());
-
-        graphics->setFaceCullingEnabled(material->getFaceCullingEnabled());
-        graphics->setCullFace(material->getCullFace());
-
-        graphics->setStencilTestEnabled(material->getStencilTestEnabled());
-        graphics->setStencilWriteMask(material->getStencilWriteMask());
-        if (material->getStencilTestEnabled()) {
-            graphics->setStencilFunction(material->getStencilComparisonFunction(), material->getStencilRef(), material->getStencilReadMask());
-            graphics->setStencilOperation(material->getStencilFailActionStencil(), material->getStencilFailActionDepth(), material->getStencilAllPassAction());
-        }
-
         // send custom uniforms first so that the renderer can override if necessary.
         material->sendCustomUniformsToShader();
 
@@ -121,48 +119,31 @@ namespace Core {
         this->setSkinningVars(mesh, material, shader);
 
         Int32 cameraPositionLoc = material->getShaderLocation(StandardUniform::CameraPosition);
-        Int32 projectionLoc = material->getShaderLocation(StandardUniform::ProjectionMatrix);
-        Int32 viewMatrixLoc = material->getShaderLocation(StandardUniform::ViewMatrix);
-        Int32 modelMatrixLoc = material->getShaderLocation(StandardUniform::ModelMatrix);
-        Int32 modelInverseTransposeMatrixLoc = material->getShaderLocation(StandardUniform::ModelInverseTransposeMatrix);
-        Int32 viewInverseTransposeMatrixLoc = material->getShaderLocation(StandardUniform::ViewInverseTransposeMatrix);
-        Int32 ssaoMapLoc = material->getShaderLocation(StandardUniform::SSAOMap);
-
         if (cameraPositionLoc >= 0) {
             shader->setUniform4f(cameraPositionLoc, viewDescriptor.cameraPosition.x, viewDescriptor.cameraPosition.y,
                                  viewDescriptor.cameraPosition.z, 1.0f);
         }
 
-        if (projectionLoc >= 0) {
-            const Matrix4x4& projMatrix = viewDescriptor.projectionMatrix;
-            shader->setUniformMatrix4(projectionLoc, projMatrix);
-        }
-
-        if (viewMatrixLoc >= 0) {
-            const Matrix4x4& viewMatrix = viewDescriptor.viewInverseMatrix;
-            shader->setUniformMatrix4(viewMatrixLoc, viewMatrix);
-        }
-
-        if (modelMatrixLoc >= 0) {
-            const Matrix4x4& modelmatrix = this->owner->getTransform().getWorldMatrix();
-            shader->setUniformMatrix4(modelMatrixLoc, modelmatrix);
-        }
-
+        Int32 projectionLoc = material->getShaderLocation(StandardUniform::ProjectionMatrix);
+        Int32 viewMatrixLoc = material->getShaderLocation(StandardUniform::ViewMatrix);
+        Int32 modelMatrixLoc = material->getShaderLocation(StandardUniform::ModelMatrix);
+        Int32 modelInverseTransposeMatrixLoc = material->getShaderLocation(StandardUniform::ModelInverseTransposeMatrix);
+        Int32 viewInverseTransposeMatrixLoc = material->getShaderLocation(StandardUniform::ViewInverseTransposeMatrix);
+        if (projectionLoc >= 0) shader->setUniformMatrix4(projectionLoc, viewDescriptor.projectionMatrix);
+        if (viewMatrixLoc >= 0) shader->setUniformMatrix4(viewMatrixLoc, viewDescriptor.inverseCameraTransformation);
+        if (modelMatrixLoc >= 0) shader->setUniformMatrix4(modelMatrixLoc, this->owner->getTransform().getWorldMatrix());
         if (modelInverseTransposeMatrixLoc >= 0) {
             Matrix4x4 modelInverseTransposeMatrix = this->owner->getTransform().getWorldMatrix();
             modelInverseTransposeMatrix.invert();
             modelInverseTransposeMatrix.transpose();
             shader->setUniformMatrix4(modelInverseTransposeMatrixLoc, modelInverseTransposeMatrix);
         }
+        if (viewInverseTransposeMatrixLoc >= 0) shader->setUniformMatrix4(viewInverseTransposeMatrixLoc, viewDescriptor.transposedCameraTransformation);
 
-        if (viewInverseTransposeMatrixLoc >= 0) {
-            Matrix4x4 viewInverseTransposeMatrix = viewDescriptor.viewMatrix;
-            viewInverseTransposeMatrix.transpose();
-            shader->setUniformMatrix4(viewInverseTransposeMatrixLoc, viewInverseTransposeMatrix);
-        }
 
-        Int32 ssaoEnabledLoc = material->getShaderLocation(StandardUniform::SSAOEnabled);
         UInt32 currentTextureSlot = material->textureCount();
+        Int32 ssaoMapLoc = material->getShaderLocation(StandardUniform::SSAOMap);
+        Int32 ssaoEnabledLoc = material->getShaderLocation(StandardUniform::SSAOEnabled);
         if (ssaoMapLoc >= 0) {
             if (isStatic && viewDescriptor.ssaoEnabled && viewDescriptor.ssaoMap.isValid()) {
                 shader->setTexture2D(currentTextureSlot, ssaoMapLoc, viewDescriptor.ssaoMap->getTextureID());
@@ -176,8 +157,8 @@ namespace Core {
             if (ssaoEnabledLoc >= 0) shader->setUniform1i(ssaoEnabledLoc, 0.0);
         }
 
-        RenderPath renderPath = material->getRenderPath();
 
+        RenderPath renderPath = material->getRenderPath();
         if (lights.size() > 0 && material->isLit()) {
 
             Int32 lightCountLoc = material->getShaderLocation(StandardUniform::LightCount);

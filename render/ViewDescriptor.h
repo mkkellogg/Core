@@ -18,8 +18,9 @@ namespace Core {
     public:
 
         Point3r cameraPosition;
-        Matrix4x4 viewMatrix;
-        Matrix4x4 viewInverseMatrix;
+        Matrix4x4 inverseCameraTransformation;
+        Matrix4x4 cameraTransformation;
+        Matrix4x4 transposedCameraTransformation;
         Matrix4x4 projectionMatrix;
         PersistentWeakPointer<Material> overrideMaterial;
         PersistentWeakPointer<RenderTarget> renderTarget;

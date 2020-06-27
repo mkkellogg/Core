@@ -360,7 +360,7 @@ namespace Core {
         Bool faceNormalInited = arrowMesh->initVertexFaceNormals();
 
         arrowMesh->calculateBoundingBox();
-        arrowMesh->calculateNormals(75.0f);
+        arrowMesh->calculateNormals(75.0f * Core::Math::DegreesToRads);
 
         return arrowMesh;
     }
@@ -545,7 +545,7 @@ namespace Core {
         Bool faceNormalInited = sphereMesh->initVertexFaceNormals();
 
         sphereMesh->calculateBoundingBox();
-        sphereMesh->calculateNormals(85.0f);
+        sphereMesh->calculateNormals(85.0f * Core::Math::DegreesToRads);
 
         return sphereMesh;
     }
@@ -647,7 +647,7 @@ namespace Core {
         Bool faceNormalInited = torusMesh->initVertexFaceNormals();
 
         torusMesh->calculateBoundingBox();
-        torusMesh->calculateNormals(85.0f);
+        torusMesh->calculateNormals(85.0f * Core::Math::DegreesToRads);
 
         return torusMesh;
 

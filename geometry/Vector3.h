@@ -101,7 +101,7 @@ namespace Core {
         }Hasher;
 
         typedef struct {
-            Bool operator() (const Vector3Base& a, const Vector3Base& b) const { 
+            Bool operator() (const Vector3Base& a, const Vector3Base& b) const {
                 Real epsilon = .005f;
                 return Math::abs(a.x - b.x) < epsilon && Math::abs(a.y - b.y) < epsilon && Math::abs(a.z - b.z) < epsilon;
     

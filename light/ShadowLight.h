@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Light.h"
+#include "../render/RenderState.h"
 
 namespace Core {
 
@@ -35,6 +36,11 @@ namespace Core {
         void setShadowSoftness(Softness softness);
         Softness getShadowSoftness() const;
 
+        Bool getFaceCullingEnabled() const;
+        void setFaceCullingEnabled(Bool enabled);
+        RenderState::CullFace getCullFace();
+        void setCullFace(RenderState::CullFace cullFace);
+
     protected:
         ShadowLight(WeakPointer<Object3D> owner, LightType type, Bool shadowsEnabled, 
                     UInt32 shadowMapSize,  Real constantShadowBias, Real angularShadowBias);
@@ -44,5 +50,9 @@ namespace Core {
         Real constantShadowBias;
         Real angularShadowBias;
         Softness shadowSoftness;
+
+        Bool faceCullingEnabled;
+        RenderState::CullFace cullFace;
+
     };
 }

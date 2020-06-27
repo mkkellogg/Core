@@ -11,7 +11,7 @@
 
 namespace Core {
 
-    const UInt32 Camera::DEFAULT_FOV = 70;
+    const Real Camera::DEFAULT_FOV = 70 * Core::Math::DegreesToRads;
     const UInt32 Camera::DEFAULT_WIDTH = 1200;
     const UInt32 Camera::DEFAULT_HEIGHT = 800;
     const Real Camera::DEFAULT_ASPECT_RATIO = (Real)Camera::DEFAULT_WIDTH / (Real)Camera::DEFAULT_HEIGHT;
@@ -262,19 +262,32 @@ namespace Core {
         return this->ssaoBias;
     }
 
-    void Camera::buildPerspectiveProjectionMatrix(Real fov, Real ratio, Real nearP, Real farP, Matrix4x4& out) {
-        // convert fov to radians
-        Real f = 1.0f / Math::tan(fov * .5f);
+    void Camera::buildPerspectiveProjectionMatrix(Real fov, Real aspectRatio, Real nearP, Real farP, Matrix4x4& out) {
+        Real xMag = Math::abs(nearP * Math::tan(fov * 0.5f));
+        Real yMag = xMag / aspectRatio;
 
-        Real data[16];
-        memset(data, 0, 16 * sizeof(Real));
+        Real left = -xMag;
+        Real right = xMag;
+        Real top = yMag;
+        Real bottom = -yMag;
 
-        data[0] = f / ratio;
-        data[1 * 4 + 1] = f;
-        data[2 * 4 + 2] = (farP + nearP) / (nearP - farP);
-        data[3 * 4 + 2] = (2.0f * farP * nearP) / (nearP - farP);
-        data[2 * 4 + 3] = -1.0f;
-        data[3 * 4 + 3] = 0.0f;
+        Real x = 2.0f * nearP / (right - left);
+		Real y = 2.0f * nearP / (top - bottom);
+
+		Real a = (right + left) / (right - left);
+		Real b = (top + bottom) / (top - bottom);
+		Real c = - (farP + nearP) / (farP - nearP);
+		Real d = - 2.0f * farP * nearP / (farP - nearP);
+
+        Real data[] = {x, 0, 0, 0,
+                       0, y, 0, 0,
+                       a, b, c, -1.0f,
+                       0, 0, d, 0};
+        /*memset(data, 0, 16 * sizeof(Real));
+		data[0] = x; data[4] = 0; data[8] = a;	    data[12] = 0;
+		data[1] = 0; data[5] = y; data[9] = b;   	data[13] = 0;
+		data[2] = 0; data[6] = 0; data[10] = c;	    data[14] = d;
+		data[3] = 0; data[7] = 0; data[11] = -1.0f;	data[15] = 0;*/
         out.copy(data);
     }
 

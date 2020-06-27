@@ -533,7 +533,7 @@ namespace Core {
         if (hasNormalUVs) coreMesh->getVertexNormalUVs()->store(normalUVs.data());
 
         // if (invert) mesh3D->SetInvertNormals(true);
-        coreMesh->setNormalsSmoothingThreshold((Real)smoothingThreshold * Math::DegreesToRads);
+        coreMesh->setNormalsSmoothingThreshold((Real)smoothingThreshold);
         coreMesh->setCalculateNormals(true);
         coreMesh->setCalculateTangents(hasAlbedoUVs || hasNormalUVs);
         coreMesh->setCalculateBoundingBox(true);

@@ -21,8 +21,7 @@ namespace Core {
         }
         // [cascadeBoundaries] gets 1 extra
         this->cascadeBoundaries.push_back(0.0f);
-        this->shadowMapBoundaryPadding = 300.0f;
-        this->shadowMapBoundaryHorizontalPadding = 5.0f;
+        this->shadowMapBoundaryPadding = 30.0f;
     }
 
     DirectionalLight::~DirectionalLight() {
@@ -87,8 +86,8 @@ namespace Core {
         lightTransformInverse.invert();
 
         Real aspectRatio = targetCamera->getAspectRatio();
-        Real fov = targetCamera->getFOV();
-        Real tanHalfHFOV = Math::tan(fov / 2.0f);
+        Real fovRadians = targetCamera->getFOV();
+        Real tanHalfHFOV = Math::tan(fovRadians / 2.0f);
         Bool isOrtho = targetCamera->isOrtho();
 
         for (UInt32 i = 1; i <= boundaryIndex; i++) {
@@ -145,12 +144,12 @@ namespace Core {
 
                 OrthoProjection& oProj = this->projections[i - 1];
 
-                oProj.right = maxX + this->shadowMapBoundaryHorizontalPadding;
-                oProj.left = minX - this->shadowMapBoundaryHorizontalPadding;
-                oProj.bottom = minY - this->shadowMapBoundaryHorizontalPadding * aspectRatio;
-                oProj.top = maxY + this->shadowMapBoundaryHorizontalPadding * aspectRatio;
-                oProj.far = maxZ + this->shadowMapBoundaryPadding;
-                oProj.near = minZ - this->shadowMapBoundaryPadding;
+                oProj.right = maxX;
+                oProj.left = minX;
+                oProj.bottom = minY;
+                oProj.top = maxY;
+                oProj.far = Math::max(-(minZ - this->shadowMapBoundaryPadding), 0.0f);
+                oProj.near = 0; //Math::max(-(maxZ + this->shadowMapBoundaryPadding), 0.0f);
 
                 Matrix4x4 viewTrans = lightTransformInverse;
                 Matrix4x4& viewProjMat =  this->viewProjectionMatrices[i - 1];

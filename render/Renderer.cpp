@@ -381,9 +381,11 @@ namespace Core {
             if (objectRenderer) {
                 ViewDescriptor skyboxView = viewDescriptor;
                 std::vector<WeakPointer<Light>> dummyLights;
-                skyboxView.viewMatrix.setTranslation(0.0f, 0.0f, 0.0f);
-                skyboxView.viewInverseMatrix.copy(skyboxView.viewMatrix);
-                skyboxView.viewInverseMatrix.invert();
+                skyboxView.cameraTransformation.setTranslation(0.0f, 0.0f, 0.0f);
+                skyboxView.inverseCameraTransformation.copy(skyboxView.cameraTransformation);
+                skyboxView.inverseCameraTransformation.invert();
+                skyboxView.transposedCameraTransformation.copy(skyboxView.cameraTransformation);
+                skyboxView.transposedCameraTransformation.transpose();
                 objectRenderer->forwardRender(skyboxView, dummyLights, true);
             }
         }
@@ -465,6 +467,8 @@ namespace Core {
                         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
                         WeakPointer<DirectionalLight> directionalLight = WeakPointer<Light>::dynamicPointerCast<DirectionalLight>(light);
                         if (directionalLight->getShadowsEnabled()) {
+                            this->depthMaterial->setFaceCullingEnabled(directionalLight->getFaceCullingEnabled());
+                            this->depthMaterial->setCullFace(directionalLight->getCullFace());
                             std::vector<DirectionalLight::OrthoProjection>& projections = directionalLight->buildProjections(renderCamera);
                             Matrix4x4 viewTrans = directionalLight->getOwner()->getTransform().getWorldMatrix();
                             for (UInt32 i = 0; i < directionalLight->getCascadeCount(); i++) {
@@ -519,7 +523,7 @@ namespace Core {
                                 camera->getProjectionMatrix(), camera->getAutoClearRenderBuffers(), viewDescriptor);
         viewDescriptor.cameraPosition.set(0.0f, 0.0f, 0.0f);
         viewDescriptor.cubeFace = -1;
-        viewDescriptor.viewMatrix.transform(viewDescriptor.cameraPosition);
+        viewDescriptor.cameraTransformation.transform(viewDescriptor.cameraPosition);
         viewDescriptor.ssaoEnabled = camera->isSSAOEnabled();
         viewDescriptor.ssaoMap = WeakPointer<Texture2D>::nullPtr();
         viewDescriptor.ssaoRadius = camera->getSSAORadius();
@@ -530,9 +534,11 @@ namespace Core {
     void Renderer::getViewDescriptorTransformations(const Matrix4x4& worldMatrix, const Matrix4x4& projectionMatrix,
                                      IntMask clearBuffers, ViewDescriptor& viewDescriptor) {
         viewDescriptor.projectionMatrix.copy(projectionMatrix);
-        viewDescriptor.viewMatrix.copy(worldMatrix);
-        viewDescriptor.viewInverseMatrix.copy(viewDescriptor.viewMatrix);
-        viewDescriptor.viewInverseMatrix.invert();
+        viewDescriptor.cameraTransformation.copy(worldMatrix);
+        viewDescriptor.inverseCameraTransformation.copy(worldMatrix);
+        viewDescriptor.inverseCameraTransformation.invert();
+        viewDescriptor.transposedCameraTransformation.copy(viewDescriptor.cameraTransformation);
+        viewDescriptor.transposedCameraTransformation.transpose();
         viewDescriptor.clearRenderBuffers = clearBuffers;
     }
 

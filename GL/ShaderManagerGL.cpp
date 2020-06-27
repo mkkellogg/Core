@@ -695,7 +695,8 @@ namespace Core {
             "      int offset0 = @lightIndex * " + MAX_CASCADES + ";\n"
             "      int offset1 = @lightIndex * " + MAX_CASCADES + " + 1;\n"
             "      int offset2 = @lightIndex * " + MAX_CASCADES + " + 2;\n"
-            "      if (_core_viewSpacePosZ[@lightIndex] <= " + LIGHT_CASCADE_END + "[offset0]) { \n"
+            "      if (_core_viewSpacePosZ[@lightIndex] <= " +
+             LIGHT_CASCADE_END + "[offset0]) { \n"
             "          shadowFactor = calcDirShadowFactor_@lightIndex_0(bias, worldPos); \n"
             "      } else if (_core_viewSpacePosZ[@lightIndex] <= " + LIGHT_CASCADE_END + "[offset1]) { \n"
             "          shadowFactor = calcDirShadowFactor_@lightIndex_1(bias, worldPos); \n"

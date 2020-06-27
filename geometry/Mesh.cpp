@@ -532,7 +532,7 @@ namespace Core {
             std::vector<UInt32>& list = *listPtr;
 
             // compute the cosine of the smoothing threshhold angle
-            Real cosSmoothingThreshhold = (Math::cos(Math::DegreesToRads * smoothingThreshhold));
+            Real cosSmoothingThreshhold = (Math::cos(smoothingThreshhold));
 
             for (UInt32 i = 0; i < list.size(); i++) {
                 UInt32 vIndex = list[i];

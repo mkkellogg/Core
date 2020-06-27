@@ -23,7 +23,7 @@ namespace Core {
         friend class Renderer;
 
     public:
-        static const UInt32 DEFAULT_FOV;
+        static const Real DEFAULT_FOV;
         static const UInt32 DEFAULT_WIDTH;
         static const UInt32 DEFAULT_HEIGHT;
         static const Real DEFAULT_ASPECT_RATIO;
