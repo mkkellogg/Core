@@ -190,6 +190,20 @@ namespace Core {
         }
     }
 
+    void Transform::setLocalPosition(Real x, Real y, Real z) {
+        this->localMatrix.setTranslation(x, y, z);
+    }
+
+    void Transform::setLocalPosition(const Vector3<Real>& position) {
+        this->setLocalPosition(position.x, position.y, position.z);
+    }
+
+    Point3r Transform::getLocalPosition() {
+        Point3r position;
+        this->localMatrix.transform(position);
+        return position;
+    }
+
     void Transform::rotate(const Vector3<Real>& axis, Real angle, TransformationSpace transformationSpace) {
         this->rotate(axis.x, axis.y, axis.z, angle, transformationSpace);
     }

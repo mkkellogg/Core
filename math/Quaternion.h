@@ -51,7 +51,7 @@ namespace Core {
 
         // void scaledAxis(const Vector3Components<Real>& w);
         Vector3r rotatedVector(const Vector3Components<Real>& v) const;
-        void euler(const Vector3Components<Real>& euler);
+        void setFromEuler(const Vector3Components<Real>& euler);
         Vector3r euler(void) const;
         // void decoupleZ(Quaternion* Qxy, Quaternion* Qz) const;
         Quaternion slerp(const Quaternion& q1, Real t);
@@ -61,6 +61,9 @@ namespace Core {
 
         static Quaternion getRotation(const Vector3Components<Real>& source, Vector3Components<Real>& dest);
         static Quaternion getRotation(const Vector3Components<Real>& source, Vector3Components<Real>& dest, const Vector3Components<Real>& fallbackAxis);
+    private:
+
+        Vector3r eulerFromRotationMatrix(const Matrix4x4& mat) const;
     };
 
     // Global operator allowing left-multiply by scalar.

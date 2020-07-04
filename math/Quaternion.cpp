@@ -284,7 +284,7 @@ namespace Core {
      */
     Matrix4x4 Quaternion::rotationMatrix() const {
         Real m[SIZE_MATRIX_4X4];
-        Quaternion::setRotationMatrix(m);
+        this->setRotationMatrix(m);
         Matrix4x4 p(m);
         return p;
     }
@@ -426,50 +426,72 @@ namespace Core {
     /**
      * Computes the quaternion that is equivalent to a given
      * euler angle rotation.
-     * @param euler A 3-vector in order:  roll-pitch-yaw.
+     * @param euler A 3-vector in order:  ZYX
      */
-    void Quaternion::euler(const Vector3Components<Real>& euler) {
-        Real c1 = Math::cos(euler.z * 0.5f);
-        Real c2 = Math::cos(euler.y * 0.5f);
-        Real c3 = Math::cos(euler.x * 0.5f);
-        Real s1 = Math::sin(euler.z * 0.5f);
-        Real s2 = Math::sin(euler.y * 0.5f);
-        Real s3 = Math::sin(euler.x * 0.5f);
+    void Quaternion::setFromEuler(const Vector3Components<Real>& euler) {
 
-        mData[0] = c1 * c2 * s3 - s1 * s2 * c3;
-        mData[1] = c1 * s2 * c3 + s1 * c2 * s3;
-        mData[2] = s1 * c2 * c3 - c1 * s2 * s3;
-        mData[3] = c1 * c2 * c3 + s1 * s2 * s3;
+        const Real c1 = Math::cos(euler.x / 2.0f);
+        const Real c2 = Math::cos(euler.y / 2.0f);
+        const Real c3 = Math::cos(euler.z / 2.0f);
+
+        const Real s1 = Math::sin(euler.x / 2.0f);
+        const Real s2 = Math::sin(euler.y / 2.0f);
+        const Real s3 = Math::sin(euler.z / 2.0f);
+
+        mData[0] = s1 * c2 * c3 + c1 * s2 * s3;
+        mData[1] = c1 * s2 * c3 - s1 * c2 * s3;
+        mData[2] = c1 * c2 * s3 + s1 * s2 * c3;
+        mData[3] = c1 * c2 * c3 - s1 * s2 * s3;
+    }
+
+    Vector3r threeaxisrot(Real r11, Real r12, Real r21, Real r31, Real r32) {
+        Vector3r result;
+        result.x = Math::aTan2(r31, r32);
+        result.y = Math::aSin (r21);
+        result.z = Math::aTan2(r11, r12);
+        return result;
     }
 
     /** Returns an equivalent euler angle representation of
      * this quaternion.
-     * @return Euler angles in roll-pitch-yaw order.
+     * @return Euler angles in order: XYZ
      */
+
     Vector3r Quaternion::euler(void) const {
-        Vector3r euler;
-        const static Real PI_OVER_2 = Math::PI * 0.5f;
-        const static Real EPSILON = (Real)1e-10;
-        Real sqw, sqx, sqy, sqz;
+        Matrix4x4 m1 = this->rotationMatrix();
+        return this->eulerFromRotationMatrix(m1);
+    }
 
-        // quick conversion to Euler angles to give tilt to user
-        sqw = mData[3] * mData[3];
-        sqx = mData[0] * mData[0];
-        sqy = mData[1] * mData[1];
-        sqz = mData[2] * mData[2];
+    Vector3r Quaternion::eulerFromRotationMatrix(const Matrix4x4& mat) const {
+        const Real* te = mat.getConstData();
+		const Real m11 = te[ 0 ];
+        const Real m12 = te[ 4 ];
+        const Real m13 = te[ 8 ];
+		const Real m21 = te[ 1 ];
+        const Real m22 = te[ 5 ];
+        const Real m23 = te[ 9 ];
+		const Real m31 = te[ 2 ];
+        const Real m32 = te[ 6 ];
+        const Real m33 = te[ 10 ];
 
-        euler.y = asin(2.0f * (mData[3] * mData[1] - mData[0] * mData[2]));
-        if (PI_OVER_2 - fabs(euler.y) > EPSILON) {
-            euler.z = atan2(2.0f * (mData[0] * mData[1] + mData[3] * mData[2]), sqx - sqy - sqz + sqw);
-            euler.x = atan2(2.0f * (mData[3] * mData[0] + mData[1] * mData[2]), sqw - sqx - sqy + sqz);
+		//order = order || this._order;
+
+        Real x;
+        Real y;
+        Real z;
+
+		// XYZ:
+        y = Math::aSin( Math::clamp( m13, - 1, 1 ) );
+        if ( Math::abs( m13 ) < 0.9999999 ) {
+            x = Math::aTan2( -m23, m33 );
+            z = Math::aTan2( -m12, m11 );
         } else {
-            // compute heading from local 'down' vector
-            euler.z = atan2(2 * mData[1] * mData[2] - 2 * mData[0] * mData[3], 2 * mData[0] * mData[2] + 2 * mData[1] * mData[3]);
-            euler.x = 0.0f;
-
-            // If facing down, reverse yaw
-            if (euler.y < 0) euler.z = Math::PI - euler.z;
+            x = Math::aTan2( m32, m22 );
+            z = 0;
         }
+
+        Vector3r euler;
+        euler.set(x, y, z);
         return euler;
     }
 

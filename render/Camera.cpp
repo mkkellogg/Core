@@ -283,11 +283,6 @@ namespace Core {
                        0, y, 0, 0,
                        a, b, c, -1.0f,
                        0, 0, d, 0};
-        /*memset(data, 0, 16 * sizeof(Real));
-		data[0] = x; data[4] = 0; data[8] = a;	    data[12] = 0;
-		data[1] = 0; data[5] = y; data[9] = b;   	data[13] = 0;
-		data[2] = 0; data[6] = 0; data[10] = c;	    data[14] = d;
-		data[3] = 0; data[7] = 0; data[11] = -1.0f;	data[15] = 0;*/
         out.copy(data);
     }
 

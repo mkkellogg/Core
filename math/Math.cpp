@@ -11,8 +11,11 @@ namespace Core {
     public:
         static Core::Real _sin(Core::Real a) { return sin(a); }
         static Core::Real _cos(Core::Real a) { return cos(a); }
+        static Core::Real _asin(Core::Real a) { return asin(a); }
+        static Core::Real _acos(Core::Real a) { return acos(a); }
         static Core::Real _tan(Core::Real a) { return tan(a); }
         static Core::Real _atan(Core::Real a) { return atan(a); }
+        static Core::Real _atan2(Core::Real a, Core::Real b) { return atan2(a, b); }
     };
 
     const Real Math::PI = 3.14159265358979f;
@@ -64,11 +67,15 @@ namespace Core {
     }
 
     Real Math::aCos(Real n) {
-        return acos(n);
+        return MathProxy::_acos(n);
     }
 
     Real Math::sin(Real n) {
         return MathProxy::_sin(n);
+    }
+
+    Real Math::aSin(Real n) {
+        return MathProxy::_asin(n);
     }
 
     Real Math::tan(Real n) {
@@ -77,6 +84,10 @@ namespace Core {
 
     Real Math::aTan(Real n) {
         return MathProxy::_atan(n);
+    }
+
+    Real Math::aTan2(Real n1, Real n2) {
+        return MathProxy::_atan2(n1, n2);
     }
 
     Real Math::abs(Real n) {

@@ -27,6 +27,9 @@ namespace Core {
      *
      ***********************************************/
 
+    Vector3r Matrix4x4::zero(0.0f, 0.0f, 0.0f);
+    Vector3r Matrix4x4::one(1.0f, 1.0f, 1.0f);
+
     Matrix4x4::Matrix4x4() {
         this->setIdentity();
     }
@@ -593,6 +596,10 @@ namespace Core {
         this->data[14] = z;
     }
 
+    Vector3r Matrix4x4::getTranslation() {
+        Vector3r translation(this->data[12], this->data[13], this->data[14]);
+    }
+
     /*
      * Translate the 4x4 matrix pointed to by [src] by [vector], and store in [out]
      *
@@ -707,7 +714,85 @@ namespace Core {
      * Set this matrix to be a rotation matrix, with Euler angles [x], [y], [z]
      */
     void Matrix4x4::makeRotationFromEuler(Real x, Real y, Real z) {
-        Matrix4x4::makeRotationFromEuler(data, x, y, z);
+        Matrix4x4::makeRotationFromEuler(this->data, x, y, z);
+    }
+
+    //  
+    Vector3r Matrix4x4::getRotationAsEuler() {
+
+        static Vector3r column0;
+        static Vector3r column1;
+        static Vector3r column2;
+        static Matrix4x4 m1;
+        static Quaternion quat;
+
+        column0.set(this->data[0], this->data[1], this->data[2]);
+        column1.set(this->data[4], this->data[5], this->data[6]);
+        column2.set(this->data[8], this->data[9], this->data[10]);
+
+		Real sx = column0.magnitude();
+		Real sy = column1.magnitude();
+		Real sz = column2.magnitude();
+
+		// if determinant is negative, we need to invert one scale
+		const Real det = this->calculateDeterminant();
+		if (det < 0.0f) sx = -sx;
+
+		// scale the rotation part
+		m1.copy(*this);
+
+		const Real invSX = 1 / sx;
+		const Real invSY = 1 / sy;
+		const Real invSZ = 1 / sz;
+
+		m1.data[ 0 ] *= invSX;
+		m1.data[ 1 ] *= invSX;
+		m1.data[ 2 ] *= invSX;
+
+		m1.data[ 4 ] *= invSY;
+		m1.data[ 5 ] *= invSY;
+		m1.data[ 6 ] *= invSY;
+
+		m1.data[ 8 ] *= invSZ;
+		m1.data[ 9 ] *= invSZ;
+		m1.data[ 10 ] *= invSZ;
+
+		quat.fromMatrix(m1);
+        return quat.euler();
+    }
+
+    void Matrix4x4::setRotationFromEuler(Real x, Real y, Real z) {
+        Matrix4x4 scaleMatrix;
+        Vector3r scaleVector = this->getScale();
+        Matrix4x4::makeScale(scaleMatrix, scaleVector);
+
+        Matrix4x4 fullMatrix;
+        Matrix4x4::makeRotationFromEuler(fullMatrix, x, y, z);
+        fullMatrix.multiply(scaleMatrix);
+
+        this->data[0] = fullMatrix.data[0];
+        this->data[1] = fullMatrix.data[1];
+        this->data[2] = fullMatrix.data[2];
+
+        this->data[4] = fullMatrix.data[4];
+        this->data[5] = fullMatrix.data[5];
+        this->data[6] = fullMatrix.data[6];
+
+        this->data[8] = fullMatrix.data[8];
+        this->data[9] = fullMatrix.data[9];
+        this->data[10] = fullMatrix.data[10];   
+    }
+
+    void Matrix4x4::setRotationFromEuler(const Vector3<Real>& euler) {
+        this->setRotationFromEuler(euler.x, euler.y, euler.z);
+    }
+
+    void Matrix4x4::setRotationFromQuaternion(const Quaternion& quaternion) {
+        Vector3r zero;
+        Vector3r one;
+        zero.set(0.0f, 0.0f, 0.0f);
+        one.set(1.0f, 1.0f, 1.0f);
+        this->buildFromComponents(zero, quaternion, one);
     }
 
     /*
@@ -795,34 +880,56 @@ namespace Core {
     void Matrix4x4::makeRotationFromEuler(Real *rm, Real x, Real y, Real z) {
         if (rm == nullptr) throw NullPointerException("Matrix4x4::makeRotationFromEuler -> 'rm' is null.");
 
-        Real cx = (Real)Math::cos(x);
-        Real sx = (Real)Math::sin(x);
-        Real cy = (Real)Math::cos(y);
-        Real sy = (Real)Math::sin(y);
-        Real cz = (Real)Math::cos(z);
-        Real sz = (Real)Math::sin(z);
-        Real cxsy = cx * sy;
-        Real sxsy = sx * sy;
+		const Real a = Math::cos(x), b = Math::sin(x);
+		const Real c = Math::cos(y), d = Math::sin(y);
+		const Real e = Math::cos(z), f = Math::sin(z);
 
-        rm[0] = cy * cz;
-        rm[1] = -cy * sz;
-        rm[2] = sy;
-        rm[3] = 0.0f;
+        // Ordering: XYZ
+        const Real ae = a * e, af = a * f, be = b * e, bf = b * f;
 
-        rm[4] = cxsy * cz + cx * sz;
-        rm[5] = -cxsy * sz + cx * cz;
-        rm[6] = -sx * cy;
-        rm[7] = 0.0f;
+        rm[ 0 ] = c * e;
+        rm[ 4 ] = - c * f;
+        rm[ 8 ] = d;
 
-        rm[8] = -sxsy * cz + sx * sz;
-        rm[9] = sxsy * sz + sx * cz;
-        rm[10] = cx * cy;
-        rm[11] = 0.0f;
+        rm[ 1 ] = af + be * d;
+        rm[ 5 ] = ae - bf * d;
+        rm[ 9 ] = - b * c;
 
-        rm[12] = 0.0f;
-        rm[13] = 0.0f;
-        rm[14] = 0.0f;
-        rm[15] = 1.0f;
+        rm[ 2 ] = bf - ae * d;
+        rm[ 6 ] = be + af * d;
+        rm[ 10 ] = a * c;
+        
+
+        // Ordering: ZYX
+       /* const Real ae = a * e, af = a * f, be = b * e, bf = b * f;
+
+        rm[ 0 ] = c * e;
+        rm[ 4 ] = be * d - af;
+        rm[ 8 ] = ae * d + bf;
+
+        rm[ 1 ] = c * f;
+        rm[ 5 ] = bf * d + ae;
+        rm[ 9 ] = af * d - be;
+
+        rm[ 2 ] = - d;
+        rm[ 6 ] = b * c;
+        rm[ 10 ] = a * c;*/
+
+        // bottom row
+		rm[ 3 ] = 0;
+		rm[ 7 ] = 0;
+		rm[ 11 ] = 0;
+
+		// last column
+		rm[ 12 ] = 0;
+		rm[ 13 ] = 0;
+		rm[ 14 ] = 0;
+		rm[ 15 ] = 1;
+
+    }
+
+    void Matrix4x4::makeRotationFromEuler(Matrix4x4& m, Real x, Real y, Real z) {
+        Matrix4x4::makeRotationFromEuler(m.data, x, y, z);
     }
 
     /*
@@ -869,6 +976,41 @@ namespace Core {
         Matrix4x4::scale(this->data, out.data, x, y, z);
     }
 
+    Vector3r Matrix4x4::getScale() {
+        Vector3r column0(this->data[0], this->data[1], this->data[2]);
+        Vector3r column1(this->data[4], this->data[5], this->data[6]);
+        Vector3r column2(this->data[8], this->data[9], this->data[10]);
+
+        Vector3r scale(column0.magnitude(), column1.magnitude(), column2.magnitude());
+        return scale;
+    }
+
+    void Matrix4x4::setScale(const Vector3Components<Real>& scale) {
+        this->setScale(scale.x, scale.y, scale.z);
+    }
+
+    void Matrix4x4::setScale(Real x, Real y, Real z) {
+        Vector3r euler = this->getRotationAsEuler();
+        Matrix4x4 eulerMatrix;
+        eulerMatrix.makeRotationFromEuler(eulerMatrix, euler.x, euler.y, euler.z);
+
+        Matrix4x4 fullMatrix;
+        Matrix4x4::makeScale(fullMatrix, x, y, z);
+        fullMatrix.multiply(eulerMatrix);
+
+        this->data[0] = fullMatrix.data[0];
+        this->data[1] = fullMatrix.data[1];
+        this->data[2] = fullMatrix.data[2];
+
+        this->data[4] = fullMatrix.data[4];
+        this->data[5] = fullMatrix.data[5];
+        this->data[6] = fullMatrix.data[6];
+
+        this->data[8] = fullMatrix.data[8];
+        this->data[9] = fullMatrix.data[9];
+        this->data[10] = fullMatrix.data[10];   
+    }
+
     /*
      * Scale the matrix pointed to by [source] by [x], [y], and [z], and store
      * the result in [dest]
@@ -909,6 +1051,17 @@ namespace Core {
             dest[8 + smi] = source[2 + mi] * z;
             dest[12 + smi] = source[3 + mi];
         }
+    }
+
+    void Matrix4x4::makeScale(Matrix4x4& m, Real x, Real y, Real z) {
+        m.setIdentity();
+        m.data[0] = x;
+        m.data[5] = y;
+        m.data[10] = z;
+    }
+
+    void Matrix4x4::makeScale(Matrix4x4& m, const Vector3Components<Real>& scale) {
+        Matrix4x4::makeScale(m, scale.x, scale.y, scale.z);
     }
 
     void Matrix4x4::lookAt(const Vector3Components<Real> &src, const Vector3Components<Real> &target, const Vector3Components<Real> &up) {

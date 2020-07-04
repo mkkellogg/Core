@@ -80,6 +80,7 @@ namespace Core {
         void preTranslate(const Vector3Components<Real>& vector);
         void preTranslate(Real x, Real y, Real z);
         void setTranslation(Real x, Real y, Real z);
+        Vector3r getTranslation();
         static void translate(const Matrix4x4& src, Matrix4x4& out, const Vector3Components<Real>& vector);
         static void translate(const Matrix4x4& src, Matrix4x4& out, Real x, Real y, Real z);
         static void translate(const Real* source, Real* dest, Real x, Real y, Real z);
@@ -90,20 +91,32 @@ namespace Core {
         void preRotate(const Vector3Components<Real>& vector, Real a);
         void preRotate(Real x, Real y, Real z, Real a);
         void makeRotationFromEuler(Real x, Real y, Real z);
+        Vector3r getRotationAsEuler();
+        void setRotationFromEuler(Real x, Real y, Real z);
+        void setRotationFromEuler(const Vector3<Real>& euler);
+        void setRotationFromQuaternion(const Quaternion& quaternion);
         static void makeRotation(Real* rm, Real x, Real y, Real z, Real a);
         static void makeRotation(Matrix4x4& m, Real x, Real y, Real z, Real a);
         static void makeRotationFromEuler(Real* rm, Real x, Real y, Real z);
+        static void makeRotationFromEuler(Matrix4x4& m, Real x, Real y, Real z);
 
         void scale(const Vector3Components<Real>& scale);
         void scale(Real x, Real y, Real z);
         void preScale(Real x, Real y, Real z);
         void scale(Matrix4x4& out, Real x, Real y, Real z) const;
+        Vector3r getScale();
+        void setScale(const Vector3Components<Real>& scale);
+        void setScale(Real x, Real y, Real z);
         static void scale(const Real* source, Real* dest, Real x, Real y, Real z);
         static void preScale(const Real* source, Real* dest, Real x, Real y, Real z);
+        static void makeScale(Matrix4x4& m, Real x, Real y, Real z);
+        static void makeScale(Matrix4x4& m, const Vector3Components<Real>& vector);
 
         void lookAt(const Vector3Components<Real>& src, const Vector3Components<Real>& target, const Vector3Components<Real>& up);
 
     private:
         Real data[SIZE_MATRIX_4X4];
+        static Vector3r zero;
+        static Vector3r one;
     };
 }

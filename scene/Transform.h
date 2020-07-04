@@ -34,6 +34,9 @@ namespace Core {
 
         void translate(const Vector3<Real>& dir, TransformationSpace transformationSpace = TransformationSpace::Local);
         void translate(Real x, Real y, Real z, TransformationSpace transformationSpace = TransformationSpace::Local);
+        void setLocalPosition(Real x, Real y, Real z);
+        void setLocalPosition(const Vector3<Real>& position);
+        Point3r getLocalPosition();
 
         void rotate(const Vector3<Real>& axis, Real angle, TransformationSpace transformationSpace = TransformationSpace::Local);
         void rotate(Real x, Real y, Real z, Real angle, TransformationSpace transformationSpace = TransformationSpace::Local);
