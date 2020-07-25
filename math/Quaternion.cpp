@@ -462,7 +462,12 @@ namespace Core {
         return this->eulerFromRotationMatrix(m1);
     }
 
+    /*
+        This function assumes the upper-left 3x3 section of [mat] is a pure rotation,
+        i.e. it has unit scale.
+    */
     Vector3r Quaternion::eulerFromRotationMatrix(const Matrix4x4& mat) const {
+
         const Real* te = mat.getConstData();
 		const Real m11 = te[ 0 ];
         const Real m12 = te[ 4 ];
@@ -473,8 +478,6 @@ namespace Core {
 		const Real m31 = te[ 2 ];
         const Real m32 = te[ 6 ];
         const Real m33 = te[ 10 ];
-
-		//order = order || this._order;
 
         Real x;
         Real y;
