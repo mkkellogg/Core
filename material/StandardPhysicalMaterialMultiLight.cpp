@@ -24,16 +24,19 @@ namespace Core {
         this->albedo.set(source->albedo.r, source->albedo.g, source->albedo.b, source->albedo.a);
         this->metallic = source->metallic;
         this->roughness = source->roughness;
+        this->opacity = source->opacity;
         this->ambientOcclusion = source->ambientOcclusion;
 
         this->albedoMapEnabled = source->albedoMapEnabled;
         this->normalMapEnabled = source->normalMapEnabled;
         this->roughnessMapEnabled = source->roughnessMapEnabled;
         this->metallicMapEnabled = source->metallicMapEnabled;
+        this->opacityMapEnabled = source->opacityMapEnabled;
 
         this->albedoMap = source->albedoMap;
         this->normalMap = source->normalMap;
         this->roughnessMap = source->roughnessMap;
         this->metallicMap = source->metallicMap;
+        this->opacityMap = source->opacityMap;
     }
 }

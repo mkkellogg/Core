@@ -1048,8 +1048,10 @@ namespace Core {
             "uniform sampler2D normalMap; \n"
             "uniform sampler2D roughnessMap; \n"
             "uniform sampler2D metallicMap; \n"
+            "uniform sampler2D opacityMap; \n"
             "uniform float metallic; \n"
             "uniform float roughness; \n"
+            "uniform float opacity; \n"
             "uniform float ambientOcclusion; \n"
             "in vec4 vColor;\n"
             "in vec3 vNormal;\n"
@@ -1066,6 +1068,7 @@ namespace Core {
             "   int normalMapEnabled = enabledMap & 2; \n"
             "   int roughnessMapEnabled = enabledMap & 4; \n"
             "   int metallicMapEnabled = enabledMap & 8; \n"
+            "   int opacityMapEnabled = enabledMap & 16; \n"
             "   vec4 _albedo; \n"
             "   if (albedoMapEnabled != 0) { \n"
             "       _albedo = texture(albedoMap, vAlbedoUV); \n"
@@ -1091,6 +1094,13 @@ namespace Core {
             "      _metallic = fullMetallic.r; \n"
             "   } else { \n"
             "       _metallic = metallic; \n"
+            "   } \n"
+            "   float _opacity; \n"
+            "   if (opacityMapEnabled != 0) { \n"
+            "      vec4 fullOpacity = texture(opacityMap, vAlbedoUV); \n"
+            "      _opacity = fullOpacity.r; \n"
+            "   } else { \n"
+            "       _opacity = opacity; \n"
             "   } \n"; 
 
         this->StandardPhysical_fragment =   
@@ -1167,13 +1177,14 @@ namespace Core {
             "#include \"ApplySSAO(lightIndex=0)\" \n"
             "void main() {\n"
             "   #include \"StandardPhysicalMain\" \n"
+            "   if (_opacity <= 0.0) discard; \n"  
             "   vec4 curColor = vec4(0.0, 0.0, 0.0, 0.0); \n"
             "   if (" + LIGHT_COUNT + " >= 1 && " + MAX_LIGHTS + " >= 1) curColor += litColorPhysical0(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
             "   checkAndApplySSAO0(vClipPos, curColor); \n"
             "   if (" + LIGHT_COUNT + " >= 2 && " + MAX_LIGHTS + " >= 2) curColor += litColorPhysical1(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
             "   if (" + LIGHT_COUNT + " >= 3 && " + MAX_LIGHTS + " >= 3) curColor += litColorPhysical2(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
             "   if (" + LIGHT_COUNT + " >= 4 && " + MAX_LIGHTS + " >= 4) curColor += litColorPhysical3(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
-            "   out_color = curColor;"
+            "   out_color = vec4(curColor.rgb, _opacity); \n"
             "}\n";
 
         this->AmbientPhysical_vertex =  

@@ -52,8 +52,15 @@ namespace Core {
 
 #ifdef CORE_USE_PRIVATE_INCLUDES
         void setTexturesOnMaterial(WeakPointer<Material> material, WeakPointer<Texture> albedoMap, WeakPointer<Texture> normalMap,
-                                  WeakPointer<Texture> roughnessGlossMap) const;
-        enum class TextureType { Albedo = 0, SpecularMetallic = 1, RoughnessGloss = 2, Normals = 3, _None = 4 };
+                                  WeakPointer<Texture> roughnessGlossMap, WeakPointer<Texture> opacityMap) const;
+        enum class TextureType { 
+            Albedo = 0,
+            SpecularMetallic = 1,
+            RoughnessGloss = 2,
+            Normals = 3,
+            Opacity = 4,
+            _None = 5
+        };
 
         enum class SceneTraverseOrder { PreOrder = 0 };
 
@@ -99,7 +106,7 @@ namespace Core {
         WeakPointer<Texture> loadAITexture(aiMaterial& assimpMaterial, aiTextureType textureType, const std::string& modelPath, TextureFilter filter, UInt32 mipLevel) const;
         void getImportDetails(const aiMaterial* mtl, MaterialImportDescriptor& materialImportDesc, const aiScene& scene, Bool preferPhysicalMaterial) const;
         Bool setupMeshSpecificMaterialWithTextures(const aiScene& scene, const aiMaterial& assimpMaterial, WeakPointer<Texture> diffuseTexture,
-                                                  WeakPointer<Texture> normalsTexture, WeakPointer<Texture> roughnessGlossTexture,
+                                                  WeakPointer<Texture> normalsTexture, WeakPointer<Texture> roughnessGlossTexture, WeakPointer<Texture> opacityTexture,
                                                   UInt32 meshIndex, MaterialImportDescriptor& materialImportDesc) const;
         WeakPointer<Object3D> recursiveProcessModelScene(const aiScene& scene, const aiNode& node,
                                                          std::vector<MaterialImportDescriptor>& materialImportDescriptors,

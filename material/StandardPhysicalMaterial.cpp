@@ -29,18 +29,21 @@ namespace Core {
         if (this->normalMap.isValid()) Graphics::safeReleaseObject(this->normalMap);
         if (this->roughnessMap.isValid()) Graphics::safeReleaseObject(this->roughnessMap);
         if (this->metallicMap.isValid()) Graphics::safeReleaseObject(this->metallicMap);
+        if (this->opacityMap.isValid()) Graphics::safeReleaseObject(this->opacityMap);
     }
 
     void StandardPhysicalMaterial::setInitialParams() {
         this->albedo.set(1.0f, 1.0f, 1.0f, 1.0f);
         this->metallic = 0.9f;
         this->roughness = 0.35f;
+        this->opacity = 1.0f;
         this->ambientOcclusion = 1.0f;
 
         this->albedoMapEnabled = false;
         this->normalMapEnabled = false;
         this->roughnessMapEnabled = false;
         this->metallicMapEnabled = false;
+        this->opacityMapEnabled = false;
 
         this->albedoUVLocation = -1;
         this->normalUVLocation = -1;
@@ -50,9 +53,11 @@ namespace Core {
         this->normalMapLocation = -1;
         this->roughnessMapLocation = -1;
         this->metallicMapLocation = -1;
+        this->opacityMapLocation = -1;
 
         this->metallicLocation = -1;
         this->roughnessLocation = -1;
+        this->opacityLocation = -1;
         this->ambientOcclusionLocation = -1;
         this->enabledMapLocation = -1;
 
@@ -79,6 +84,10 @@ namespace Core {
         this->albedo = albedo;
     }
 
+     void StandardPhysicalMaterial::setOpacity(Real opacity) {
+        this->opacity = opacity;
+    }
+
     void StandardPhysicalMaterial::setAlbedoMap(WeakPointer<Texture> albedoMap) {
         this->albedoMap = albedoMap;
     }
@@ -95,6 +104,10 @@ namespace Core {
         this->metallicMap = metallicMap;
     }
 
+    void StandardPhysicalMaterial::setOpacityMap(WeakPointer<Texture> opacityMap) {
+        this->opacityMap = opacityMap;
+    }
+
     void StandardPhysicalMaterial::setAlbedoMapEnabled(Bool enabled) {
         this->albedoMapEnabled = enabled;
     }
@@ -109,6 +122,10 @@ namespace Core {
 
     void StandardPhysicalMaterial::setMetallicMapEnabled(Bool enabled) {
         this->metallicMapEnabled = enabled;
+    }
+
+    void StandardPhysicalMaterial::setOpacityMapEnabled(Bool enabled) {
+        this->opacityMapEnabled = enabled;
     }
 
     Bool StandardPhysicalMaterial::build() {
@@ -190,6 +207,17 @@ namespace Core {
             this->shader->setUniform1i(this->roughnessMapLocation, textureLoc);
         }
         textureLoc++;
+
+        if (this->opacityMapEnabled) {
+            this->shader->setTexture2D(textureLoc, this->opacityMap->getTextureID());
+            this->shader->setUniform1i(this->opacityMapLocation, textureLoc);
+        }
+        else {
+            this->shader->setUniform1f(this->opacityLocation, this->opacity);
+            this->shader->setTexture2D(textureLoc, this->graphics->getPlaceHolderTexture2D()->getTextureID());
+            this->shader->setUniform1i(this->opacityMapLocation, textureLoc);
+        }
+        textureLoc++;
         
         this->shader->setUniform1f(this->ambientOcclusionLocation, this->ambientOcclusion);
         this->shader->setUniform1i(this->enabledMapLocation, this->getEnabledMapMask());
@@ -202,17 +230,20 @@ namespace Core {
             standardPhysicalMaterial->albedo = this->albedo;
             standardPhysicalMaterial->metallic = this->metallic;
             standardPhysicalMaterial->roughness = this->roughness;
+            standardPhysicalMaterial->opacity = this->opacity;
             standardPhysicalMaterial->ambientOcclusion = this->ambientOcclusion;
 
             standardPhysicalMaterial->albedoMap = this->albedoMap;
             standardPhysicalMaterial->normalMap = this->normalMap;
             standardPhysicalMaterial->roughnessMap = this->roughnessMap;
             standardPhysicalMaterial->metallicMap = this->metallicMap;
+            standardPhysicalMaterial->opacityMap = this->opacityMap;
             
             standardPhysicalMaterial->albedoMapEnabled = this->albedoMapEnabled;
             standardPhysicalMaterial->normalMapEnabled = this->normalMapEnabled;
             standardPhysicalMaterial->roughnessMapEnabled = this->roughnessMapEnabled;
             standardPhysicalMaterial->metallicMapEnabled = this->metallicMapEnabled;
+            standardPhysicalMaterial->opacityMapEnabled = this->opacityMapEnabled;
 
             standardPhysicalMaterial->albedoUVLocation = this->albedoUVLocation;
             standardPhysicalMaterial->normalUVLocation = this->normalUVLocation;
@@ -221,8 +252,10 @@ namespace Core {
             standardPhysicalMaterial->normalMapLocation = this->normalMapLocation;
             standardPhysicalMaterial->roughnessMapLocation = this->roughnessMapLocation;
             standardPhysicalMaterial->metallicMapLocation = this->metallicMapLocation;
+            standardPhysicalMaterial->opacityMapLocation = this->opacityMapLocation;
             standardPhysicalMaterial->metallicLocation = this->metallicLocation;
             standardPhysicalMaterial->roughnessLocation = this->roughnessLocation;
+            standardPhysicalMaterial->opacityLocation = this->opacityLocation;
             standardPhysicalMaterial->ambientOcclusionLocation = this->ambientOcclusionLocation;
             standardPhysicalMaterial->enabledMapLocation = this->enabledMapLocation;
             for (UInt32 i = 0; i < Constants::MaxShaderLights; i++) { 
@@ -256,14 +289,16 @@ namespace Core {
         this->normalMapLocation = this->shader->getUniformLocation("normalMap");
         this->roughnessMapLocation = this->shader->getUniformLocation("roughnessMap");
         this->metallicMapLocation = this->shader->getUniformLocation("metallicMap");
+        this->opacityMapLocation = this->shader->getUniformLocation("opacityMap");
         this->metallicLocation = this->shader->getUniformLocation("metallic");
         this->roughnessLocation = this->shader->getUniformLocation("roughness");
+        this->opacityLocation = this->shader->getUniformLocation("opacity");
         this->ambientOcclusionLocation = this->shader->getUniformLocation("ambientOcclusion");
         this->enabledMapLocation = this->shader->getUniformLocation("enabledMap");
     }
 
     UInt32 StandardPhysicalMaterial::textureCount() {
-        return 4;
+        return 5;
     }
 
     UInt32 StandardPhysicalMaterial::getEnabledMapMask() {
@@ -272,6 +307,7 @@ namespace Core {
         if (this->normalMapEnabled) mask = mask | NORMAL_MAP_MASK;
         if (this->roughnessMapEnabled) mask = mask | ROUGHNESS_MAP_MASK;
         if (this->metallicMapEnabled) mask = mask | METALLIC_MAP_MASK;
+        if (this->opacityMapEnabled) mask = mask | OPACITY_MAP_MASK;
         return mask;
     }
 }

@@ -31,20 +31,24 @@ namespace Core {
         void setRoughness(Real roughness);
         void setAmbientOcclusion(Real ambientOcclusion);
         void setAlbedo(Color albedo);
+        void setOpacity(Real opacity);
         void setAlbedoMap(WeakPointer<Texture> albedoMap);
         void setNormalMap(WeakPointer<Texture> normalMap);
         void setRoughnessMap(WeakPointer<Texture> roughnessMap);
-        void setMetallicMap(WeakPointer<Texture> roughnessMap);
+        void setMetallicMap(WeakPointer<Texture> metallicMap);
+        void setOpacityMap(WeakPointer<Texture> opacityMap);
         void setAlbedoMapEnabled(Bool enabled);
         void setNormalMapEnabled(Bool enabled);
         void setRoughnessMapEnabled(Bool enabled);
         void setMetallicMapEnabled(Bool enabled);
+        void setOpacityMapEnabled(Bool enabled);
 
     protected:
         const UInt32 ALBEDO_MAP_MASK = 0x1;
         const UInt32 NORMAL_MAP_MASK = 0x1 << 1;
         const UInt32 ROUGHNESS_MAP_MASK = 0x1 << 2;
         const UInt32 METALLIC_MAP_MASK = 0x1 << 3;
+        const UInt32 OPACITY_MAP_MASK = 0x1 << 4;
 
         StandardPhysicalMaterial(const std::string& vertexShader, const std::string& fragmentShader, WeakPointer<Graphics> graphics);
         StandardPhysicalMaterial(const std::string& buildInShaderName, WeakPointer<Graphics> graphics);
@@ -55,15 +59,18 @@ namespace Core {
         Real roughness;
         Real ambientOcclusion;
         Color albedo;
+        Real opacity;
         PersistentWeakPointer<Texture> albedoMap;
         PersistentWeakPointer<Texture> normalMap;
         PersistentWeakPointer<Texture> roughnessMap;
         PersistentWeakPointer<Texture> metallicMap;
+        PersistentWeakPointer<Texture> opacityMap;
 
         Bool albedoMapEnabled;
         Bool normalMapEnabled;
         Bool roughnessMapEnabled;
         Bool metallicMapEnabled;
+        Bool opacityMapEnabled;
 
         Int32 albedoUVLocation;
         Int32 normalUVLocation;
@@ -73,11 +80,13 @@ namespace Core {
         Int32 normalMapLocation;
         Int32 roughnessMapLocation;
         Int32 metallicMapLocation;
+        Int32 opacityMapLocation;
 
         Int32 metallicLocation;
         Int32 roughnessLocation;
         Int32 ambientOcclusionLocation;
         Int32 enabledMapLocation;
+        Int32 opacityLocation;
 
         Int32 lightIrradianceMapLocation[Constants::MaxShaderLights];
         Int32 lightSpecularIBLPreFilteredMapLocation[Constants::MaxShaderLights];
