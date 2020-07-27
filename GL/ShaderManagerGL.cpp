@@ -29,6 +29,7 @@ const std::string BONES = _un(Core::StandardUniform::Bones);
 const std::string SKINNING_ENABLED = _un(Core::StandardUniform::SkinningEnabled);
 const std::string SSAO_MAP = _un(Core::StandardUniform::SSAOMap);
 const std::string SSAO_ENABLED = _un(Core::StandardUniform::SSAOEnabled);
+const std::string DEPTH_OUTPUT_OVERRIDE = _un(Core::StandardUniform::DepthOutputOverride);
 
 const std::string MAX_BONES = std::to_string(Core::Constants::MaxBones);
 const std::string MAX_CASCADES = std::to_string(Core::Constants::MaxDirectionalCascades);
@@ -90,6 +91,7 @@ const std::string BONES_DEF = "uniform mat4 " + BONES + "[" + MAX_BONES + "];\n"
 const std::string SKINNING_ENABLED_DEF = "uniform int " + SKINNING_ENABLED + ";\n";
 const std::string SSAO_MAP_DEF = "uniform sampler2D " + SSAO_MAP + ";\n";
 const std::string SSAO_ENABLED_DEF = "uniform int " + SSAO_ENABLED + ";\n";
+const std::string DEPTH_OUTPUT_OVERRIDE_DEF = "uniform int " + DEPTH_OUTPUT_OVERRIDE + ";\n";
 
 // ------------------------------------
 // Single-pass lighting definitions
@@ -525,7 +527,9 @@ namespace Core {
             "const int DIRECTIONAL_LIGHT = 2;\n"
             "const int POINT_LIGHT = 3;\n"
             "const int SPOT_LIGHT = 4;\n"
-            "const int PLANAR_LIGHT = 5;\n";
+            "const int PLANAR_LIGHT = 5;\n"
+            "const int DEPTH_OUTPUT_PARALLEL = 1;\n"
+            "const int DEPTH_OUTPUT_PERSPECTIVE = 2;\n";
 
         this->Lighting_Header_Multi_vertex =
             MAX_CASCADES_DEF
@@ -1017,6 +1021,7 @@ namespace Core {
             "out vec2 vAlbedoUV;\n"
             "out vec2 vNormalUV;\n"
             "out vec4 vWorldPos;\n"
+            "out vec4 vViewPos; \n"
             "out vec4 vClipPos; \n"
             "void main() {\n"
             "    vec4 localPos = " + POSITION + "; \n"
@@ -1024,9 +1029,9 @@ namespace Core {
             "    vec4 localFaceNormal = " + FACE_NORMAL + "; \n"
             "    calculateSkinnedPositionAndNormals(localPos, localNormal, localFaceNormal); \n"
             "    vWorldPos = " +  MODEL_MATRIX + " * localPos;\n"
-            "    vec4 viewSpacePos = " + VIEW_MATRIX + " * vWorldPos;\n"
+            "    vViewPos = " + VIEW_MATRIX + " * vWorldPos;\n"
             "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * vWorldPos;\n"
-            "    vClipPos = " + PROJECTION_MATRIX + " * viewSpacePos; \n"
+            "    vClipPos = " + PROJECTION_MATRIX + " * vViewPos; \n"
             "    vAlbedoUV = " + ALBEDO_UV + ";\n"
             "    vNormalUV = " + NORMAL_UV + ";\n"
             "    vColor = " + COLOR + ";\n"
@@ -1035,13 +1040,14 @@ namespace Core {
             "    vec4 eTangent = " + TANGENT + ";\n"
             "    vTangent = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * eTangent);\n"
             "    vFaceNormal = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * localFaceNormal);\n"
-            "    TRANSFER_LIGHTING(localPos, gl_Position, viewSpacePos) \n"
+            "    TRANSFER_LIGHTING(localPos, gl_Position, vViewPos) \n"
             "}\n";
 
         this->StandardPhysicalVars_fragment =
             CAMERA_POSITION_DEF
             + SSAO_MAP_DEF
-            + SSAO_ENABLED_DEF +
+            + SSAO_ENABLED_DEF
+            + DEPTH_OUTPUT_OVERRIDE_DEF +
             "uniform int enabledMap; \n"
             "uniform vec4 albedo; \n"
             "uniform sampler2D albedoMap; \n"
@@ -1060,6 +1066,7 @@ namespace Core {
             "in vec2 vAlbedoUV;\n"
             "in vec2 vNormalUV;\n"
             "in vec4 vWorldPos;\n"
+            "in vec4 vViewPos; \n"
             "in vec4 vClipPos;\n"
             "out vec4 out_color;\n";
 
@@ -1113,9 +1120,17 @@ namespace Core {
             "#include \"ApplySSAO(lightIndex=0)\" \n"
             "void main() {\n"
             "   #include \"StandardPhysicalMain\" \n"
-            "   vec4 finalColor = litColorPhysical0(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
-            "   checkAndApplySSAO0(vClipPos, finalColor); \n"
-            "   out_color = finalColor; \n"
+            "   if (_opacity <= 0.0) discard; \n"  
+            "   if (" + DEPTH_OUTPUT_OVERRIDE + " == DEPTH_OUTPUT_PARALLEL) {\n"
+            "       out_color = vec4(gl_FragCoord.z, 0.0, 0.0, 0.0);\n"
+            "   } else if (" + DEPTH_OUTPUT_OVERRIDE + " == DEPTH_OUTPUT_PERSPECTIVE) {\n"
+            "       float len = length(vViewPos.xyz);\n"
+            "       out_color = vec4(len, 0.0, 0.0, 0.0);\n"
+            "   } else { \n"
+            "       vec4 finalColor = litColorPhysical0(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
+            "       checkAndApplySSAO0(vClipPos, finalColor); \n"
+            "       out_color = vec4(finalColor.rgb, _opacity); \n"
+            "   } \n"
             "} \n";
 
         this->StandardPhysicalMulti_vertex =  
@@ -1178,13 +1193,21 @@ namespace Core {
             "void main() {\n"
             "   #include \"StandardPhysicalMain\" \n"
             "   if (_opacity <= 0.0) discard; \n"  
-            "   vec4 curColor = vec4(0.0, 0.0, 0.0, 0.0); \n"
-            "   if (" + LIGHT_COUNT + " >= 1 && " + MAX_LIGHTS + " >= 1) curColor += litColorPhysical0(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
-            "   checkAndApplySSAO0(vClipPos, curColor); \n"
-            "   if (" + LIGHT_COUNT + " >= 2 && " + MAX_LIGHTS + " >= 2) curColor += litColorPhysical1(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
-            "   if (" + LIGHT_COUNT + " >= 3 && " + MAX_LIGHTS + " >= 3) curColor += litColorPhysical2(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
-            "   if (" + LIGHT_COUNT + " >= 4 && " + MAX_LIGHTS + " >= 4) curColor += litColorPhysical3(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
-            "   out_color = vec4(curColor.rgb, _opacity); \n"
+            "   if (" + DEPTH_OUTPUT_OVERRIDE + " == DEPTH_OUTPUT_PARALLEL) {\n"
+            "       out_color = vec4(gl_FragCoord.z, 0.0, 0.0, 0.0);\n"
+            "   } else if (" + DEPTH_OUTPUT_OVERRIDE + " == DEPTH_OUTPUT_PERSPECTIVE) {\n"
+            "       float len = length(vViewPos.xyz);\n"
+            "       out_color = vec4(len, 0.0, 0.0, 0.0);\n"
+            "   } else { \n"
+            "       vec4 curColor = vec4(0.0, 0.0, 0.0, 0.0); \n"
+            "       if (" + LIGHT_COUNT + " >= 1 && " + MAX_LIGHTS + " >= 1) curColor += litColorPhysical0(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
+            "       checkAndApplySSAO0(vClipPos, curColor); \n"
+            "       if (" + LIGHT_COUNT + " >= 2 && " + MAX_LIGHTS + " >= 2) curColor += litColorPhysical1(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
+            "       if (" + LIGHT_COUNT + " >= 3 && " + MAX_LIGHTS + " >= 3) curColor += litColorPhysical2(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
+            "       if (" + LIGHT_COUNT + " >= 4 && " + MAX_LIGHTS + " >= 4) curColor += litColorPhysical3(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
+            "       out_color = vec4(curColor.rgb, _opacity); \n"
+            "   } \n"
+
             "}\n";
 
         this->AmbientPhysical_vertex =  

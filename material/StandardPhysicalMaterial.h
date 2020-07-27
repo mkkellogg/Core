@@ -43,6 +43,8 @@ namespace Core {
         void setMetallicMapEnabled(Bool enabled);
         void setOpacityMapEnabled(Bool enabled);
 
+        virtual Bool hasOpacityMap() const override;
+        virtual WeakPointer<Texture> getOpacityMap() override;
     protected:
         const UInt32 ALBEDO_MAP_MASK = 0x1;
         const UInt32 NORMAL_MAP_MASK = 0x1 << 1;

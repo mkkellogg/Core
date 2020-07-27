@@ -135,6 +135,7 @@ set(INCLUDE_FILES
     render/RenderQueue.h
     render/MaterialGroupedRenderQueue.h
     render/ViewDescriptor.h
+    render/DepthOutputOverride.h
     render/RenderTargetException.h
     render/RenderBuffer.h
     render/MeshOutlinePostProcessor.h

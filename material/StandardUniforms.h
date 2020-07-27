@@ -52,8 +52,9 @@ namespace Core {
         Bones = 40,
         SSAOMap = 41,
         SSAOEnabled = 42,
-        _Count = 43,  // Must always be last in the list (before _None)
-        _None = 44,
+        DepthOutputOverride = 43,
+        _Count = 44,  // Must always be last in the list (before _None)
+        _None = 45,
     };
 
     class StandardUniforms {

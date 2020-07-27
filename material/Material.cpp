@@ -34,6 +34,8 @@ namespace Core {
         this->stencilTestEnabled = false;
         this->stencilReadMask = 0xFF;
         this->stencilWriteMask = 0xFF;
+
+        this->customDepthOutput = false;
     }
 
     Material::Material(WeakPointer<Graphics> graphics, WeakPointer<Shader> shader): Material(graphics) {
@@ -306,4 +308,21 @@ namespace Core {
         this->setShader(shader);
         return true;
     }
+
+    void Material::setCustomDepthOutput(Bool customDepthOutput) {
+        this->customDepthOutput = customDepthOutput;
+    }
+
+    Bool Material::hasCustomDepthOutput() const {
+        return this->customDepthOutput;
+    }
+
+    Bool Material::hasOpacityMap() const {
+        return false;
+    }
+
+    WeakPointer<Texture> Material::getOpacityMap() {
+        return WeakPointer<Texture>::nullPtr();
+    }
+
 }

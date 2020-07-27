@@ -18,6 +18,7 @@
 #include "../animation/Object3DSkeletonNode.h"
 #include "RenderException.h"
 #include "RenderPath.h"
+#include "DepthOutputOverride.h"
 
 namespace Core {
 
@@ -95,7 +96,13 @@ namespace Core {
     Bool MeshRenderer::forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh, Bool isStatic,
                                            const std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting) {
         Matrix4x4 tempMatrix;
-        WeakPointer<Material> material = viewDescriptor.overrideMaterial.isValid() ? viewDescriptor.overrideMaterial : this->material;
+        WeakPointer<Material> material;
+        Bool renderingDepthOutput = this->material->hasCustomDepthOutput() && viewDescriptor.depthOutputOverride != DepthOutputOverride::None;
+        if (!renderingDepthOutput && viewDescriptor.overrideMaterial.isValid()) {
+            material = viewDescriptor.overrideMaterial;
+        } else {
+            material = this->material;
+        }
         WeakPointer<Shader> shader = material->getShader();
         this->graphics->activateShader(shader);
 
@@ -157,9 +164,13 @@ namespace Core {
             if (ssaoEnabledLoc >= 0) shader->setUniform1i(ssaoEnabledLoc, 0.0);
         }
 
+        Int32 depthOutputOverrideLoc = material->getShaderLocation(StandardUniform::DepthOutputOverride); 
+        if (depthOutputOverrideLoc >= 0) {
+            shader->setUniform1i(depthOutputOverrideLoc, (UInt32)viewDescriptor.depthOutputOverride);
+        }
 
         RenderPath renderPath = material->getRenderPath();
-        if (lights.size() > 0 && material->isLit()) {
+        if (lights.size() > 0 && material->isLit() && !renderingDepthOutput) {
 
             Int32 lightCountLoc = material->getShaderLocation(StandardUniform::LightCount);
             if (renderPath != RenderPath::SinglePassMultiLight) {
@@ -401,7 +412,7 @@ namespace Core {
             }
 
         } else {
-            if (material->isLit()) {
+            if (material->isLit() && !renderingDepthOutput) {
                 throw RenderException("MeshRenderer::render() -> Rendering lit material with no lights!");    
             }
 

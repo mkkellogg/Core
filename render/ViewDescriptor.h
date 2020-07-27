@@ -4,6 +4,7 @@
 #include "../base/BitMask.h"
 #include "../math/Matrix4x4.h"
 #include "ToneMapType.h"
+#include "DepthOutputOverride.h"
 
 namespace Core {
 
@@ -37,6 +38,7 @@ namespace Core {
         WeakPointer<Texture2D> ssaoMap;
         Real ssaoRadius = 1.5f;
         Real ssaoBias = 0.05f;
+        DepthOutputOverride depthOutputOverride = DepthOutputOverride::None;
     };
 
 }

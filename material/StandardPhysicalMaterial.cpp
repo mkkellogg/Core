@@ -310,4 +310,12 @@ namespace Core {
         if (this->opacityMapEnabled) mask = mask | OPACITY_MAP_MASK;
         return mask;
     }
+
+    Bool StandardPhysicalMaterial::hasOpacityMap() const {
+        return this->opacityMapEnabled;
+    }
+
+    WeakPointer<Texture> StandardPhysicalMaterial::getOpacityMap() {
+        return this->opacityMap;
+    }
 }

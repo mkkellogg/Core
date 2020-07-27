@@ -15,6 +15,7 @@ namespace Core {
     // forward declarations
     class Shader;
     class Graphics;
+    class Texture;
 
     class Material : public CoreObject {
     public:
@@ -81,6 +82,12 @@ namespace Core {
         void setStencilFailActionStencil(RenderState::StencilAction action);
         RenderState::StencilAction getStencilFailActionDepth() const;
         void setStencilFailActionDepth(RenderState::StencilAction action);
+
+        void setCustomDepthOutput(Bool hasCustomDepthOutput);
+        Bool hasCustomDepthOutput() const;
+
+        virtual Bool hasOpacityMap() const;
+        virtual WeakPointer<Texture> getOpacityMap();
         
     protected:
         virtual void copyTo(WeakPointer<Material> target);
@@ -120,6 +127,8 @@ namespace Core {
 
         Bool faceCullingEnabled;
         RenderState::CullFace cullFace;
+
+        Bool customDepthOutput;
 
     };
 }

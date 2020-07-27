@@ -53,7 +53,8 @@ namespace Core {
             "SKINNING_ENABLED",
             "BONES",
             "SSAOMAP",
-            "SSAOENABLED"
+            "SSAOENABLED",
+            "RENDERING_SHADOWS"
         };
 
         nameToUniform =
@@ -100,7 +101,8 @@ namespace Core {
             {uniformNames[(UInt16)StandardUniform::SkinningEnabled], StandardUniform::SkinningEnabled},
             {uniformNames[(UInt16)StandardUniform::Bones], StandardUniform::Bones},
             {uniformNames[(UInt16)StandardUniform::SSAOMap], StandardUniform::SSAOMap},
-            {uniformNames[(UInt16)StandardUniform::SSAOEnabled], StandardUniform::SSAOEnabled}
+            {uniformNames[(UInt16)StandardUniform::SSAOEnabled], StandardUniform::SSAOEnabled},
+            {uniformNames[(UInt16)StandardUniform::DepthOutputOverride], StandardUniform::DepthOutputOverride}
         };
     }
 

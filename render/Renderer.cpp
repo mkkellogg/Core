@@ -39,6 +39,7 @@
 #include "../light/PointLight.h"
 #include "../light/AmbientIBLLight.h"
 #include "../geometry/Mesh.h"
+#include "DepthOutputOverride.h"
 #include "ReflectionProbe.h"
 
 
@@ -457,8 +458,12 @@ namespace Core {
                             this->perspectiveShadowMapCameraObject->getTransform().getWorldMatrix().copy(lightTransform);
                             Vector4u renderTargetDimensions = shadowMapRenderTarget->getViewport();
                             this->perspectiveShadowMapCamera->setRenderTarget(shadowMapRenderTarget);  
-                            this->perspectiveShadowMapCamera->setAspectRatioFromDimensions(renderTargetDimensions.z, renderTargetDimensions.w);                     
-                            this->render(perspectiveShadowMapCamera, toRender, dummyLights, this->distanceMaterial, true);
+                            this->perspectiveShadowMapCamera->setAspectRatioFromDimensions(renderTargetDimensions.z, renderTargetDimensions.w);
+                            ViewDescriptor viewDesc;
+                            this->getViewDescriptorForCamera(this->perspectiveShadowMapCamera, viewDesc);
+                            viewDesc.overrideMaterial = this->distanceMaterial;
+                            viewDesc.depthOutputOverride = DepthOutputOverride::Parallel;
+                            this->render(viewDesc, toRender, dummyLights, true);
                         }
                     }
                     break;
@@ -483,6 +488,7 @@ namespace Core {
                                                                        this->orthoShadowMapCamera->getAutoClearRenderBuffers(), viewDesc);
                                 viewDesc.overrideMaterial = this->depthMaterial;
                                 viewDesc.renderTarget = directionalLight->getShadowMap(i);
+                                viewDesc.depthOutputOverride = DepthOutputOverride::Perspective;
                                 this->render(viewDesc, toRender, dummyLights, true);
                             }
                         }
@@ -630,7 +636,11 @@ namespace Core {
         ViewDescriptor viewDescriptor;
         this->getViewDescriptorForCamera(camera, viewDescriptor);
 
+        DepthOutputOverride saveDepthOutputOverride = viewDescriptor.depthOutputOverride;
+        viewDescriptor.depthOutputOverride = DepthOutputOverride::Parallel;
         this->renderPositionsAndNormals(viewDescriptor, objects);
+        viewDescriptor.depthOutputOverride = saveDepthOutputOverride;
+
         this->ssaoMaterial->setViewPositions(this->depthPositionsRenderTarget->getColorTexture(0));
         this->ssaoMaterial->setViewNormals(this->depthNormalsRenderTarget->getColorTexture(0));
         this->ssaoMaterial->setRadius(viewDescriptor.ssaoRadius);
