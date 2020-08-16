@@ -191,6 +191,9 @@ namespace Core {
         this->setShaderSource(ShaderType::Vertex, "Common", ShaderManagerGL::Common_vertex);
         this->setShaderSource(ShaderType::Fragment, "Common", ShaderManagerGL::Common_fragment);
 
+        this->setShaderSource(ShaderType::Vertex, "Copy", ShaderManagerGL::Copy_vertex);
+        this->setShaderSource(ShaderType::Fragment, "Copy", ShaderManagerGL::Copy_fragment);
+
         this->setShaderSource(ShaderType::Vertex, "Skybox", ShaderManagerGL::Skybox_vertex);
         this->setShaderSource(ShaderType::Fragment, "Skybox", ShaderManagerGL::Skybox_fragment);
 
@@ -341,6 +344,29 @@ namespace Core {
             "    newNormal = normalize(newNormal); \n "
             "    return newNormal; \n "
             "} \n ";
+
+        this->Copy_vertex =  
+            "#version 330\n"
+            + POSITION_DEF
+            + PROJECTION_MATRIX_DEF
+            + VIEW_MATRIX_DEF
+            + MODEL_MATRIX_DEF +
+            "out vec2 vUV;\n"
+            "void main() {\n"
+            "    vec4 localPos = " + POSITION + "; \n"
+            "    vUV = localPos.xy / 2.0 + 0.5; \n"
+            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * localPos;\n"
+            "}\n";
+
+        this->Copy_fragment =  
+            "#version 330 core \n"
+            "out vec4 out_color; \n"
+            "in vec2 vUV; \n"
+            + TEXTURE0_DEF + 
+            "void main()  \n"
+            "{ \n"
+            "    out_color = texture(" + TEXTURE0 + ", vUV); \n"
+            "}\n";
 
         this->Equirectangular_vertex =
             "#version 330 core\n "
@@ -550,13 +576,14 @@ namespace Core {
             "    int _outlineSize = 10; \n"
             "    vec2 texelSize = 1.0 / vec2(textureSize(" + TEXTURE0 + ", 0)); \n"
             "    float result = 0.0; \n"
+            "    vec4 sampleColor; \n"
             "    for (int x = -_outlineSize; x < _outlineSize; ++x)  \n"
             "    { \n"
             "        for (int y = -_outlineSize; y < _outlineSize; ++y)  \n"
             "        { \n"
             "            vec2 offset = vec2(float(x), float(y)) * texelSize; \n"
-            "            vec4 sample = texture(" + TEXTURE0 + ", vUV + offset); \n"
-            "            result = max(max(max(sample.r, sample.g), sample.b), result); \n"
+            "            sampleColor = texture(" + TEXTURE0 + ", vUV + offset); \n"
+            "            result = max(max(max(sampleColor.r, sampleColor.g), sampleColor.b), result); \n"
             "            if (result > 0.0) { \n"
             "                result = 1.0; \n"
             "                break; \n"
@@ -566,8 +593,8 @@ namespace Core {
             "           break; \n"
             "        }\n"
             "    } \n"
-            "    out_color = result * vec4(1.0, 0.0, 0.0, 1.0); \n"
-           //"       out_color = texture(" + TEXTURE0 + ", vUV); \n"
+            //"    out_color = result * vec4(sampleColor.rgb, 1.0); \n"
+           "       out_color = result * vec4(outlineColor.rgb, 1.0); \n"
             "}\n";
 
         this->Blur_vertex =  

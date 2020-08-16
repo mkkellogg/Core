@@ -4,8 +4,8 @@ namespace Core {
 
     enum class DepthOutputOverride {
         None = 0,
-        Parallel = 1,
-        Perspective = 2
+        Depth = 1,
+        Distance = 2
     };
     
 }

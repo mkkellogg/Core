@@ -129,7 +129,10 @@ namespace Core {
         Vector4u mipLevelScaledViewport = destination->getViewportForMipLevel(targetMipLevel);
         this->setViewport(mipLevelScaledViewport.x, mipLevelScaledViewport.y, mipLevelScaledViewport.z, mipLevelScaledViewport.w);
 
-        this->getRenderer()->renderObjectDirect(fullScreenQuadObject, renderCamera, material);
+        WeakPointer<Material> savedOverideMaterial = renderCamera->getOverrideMaterial();
+        renderCamera->setOverrideMaterial(material);
+        this->getRenderer()->renderObjectDirect(fullScreenQuadObject, renderCamera);
+        renderCamera->setOverrideMaterial(savedOverideMaterial);
 
         material->setFaceCullingEnabled(faceCullingEnabled);
         material->setDepthTestEnabled(depthTestEnabled);

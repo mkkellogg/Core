@@ -29,6 +29,7 @@ namespace Core {
         this->ssaoRadius = 1.5f;
         this->ssaoBias = 0.05f;
         this->depthOutputOverride = DepthOutputOverride::None;
+        this->overrideMaterial = WeakPointer<Material>::nullPtr();
     }
 
     Camera::~Camera() {

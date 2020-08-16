@@ -161,7 +161,10 @@ namespace Core {
         }
 
         for (auto camera : cameraList) {
-            this->render(camera, objectList, lightList, overrideMaterial, true);
+            WeakPointer<Material> savedOverrideMaterial = camera->getOverrideMaterial();
+            if (overrideMaterial.isValid()) camera->setOverrideMaterial(overrideMaterial);
+            this->render(camera, objectList, lightList, true);
+            if (overrideMaterial.isValid()) camera->setOverrideMaterial(savedOverrideMaterial);
         }
     }
 
@@ -211,8 +214,7 @@ namespace Core {
         }
     }
 
-    void Renderer::renderObjectBasic(WeakPointer<Object3D> rootObject, WeakPointer<Camera> camera,
-                                     WeakPointer<Material> overrideMaterial, Bool matchPhysicalPropertiesWithLighting) {
+    void Renderer::renderObjectBasic(WeakPointer<Object3D> rootObject, WeakPointer<Camera> camera, Bool matchPhysicalPropertiesWithLighting) {
         static std::vector<WeakPointer<Object3D>> objectList;
         objectList.resize(0);
 
@@ -220,17 +222,16 @@ namespace Core {
         rootObject->getTransform().getAncestorWorldMatrix(baseTransformation);
 
         this->collectSceneObjectsAndComputeTransforms(rootObject, objectList, baseTransformation);
-        this->render(camera, objectList, overrideMaterial, matchPhysicalPropertiesWithLighting);
+        this->render(camera, objectList, matchPhysicalPropertiesWithLighting);
     }
 
-    void Renderer::render(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects,
-                          WeakPointer<Material> overrideMaterial, Bool matchPhysicalPropertiesWithLighting) {
+    void Renderer::render(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, Bool matchPhysicalPropertiesWithLighting) {
         static std::vector<WeakPointer<Light>> lightList;   
-        this->render(camera, objects, lightList, overrideMaterial, matchPhysicalPropertiesWithLighting);                 
+        this->render(camera, objects, lightList, matchPhysicalPropertiesWithLighting);                 
     }
 
     void Renderer::render(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, std::vector<WeakPointer<Light>>& lights,
-                          WeakPointer<Material> overrideMaterial, Bool matchPhysicalPropertiesWithLighting) {
+                          Bool matchPhysicalPropertiesWithLighting) {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         WeakPointer<RenderTarget> nextRenderTarget = camera->getRenderTarget();
         if (!nextRenderTarget.isValid()) {
@@ -239,7 +240,7 @@ namespace Core {
 
         RenderTargetCube * renderTargetCube = dynamic_cast<RenderTargetCube*>(nextRenderTarget.get());
         if (renderTargetCube != nullptr) {
-            this->renderCube(camera, objects, lights, overrideMaterial, matchPhysicalPropertiesWithLighting);
+            this->renderCube(camera, objects, lights, matchPhysicalPropertiesWithLighting);
         }
         else {
 
@@ -257,24 +258,22 @@ namespace Core {
                 ssaoMap = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->ssaoBlurRenderTarget->getColorTexture());
             }
 
-            this->renderStandard(camera, objects, lights, overrideMaterial, matchPhysicalPropertiesWithLighting, ssaoMap);
+            this->renderStandard(camera, objects, lights, matchPhysicalPropertiesWithLighting, ssaoMap);
         }
     }
 
     void Renderer::renderStandard(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects,
-                                  std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial,
-                                  Bool matchPhysicalPropertiesWithLighting, WeakPointer<Texture2D> ssaoMap) {
+                                  std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting,
+                                  WeakPointer<Texture2D> ssaoMap) {
         ViewDescriptor viewDescriptor;
         this->getViewDescriptorForCamera(camera, viewDescriptor);
-        viewDescriptor.overrideMaterial = overrideMaterial;
         viewDescriptor.ssaoMap = ssaoMap;
         viewDescriptor.ssaoEnabled = ssaoMap.isValid();
         render(viewDescriptor, objects, lights, matchPhysicalPropertiesWithLighting);
     }
 
     void Renderer::renderCube(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects,
-                    std::vector<WeakPointer<Light>>& lights, WeakPointer<Material> overrideMaterial,
-                    Bool matchPhysicalPropertiesWithLighting) {
+                    std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting) {
 
         static bool initialized = false;
         static Matrix4x4 forward;
@@ -309,8 +308,8 @@ namespace Core {
             cameraTransform.multiply(orientations[i]);
             this->getViewDescriptorTransformations(cameraTransform, camera->getProjectionMatrix(),
                                                    camera->getAutoClearRenderBuffers(), viewDescriptor);
-            viewDescriptor.overrideMaterial = overrideMaterial;
             viewDescriptor.cubeFace = i;
+            viewDescriptor.overrideMaterial = camera->getOverrideMaterial();
             render(viewDescriptor, objects, lights, matchPhysicalPropertiesWithLighting);
         }
     }
@@ -391,18 +390,15 @@ namespace Core {
         }
     }
 
-    void Renderer::renderObjectDirect(WeakPointer<Object3D> object, WeakPointer<Camera> camera, WeakPointer<Material> overrideMaterial,
-                                      Bool matchPhysicalPropertiesWithLighting) {
+    void Renderer::renderObjectDirect(WeakPointer<Object3D> object, WeakPointer<Camera> camera, Bool matchPhysicalPropertiesWithLighting) {
         static std::vector<WeakPointer<Light>> lightList;
-        this->renderObjectDirect(object, camera, lightList, overrideMaterial, matchPhysicalPropertiesWithLighting);
+        this->renderObjectDirect(object, camera, lightList, matchPhysicalPropertiesWithLighting);
     }
 
     void Renderer::renderObjectDirect(WeakPointer<Object3D> object, WeakPointer<Camera> camera,
-                                     std::vector<WeakPointer<Light>>& lightList, WeakPointer<Material> overrideMaterial,
-                                     Bool matchPhysicalPropertiesWithLighting) {
+                                     std::vector<WeakPointer<Light>>& lightList, Bool matchPhysicalPropertiesWithLighting) {
         ViewDescriptor viewDescriptor;
         this->getViewDescriptorForCamera(camera, viewDescriptor);
-        viewDescriptor.overrideMaterial = overrideMaterial;
         this->renderObjectDirect(object, viewDescriptor, lightList, matchPhysicalPropertiesWithLighting);
     }
 
@@ -461,7 +457,7 @@ namespace Core {
                             ViewDescriptor viewDesc;
                             this->getViewDescriptorForCamera(this->perspectiveShadowMapCamera, viewDesc);
                             viewDesc.overrideMaterial = this->distanceMaterial;
-                            viewDesc.depthOutputOverride = DepthOutputOverride::Parallel;
+                            viewDesc.depthOutputOverride = DepthOutputOverride::Depth;
                             this->render(viewDesc, toRender, dummyLights, true);
                         }
                     }
@@ -487,7 +483,7 @@ namespace Core {
                                                                        this->orthoShadowMapCamera->getAutoClearRenderBuffers(), viewDesc);
                                 viewDesc.overrideMaterial = this->depthMaterial;
                                 viewDesc.renderTarget = directionalLight->getShadowMap(i);
-                                viewDesc.depthOutputOverride = DepthOutputOverride::Perspective;
+                                viewDesc.depthOutputOverride = DepthOutputOverride::Distance;
                                 this->render(viewDesc, toRender, dummyLights, true);
                             }
                         }
@@ -521,6 +517,8 @@ namespace Core {
             viewDescriptor.hdrRenderTarget = WeakPointer<RenderTarget2D>::nullPtr();
             viewDescriptor.renderTarget = cameraRenderTarget;
         }
+        viewDescriptor.overrideMaterial = camera->getOverrideMaterial();
+        viewDescriptor.depthOutputOverride = camera->getDepthOutputOverride();
         viewDescriptor.hdrExposure = camera->getHDRExposure();
         viewDescriptor.hdrGamma = camera->getHDRGamma();
         viewDescriptor.skybox = camera->isSkyboxEnabled() ? &camera->getSkybox() : nullptr;
@@ -604,12 +602,15 @@ namespace Core {
 
         probeCam->setRenderTarget(reflectionProbe->getSceneRenderTarget());
 
-        this->render(probeCam, renderObjects, renderLights, WeakPointer<Material>::nullPtr(), true);
+        this->render(probeCam, renderObjects, renderLights, true);
         reflectionProbe->getSceneRenderTarget()->getColorTexture()->updateMipMaps();
 
         if(!specularOnly) {
             probeCam->setRenderTarget(reflectionProbe->getIrradianceMap());
-            this->renderObjectBasic(reflectionProbe->getSkyboxObject(), probeCam, reflectionProbe->getIrradianceRendererMaterial());
+            WeakPointer<Material> savedOverrideMaterial = probeCam->getOverrideMaterial();
+            probeCam->setOverrideMaterial(reflectionProbe->getIrradianceRendererMaterial());
+            this->renderObjectBasic(reflectionProbe->getSkyboxObject(), probeCam);
+            probeCam->setOverrideMaterial(savedOverrideMaterial);
         }
         
         WeakPointer<RenderTargetCube> specularIBLPreFilteredMap = reflectionProbe->getSpecularIBLPreFilteredMap();
@@ -620,7 +621,10 @@ namespace Core {
             specularIBLPreFilteredMap->setMipLevel(i);
             Real roughness = (Real)i / (Real)(specularIBLPreFilteredMap->getMaxMipLevel());
             specularIBLPreFilteredRendererMaterial->setRoughness(roughness);
-            this->renderObjectBasic(reflectionProbe->getSkyboxObject(), probeCam, specularIBLPreFilteredRendererMaterial);
+            WeakPointer<Material> savedOverrideMaterial = probeCam->getOverrideMaterial();
+            probeCam->setOverrideMaterial(specularIBLPreFilteredRendererMaterial);
+            this->renderObjectBasic(reflectionProbe->getSkyboxObject(), probeCam);
+            probeCam->setOverrideMaterial(savedOverrideMaterial);
         }
 
         WeakPointer<RenderTarget2D> specularIBLBRDFMap = reflectionProbe->getSpecularIBLBRDFMap();
@@ -636,7 +640,7 @@ namespace Core {
         this->getViewDescriptorForCamera(camera, viewDescriptor);
 
         DepthOutputOverride saveDepthOutputOverride = viewDescriptor.depthOutputOverride;
-        viewDescriptor.depthOutputOverride = DepthOutputOverride::Parallel;
+        viewDescriptor.depthOutputOverride = DepthOutputOverride::Depth;
         this->renderPositionsAndNormals(viewDescriptor, objects);
         viewDescriptor.depthOutputOverride = saveDepthOutputOverride;
 

@@ -80,6 +80,7 @@ set(INCLUDE_FILES
     material/Material.h
     material/BaseMaterial.h
     material/BaseLitMaterial.h
+    material/CopyMaterial.h
     material/ShaderMaterial.h
     material/DepthOnlyMaterial.h
     material/DistanceOnlyMaterial.h
@@ -256,6 +257,7 @@ set(SOURCE_FILES
     material/Material.cpp
     material/BaseMaterial.cpp
     material/BaseLitMaterial.cpp
+    material/CopyMaterial.cpp
     material/DepthOnlyMaterial.cpp
     material/DistanceOnlyMaterial.cpp
     material/BasicMaterial.cpp
