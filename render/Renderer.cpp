@@ -39,7 +39,6 @@
 #include "../light/PointLight.h"
 #include "../light/AmbientIBLLight.h"
 #include "../geometry/Mesh.h"
-#include "DepthOutputOverride.h"
 #include "ReflectionProbe.h"
 
 

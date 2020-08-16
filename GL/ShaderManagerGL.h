@@ -31,6 +31,12 @@ namespace Core {
         std::string Outline_geometry;
         std::string Outline_fragment;
 
+        std::string BufferOutline_vertex;
+        std::string BufferOutline_fragment;
+
+        std::string Blur_vertex;
+        std::string Blur_fragment;
+
         std::string Lighting_Common_vertex;
         std::string Lighting_Common_fragment;
 

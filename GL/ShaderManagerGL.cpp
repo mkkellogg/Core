@@ -201,6 +201,12 @@ namespace Core {
         this->setShaderSource(ShaderType::Geometry, "Outline", ShaderManagerGL::Outline_geometry);
         this->setShaderSource(ShaderType::Fragment, "Outline", ShaderManagerGL::Outline_fragment);
 
+        this->setShaderSource(ShaderType::Vertex, "BufferOutline", ShaderManagerGL::BufferOutline_vertex);
+        this->setShaderSource(ShaderType::Fragment, "BufferOutline", ShaderManagerGL::BufferOutline_fragment);
+
+        this->setShaderSource(ShaderType::Vertex, "Blur", ShaderManagerGL::Blur_vertex);
+        this->setShaderSource(ShaderType::Fragment, "Blur", ShaderManagerGL::Blur_fragment);
+
         this->setShaderSource(ShaderType::Vertex, "LightingCommon", ShaderManagerGL::Lighting_Common_vertex);
         this->setShaderSource(ShaderType::Fragment, "LightingCommon", ShaderManagerGL::Lighting_Common_fragment);
 
@@ -518,6 +524,86 @@ namespace Core {
             "   vec4 rColor = vec4(color.rgb, alpha); \n"
             "   out_color = rColor;\n"
             "}\n";
+
+        this->BufferOutline_vertex =  
+            "#version 330\n"
+            + POSITION_DEF
+            + PROJECTION_MATRIX_DEF
+            + VIEW_MATRIX_DEF
+            + MODEL_MATRIX_DEF +
+            "out vec2 vUV;\n"
+            "void main() {\n"
+            "    vec4 localPos = " + POSITION + "; \n"
+            "    vUV = localPos.xy / 2.0 + 0.5; \n"
+            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * localPos;\n"
+            "}\n";
+
+        this->BufferOutline_fragment =  
+            "#version 330 core \n"
+            "out vec4 out_color; \n"
+            "in vec2 vUV; \n"
+            + TEXTURE0_DEF + 
+            "uniform int outlineSize; \n"
+            "uniform vec4 outlineColor; \n"
+            "void main()  \n"
+            "{ \n"
+            "    int _outlineSize = 10; \n"
+            "    vec2 texelSize = 1.0 / vec2(textureSize(" + TEXTURE0 + ", 0)); \n"
+            "    float result = 0.0; \n"
+            "    for (int x = -_outlineSize; x < _outlineSize; ++x)  \n"
+            "    { \n"
+            "        for (int y = -_outlineSize; y < _outlineSize; ++y)  \n"
+            "        { \n"
+            "            vec2 offset = vec2(float(x), float(y)) * texelSize; \n"
+            "            vec4 sample = texture(" + TEXTURE0 + ", vUV + offset); \n"
+            "            result = max(max(max(sample.r, sample.g), sample.b), result); \n"
+            "            if (result > 0.0) { \n"
+            "                result = 1.0; \n"
+            "                break; \n"
+            "            }\n"
+            "        } \n"
+            "        if (result > 0.0) { \n"
+            "           break; \n"
+            "        }\n"
+            "    } \n"
+            "    out_color = result * vec4(1.0, 0.0, 0.0, 1.0); \n"
+           //"       out_color = texture(" + TEXTURE0 + ", vUV); \n"
+            "}\n";
+
+        this->Blur_vertex =  
+            "#version 330\n"
+            + POSITION_DEF
+            + ALBEDO_UV_DEF
+            + PROJECTION_MATRIX_DEF
+            + VIEW_MATRIX_DEF
+            + MODEL_MATRIX_DEF +
+            "out vec2 vUV;\n"
+            "void main() {\n"
+            "    vec4 localPos = " + POSITION + "; \n"
+            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * localPos;\n"
+            "    vUV = " + ALBEDO_UV + "; \n"
+            "}\n";
+
+        this->Blur_fragment =  
+            "#version 330 core \n"
+            "out float out_color; \n"
+            "in vec2 vUV; \n"
+            "uniform sampler2D blueInput; \n"
+            "uniform int kernelSize; \n"
+            "void main()  \n"
+            "{ \n"
+            "    vec2 texelSize = 1.0 / vec2(textureSize(blueInput, 0)); \n"
+            "    float result = 0.0; \n"
+            "    for (int x = -kernelSize; x < kernelSize; ++x)  \n"
+            "    { \n"
+            "        for (int y = -kernelSize; y < kernelSize; ++y)  \n"
+            "        { \n"
+            "            vec2 offset = vec2(float(x), float(y)) * texelSize; \n"
+            "            result += texture(blueInput, vUV + offset).r; \n"
+            "        } \n"
+            "    } \n"
+            "    out_color = result / (kernelSize * kernelSize); \n"
+            "}   \n";
 
         this->Lighting_Common_vertex = "";
 

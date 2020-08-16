@@ -14,6 +14,7 @@
 #include "../util/WeakPointer.h"
 #include "../light/LightType.h"
 #include "../base/BitMask.h"
+#include "DepthOutputOverride.h"
 
 namespace Core {
 

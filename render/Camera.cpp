@@ -28,6 +28,7 @@ namespace Core {
         this->ssaoEnabled = false;
         this->ssaoRadius = 1.5f;
         this->ssaoBias = 0.05f;
+        this->depthOutputOverride = DepthOutputOverride::None;
     }
 
     Camera::~Camera() {
@@ -260,6 +261,22 @@ namespace Core {
 
     Real Camera::getSSAOBias() {
         return this->ssaoBias;
+    }
+
+    WeakPointer<Material> Camera::getOverrideMaterial() {
+        return this->overrideMaterial;
+    }
+
+    void Camera::setOverrideMaterial(WeakPointer<Material> overrideMaterial) {
+        this->overrideMaterial = overrideMaterial;
+    }
+
+    DepthOutputOverride Camera::getDepthOutputOverride() {
+        return this->depthOutputOverride;
+    }
+
+    void Camera::setDepthOutputOverride(DepthOutputOverride depthOutputOverride) {
+        this->depthOutputOverride = depthOutputOverride;
     }
 
     void Camera::buildPerspectiveProjectionMatrix(Real fov, Real aspectRatio, Real nearP, Real farP, Matrix4x4& out) {

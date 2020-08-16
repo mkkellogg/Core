@@ -97,6 +97,7 @@ set(INCLUDE_FILES
     material/SSAOMaterial.h
     material/SSAOBlurMaterial.h
     material/OutlineMaterial.h
+    material/BufferOutlineMaterial.h
     material/SkyboxMaterial.h
     material/PhysicalSkyboxMaterial.h
     material/IrradianceRendererMaterial.h
@@ -271,6 +272,7 @@ set(SOURCE_FILES
     material/SSAOMaterial.cpp
     material/SSAOBlurMaterial.cpp
     material/OutlineMaterial.cpp
+    material/BufferOutlineMaterial.cpp
     material/SkyboxMaterial.cpp
     material/PhysicalSkyboxMaterial.cpp
     material/IrradianceRendererMaterial.cpp

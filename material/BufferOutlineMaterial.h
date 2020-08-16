@@ -13,26 +13,29 @@ namespace Core {
     class Engine;
     class Texture;
 
-    class SSAOBlurMaterial : public BaseMaterial {
+    class BufferOutlineMaterial : public BaseMaterial {
         friend class Engine;
 
     public:
-        virtual ~SSAOBlurMaterial();
+        virtual ~BufferOutlineMaterial();
         virtual Bool build() override;
-        virtual Int32 getShaderLocation(StandardAttribute attribute, UInt32 offset = 0) override;
+        virtual Int32 getShaderLocation(StandardUniform uniform, UInt32 offset = 0) override;
         virtual void sendCustomUniformsToShader() override;
         virtual WeakPointer<Material> clone() override;
         virtual void copyTo(WeakPointer<Material> targetMaterial) override;
         virtual void bindShaderVarLocations() override;
 
-        void setSSAOInput(WeakPointer<Texture> ssaoInput);
+        void setOutlineColor(Color color);
+        void setOutlineSize(UInt32 outlineSize);
 
     private:
-        SSAOBlurMaterial(WeakPointer<Graphics> graphics);
+        BufferOutlineMaterial(WeakPointer<Graphics> graphics);
 
-        Int32 ssaoInputLocation;
-        Int32 albedoUVLocation;
+        Int32 silhouetteLocation;
+        Int32 outlineColorLocation;
+        Int32 outlineSizeLocation;
 
-        PersistentWeakPointer<Texture> ssaoInput;
+        Color outlineColor;
+        UInt32 outlineSize;
     };
 }

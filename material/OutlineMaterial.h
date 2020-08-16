@@ -9,6 +9,7 @@ namespace Core {
 
     // forward declarations
     class Engine;
+    class Texture;
 
     class OutlineMaterial: public BaseMaterial {
         friend class Engine;
@@ -25,6 +26,9 @@ namespace Core {
         void setPctExtend(Real extend);
         void setAbsExtend(Real extend);
 
+        void setHasOpacityMap(Bool hasOpacityMap);
+        void setOpacityMap(WeakPointer<Texture> opacityMap);
+
     private:
         OutlineMaterial(WeakPointer<Graphics> graphics);
 
@@ -33,9 +37,15 @@ namespace Core {
         Real pctExtend;
         Real absExtend;
 
+        Bool hasOpacityMap;
+        PersistentWeakPointer<Texture> opacityMap;
+
         Int32 outlineColorLocation;
         Int32 edgeWidthLocation;
         Int32 pctExtendLocation;
         Int32 absExtendLocation;
+        Int32 opacityMapEnabledLocation;
+        Int32 opacityMapLocation;
+
     };
 }

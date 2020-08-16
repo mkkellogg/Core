@@ -3,6 +3,8 @@
 #include "../Engine.h"
 #include "../Graphics.h"
 #include "../material/ShaderManager.h"
+#include "../image/Texture.h"
+#include "../image/Texture2D.h"
 
 namespace Core {
 
@@ -11,11 +13,13 @@ namespace Core {
         this->edgeWidthLocation = -1;
         this->pctExtendLocation = -1;
         this->absExtendLocation = -1;
+        this->opacityMapLocation = -1;
 
         this->outlineColor.set(1.0, 0.0, 1.0, 1.0);
         this->edgeWidth = 0.005;
         this->pctExtend = 0.0;
         this->absExtend = 0.0025;
+        this->hasOpacityMap = false;
     }
 
     void OutlineMaterial::setOutlineColor(Color color) {
@@ -34,6 +38,14 @@ namespace Core {
         this->absExtend = extend;
     }
 
+    void OutlineMaterial::setHasOpacityMap(Bool hasOpacityMap) {
+        this->hasOpacityMap = hasOpacityMap;
+    }
+
+    void OutlineMaterial::setOpacityMap(WeakPointer<Texture> opacityMap) {
+        this->opacityMap = opacityMap;
+    }
+
     Bool OutlineMaterial::build() {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         ShaderManager& shaderManager = graphics->getShaderManager();
@@ -49,7 +61,15 @@ namespace Core {
         this->shader->setUniform1f(this->edgeWidthLocation, this->edgeWidth);
         this->shader->setUniform1f(this->pctExtendLocation, this->pctExtend);
         this->shader->setUniform1f(this->absExtendLocation, this->absExtend);
-        
+        if (this->hasOpacityMap) {
+            this->shader->setUniform1f(this->opacityMapEnabledLocation, 1.0);
+            this->shader->setTexture2D(0, this->opacityMap->getTextureID());
+            this->shader->setUniform1i(this->opacityMapLocation, 0);
+        } else {
+            this->shader->setUniform1f(this->opacityMapEnabledLocation, 0.0);
+            this->shader->setTexture2D(0, this->graphics->getPlaceHolderTexture2D()->getTextureID());
+            this->shader->setUniform1i(this->opacityMapLocation, 0);
+        }
     }
 
     void OutlineMaterial::copyTo(WeakPointer<Material> target) {
@@ -82,5 +102,7 @@ namespace Core {
         this->edgeWidthLocation = this->shader->getUniformLocation("edgeWidth");
         this->pctExtendLocation = this->shader->getUniformLocation("pctExtend");
         this->absExtendLocation = this->shader->getUniformLocation("absExtend");
+        this->opacityMapEnabledLocation = this->shader->getUniformLocation("opacityMapEnabled");
+        this->opacityMapLocation = this->shader->getUniformLocation("opacityMap");
     }
 }

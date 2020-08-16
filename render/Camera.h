@@ -11,12 +11,14 @@
 #include "../geometry/Ray.h"
 #include "../scene/Skybox.h"
 #include "../image/CubeTexture.h"
+#include "../render/DepthOutputOverride.h"
 
 namespace Core {
 
     // forward declarations
     class Engine;
     class RenderTarget;
+    class Material;
 
     class Camera : public Object3DComponent {
         friend class Engine;
@@ -78,6 +80,12 @@ namespace Core {
         void setSSAOBias(Real bias);
         Real getSSAOBias();
 
+        WeakPointer<Material> getOverrideMaterial();
+        void setOverrideMaterial(WeakPointer<Material> overrideMaterial);
+
+        DepthOutputOverride getDepthOutputOverride();
+        void setDepthOutputOverride(DepthOutputOverride depthOutputOverride);
+
         static void buildPerspectiveProjectionMatrix(Real fov, Real aspectRatio, Real near, Real far, Matrix4x4& out);
         static void buildOrthographicProjectionMatrix(Real top, Real bottom, Real left, Real right, Real near, Real far, Matrix4x4& matrix);
 
@@ -120,5 +128,9 @@ namespace Core {
         Bool ssaoEnabled;
         Real ssaoRadius;
         Real ssaoBias;
+
+        PersistentWeakPointer<Material> overrideMaterial;
+        DepthOutputOverride depthOutputOverride;
+        
     };
 }
