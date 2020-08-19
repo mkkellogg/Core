@@ -573,13 +573,13 @@ namespace Core {
             "uniform vec4 outlineColor; \n"
             "void main()  \n"
             "{ \n"
-            "    int _outlineSize = 10; \n"
+            "    int _outlineSize = outlineSize; \n"
             "    vec2 texelSize = 1.0 / vec2(textureSize(" + TEXTURE0 + ", 0)); \n"
             "    float result = 0.0; \n"
             "    vec4 sampleColor; \n"
-            "    for (int x = -_outlineSize; x < _outlineSize; ++x)  \n"
+            "    for (int x = -_outlineSize; x <= _outlineSize; ++x)  \n"
             "    { \n"
-            "        for (int y = -_outlineSize; y < _outlineSize; ++y)  \n"
+            "        for (int y = -_outlineSize; y <= _outlineSize; ++y)  \n"
             "        { \n"
             "            vec2 offset = vec2(float(x), float(y)) * texelSize; \n"
             "            sampleColor = texture(" + TEXTURE0 + ", vUV + offset); \n"
@@ -600,36 +600,66 @@ namespace Core {
         this->Blur_vertex =  
             "#version 330\n"
             + POSITION_DEF
-            + ALBEDO_UV_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
             + MODEL_MATRIX_DEF +
             "out vec2 vUV;\n"
             "void main() {\n"
             "    vec4 localPos = " + POSITION + "; \n"
+            "    vUV = localPos.xy / 2.0 + 0.5; \n"
             "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * localPos;\n"
-            "    vUV = " + ALBEDO_UV + "; \n"
             "}\n";
 
         this->Blur_fragment =  
             "#version 330 core \n"
-            "out float out_color; \n"
+            "out vec4 out_color; \n"
             "in vec2 vUV; \n"
-            "uniform sampler2D blueInput; \n"
+            + TEXTURE0_DEF + 
             "uniform int kernelSize; \n"
             "void main()  \n"
             "{ \n"
-            "    vec2 texelSize = 1.0 / vec2(textureSize(blueInput, 0)); \n"
-            "    float result = 0.0; \n"
-            "    for (int x = -kernelSize; x < kernelSize; ++x)  \n"
+           /* "    int _kernelSize = kernelSize; \n"
+            "    vec2 texelSize = 1.0 / vec2(textureSize(" + TEXTURE0 + ", 0)); \n"
+            "    vec4 result = vec4(0.0, 0.0, 0.0, 0.0); \n"
+            "    for (int x = -_kernelSize; x < _kernelSize; ++x)  \n"
             "    { \n"
-            "        for (int y = -kernelSize; y < kernelSize; ++y)  \n"
+            "        for (int y = -_kernelSize; y < _kernelSize; ++y)  \n"
             "        { \n"
             "            vec2 offset = vec2(float(x), float(y)) * texelSize; \n"
-            "            result += texture(blueInput, vUV + offset).r; \n"
+            "            result += texture(" + TEXTURE0 + ", vUV + offset); \n"
             "        } \n"
             "    } \n"
-            "    out_color = result / (kernelSize * kernelSize); \n"
+            "    out_color = result / (kernelSize * kernelSize); \n"*/
+
+            "    float Pi = 6.28318530718; // Pi*2 \n"
+            "    vec2 iResolution = vec2(textureSize(" + TEXTURE0 + ", 0)); \n"
+
+            "    // GAUSSIAN BLUR SETTINGS {{{\n"
+            "    float Directions = 16.0; // BLUR DIRECTIONS (Default 16.0 - More is better but slower)\n"
+            "    float Quality = 3.0; // BLUR QUALITY (Default 4.0 - More is better but slower)\n"
+            "    float Size = float(kernelSize); // BLUR SIZE (Radius)\n"
+            "    // GAUSSIAN BLUR SETTINGS }}}\n"
+        
+            "    vec2 Radius = Size/iResolution.xy;\n"
+            
+            "    // Normalized pixel coordinates (from 0 to 1)\n"
+            "    vec2 uv = gl_FragCoord.xy/iResolution.xy;\n"
+            "    // Pixel colour\n"
+            "    vec4 Color = texture(" + TEXTURE0 + ", uv);\n"
+            
+            "    // Blur calculations\n"
+            "    for( float d=0.0; d<Pi; d+=Pi/Directions)\n"
+            "    {\n"
+            "        for(float i=1.0/Quality; i<=1.0; i+=1.0/Quality)\n"
+            "        {\n"
+            "            Color += texture(" + TEXTURE0 + ", uv+vec2(cos(d),sin(d))*Radius*i);		\n"
+            "        }\n"
+            "    }\n"
+            
+            "    // Output to screen\n"
+            "    Color /= Quality * Directions - 15.0;\n"
+            "    out_color =  Color;\n"
+
             "}   \n";
 
         this->Lighting_Common_vertex = "";
@@ -641,8 +671,8 @@ namespace Core {
             "const int POINT_LIGHT = 3;\n"
             "const int SPOT_LIGHT = 4;\n"
             "const int PLANAR_LIGHT = 5;\n"
-            "const int DEPTH_OUTPUT_PARALLEL = 1;\n"
-            "const int DEPTH_OUTPUT_PERSPECTIVE = 2;\n";
+            "const int DEPTH_OUTPUT_DEPTH = 1;\n"
+            "const int DEPTH_OUTPUT_DISTANCE = 2;\n";
 
         this->Lighting_Header_Multi_vertex =
             MAX_CASCADES_DEF
@@ -1220,7 +1250,7 @@ namespace Core {
             "      vec4 fullOpacity = texture(opacityMap, vAlbedoUV); \n"
             "      _opacity = fullOpacity.r; \n"
             "   } else { \n"
-            "       _opacity = opacity; \n"
+            "      _opacity = opacity; \n"
             "   } \n"; 
 
         this->StandardPhysical_fragment =   
@@ -1234,9 +1264,9 @@ namespace Core {
             "void main() {\n"
             "   #include \"StandardPhysicalMain\" \n"
             "   if (_opacity <= 0.0) discard; \n"  
-            "   if (" + DEPTH_OUTPUT_OVERRIDE + " == DEPTH_OUTPUT_PARALLEL) {\n"
+            "   if (" + DEPTH_OUTPUT_OVERRIDE + " == DEPTH_OUTPUT_DEPTH) {\n"
             "       out_color = vec4(gl_FragCoord.z, 0.0, 0.0, 0.0);\n"
-            "   } else if (" + DEPTH_OUTPUT_OVERRIDE + " == DEPTH_OUTPUT_PERSPECTIVE) {\n"
+            "   } else if (" + DEPTH_OUTPUT_OVERRIDE + " == DEPTH_OUTPUT_DISTANCE) {\n"
             "       float len = length(vViewPos.xyz);\n"
             "       out_color = vec4(len, 0.0, 0.0, 0.0);\n"
             "   } else { \n"
@@ -1306,9 +1336,9 @@ namespace Core {
             "void main() {\n"
             "   #include \"StandardPhysicalMain\" \n"
             "   if (_opacity <= 0.0) discard; \n"  
-            "   if (" + DEPTH_OUTPUT_OVERRIDE + " == DEPTH_OUTPUT_PARALLEL) {\n"
+            "   if (" + DEPTH_OUTPUT_OVERRIDE + " == DEPTH_OUTPUT_DEPTH) {\n"
             "       out_color = vec4(gl_FragCoord.z, 0.0, 0.0, 0.0);\n"
-            "   } else if (" + DEPTH_OUTPUT_OVERRIDE + " == DEPTH_OUTPUT_PERSPECTIVE) {\n"
+            "   } else if (" + DEPTH_OUTPUT_OVERRIDE + " == DEPTH_OUTPUT_DISTANCE) {\n"
             "       float len = length(vViewPos.xyz);\n"
             "       out_color = vec4(len, 0.0, 0.0, 0.0);\n"
             "   } else { \n"
@@ -1320,7 +1350,6 @@ namespace Core {
             "       if (" + LIGHT_COUNT + " >= 4 && " + MAX_LIGHTS + " >= 4) curColor += litColorPhysical3(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
             "       out_color = vec4(curColor.rgb, _opacity); \n"
             "   } \n"
-
             "}\n";
 
         this->AmbientPhysical_vertex =  
@@ -2246,7 +2275,6 @@ namespace Core {
         this->SSAOBlur_vertex =  
             "#version 330\n"
             + POSITION_DEF
-            + ALBEDO_UV_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
             + MODEL_MATRIX_DEF +
@@ -2254,7 +2282,7 @@ namespace Core {
             "void main() {\n"
             "    vec4 localPos = " + POSITION + "; \n"
             "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * localPos;\n"
-            "    vUV = " + ALBEDO_UV + "; \n"
+            "    vUV = localPos.xy / 2.0 + 0.5; \n"
             "}\n";
 
         this->SSAOBlur_fragment =  

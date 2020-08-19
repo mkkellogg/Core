@@ -609,7 +609,7 @@ namespace Core {
             probeCam->setRenderTarget(reflectionProbe->getIrradianceMap());
             WeakPointer<Material> savedOverrideMaterial = probeCam->getOverrideMaterial();
             probeCam->setOverrideMaterial(reflectionProbe->getIrradianceRendererMaterial());
-            this->renderObjectBasic(reflectionProbe->getSkyboxObject(), probeCam);
+            this->renderObjectBasic(reflectionProbe->getSkyboxObject(), probeCam, true);
             probeCam->setOverrideMaterial(savedOverrideMaterial);
         }
         
@@ -623,7 +623,7 @@ namespace Core {
             specularIBLPreFilteredRendererMaterial->setRoughness(roughness);
             WeakPointer<Material> savedOverrideMaterial = probeCam->getOverrideMaterial();
             probeCam->setOverrideMaterial(specularIBLPreFilteredRendererMaterial);
-            this->renderObjectBasic(reflectionProbe->getSkyboxObject(), probeCam);
+            this->renderObjectBasic(reflectionProbe->getSkyboxObject(), probeCam, true);
             probeCam->setOverrideMaterial(savedOverrideMaterial);
         }
 

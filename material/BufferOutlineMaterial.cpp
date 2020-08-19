@@ -41,7 +41,7 @@ namespace Core {
 
     void BufferOutlineMaterial::sendCustomUniformsToShader() {
         this->shader->setUniform4f(this->outlineColorLocation, this->outlineColor.r, this->outlineColor.g, this->outlineColor.b, this->outlineColor.a);
-        this->shader->setUniform1f(this->outlineSize, this->outlineSize);
+        this->shader->setUniform1i(this->outlineSizeLocation, this->outlineSize);
     }
 
     WeakPointer<Material> BufferOutlineMaterial::clone() {

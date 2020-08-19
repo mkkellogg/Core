@@ -131,7 +131,7 @@ namespace Core {
 
         WeakPointer<Material> savedOverideMaterial = renderCamera->getOverrideMaterial();
         renderCamera->setOverrideMaterial(material);
-        this->getRenderer()->renderObjectDirect(fullScreenQuadObject, renderCamera);
+        this->getRenderer()->renderObjectDirect(fullScreenQuadObject, renderCamera, true);
         renderCamera->setOverrideMaterial(savedOverideMaterial);
 
         material->setFaceCullingEnabled(faceCullingEnabled);

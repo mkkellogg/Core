@@ -60,7 +60,7 @@ namespace Core {
         renderCamera->setAutoClearRenderBuffer(Core::RenderBufferType::Depth, true);
         renderCamera->setOverrideMaterial(equirectangularMaterial);
         cubeMeshObj->getTransform().lookAt(Core::Point3r(0.f, 0.0f, -1.0f));
-        Engine::instance()->getGraphicsSystem()->getRenderer()->renderObjectBasic(cubeMeshObj, renderCamera);
+        Engine::instance()->getGraphicsSystem()->getRenderer()->renderObjectBasic(cubeMeshObj, renderCamera, true);
 
         Graphics::safeReleaseObject(equirectangularTexture);
         WeakPointer<CubeTexture> cubeMap = WeakPointer<Texture>::dynamicPointerCast<CubeTexture>(renderTarget->getColorTexture());

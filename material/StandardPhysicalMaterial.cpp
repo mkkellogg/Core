@@ -66,6 +66,8 @@ namespace Core {
             this->lightSpecularIBLPreFilteredMapLocation[i] = -1;
             this->lightSpecularIBLBRDFMapLocation[i] = -1;
         }
+
+        this->depthOutputOverrideLocation = -1;
     }
 
     void StandardPhysicalMaterial::setMetallic(Real metallic) {
@@ -159,6 +161,8 @@ namespace Core {
                 return this->lightSpecularIBLBRDFMapLocation[offset];
             case StandardUniform::LightSpecularIBLPreFilteredMap:
                 return this->lightSpecularIBLPreFilteredMapLocation[offset];
+            case StandardUniform::DepthOutputOverride:
+                return this->depthOutputOverrideLocation;
             default:
                 return -1;
         }
@@ -295,6 +299,7 @@ namespace Core {
         this->opacityLocation = this->shader->getUniformLocation("opacity");
         this->ambientOcclusionLocation = this->shader->getUniformLocation("ambientOcclusion");
         this->enabledMapLocation = this->shader->getUniformLocation("enabledMap");
+        this->depthOutputOverrideLocation = this->shader->getUniformLocation(StandardUniform::DepthOutputOverride);
     }
 
     UInt32 StandardPhysicalMaterial::textureCount() {

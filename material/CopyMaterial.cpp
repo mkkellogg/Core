@@ -16,7 +16,7 @@ namespace Core {
     Bool CopyMaterial::build() {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         ShaderManager& shaderManager = graphics->getShaderManager();
-        this->shader = shaderManager.getShader("BufferOutline");
+        this->shader = shaderManager.getShader("Copy");
         graphics->activateShader(this->shader);
         this->bindShaderVarLocations();
         return true;

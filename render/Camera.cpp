@@ -30,6 +30,7 @@ namespace Core {
         this->ssaoBias = 0.05f;
         this->depthOutputOverride = DepthOutputOverride::None;
         this->overrideMaterial = WeakPointer<Material>::nullPtr();
+        this->skyboxEnabled = false;
     }
 
     Camera::~Camera() {

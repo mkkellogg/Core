@@ -32,10 +32,10 @@ namespace Core {
         }
     }
 
-    void MeshRenderer::setRenderStateForMaterial(WeakPointer<Material> material) {
+    void MeshRenderer::setRenderStateForMaterial(WeakPointer<Material> material, Bool renderingDepthOutput) {
         this->graphics->setColorWriteEnabled(material->getColorWriteEnabled());
         this->graphics->setRenderStyle(material->getRenderStyle());
-        if (material->getBlendingMode() != RenderState::BlendingMode::None) {
+        if (material->getBlendingMode() != RenderState::BlendingMode::None && !renderingDepthOutput) {
             graphics->setBlendingEnabled(true);
             if (material->getBlendingMode() == RenderState::BlendingMode::Custom) {
                 graphics->setBlendingEquation(material->getBlendingEquation());
@@ -106,7 +106,7 @@ namespace Core {
         WeakPointer<Shader> shader = material->getShader();
         this->graphics->activateShader(shader);
 
-        this->setRenderStateForMaterial(material);
+        this->setRenderStateForMaterial(material, renderingDepthOutput);
         
         // send custom uniforms first so that the renderer can override if necessary.
         material->sendCustomUniformsToShader();
@@ -416,11 +416,17 @@ namespace Core {
                 throw RenderException("MeshRenderer::render() -> Rendering lit material with no lights!");    
             }
 
+            Int32 lightCountLoc = material->getShaderLocation(StandardUniform::LightCount);
             Int32 lightEnabledLoc = material->getShaderLocation(StandardUniform::LightEnabled, 0);
             Int32 lightShadowsEnabledLoc = material->getShaderLocation(StandardUniform::LightShadowsEnabled, 0);
 
             if (lightEnabledLoc >= 0) shader->setUniform1i(lightEnabledLoc, 0);
             if (lightShadowsEnabledLoc >= 0) shader->setUniform1i(lightShadowsEnabledLoc, 0);
+            if (lightCountLoc >= 0) shader->setUniform1i(lightCountLoc, 0);
+
+            if (mesh->getName().compare("Bush") == 0) {
+                
+            }
 
             this->drawMesh(mesh);
         }

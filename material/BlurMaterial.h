@@ -13,24 +13,26 @@ namespace Core {
     class Engine;
     class Texture;
 
-    class SSAOBlurMaterial : public BaseMaterial {
+    class BlurMaterial : public BaseMaterial {
         friend class Engine;
 
     public:
-        virtual ~SSAOBlurMaterial();
+        virtual ~BlurMaterial();
         virtual Bool build() override;
+        virtual Int32 getShaderLocation(StandardUniform uniform, UInt32 offset = 0) override;
         virtual void sendCustomUniformsToShader() override;
         virtual WeakPointer<Material> clone() override;
         virtual void copyTo(WeakPointer<Material> targetMaterial) override;
         virtual void bindShaderVarLocations() override;
 
-        void setSSAOInput(WeakPointer<Texture> ssaoInput);
+        void setKernelSize(UInt32 kernelSize);
 
     private:
-        SSAOBlurMaterial(WeakPointer<Graphics> graphics);
+        BlurMaterial(WeakPointer<Graphics> graphics);
 
-        Int32 ssaoInputLocation;
+        Int32 inputLocation;
+        Int32 kernelSizeLocation;
 
-        PersistentWeakPointer<Texture> ssaoInput;
+        UInt32 kernelSize;
     };
 }

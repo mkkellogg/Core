@@ -93,6 +93,8 @@ namespace Core {
         Int32 lightIrradianceMapLocation[Constants::MaxShaderLights];
         Int32 lightSpecularIBLPreFilteredMapLocation[Constants::MaxShaderLights];
         Int32 lightSpecularIBLBRDFMapLocation[Constants::MaxShaderLights];
+
+        Int32 depthOutputOverrideLocation;
     
     private:
         void setInitialParams();

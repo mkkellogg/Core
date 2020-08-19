@@ -22,17 +22,6 @@ namespace Core {
         return true;
     }
 
-    Int32 SSAOBlurMaterial::getShaderLocation(StandardAttribute attribute, UInt32 offset) {
-        Int32 attributeLocation = BaseMaterial::getShaderLocation(attribute, offset);
-        if (attributeLocation >= 0) return attributeLocation;
-        switch (attribute) {
-            case StandardAttribute::AlbedoUV:
-                return this->albedoUVLocation;
-            default:
-                return -1;
-        }
-    }
-
     void SSAOBlurMaterial::sendCustomUniformsToShader() {
         UInt32 textureLoc = 0;
         this->shader->setTexture2D(textureLoc, this->ssaoInput->getTextureID());
@@ -60,7 +49,6 @@ namespace Core {
     void SSAOBlurMaterial::bindShaderVarLocations() {
         BaseMaterial::bindShaderVarLocations();
         this->ssaoInputLocation = this->shader->getUniformLocation("ssaoInput");
-        this->albedoUVLocation = this->shader->getAttributeLocation(StandardAttribute::AlbedoUV);
     }
 
     void SSAOBlurMaterial::setSSAOInput(WeakPointer<Texture> ssaoInput) {
