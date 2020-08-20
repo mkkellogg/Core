@@ -648,17 +648,21 @@ namespace Core {
             "    vec4 Color = texture(" + TEXTURE0 + ", uv);\n"
             
             "    // Blur calculations\n"
+            "    float totalAlpha = 0.0; \n"
+            "    float totalWeight = 0.0; \n"
             "    for( float d=0.0; d<Pi; d+=Pi/Directions)\n"
             "    {\n"
             "        for(float i=1.0/Quality; i<=1.0; i+=1.0/Quality)\n"
             "        {\n"
-            "            Color += texture(" + TEXTURE0 + ", uv+vec2(cos(d),sin(d))*Radius*i);		\n"
+            "            vec4 sample =  texture(" + TEXTURE0 + ", uv+vec2(cos(d),sin(d))*Radius*i); \n"
+            "            Color += sample;		\n"
+            "            totalAlpha += sample.a; \n"
+             "           totalWeight += 1.0; \n"
             "        }\n"
             "    }\n"
             
             "    // Output to screen\n"
-            "    Color /= Quality * Directions - 15.0;\n"
-            "    out_color =  Color;\n"
+            "    out_color =  vec4(Color.rgb / totalAlpha, Color.a / totalWeight);\n"
 
             "}   \n";
 

@@ -78,6 +78,7 @@ set(INCLUDE_FILES
     asset/AssetLoader.h
     asset/ModelLoader.h
     material/Material.h
+    material/MaterialState.h
     material/BaseMaterial.h
     material/BaseLitMaterial.h
     material/CopyMaterial.h
@@ -256,6 +257,7 @@ set(SOURCE_FILES
     light/AmbientLight.cpp
     light/AmbientIBLLight.cpp
     material/Material.cpp
+    material/MaterialState.cpp
     material/BaseMaterial.cpp
     material/BaseLitMaterial.cpp
     material/CopyMaterial.cpp

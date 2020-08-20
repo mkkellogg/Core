@@ -9,32 +9,10 @@
 namespace Core {
 
     Material::Material(WeakPointer<Graphics> graphics): graphics(graphics) {
-        this->ready = false;
-        this->colorWriteEnabled = true;
-
-        this->blendingMode = RenderState::BlendingMode::None;
-        this->blendingEquation = RenderState::BlendingEquation::Add;
-        this->srcBlendingFactor = RenderState::BlendingFactor::One;
-        this->destBlendingFactor = RenderState::BlendingFactor::Zero;
-        this->renderStyle = RenderStyle::Fill;
-        this->renderPath = RenderPath::Forward;
-        this->renderQueueID = (UInt16)EngineRenderQueue::Geometry;
-
         this->lit = false;
         this->physical = false;
         this->skinningEnabled = false;
-        
-        this->depthWriteEnabled = true;
-        this->depthTestEnabled = true;
-        this->depthFunction = RenderState::DepthFunction::LessThanOrEqual;
-
-        this->faceCullingEnabled = true;
-        this->cullFace = RenderState::CullFace::Back;
-
-        this->stencilTestEnabled = false;
-        this->stencilReadMask = 0xFF;
-        this->stencilWriteMask = 0xFF;
-
+        this->ready = false;
         this->customDepthOutput = false;
     }
 
@@ -55,67 +33,67 @@ namespace Core {
     }
 
     Bool Material::getColorWriteEnabled() const {
-        return this->colorWriteEnabled;
+        return this->materialState.colorWriteEnabled;
     }
 
     void Material::setColorWriteEnabled(Bool enabled) {
-        this->colorWriteEnabled = enabled;
+        this->materialState.colorWriteEnabled = enabled;
     }
 
     RenderState::BlendingEquation Material::getBlendingEquation() const {
-        return this->blendingEquation;
+        return this->materialState.blendingEquation;
     }
 
     void Material::setBlendingEquation(RenderState::BlendingEquation equation) {
-        this->blendingEquation = equation;
+        this->materialState.blendingEquation = equation;
     }
 
     RenderState::BlendingFactor Material::getSourceBlendingFactor() const {
-        return this->srcBlendingFactor;
+        return this->materialState.srcBlendingFactor;
     }
 
     void Material::setSourceBlendingFactor(RenderState::BlendingFactor factor) {
-        this->srcBlendingFactor = factor;
+        this->materialState.srcBlendingFactor = factor;
     }
 
     RenderState::BlendingFactor Material::getDestBlendingFactor() const {
-        return this->destBlendingFactor;
+        return this->materialState.destBlendingFactor;
     }
 
     void Material::setDestBlendingFactor(RenderState::BlendingFactor factor) {
-        this->destBlendingFactor = factor;
+        this->materialState.destBlendingFactor = factor;
     }
 
     RenderStyle Material::getRenderStyle() const {
-        return this->renderStyle;
+        return this->materialState.renderStyle;
     }
 
     void Material::setRenderStyle(RenderStyle style) {
-        this->renderStyle = style;
+        this->materialState.renderStyle = style;
     }
 
     RenderPath Material::getRenderPath() const {
-        return this->renderPath;
+        return this->materialState.renderPath;
     }
 
     void Material::setRenderPath(RenderPath path) {
-        this->renderPath = path;
+        this->materialState.renderPath = path;
     }
 
     RenderState::BlendingMode Material::getBlendingMode() const {
-        return this->blendingMode;
+        return this->materialState.blendingMode;
     }
 
     void Material::setBlendingMode(RenderState::BlendingMode mode) {
-        this->blendingMode = mode;
+        this->materialState.blendingMode = mode;
     }
 
     UInt16 Material::getRenderQueueID() const {
-        return this->renderQueueID;
+        return this->materialState.renderQueueID;
     }
 
     void Material::setRenderQueueID(UInt16 renderQueueID) {
-        this->renderQueueID = renderQueueID;
+        this->materialState.renderQueueID = renderQueueID;
     }
 
     Bool Material::isLit() const {
@@ -147,107 +125,107 @@ namespace Core {
     }
 
     Bool Material::getDepthWriteEnabled() const {
-        return this->depthWriteEnabled;
+        return this->materialState.depthWriteEnabled;
     }
 
     void Material::setDepthWriteEnabled(Bool enabled) {
-        this->depthWriteEnabled = enabled;
+        this->materialState.depthWriteEnabled = enabled;
     }
 
     Bool Material::getDepthTestEnabled() const {
-        return this->depthTestEnabled;
+        return this->materialState.depthTestEnabled;
     }
 
     void Material::setDepthTestEnabled(Bool enabled) {
-        this->depthTestEnabled = enabled;
+        this->materialState.depthTestEnabled = enabled;
     }
 
     RenderState::DepthFunction Material::getDepthFunction() {
-        return this->depthFunction;
+        return this->materialState.depthFunction;
     }
 
     void Material::setDepthFunction(RenderState::DepthFunction depthFunction) {
-        this->depthFunction = depthFunction;
+        this->materialState.depthFunction = depthFunction;
     }
 
     Bool Material::getFaceCullingEnabled() const {
-        return this->faceCullingEnabled;
+        return this->materialState.faceCullingEnabled;
     }
 
     void Material::setFaceCullingEnabled(Bool enabled) {
-        this->faceCullingEnabled = enabled;
+        this->materialState.faceCullingEnabled = enabled;
     }
 
     RenderState::CullFace Material::getCullFace() {
-        return this->cullFace;
+        return this->materialState.cullFace;
     }
 
     void Material::setCullFace(RenderState::CullFace cullFace) {
-        this->cullFace = cullFace;
+        this->materialState.cullFace = cullFace;
     }
 
     Bool Material::getStencilTestEnabled() const {
-        return this->stencilTestEnabled;
+        return this->materialState.stencilTestEnabled;
     }
 
     void Material::setStencilTestEnabled(Bool enabled) {
-        this->stencilTestEnabled = enabled;
+        this->materialState.stencilTestEnabled = enabled;
     }
     
     Byte Material::getStencilRef() const {
-        return this->stencilRef;
+        return this->materialState.stencilRef;
     }
     
     void Material::setStencilRef(Byte ref) {
-        this->stencilRef = ref;
+        this->materialState.stencilRef = ref;
     }
     
     Byte Material::getStencilReadMask() const {
-        return this->stencilReadMask;
+        return this->materialState.stencilReadMask;
     }
     
     void Material::setStencilReadMask(Byte mask) {
-        this->stencilReadMask = mask;
+        this->materialState.stencilReadMask = mask;
     }
     
     Byte Material::getStencilWriteMask() const {
-        return this->stencilWriteMask;
+        return this->materialState.stencilWriteMask;
     }
     
     void Material::setStencilWriteMask(Byte mask) {
-        this->stencilWriteMask = mask;
+        this->materialState.stencilWriteMask = mask;
     }
     
     RenderState::StencilFunction Material::getStencilComparisonFunction() const {
-        return this->stencilComparisonFunction;
+        return this->materialState.stencilComparisonFunction;
     }
     
     void Material::setStencilComparisonFunction(RenderState::StencilFunction function) {
-        this->stencilComparisonFunction = function;
+        this->materialState.stencilComparisonFunction = function;
     }
     
     RenderState::StencilAction Material::getStencilAllPassAction() const {
-        return this->stencilAllPassAction;
+        return this->materialState.stencilAllPassAction;
     }
     
     void Material::setStencilAllPassAction(RenderState::StencilAction action) {
-        this->stencilAllPassAction = action;
+        this->materialState.stencilAllPassAction = action;
     }
     
     RenderState::StencilAction Material::getStencilFailActionStencil() const {
-        return this->stencilFailActionStencil;
+        return this->materialState.stencilFailActionStencil;
     }
     
     void Material::setStencilFailActionStencil(RenderState::StencilAction action) {
-        this->stencilFailActionStencil = action;
+        this->materialState.stencilFailActionStencil = action;
     }
     
     RenderState::StencilAction Material::getStencilFailActionDepth() const {
-        return this->stencilFailActionDepth;
+        return this->materialState.stencilFailActionDepth;
     }
     
     void Material::setStencilFailActionDepth(RenderState::StencilAction action) {
-        this->stencilFailActionDepth = action;
+        this->materialState.stencilFailActionDepth = action;
     }
     
 
@@ -259,32 +237,13 @@ namespace Core {
     void Material::copyTo(WeakPointer<Material> target) {
         target->ready = this->ready;
         target->shader = this->shader;
-
-        target->colorWriteEnabled = this->colorWriteEnabled;
-        target->blendingMode = this->blendingMode;
-        target->srcBlendingFactor = this->srcBlendingFactor;
-        target->destBlendingFactor = this->destBlendingFactor;
-        target->renderStyle = this->renderStyle;
-        target->renderQueueID = this->renderQueueID;
         target->lit = this->lit;
         target->physical = this->physical;
         target->skinningEnabled = this->skinningEnabled;
 
-        target->stencilTestEnabled = this->stencilTestEnabled;
-        target->stencilRef = this->stencilRef;
-        target->stencilReadMask = this->stencilReadMask;
-        target->stencilWriteMask = this->stencilWriteMask;
-        target->stencilComparisonFunction = this->stencilComparisonFunction;
-        target->stencilAllPassAction = this->stencilAllPassAction;
-        target->stencilFailActionStencil = this->stencilFailActionStencil;
-        target->stencilFailActionDepth = this->stencilFailActionDepth;
+        target->materialState = this->materialState;
 
-        target->depthWriteEnabled = this->depthWriteEnabled;
-        target->depthTestEnabled = this->depthTestEnabled;
-        target->depthFunction = this->depthFunction;
-
-        target->faceCullingEnabled = this->faceCullingEnabled;
-        target->cullFace = this->cullFace;
+        target->customDepthOutput = this->customDepthOutput;
     }
 
     Bool Material::buildFromSource(const std::string& vertexSource, const std::string& fragmentSource) {
@@ -323,6 +282,14 @@ namespace Core {
 
     WeakPointer<Texture> Material::getOpacityMap() {
         return WeakPointer<Texture>::nullPtr();
+    }
+
+    MaterialState Material::getMaterialState() {
+        return this->materialState;
+    }
+
+    void Material::setMaterialState(MaterialState state) {
+        this->materialState = state;
     }
 
 }

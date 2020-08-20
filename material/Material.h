@@ -6,9 +6,7 @@
 #include "../base/CoreObject.h"
 #include "StandardAttributes.h"
 #include "StandardUniforms.h"
-#include "../render/RenderStyle.h"
-#include "../render/RenderState.h"
-#include "../render/RenderPath.h"
+#include "MaterialState.h"
 
 namespace Core {
 
@@ -88,6 +86,9 @@ namespace Core {
 
         virtual Bool hasOpacityMap() const;
         virtual WeakPointer<Texture> getOpacityMap();
+
+        MaterialState getMaterialState();
+        void setMaterialState(MaterialState state);
         
     protected:
         virtual void copyTo(WeakPointer<Material> target);
@@ -99,36 +100,11 @@ namespace Core {
         PersistentWeakPointer<Shader> shader;
 
     private:
-        Bool colorWriteEnabled;
-        RenderState::BlendingMode blendingMode;
-        RenderState::BlendingEquation blendingEquation;
-        RenderState::BlendingFactor srcBlendingFactor;
-        RenderState::BlendingFactor destBlendingFactor;
-        RenderStyle renderStyle;
-        RenderPath renderPath;
         Bool ready;
-        UInt16 renderQueueID;
         Bool lit;
         Bool physical;
         Bool skinningEnabled;
-
-        Bool stencilTestEnabled;
-        Byte stencilRef;
-        Byte stencilReadMask;
-        Byte stencilWriteMask;
-        RenderState::StencilFunction stencilComparisonFunction;
-        RenderState::StencilAction stencilAllPassAction;
-        RenderState::StencilAction stencilFailActionStencil;
-        RenderState::StencilAction stencilFailActionDepth;
-
-        Bool depthWriteEnabled;
-        Bool depthTestEnabled;
-        RenderState::DepthFunction depthFunction;
-
-        Bool faceCullingEnabled;
-        RenderState::CullFace cullFace;
-
+        MaterialState materialState;
         Bool customDepthOutput;
-
     };
 }
