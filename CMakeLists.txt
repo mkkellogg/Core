@@ -98,6 +98,7 @@ set(INCLUDE_FILES
     material/PositionsAndNormalsMaterial.h
     material/SSAOMaterial.h
     material/BlurMaterial.h
+    material/RedColorSetMaterial.h
     material/SSAOBlurMaterial.h
     material/OutlineMaterial.h
     material/BufferOutlineMaterial.h
@@ -275,6 +276,7 @@ set(SOURCE_FILES
     material/PositionsMaterial.cpp
     material/PositionsAndNormalsMaterial.cpp
     material/BlurMaterial.cpp
+    material/RedColorSetMaterial.cpp
     material/SSAOMaterial.cpp
     material/SSAOBlurMaterial.cpp
     material/OutlineMaterial.cpp

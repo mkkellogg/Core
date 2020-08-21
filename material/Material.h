@@ -83,12 +83,14 @@ namespace Core {
 
         void setCustomDepthOutput(Bool hasCustomDepthOutput);
         Bool hasCustomDepthOutput() const;
+        Bool getCustomDepthOutputCopyOverrideMatrialState() const;
+        void setCustomDepthOutputCopyOverrideMatrialState(Bool state);
 
         virtual Bool hasOpacityMap() const;
         virtual WeakPointer<Texture> getOpacityMap();
 
-        MaterialState getMaterialState();
-        void setMaterialState(MaterialState state);
+        MaterialState getState() const;
+        void setState(MaterialState state);
         
     protected:
         virtual void copyTo(WeakPointer<Material> target);
@@ -106,5 +108,6 @@ namespace Core {
         Bool skinningEnabled;
         MaterialState materialState;
         Bool customDepthOutput;
+        Bool customDepthOutputCopyOverrideMaterialState;
     };
 }

@@ -210,6 +210,9 @@ namespace Core {
         this->setShaderSource(ShaderType::Vertex, "Blur", ShaderManagerGL::Blur_vertex);
         this->setShaderSource(ShaderType::Fragment, "Blur", ShaderManagerGL::Blur_fragment);
 
+        this->setShaderSource(ShaderType::Vertex, "RedColorSet", ShaderManagerGL::RedColorSet_vertex);
+        this->setShaderSource(ShaderType::Fragment, "RedColorSet", ShaderManagerGL::RedColorSet_fragment);
+
         this->setShaderSource(ShaderType::Vertex, "LightingCommon", ShaderManagerGL::Lighting_Common_vertex);
         this->setShaderSource(ShaderType::Fragment, "LightingCommon", ShaderManagerGL::Lighting_Common_fragment);
 
@@ -583,7 +586,7 @@ namespace Core {
             "        { \n"
             "            vec2 offset = vec2(float(x), float(y)) * texelSize; \n"
             "            sampleColor = texture(" + TEXTURE0 + ", vUV + offset); \n"
-            "            result = max(max(max(sampleColor.r, sampleColor.g), sampleColor.b), result); \n"
+            "            result = max(max(sampleColor.r, sampleColor.b), sampleColor.g); \n"
             "            if (result > 0.0) { \n"
             "                result = 1.0; \n"
             "                break; \n"
@@ -593,8 +596,8 @@ namespace Core {
             "           break; \n"
             "        }\n"
             "    } \n"
-            //"    out_color = result * vec4(sampleColor.rgb, 1.0); \n"
-           "       out_color = result * vec4(outlineColor.rgb, 1.0); \n"
+            "    out_color = result * vec4(sampleColor.rgb, 1.0); \n"
+           //"       out_color = result * vec4(outlineColor.rgb, 1.0); \n"
             "}\n";
 
         this->Blur_vertex =  
@@ -664,6 +667,33 @@ namespace Core {
             "    // Output to screen\n"
             "    out_color =  vec4(Color.rgb / totalAlpha, Color.a / totalWeight);\n"
 
+            "}   \n";
+
+        this->RedColorSet_vertex =  
+            "#version 330\n"
+            + POSITION_DEF
+            + PROJECTION_MATRIX_DEF
+            + VIEW_MATRIX_DEF
+            + MODEL_MATRIX_DEF +
+            "out vec2 vUV;\n"
+            "void main() {\n"
+            "    vec4 localPos = " + POSITION + "; \n"
+            "    vUV = localPos.xy / 2.0 + 0.5; \n"
+            "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * " +  MODEL_MATRIX + " * localPos;\n"
+            "}\n";
+
+        this->RedColorSet_fragment =  
+            "#version 330 core \n"
+            "out vec4 out_color; \n"
+            "in vec2 vUV; \n"
+            + TEXTURE0_DEF + 
+            "uniform vec4 inputColor; \n"
+            "uniform vec4 outputColor; \n"
+            "void main()  \n"
+            "{ \n"
+            "    vec4 sample = texture(" + TEXTURE0 + ", vUV); \n"
+            "    float stepVal = step(0.001, sample.r) * (1.0 - step(0.001, sample.g)) * (1.0 - step(0.001, sample.b)); \n"
+            "    out_color =  outputColor * stepVal + sample * (1.0 - stepVal);\n"
             "}   \n";
 
         this->Lighting_Common_vertex = "";

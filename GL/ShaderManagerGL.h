@@ -40,6 +40,9 @@ namespace Core {
         std::string Blur_vertex;
         std::string Blur_fragment;
 
+        std::string RedColorSet_vertex;
+        std::string RedColorSet_fragment;
+
         std::string Lighting_Common_vertex;
         std::string Lighting_Common_fragment;
 

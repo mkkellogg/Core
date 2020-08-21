@@ -9,6 +9,7 @@
 #include "../light/PointLight.h"
 #include "../light/DirectionalLight.h"
 #include "../material/Material.h"
+#include "../material/MaterialState.h"
 #include "../material/Shader.h"
 #include "../render/Camera.h"
 #include "../render/RenderTarget.h"
@@ -97,11 +98,18 @@ namespace Core {
                                            const std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting) {
         Matrix4x4 tempMatrix;
         WeakPointer<Material> material;
+        Bool copiedStateFromOverrideMaterial = false;
+        MaterialState savedState;
         Bool renderingDepthOutput = this->material->hasCustomDepthOutput() && viewDescriptor.depthOutputOverride != DepthOutputOverride::None;
         if (!renderingDepthOutput && viewDescriptor.overrideMaterial.isValid()) {
             material = viewDescriptor.overrideMaterial;
         } else {
             material = this->material;
+            if (material->getCustomDepthOutputCopyOverrideMatrialState() && viewDescriptor.overrideMaterial.isValid()) {
+                savedState = material->getState();
+                material->setState(viewDescriptor.overrideMaterial->getState());
+                copiedStateFromOverrideMaterial = true;
+            }
         }
         WeakPointer<Shader> shader = material->getShader();
         this->graphics->activateShader(shader);
@@ -429,6 +437,10 @@ namespace Core {
             }
 
             this->drawMesh(mesh);
+        }
+
+        if (copiedStateFromOverrideMaterial) {
+            material->setState(savedState);
         }
 
         this->disableShaderAttribute(mesh, material, StandardAttribute::Position, mesh->getVertexPositions());

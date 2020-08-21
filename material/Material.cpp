@@ -14,6 +14,7 @@ namespace Core {
         this->skinningEnabled = false;
         this->ready = false;
         this->customDepthOutput = false;
+        this->customDepthOutputCopyOverrideMaterialState;
     }
 
     Material::Material(WeakPointer<Graphics> graphics, WeakPointer<Shader> shader): Material(graphics) {
@@ -276,6 +277,14 @@ namespace Core {
         return this->customDepthOutput;
     }
 
+    Bool Material::getCustomDepthOutputCopyOverrideMatrialState() const {
+        return this->customDepthOutputCopyOverrideMaterialState;
+    }
+
+    void Material::setCustomDepthOutputCopyOverrideMatrialState(Bool state) {
+        this->customDepthOutputCopyOverrideMaterialState = state;
+    }
+
     Bool Material::hasOpacityMap() const {
         return false;
     }
@@ -284,11 +293,11 @@ namespace Core {
         return WeakPointer<Texture>::nullPtr();
     }
 
-    MaterialState Material::getMaterialState() {
+    MaterialState Material::getState() const {
         return this->materialState;
     }
 
-    void Material::setMaterialState(MaterialState state) {
+    void Material::setState(MaterialState state) {
         this->materialState = state;
     }
 
