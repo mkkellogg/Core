@@ -25,7 +25,6 @@ namespace Core {
         virtual void copyTo(WeakPointer<Material> targetMaterial) override;
         virtual void bindShaderVarLocations() override;
 
-        void setInputColor(Color inputColor);
         void setOutputColor(Color outputColor);
 
     private:
@@ -33,9 +32,6 @@ namespace Core {
 
         Int32 inputLocation;
         Int32 outputColorLocation;
-        Int32 inputColorLocation;
-
-        Color inputColor;
         Color outputColor;
     };
 }

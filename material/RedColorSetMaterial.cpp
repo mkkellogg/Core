@@ -8,7 +8,6 @@
 namespace Core {
 
     RedColorSetMaterial::RedColorSetMaterial(WeakPointer<Graphics> graphics) : BaseMaterial(graphics) {
-        this->inputColor.set(1.0, 0.0, 1.0, 1.0);
         this->outputColor.set(1.0, 0.0, 1.0, 1.0);
     }
 
@@ -36,7 +35,6 @@ namespace Core {
     }
 
     void RedColorSetMaterial::sendCustomUniformsToShader() {
-        this->shader->setUniform4f(this->inputColorLocation, this->inputColor.r, this->inputColor.g, this->inputColor.b, this->inputColor.a);
         this->shader->setUniform4f(this->outputColorLocation, this->outputColor.r, this->outputColor.g, this->outputColor.b, this->outputColor.a);
     }
 
@@ -51,8 +49,6 @@ namespace Core {
         if (colorSetMaterial.isValid()) {
             BaseMaterial::copyTo(target);
             colorSetMaterial->inputLocation = this->inputLocation;
-            colorSetMaterial->inputColorLocation = this->inputColorLocation;
-            colorSetMaterial->inputColor = this->inputColor;
             colorSetMaterial->outputColorLocation = this->outputColorLocation;
             colorSetMaterial->outputColor = this->outputColor;
         } else {
@@ -63,13 +59,8 @@ namespace Core {
     void RedColorSetMaterial::bindShaderVarLocations() {
         BaseMaterial::bindShaderVarLocations();
         this->inputLocation = this->shader->getUniformLocation(StandardUniform::Texture0);
-        this->inputColorLocation = this->shader->getUniformLocation("inputColor");
         this->outputColorLocation = this->shader->getUniformLocation("outputColor");
     }
-
-    void RedColorSetMaterial::setInputColor(Color inputColor) {  
-        this->inputColor = inputColor;
-    } 
 
     void RedColorSetMaterial::setOutputColor(Color outputColor) {
         this->outputColor = outputColor;

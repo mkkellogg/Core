@@ -12,9 +12,11 @@ namespace Core {
         this->lit = false;
         this->physical = false;
         this->skinningEnabled = false;
+        this->renderPath = RenderPath::Forward;
+        this->renderQueueID = (UInt16)EngineRenderQueue::Geometry;
         this->ready = false;
         this->customDepthOutput = false;
-        this->customDepthOutputCopyOverrideMaterialState;
+        this->customDepthOutputCopyOverrideMaterialState = false;
     }
 
     Material::Material(WeakPointer<Graphics> graphics, WeakPointer<Shader> shader): Material(graphics) {
@@ -74,11 +76,11 @@ namespace Core {
     }
 
     RenderPath Material::getRenderPath() const {
-        return this->materialState.renderPath;
+        return this->renderPath;
     }
 
     void Material::setRenderPath(RenderPath path) {
-        this->materialState.renderPath = path;
+        this->renderPath = path;
     }
 
     RenderState::BlendingMode Material::getBlendingMode() const {
@@ -90,11 +92,15 @@ namespace Core {
     }
 
     UInt16 Material::getRenderQueueID() const {
-        return this->materialState.renderQueueID;
+        return this->renderQueueID;
+    }
+
+    void Material::setRenderQueue(EngineRenderQueue queue) {
+        this->renderQueueID = (UInt16) queue;
     }
 
     void Material::setRenderQueueID(UInt16 renderQueueID) {
-        this->materialState.renderQueueID = renderQueueID;
+        this->renderQueueID = renderQueueID;
     }
 
     Bool Material::isLit() const {

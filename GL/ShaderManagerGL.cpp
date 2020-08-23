@@ -687,7 +687,6 @@ namespace Core {
             "out vec4 out_color; \n"
             "in vec2 vUV; \n"
             + TEXTURE0_DEF + 
-            "uniform vec4 inputColor; \n"
             "uniform vec4 outputColor; \n"
             "void main()  \n"
             "{ \n"
@@ -1226,6 +1225,8 @@ namespace Core {
             + SSAO_ENABLED_DEF
             + DEPTH_OUTPUT_OVERRIDE_DEF +
             "uniform int enabledMap; \n"
+            "uniform int enabledOpacityChannel; \n"
+            "uniform int discardMask; \n"
             "uniform vec4 albedo; \n"
             "uniform sampler2D albedoMap; \n"
             "uniform sampler2D normalMap; \n"
@@ -1248,6 +1249,9 @@ namespace Core {
             "out vec4 out_color;\n";
 
         this->StandardPhysicalMain_fragment =
+            "   int opacityChannelRedEnabled = enabledOpacityChannel & 1; \n"
+            "   int opacityChannelAlphaEnabled = enabledOpacityChannel & 8; \n"
+
             "   int albedoMapEnabled = enabledMap & 1; \n"
             "   int normalMapEnabled = enabledMap & 2; \n"
             "   int roughnessMapEnabled = enabledMap & 4; \n"
@@ -1281,11 +1285,12 @@ namespace Core {
             "   } \n"
             "   float _opacity; \n"
             "   if (opacityMapEnabled != 0) { \n"
-            "      vec4 fullOpacity = texture(opacityMap, vAlbedoUV); \n"
-            "      _opacity = fullOpacity.r; \n"
+            "       vec4 opacitySample = texture(opacityMap, vAlbedoUV); \n"
+            "      _opacity = clamp(opacitySample.r * opacityChannelRedEnabled + opacitySample.a * opacityChannelAlphaEnabled, 0.0, 1.0); \n"
             "   } else { \n"
             "      _opacity = opacity; \n"
-            "   } \n"; 
+            "   } \n"
+            "   if ((int(_opacity * 255.0) & discardMask) == 0) discard; \n";
 
         this->StandardPhysical_fragment =   
             "#version 330\n"
@@ -1296,8 +1301,7 @@ namespace Core {
             "#include \"StandardPhysicalVars\" \n"
             "#include \"ApplySSAO(lightIndex=0)\" \n"
             "void main() {\n"
-            "   #include \"StandardPhysicalMain\" \n"
-            "   if (_opacity <= 0.0) discard; \n"  
+            "   #include \"StandardPhysicalMain\" \n" 
             "   if (" + DEPTH_OUTPUT_OVERRIDE + " == DEPTH_OUTPUT_DEPTH) {\n"
             "       out_color = vec4(gl_FragCoord.z, 0.0, 0.0, 0.0);\n"
             "   } else if (" + DEPTH_OUTPUT_OVERRIDE + " == DEPTH_OUTPUT_DISTANCE) {\n"
@@ -1369,7 +1373,6 @@ namespace Core {
             "#include \"ApplySSAO(lightIndex=0)\" \n"
             "void main() {\n"
             "   #include \"StandardPhysicalMain\" \n"
-            "   if (_opacity <= 0.0) discard; \n"  
             "   if (" + DEPTH_OUTPUT_OVERRIDE + " == DEPTH_OUTPUT_DEPTH) {\n"
             "       out_color = vec4(gl_FragCoord.z, 0.0, 0.0, 0.0);\n"
             "   } else if (" + DEPTH_OUTPUT_OVERRIDE + " == DEPTH_OUTPUT_DISTANCE) {\n"

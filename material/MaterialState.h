@@ -20,8 +20,6 @@ namespace Core {
         RenderState::BlendingFactor srcBlendingFactor;
         RenderState::BlendingFactor destBlendingFactor;
         RenderStyle renderStyle;
-        RenderPath renderPath;
-        UInt16 renderQueueID;
 
         Bool stencilTestEnabled;
         Byte stencilRef;

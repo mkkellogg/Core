@@ -42,9 +42,12 @@ namespace Core {
         void setRoughnessMapEnabled(Bool enabled);
         void setMetallicMapEnabled(Bool enabled);
         void setOpacityMapEnabled(Bool enabled);
-
         virtual Bool hasOpacityMap() const override;
         virtual WeakPointer<Texture> getOpacityMap() override;
+        void setOpacityChannelRedEnabled(Bool enabled);
+        void setOpacityChannelAlphaEnabled(Bool enabled);
+        void setDiscardMask(Byte mask);
+
     protected:
         const UInt32 ALBEDO_MAP_MASK = 0x1;
         const UInt32 NORMAL_MAP_MASK = 0x1 << 1;
@@ -52,10 +55,14 @@ namespace Core {
         const UInt32 METALLIC_MAP_MASK = 0x1 << 3;
         const UInt32 OPACITY_MAP_MASK = 0x1 << 4;
 
+        const UInt32 OPACITY_CHANNEL_RED_MASK = 0x1;
+        const UInt32 OPACITY_CHANNEL_ALPHA_MASK = 0x1 << 3;
+
         StandardPhysicalMaterial(const std::string& vertexShader, const std::string& fragmentShader, WeakPointer<Graphics> graphics);
         StandardPhysicalMaterial(const std::string& buildInShaderName, WeakPointer<Graphics> graphics);
         StandardPhysicalMaterial(WeakPointer<Graphics> graphics);
         UInt32 getEnabledMapMask();
+        UInt32 getEnabledOpacityChannelMask();
 
         Real metallic;
         Real roughness;
@@ -73,6 +80,11 @@ namespace Core {
         Bool roughnessMapEnabled;
         Bool metallicMapEnabled;
         Bool opacityMapEnabled;
+
+        Bool opacityChannelRed;
+        Bool opacityChannelAlpha;
+
+        Byte discardMask;
 
         Int32 albedoUVLocation;
         Int32 normalUVLocation;
@@ -95,6 +107,9 @@ namespace Core {
         Int32 lightSpecularIBLBRDFMapLocation[Constants::MaxShaderLights];
 
         Int32 depthOutputOverrideLocation;
+        Int32 enabledOpacityChannelLocation;
+
+        Int32 discardMaskLocation;
     
     private:
         void setInitialParams();

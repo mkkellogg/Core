@@ -45,6 +45,11 @@ namespace Core {
         this->metallicMapEnabled = false;
         this->opacityMapEnabled = false;
 
+        this->opacityChannelRed = false;
+        this->opacityChannelAlpha = true;
+
+        this->discardMask = 0xFF;
+
         this->albedoUVLocation = -1;
         this->normalUVLocation = -1;
 
@@ -68,6 +73,7 @@ namespace Core {
         }
 
         this->depthOutputOverrideLocation = -1;
+        this->discardMaskLocation = -1;
     }
 
     void StandardPhysicalMaterial::setMetallic(Real metallic) {
@@ -128,6 +134,26 @@ namespace Core {
 
     void StandardPhysicalMaterial::setOpacityMapEnabled(Bool enabled) {
         this->opacityMapEnabled = enabled;
+    }
+
+    Bool StandardPhysicalMaterial::hasOpacityMap() const {
+        return this->opacityMapEnabled;
+    }
+
+    WeakPointer<Texture> StandardPhysicalMaterial::getOpacityMap() {
+        return this->opacityMap;
+    }
+
+    void StandardPhysicalMaterial::setOpacityChannelRedEnabled(Bool enabled) {
+        this->opacityChannelRed = enabled;
+    }
+
+    void StandardPhysicalMaterial::setOpacityChannelAlphaEnabled(Bool enabled) {
+        this->opacityChannelAlpha = enabled;
+    }
+
+    void StandardPhysicalMaterial::setDiscardMask(Byte mask) {
+        this->discardMask = mask;
     }
 
     Bool StandardPhysicalMaterial::build() {
@@ -225,6 +251,8 @@ namespace Core {
         
         this->shader->setUniform1f(this->ambientOcclusionLocation, this->ambientOcclusion);
         this->shader->setUniform1i(this->enabledMapLocation, this->getEnabledMapMask());
+        this->shader->setUniform1i(this->enabledOpacityChannelLocation, this->getEnabledOpacityChannelMask());
+        this->shader->setUniform1i(this->discardMaskLocation, this->discardMask);
     }
 
     void StandardPhysicalMaterial::copyTo(WeakPointer<Material> target) {
@@ -248,6 +276,9 @@ namespace Core {
             standardPhysicalMaterial->roughnessMapEnabled = this->roughnessMapEnabled;
             standardPhysicalMaterial->metallicMapEnabled = this->metallicMapEnabled;
             standardPhysicalMaterial->opacityMapEnabled = this->opacityMapEnabled;
+            standardPhysicalMaterial->opacityChannelRed = this->opacityChannelRed;
+            standardPhysicalMaterial->opacityChannelAlpha = this->opacityChannelAlpha;
+            standardPhysicalMaterial->discardMask = this->discardMask;
 
             standardPhysicalMaterial->albedoUVLocation = this->albedoUVLocation;
             standardPhysicalMaterial->normalUVLocation = this->normalUVLocation;
@@ -267,6 +298,10 @@ namespace Core {
                 standardPhysicalMaterial->lightSpecularIBLPreFilteredMapLocation[i] = this->lightSpecularIBLPreFilteredMapLocation[i];
                 standardPhysicalMaterial->lightSpecularIBLBRDFMapLocation[i] = this->lightSpecularIBLBRDFMapLocation[i];
             }
+            standardPhysicalMaterial->depthOutputOverrideLocation = this->depthOutputOverrideLocation;
+            standardPhysicalMaterial->enabledOpacityChannelLocation = this->enabledOpacityChannelLocation;
+            standardPhysicalMaterial->discardMaskLocation = this->discardMaskLocation;
+            
         } else {
             throw InvalidArgumentException("StandardPhysicalMaterial::copyTo() -> 'target must be same material."); 
         }
@@ -300,6 +335,8 @@ namespace Core {
         this->ambientOcclusionLocation = this->shader->getUniformLocation("ambientOcclusion");
         this->enabledMapLocation = this->shader->getUniformLocation("enabledMap");
         this->depthOutputOverrideLocation = this->shader->getUniformLocation(StandardUniform::DepthOutputOverride);
+        this->enabledOpacityChannelLocation = this->shader->getUniformLocation("enabledOpacityChannel");
+        this->discardMaskLocation = this->shader->getUniformLocation("discardMask");
     }
 
     UInt32 StandardPhysicalMaterial::textureCount() {
@@ -316,11 +353,10 @@ namespace Core {
         return mask;
     }
 
-    Bool StandardPhysicalMaterial::hasOpacityMap() const {
-        return this->opacityMapEnabled;
-    }
-
-    WeakPointer<Texture> StandardPhysicalMaterial::getOpacityMap() {
-        return this->opacityMap;
+    UInt32 StandardPhysicalMaterial::getEnabledOpacityChannelMask() {
+        UInt32 mask = 0;
+        if (this->opacityChannelRed) mask = mask | OPACITY_CHANNEL_RED_MASK;
+        if (this->opacityChannelAlpha) mask = mask | OPACITY_CHANNEL_ALPHA_MASK;
+        return mask;
     }
 }

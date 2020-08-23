@@ -14,8 +14,6 @@ namespace Core {
         this->srcBlendingFactor = RenderState::BlendingFactor::One;
         this->destBlendingFactor = RenderState::BlendingFactor::Zero;
         this->renderStyle = RenderStyle::Fill;
-        this->renderPath = RenderPath::Forward;
-        this->renderQueueID = (UInt16)EngineRenderQueue::Geometry;
         
         this->depthWriteEnabled = true;
         this->depthTestEnabled = true;

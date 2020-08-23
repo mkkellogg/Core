@@ -7,6 +7,7 @@
 #include "StandardAttributes.h"
 #include "StandardUniforms.h"
 #include "MaterialState.h"
+#include "../render/EngineRenderQueue.h"
 
 namespace Core {
 
@@ -43,6 +44,7 @@ namespace Core {
         RenderState::BlendingMode getBlendingMode() const;
         void setBlendingMode(RenderState::BlendingMode mode);
         UInt16 getRenderQueueID() const;
+        void setRenderQueue(EngineRenderQueue queue);
         void setRenderQueueID(UInt16 renderQueueID);
         Bool isLit() const;
         void setLit(Bool lit);
@@ -106,6 +108,8 @@ namespace Core {
         Bool lit;
         Bool physical;
         Bool skinningEnabled;
+        RenderPath renderPath;
+        UInt16 renderQueueID;
         MaterialState materialState;
         Bool customDepthOutput;
         Bool customDepthOutputCopyOverrideMaterialState;
