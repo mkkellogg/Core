@@ -134,10 +134,11 @@ namespace Core {
                 pos++;
             }
         }
+        this->boundingSphere.set(center.x, center.y, center.z, radius);
     }
 
     const Vector4r& Mesh::getBoundingSphere() const {
-
+        return this->boundingSphere;
     }
 
     WeakPointer<AttributeArray<Point3rs>> Mesh::getVertexPositions() {
