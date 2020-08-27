@@ -17,6 +17,7 @@ namespace Core {
         this->ready = false;
         this->customDepthOutput = false;
         this->customDepthOutputCopyOverrideMaterialState = false;
+        this->customDepthOutputStateCopyExcludeFaceCulling = false;
     }
 
     Material::Material(WeakPointer<Graphics> graphics, WeakPointer<Shader> shader): Material(graphics) {
@@ -163,7 +164,7 @@ namespace Core {
         this->materialState.faceCullingEnabled = enabled;
     }
 
-    RenderState::CullFace Material::getCullFace() {
+    RenderState::CullFace Material::getCullFace() const {
         return this->materialState.cullFace;
     }
 
@@ -289,6 +290,14 @@ namespace Core {
 
     void Material::setCustomDepthOutputCopyOverrideMatrialState(Bool state) {
         this->customDepthOutputCopyOverrideMaterialState = state;
+    }
+
+    Bool Material::getCustomDepthOutputStateCopyExcludeFaceCulling() const {
+        return this->customDepthOutputStateCopyExcludeFaceCulling;
+    }
+
+    void Material::setCustomDepthOutputStateCopyExcludeFaceCulling(Bool exclude) {
+        this->customDepthOutputStateCopyExcludeFaceCulling = exclude;
     }
 
     Bool Material::hasOpacityMap() const {

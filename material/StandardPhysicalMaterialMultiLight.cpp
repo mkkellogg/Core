@@ -16,7 +16,7 @@ namespace Core {
     }
 
     UInt32 StandardPhysicalMaterialMultiLight::maxLightCount() const {
-        return 2;
+        return 3;
     }
 
     void StandardPhysicalMaterialMultiLight::copyAttributesFromStandardPhysicalMaterial(WeakPointer<StandardPhysicalMaterial> source) {

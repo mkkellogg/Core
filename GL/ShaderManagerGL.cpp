@@ -139,7 +139,7 @@ const std::string MAX_LIGHTS_DEF = "const int MAX_LIGHTS = " + MAX_LIGHTS + ";\n
 const std::string MAX_POINT_LIGHTS_DEF = "const int MAX_POINT_LIGHTS = " + MAX_POINT_LIGHTS + ";\n";
 const std::string MAX_DIRECTIONAL_LIGHTS_DEF = "const int MAX_DIRECTIONAL_LIGHTS = " + MAX_DIRECTIONAL_LIGHTS + ";\n";
 const std::string POINT_LIGHT_COUNT_DEF = "uniform int " + POINT_LIGHT_COUNT + ";\n";
-const std::string DIRECTIONAL_LIGHT_DEF = "uniform int " + DIRECTIONAL_LIGHT_COUNT + ";\n";
+const std::string DIRECTIONAL_LIGHT_COUNT_DEF = "uniform int " + DIRECTIONAL_LIGHT_COUNT + ";\n";
 const std::string AMBIENTL_LIGHT_DEF = "unfirm int " + AMBIENT_LIGHT_COUNT + ";\n";
 const std::string AMBIENTL_IBL_LIGHT_DEF = "unfirm int " + AMBIENT_IBL_LIGHT_COUNT + ";\n";
 const std::string LIGHT_COUNT_DEF = "uniform int " + LIGHT_COUNT + ";\n";
@@ -704,6 +704,7 @@ namespace Core {
             "const int POINT_LIGHT = 3;\n"
             "const int SPOT_LIGHT = 4;\n"
             "const int PLANAR_LIGHT = 5;\n"
+            "const int DEPTH_OUTPUT_NONE = 0;\n"
             "const int DEPTH_OUTPUT_DEPTH = 1;\n"
             "const int DEPTH_OUTPUT_DISTANCE = 2;\n";
 
@@ -1290,7 +1291,13 @@ namespace Core {
             "   } else { \n"
             "      _opacity = opacity; \n"
             "   } \n"
-            "   if ((int(_opacity * 255.0) & discardMask) == 0) discard; \n";
+            "   if ((int(_opacity * 255.0) & discardMask) == 0) discard; \n"
+            "   if (" + DEPTH_OUTPUT_OVERRIDE + " == DEPTH_OUTPUT_DEPTH) {\n"
+            "       out_color = vec4(gl_FragCoord.z, 0.0, 0.0, 0.0);\n"
+            "   } else if (" + DEPTH_OUTPUT_OVERRIDE + " == DEPTH_OUTPUT_DISTANCE) {\n"
+            "       float len = length(vViewPos.xyz);\n"
+            "       out_color = vec4(len, 0.0, 0.0, 0.0);\n"
+            "   } \n";
 
         this->StandardPhysical_fragment =   
             "#version 330\n"
@@ -1302,12 +1309,7 @@ namespace Core {
             "#include \"ApplySSAO(lightIndex=0)\" \n"
             "void main() {\n"
             "   #include \"StandardPhysicalMain\" \n" 
-            "   if (" + DEPTH_OUTPUT_OVERRIDE + " == DEPTH_OUTPUT_DEPTH) {\n"
-            "       out_color = vec4(gl_FragCoord.z, 0.0, 0.0, 0.0);\n"
-            "   } else if (" + DEPTH_OUTPUT_OVERRIDE + " == DEPTH_OUTPUT_DISTANCE) {\n"
-            "       float len = length(vViewPos.xyz);\n"
-            "       out_color = vec4(len, 0.0, 0.0, 0.0);\n"
-            "   } else { \n"
+            "   if (" + DEPTH_OUTPUT_OVERRIDE + " == DEPTH_OUTPUT_NONE) { \n"
             "       vec4 finalColor = litColorPhysical0(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
             "       checkAndApplySSAO0(vClipPos, finalColor); \n"
             "       out_color = vec4(finalColor.rgb, _opacity); \n"
@@ -1338,6 +1340,7 @@ namespace Core {
             "out vec2 vAlbedoUV;\n"
             "out vec2 vNormalUV;\n"
             "out vec4 vWorldPos;\n"
+            "out vec4 vViewPos; \n"
             "out vec4 vClipPos;\n"
             "void main() {\n"
             "    vec4 localPos = " + POSITION + "; \n"
@@ -1345,8 +1348,8 @@ namespace Core {
             "    vec4 localFaceNormal = " + FACE_NORMAL + "; \n"
             "    calculateSkinnedPositionAndNormals(localPos, localNormal, localFaceNormal); \n"
             "    vWorldPos = " +  MODEL_MATRIX + " * localPos;\n"
-            "    vec4 viewSpacePos = " + VIEW_MATRIX + " * vWorldPos;\n"
-            "    vClipPos = " + PROJECTION_MATRIX + " * viewSpacePos; \n"
+            "    vViewPos = " + VIEW_MATRIX + " * vWorldPos;\n"
+            "    vClipPos = " + PROJECTION_MATRIX + " * vViewPos; \n"
             "    gl_Position = " + PROJECTION_MATRIX + " * " + VIEW_MATRIX + " * vWorldPos;\n"
             "    vAlbedoUV = " + ALBEDO_UV + ";\n"
             "    vNormalUV = " + NORMAL_UV + ";\n"
@@ -1356,7 +1359,7 @@ namespace Core {
             "    vec4 eTangent = " + TANGENT + ";\n"
             "    vTangent = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * eTangent);\n"
             "    vFaceNormal = vec3(" + MODEL_INVERSE_TRANSPOSE_MATRIX + " * localFaceNormal);\n"
-            "    TRANSFER_LIGHTING(localPos, gl_Position, viewSpacePos) \n"
+            "    TRANSFER_LIGHTING(localPos, gl_Position, vViewPos) \n"
             "}\n";
 
         this->StandardPhysicalMulti_fragment =   
@@ -1373,12 +1376,7 @@ namespace Core {
             "#include \"ApplySSAO(lightIndex=0)\" \n"
             "void main() {\n"
             "   #include \"StandardPhysicalMain\" \n"
-            "   if (" + DEPTH_OUTPUT_OVERRIDE + " == DEPTH_OUTPUT_DEPTH) {\n"
-            "       out_color = vec4(gl_FragCoord.z, 0.0, 0.0, 0.0);\n"
-            "   } else if (" + DEPTH_OUTPUT_OVERRIDE + " == DEPTH_OUTPUT_DISTANCE) {\n"
-            "       float len = length(vViewPos.xyz);\n"
-            "       out_color = vec4(len, 0.0, 0.0, 0.0);\n"
-            "   } else { \n"
+            "   if (" + DEPTH_OUTPUT_OVERRIDE + " == DEPTH_OUTPUT_NONE) { \n"
             "       vec4 curColor = vec4(0.0, 0.0, 0.0, 0.0); \n"
             "       if (" + LIGHT_COUNT + " >= 1 && " + MAX_LIGHTS + " >= 1) curColor += litColorPhysical0(_albedo, vWorldPos, _normal, " + CAMERA_POSITION + ", _metallic, _roughness, ambientOcclusion);\n"
             "       checkAndApplySSAO0(vClipPos, curColor); \n"
@@ -1916,7 +1914,6 @@ namespace Core {
             "    out_color = vColor;\n"
             "}\n";
 
-
         this->BasicLit_vertex =  
             "#version 330\n"
             "precision highp float;\n"
@@ -2269,16 +2266,13 @@ namespace Core {
 
             "float eRadius = radius; \n"
 
-            // parameters (you'd probably want to use them as uniforms to more easily tweak the effect)
             "const int kernelSize = " + std::to_string(Constants::SSAOSamples) + ";\n"
-            //"const float bias = 0.05;\n"
 
             "void main() {\n"
                 // get input for SSAO algorithm
                 "vec3 fragPos = texture(viewPositions, vUV).xyz;\n"
                 "vec3 normal = normalize(texture(viewNormals, vUV).rgb);\n"
                 "vec3 randomVec = normalize(texture(noise, vUV * vec2(screenWidth/4.0, screenHeight/4.0)).xyz);\n"
-               // "vec3 randomVec = normalize(noise3(2.0));\n"
                 // create TBN change-of-basis matrix: from tangent-space to view-space
                 "vec3 tangent = normalize(randomVec - normal * dot(randomVec, normal));\n"
                 "vec3 bitangent = cross(normal, tangent);\n"
@@ -2287,20 +2281,17 @@ namespace Core {
                 "float occlusion = 0.0;\n"
                 "for(int i = 0; i < kernelSize; ++i) \n"
                 "{\n"
-                    // get sample position
                     "vec3 sample = TBN * samples[i]; \n" // from tangent to view-space
                     "sample = fragPos + sample * eRadius; \n"
                     
-                    // project sample position (to sample texture) (to get position on screen/texture)
                     "vec4 offset = vec4(sample, 1.0);\n"
-                    "offset = projection * offset;\n" // from view to clip-space
-                    "offset.xyz /= offset.w;\n" // perspective divide
-                    "offset.xyz = offset.xyz * 0.5 + 0.5;\n" // transform to range 0.0 - 1.0
+                    "offset = projection * offset;\n"
+                    "offset.xyz /= offset.w;\n"
+                    "offset.xyz = offset.xyz * 0.5 + 0.5;\n"
                     
                     // get sample depth
                     "float sampleDepth = texture(viewPositions, offset.xy).z;\n" // get depth value of kernel sample
                     
-                    // range check & accumulate
                     "float rangeCheck = smoothstep(0.0, 1.0, eRadius / abs(fragPos.z - sampleDepth));\n"
                     "occlusion += (sampleDepth >= sample.z + bias ? 1.0 : 0.0) * rangeCheck;\n"
                 "}\n"

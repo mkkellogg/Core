@@ -536,7 +536,7 @@ namespace Core {
         coreMesh->setNormalsSmoothingThreshold((Real)smoothingThreshold);
         coreMesh->setCalculateNormals(true);
         coreMesh->setCalculateTangents(hasAlbedoUVs || hasNormalUVs);
-        coreMesh->setCalculateBoundingBox(true);
+        coreMesh->setCalculateBounds(true);
         coreMesh->update();
 
         return coreMesh;

@@ -108,6 +108,10 @@ namespace Core {
             if (material->getCustomDepthOutputCopyOverrideMatrialState() && viewDescriptor.overrideMaterial.isValid()) {
                 savedState = material->getState();
                 material->setState(viewDescriptor.overrideMaterial->getState());
+                if (material->getCustomDepthOutputStateCopyExcludeFaceCulling()) {
+                    material->setFaceCullingEnabled(savedState.faceCullingEnabled);
+                    material->setCullFace(savedState.cullFace);
+                }
                 copiedStateFromOverrideMaterial = true;
             }
         }
@@ -181,9 +185,6 @@ namespace Core {
         if (lights.size() > 0 && material->isLit() && !renderingDepthOutput) {
 
             Int32 lightCountLoc = material->getShaderLocation(StandardUniform::LightCount);
-            if (renderPath != RenderPath::SinglePassMultiLight) {
-                if (lightCountLoc >= 0) shader->setUniform1i(lightCountLoc, 1);
-            }
             UInt32 renderPassCount = 0;
 
             for (UInt32 i = 0; i < lights.size(); i++) {
@@ -408,7 +409,9 @@ namespace Core {
                         }
                     }
                 }
+
                 if (renderPath != RenderPath::SinglePassMultiLight) {
+                    if (lightCountLoc >= 0) shader->setUniform1i(lightCountLoc, 1);
                     this->drawMesh(mesh);
                 }
                 renderPassCount++;
@@ -431,10 +434,6 @@ namespace Core {
             if (lightEnabledLoc >= 0) shader->setUniform1i(lightEnabledLoc, 0);
             if (lightShadowsEnabledLoc >= 0) shader->setUniform1i(lightShadowsEnabledLoc, 0);
             if (lightCountLoc >= 0) shader->setUniform1i(lightCountLoc, 0);
-
-            if (mesh->getName().compare("Bush") == 0) {
-                
-            }
 
             this->drawMesh(mesh);
         }

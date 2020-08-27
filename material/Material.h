@@ -63,7 +63,7 @@ namespace Core {
 
         Bool getFaceCullingEnabled() const;
         void setFaceCullingEnabled(Bool enabled);
-        RenderState::CullFace getCullFace();
+        RenderState::CullFace getCullFace() const;
         void setCullFace(RenderState::CullFace cullFace);
 
         Bool getStencilTestEnabled() const;
@@ -87,6 +87,8 @@ namespace Core {
         Bool hasCustomDepthOutput() const;
         Bool getCustomDepthOutputCopyOverrideMatrialState() const;
         void setCustomDepthOutputCopyOverrideMatrialState(Bool state);
+        Bool getCustomDepthOutputStateCopyExcludeFaceCulling() const;
+        void setCustomDepthOutputStateCopyExcludeFaceCulling(Bool exclude);
 
         virtual Bool hasOpacityMap() const;
         virtual WeakPointer<Texture> getOpacityMap();
@@ -113,5 +115,6 @@ namespace Core {
         MaterialState materialState;
         Bool customDepthOutput;
         Bool customDepthOutputCopyOverrideMaterialState;
+        Bool customDepthOutputStateCopyExcludeFaceCulling;
     };
 }

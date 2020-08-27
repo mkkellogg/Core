@@ -455,10 +455,9 @@ namespace Core {
                             this->perspectiveShadowMapCamera->setRenderTarget(shadowMapRenderTarget);  
                             this->perspectiveShadowMapCamera->setAspectRatioFromDimensions(renderTargetDimensions.z, renderTargetDimensions.w);
                             ViewDescriptor viewDesc;
-                            this->getViewDescriptorForCamera(this->perspectiveShadowMapCamera, viewDesc);
-                            viewDesc.overrideMaterial = this->distanceMaterial;
-                            viewDesc.depthOutputOverride = DepthOutputOverride::Depth;
-                            this->render(viewDesc, toRender, dummyLights, true);
+                            this->perspectiveShadowMapCamera->setOverrideMaterial(this->distanceMaterial);
+                            this->perspectiveShadowMapCamera->setDepthOutputOverride(DepthOutputOverride::Distance);
+                            this->renderCube(this->perspectiveShadowMapCamera, toRender, dummyLights, true);
                         }
                     }
                     break;
@@ -483,7 +482,7 @@ namespace Core {
                                                                        this->orthoShadowMapCamera->getAutoClearRenderBuffers(), viewDesc);
                                 viewDesc.overrideMaterial = this->depthMaterial;
                                 viewDesc.renderTarget = directionalLight->getShadowMap(i);
-                                viewDesc.depthOutputOverride = DepthOutputOverride::Distance;
+                                viewDesc.depthOutputOverride = DepthOutputOverride::Depth;
                                 this->render(viewDesc, toRender, dummyLights, true);
                             }
                         }
