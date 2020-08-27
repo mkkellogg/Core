@@ -16,9 +16,9 @@ namespace Core {
         this->indexed = indexCount > 0 ? true : false;
         this->enabledAttributes = StandardAttributes::createAttributeSet();
         this->normalsSmoothingThreshold = Math::PI / 2.0;
-        this->shoudCalculateNormals = false;
-        this->shoudCalculateTangents = false;
-        this->shouldCalculateBoundingBox = false;
+        this->shouldCalculateNormals = false;
+        this->shouldCalculateTangents = false;
+        this->shouldCalculateBounds = false;
         initAttributes();
     }
 
@@ -106,6 +106,40 @@ namespace Core {
         return this->boundingBox;
     }
 
+    void Mesh::calculateBoundingSphere() {
+        Point3r center;
+        Vector3r centerToNewPoint;
+        Vector3r centerToNewPointOffset;
+        Real radius = 0.0f;
+        if (vertexPositions && this->isAttributeEnabled(StandardAttribute::Position)) {
+            UInt32 pointCount = vertexPositions->getAttributeCount();
+            Point3rs * pos = vertexPositions->getAttributes();
+            for (UInt32 i = 0; i < pointCount; i++) {
+                Point3rs& position = *pos;
+                if (i == 0) {
+                    center = position;
+                } else {
+                    centerToNewPoint = position - center;
+                    Real distanceToNewPoint = centerToNewPoint.magnitude();
+                    if (distanceToNewPoint > radius) {
+                        centerToNewPointOffset = centerToNewPoint;
+                        centerToNewPointOffset.normalize();
+                        Real halfDiff = (distanceToNewPoint - radius) * 0.5f;
+                        centerToNewPointOffset = centerToNewPointOffset * halfDiff;
+                        Real newRadius = radius + halfDiff;
+                        center = center + centerToNewPointOffset;
+                        radius = newRadius;
+                    }
+                }
+                pos++;
+            }
+        }
+    }
+
+    const Vector4r& Mesh::getBoundingSphere() const {
+
+    }
+
     WeakPointer<AttributeArray<Point3rs>> Mesh::getVertexPositions() {
         return this->vertexPositions;
     }
@@ -179,11 +213,11 @@ namespace Core {
     }
 
     void Mesh::update() {
-        if (this->shouldCalculateBoundingBox) this->calculateBoundingBox();
-        if (this->shoudCalculateNormals){
+        if (this->shouldCalculateBounds) this->calculateBoundingBox();
+        if (this->shouldCalculateNormals){
             this->calculateNormals((Real)this->normalsSmoothingThreshold);
         }
-        if (this->shoudCalculateTangents){
+        if (this->shouldCalculateTangents){
             this->calculateTangents((Real)this->normalsSmoothingThreshold);
         }
         //if (buildFaces)BuildFaces();
@@ -248,15 +282,15 @@ namespace Core {
     }
 
     void Mesh::setCalculateNormals(Bool calculateNormals) {
-        this->shoudCalculateNormals = calculateNormals;
+        this->shouldCalculateNormals = calculateNormals;
     }
 
     void Mesh::setCalculateTangents(Bool calculateTangents) {
-        this->shoudCalculateTangents = calculateTangents;
+        this->shouldCalculateTangents = calculateTangents;
     }
 
-    void Mesh::setCalculateBoundingBox(Bool calculateBoundingBox) {
-        this->shouldCalculateBoundingBox = calculateBoundingBox;
+    void Mesh::setCalculateBounds(Bool calculateBoundingBox) {
+        this->shouldCalculateBounds = calculateBoundingBox;
     }
 
     void Mesh::setNormalsSmoothingThreshold(Real threshold) {

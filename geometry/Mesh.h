@@ -59,10 +59,13 @@ namespace Core {
         void calculateBoundingBox();
         const Box3& getBoundingBox() const;
 
+        void calculateBoundingSphere();
+        const Vector4r& getBoundingSphere() const;
+
         void setNormalsSmoothingThreshold(Real threshold);
         void setCalculateNormals(Bool calculateNormals);
         void setCalculateTangents(Bool calculateTangents);
-        void setCalculateBoundingBox(Bool calculateBoundingBox);
+        void setCalculateBounds(Bool calculateBoundingBox);
         void calculateNormals(Real smoothingThreshold);
         void calculateTangents(Real smoothingThreshhold);
 
@@ -104,6 +107,7 @@ namespace Core {
         Bool indexed;
         UInt32 indexCount;
         Box3 boundingBox;
+        Vector4r boundingSphere;
 
         std::shared_ptr<AttributeArray<Point3rs>> vertexPositions;
         std::shared_ptr<AttributeArray<Vector3rs>> vertexNormals;
@@ -118,9 +122,9 @@ namespace Core {
 
         // maps vertices to other equal vertices
         std::vector<UInt32>** vertexCrossMap;
-        Bool shoudCalculateNormals;
-        Bool shoudCalculateTangents;
-        Bool shouldCalculateBoundingBox;
+        Bool shouldCalculateNormals;
+        Bool shouldCalculateTangents;
+        Bool shouldCalculateBounds;
         Real normalsSmoothingThreshold;
 
     };
