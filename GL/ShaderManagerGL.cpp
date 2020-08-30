@@ -959,7 +959,9 @@ namespace Core {
             "    vec3 toLightNormalized = normalize(toLight);\n"
             "    NdotL = max(cos(acos(dot(toLightNormalized, worldNormal)) * 1.025), 0.0); \n"
             "    halfwayVec = normalize(toViewer + toLight); \n"
-            "    attenuation = clamp(" + LIGHT_RANGE + "[@lightIndex] / (distance * distance), 0.0, 1.0); \n"
+            //"    attenuation = clamp(" + LIGHT_RANGE + "[@lightIndex] / (distance * distance), 0.0, 1.0); \n"
+            "    float attenuationDistance = distance + 1.0; \n"
+            "    attenuation = clamp(1.0 / pow(attenuationDistance, 2.0), 0.0, 1.0); \n"
             "    bias = (1.0 - NdotL) * " + LIGHT_ANGULAR_SHADOW_BIAS + "[@lightIndex] + " + LIGHT_CONSTANT_SHADOW_BIAS + "[@lightIndex];\n"
             "} \n"
 

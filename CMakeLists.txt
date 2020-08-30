@@ -146,6 +146,7 @@ set(INCLUDE_FILES
     render/MeshOutlinePostProcessor.h
     render/ReflectionProbe.h
     render/ToneMapType.h
+    render/RenderUtils.h
     light/Light.h
     light/ShadowLight.h
     light/PointLight.h
@@ -251,6 +252,7 @@ set(SOURCE_FILES
     render/MaterialGroupedRenderQueue.cpp
     render/MeshOutlinePostProcessor.cpp
     render/ReflectionProbe.cpp
+    render/RenderUtils.cpp
     light/Light.cpp
     light/ShadowLight.cpp
     light/PointLight.cpp

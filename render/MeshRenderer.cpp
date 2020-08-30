@@ -20,6 +20,7 @@
 #include "RenderException.h"
 #include "RenderPath.h"
 #include "DepthOutputOverride.h"
+#include "RenderUtils.h"
 
 namespace Core {
 
@@ -196,6 +197,12 @@ namespace Core {
                     if (lightType == LightType::Ambient && material->isPhysical()) continue;
                 }
                 if (renderPath == RenderPath::SinglePassMultiLight && (renderPassCount >= material->maxLightCount() || renderPassCount >= Constants::MaxShaderLights)) continue;
+                
+                Point3r pointLightPos;
+                if (lightType == LightType::Point) {
+                    WeakPointer<PointLight> pointLight = WeakPointer<Light>::dynamicPointerCast<PointLight>(light);
+                    if (!RenderUtils::isPointLightInRangeOfMesh(pointLight, pointLightPos, mesh, this->owner)) continue;
+                }
 
                 if (renderPath != RenderPath::SinglePassMultiLight) {
                     if (material->getBlendingMode() == RenderState::BlendingMode::None) {
@@ -317,9 +324,7 @@ namespace Core {
 
                     Int32 lightPositionLoc = material->getShaderLocation(StandardUniform::LightPosition, lightShaderVarLocOffset);
                     if (lightPositionLoc >= 0) {
-                        Point3r pos;
-                        pointLight->getOwner()->getTransform().applyTransformationTo(pos);
-                        shader->setUniform4f(lightPositionLoc, pos.x, pos.y, pos.z, 1.0f);
+                        shader->setUniform4f(lightPositionLoc, pointLightPos.x, pointLightPos.y, pointLightPos.z, 1.0f);
                     }
 
                     if (lightShadowsEnabledLoc >= 0) {

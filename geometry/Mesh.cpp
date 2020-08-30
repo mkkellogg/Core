@@ -214,7 +214,10 @@ namespace Core {
     }
 
     void Mesh::update() {
-        if (this->shouldCalculateBounds) this->calculateBoundingBox();
+        if (this->shouldCalculateBounds) {
+            this->calculateBoundingBox();
+            this->calculateBoundingSphere();
+        }
         if (this->shouldCalculateNormals){
             this->calculateNormals((Real)this->normalsSmoothingThreshold);
         }
