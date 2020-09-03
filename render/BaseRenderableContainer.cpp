@@ -1,5 +1,6 @@
 #include "BaseRenderableContainer.h"
 #include "BaseObjectRenderer.h"
+#include "BaseRenderable.h"
 
 namespace Core {
 
@@ -16,5 +17,4 @@ namespace Core {
             this->renderer = renderer;
         }
     }
-
 }

@@ -20,9 +20,10 @@ namespace Core {
         this->renderItemPool.returnAll();
     }
 
-    void RenderQueue::addItem(WeakPointer<BaseObjectRenderer> objectRenderer) {
+    void RenderQueue::addItem(WeakPointer<BaseObjectRenderer> objectRenderer, WeakPointer<BaseRenderable> renderable) {
         RenderItem& renderItem = this->renderItemPool.acquireObject();
         renderItem.ObjectRenderer = objectRenderer;
+        renderItem.Renderable = renderable;
         this->renderItems.push_back(renderItem);
     }
 

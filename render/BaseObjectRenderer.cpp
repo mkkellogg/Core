@@ -7,6 +7,11 @@ namespace Core {
         return false;
     }
 
+    Bool BaseObjectRenderer::forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<BaseRenderable> renderable, Bool isStatic,
+                                                 const std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting) {
+        return false;
+    }
+
     Bool BaseObjectRenderer::supportsRenderPath(RenderPath renderPath) {
         return false;
     }

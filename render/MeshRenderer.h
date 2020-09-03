@@ -4,6 +4,8 @@
 #include <vector>
 
 #include "../material/StandardAttributes.h"
+#include "../render/BaseRenderable.h"
+#include "../render/Renderable.h"
 #include "../render/ObjectRenderer.h"
 #include "../util/PersistentWeakPointer.h"
 
@@ -25,14 +27,13 @@ namespace Core {
         virtual ~MeshRenderer();
         virtual Bool forwardRender(const ViewDescriptor& viewDescriptor, const std::vector<WeakPointer<Light>>& lights,
                                    Bool matchPhysicalPropertiesWithLighting) override;
+        virtual Bool forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<BaseRenderable> mesh, Bool isStatic,
+                                         const std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting) override;
         virtual Bool supportsRenderPath(RenderPath renderPath) override;
         virtual UInt32 getRenderQueueID() const override;
         void setMaterial(WeakPointer<Material> material);
         WeakPointer<Material> getMaterial();
 
-    protected:
-        virtual Bool forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh, Bool isStatic,
-                                         const std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting) override;
     private:
         MeshRenderer(WeakPointer<Graphics> graphics, WeakPointer<Material> material, WeakPointer<Object3D> owner);
         void checkAndSetShaderAttribute(WeakPointer<Mesh> mesh, WeakPointer<Material> material, StandardAttribute checkAttribute,

@@ -5,5 +5,7 @@
 namespace Core {
 
     class BaseRenderable : public CoreObject {
+    public:
+        virtual ~BaseRenderable() = default;
     };
 }

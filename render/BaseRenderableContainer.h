@@ -7,6 +7,7 @@ namespace Core {
 
     // forward declarations
     class BaseObjectRenderer;
+    class BaseRenderable;
 
     class BaseRenderableContainer : public Object3D {
     public:

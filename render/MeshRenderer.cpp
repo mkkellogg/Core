@@ -1,4 +1,6 @@
 #include "MeshRenderer.h"
+#include "BaseRenderable.h"
+#include "Renderable.h"
 #include "../Engine.h"
 #include "../geometry/AttributeArray.h"
 #include "../geometry/AttributeArrayGPUStorage.h"
@@ -95,8 +97,13 @@ namespace Core {
         }
     }
 
-    Bool MeshRenderer::forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh, Bool isStatic,
+    Bool MeshRenderer::forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<BaseRenderable> renderable, Bool isStatic,
                                            const std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting) {
+        WeakPointer<Mesh> mesh = WeakPointer<BaseRenderable>::dynamicPointerCast<Mesh>(renderable);
+        if (!mesh.isValid()) {
+            throw RenderException("MeshRenderer::forwardRenderObject() -> 'renderable' is not an instance of Mesh!");  
+        }
+
         Matrix4x4 tempMatrix;
         WeakPointer<Material> material;
         Bool copiedStateFromOverrideMaterial = false;

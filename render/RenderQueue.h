@@ -12,6 +12,7 @@ namespace Core {
      // forward declarations
     class Object3D;
     class BaseObjectRenderer;
+    class BaseRenderable;
 
     class RenderQueue {
     public:
@@ -23,6 +24,7 @@ namespace Core {
                 this->ObjectRenderer = objectRenderer;
             }
             PersistentWeakPointer<BaseObjectRenderer> ObjectRenderer;
+            PersistentWeakPointer<BaseRenderable> Renderable;
         };
 
         RenderQueue(UInt32 id);
@@ -30,7 +32,7 @@ namespace Core {
         UInt32 getID() const;
         UInt32 getItemCount() const;
         void clear();
-        void addItem(WeakPointer<BaseObjectRenderer> objectRenderer);
+        void addItem(WeakPointer<BaseObjectRenderer> objectRenderer, WeakPointer<BaseRenderable> renderable);
         RenderItem& getRenderItem(UInt32 index);
 
     protected:
