@@ -20,7 +20,7 @@ namespace Core {
     class RenderableContainer;
 
     template <typename T>
-    class RenderableContainer<T, Core::enable_if_t<std::is_base_of<Renderable<T>, T>::value>> : public BaseRenderableContainer {
+    class RenderableContainer<T, Core::enable_if_t<std::is_base_of<BaseRenderable, T>::value>> : public BaseRenderableContainer {
         friend class Engine;
 
     public:
@@ -28,20 +28,17 @@ namespace Core {
             renderables.push_back(renderable);
         }
 
-        const std::vector<PersistentWeakPointer<T>>& getRenderables() {
-            return renderables;
-        }
-
         WeakPointer<ObjectRenderer<T>> getRenderer() {
             return this->localRendererRef;
         }
 
-        ValueIterator<typename std::vector<WeakPointer<T>>::iterator> begin() {
-            return this->renderables.begin();
-        }
-
-        ValueIterator<typename std::vector<WeakPointer<T>>::iterator> end() {
-            return this->renderables.end();
+        WeakPointer<T> getRenderable(UInt32 index) {
+            WeakPointer<BaseRenderable> baseRenderable = this->getBaseRenderable(index);
+            WeakPointer<T> renderable = WeakPointer<BaseRenderable>::dynamicPointerCast<T>(baseRenderable);
+            if (!renderable.isValid() && baseRenderable.isValid()) {
+                throw Exception("RenderableContainer::getRenderable could not dynamically cast object.");
+            }
+            return renderable;
         }
 
     protected:
@@ -54,6 +51,5 @@ namespace Core {
         }
 
         PersistentWeakPointer<ObjectRenderer<T>> localRendererRef;
-        std::vector<PersistentWeakPointer<T>> renderables;
     };
 }

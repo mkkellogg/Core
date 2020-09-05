@@ -124,7 +124,6 @@ set(INCLUDE_FILES
     render/BaseRenderableContainer.h
     render/RenderableContainer.h
     render/MeshContainer.h
-    render/Renderable.h
     render/BaseObjectRenderer.h
     render/ObjectRenderer.h
     render/Camera.h

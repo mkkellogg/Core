@@ -1,6 +1,5 @@
 #include "MeshRenderer.h"
 #include "BaseRenderable.h"
-#include "Renderable.h"
 #include "../Engine.h"
 #include "../geometry/AttributeArray.h"
 #include "../geometry/AttributeArrayGPUStorage.h"
@@ -481,8 +480,9 @@ namespace Core {
                                      Bool matchPhysicalPropertiesWithLighting) {
         std::shared_ptr<MeshContainer> thisContainer = std::dynamic_pointer_cast<MeshContainer>(this->owner.lock());
         if (thisContainer) {
-            auto renderables = thisContainer->getRenderables();
-            for (auto mesh : renderables) {
+            UInt32 renderableCount = thisContainer->getBaseRenderableCount();
+            for (UInt32 i = 0; i < renderableCount; i++) {
+                WeakPointer<BaseRenderable> mesh = thisContainer->getBaseRenderable(i);
                 this->forwardRenderObject(viewDescriptor, mesh, thisContainer->isStatic(), lights, matchPhysicalPropertiesWithLighting);
             }
         }

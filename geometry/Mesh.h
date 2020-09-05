@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "../Graphics.h"
-#include "../render/Renderable.h"
+#include "../render/BaseRenderable.h"
 #include "../util/PersistentWeakPointer.h"
 #include "../color/Color.h"
 #include "../common/assert.h"
@@ -23,7 +23,7 @@ namespace Core {
     class Object3D;
     class IndexBuffer;
 
-    class Mesh : public Renderable<Mesh> {
+    class Mesh : public BaseRenderable {
         friend class Engine;
 
     public:

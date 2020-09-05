@@ -54,13 +54,15 @@ namespace Core {
     }
 
     Bool RenderTargetCubeGL::addColorTexture(TextureAttributes attributes) {
+        Bool success = true;
         if (this->activeColorTextures < RenderTarget::MaxRenderTargetOutputTargets - 1) {
             this->colorTextureAttributes[this->activeColorTextures] = attributes;
             this->mipLevel[this->activeColorTextures] = 0;
             this->colorBufferIsTexture[this->activeColorTextures] = true;
-            this->initColorTexture(this->activeColorTextures);
+            success = success && this->initColorTexture(this->activeColorTextures);
             this->activeColorTextures++;
         }
+        return success;
     }
 
     Bool RenderTargetCubeGL::initColorTexture(UInt32 index) {

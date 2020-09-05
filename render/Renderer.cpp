@@ -842,7 +842,11 @@ namespace Core {
                     } else {
                         renderQueueID = objectRenderer->getRenderQueueID();
                     }
-                    renderQueueManager.addItemToQueue(renderQueueID, objectRenderer);
+                    UInt32 renderableCount = containerPtr->getBaseRenderableCount();
+                    for(UInt32 i = 0; i < renderableCount; i++) {
+                        WeakPointer<BaseRenderable> renderable = containerPtr->getBaseRenderable(i);
+                        renderQueueManager.addItemToQueue(renderQueueID, objectRenderer, renderable);
+                    }
                 }
             }
         }

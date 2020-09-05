@@ -5,7 +5,6 @@
 
 #include "../material/StandardAttributes.h"
 #include "../render/BaseRenderable.h"
-#include "../render/Renderable.h"
 #include "../render/ObjectRenderer.h"
 #include "../util/PersistentWeakPointer.h"
 
