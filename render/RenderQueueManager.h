@@ -19,7 +19,7 @@ namespace Core {
 
         UInt32 getRenderQueueCount() const;
         void clearAll();
-        void addItemToQueue(UInt32 queueID, WeakPointer<BaseObjectRenderer> objectRenderer, WeakPointer<BaseRenderable> renderable);
+        void addItemToQueue(UInt32 queueID, WeakPointer<BaseObjectRenderer> objectRenderer, WeakPointer<BaseRenderable> renderable, Bool isStatic);
         RenderQueue& getRenderQueue(UInt32 index);
 
     protected:

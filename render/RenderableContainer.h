@@ -25,7 +25,7 @@ namespace Core {
 
     public:
         void addRenderable(WeakPointer<T> renderable) {
-            renderables.push_back(renderable);
+            this->addBaseRenderable(renderable);
         }
 
         WeakPointer<ObjectRenderer<T>> getRenderer() {
@@ -45,8 +45,8 @@ namespace Core {
         RenderableContainer() {
         }
 
-        void setRenderer(std::shared_ptr<ObjectRenderer<T>> renderer) {
-            this->setBaseRenderer(std::static_pointer_cast<BaseObjectRenderer>(renderer));
+        void setRenderer(WeakPointer<ObjectRenderer<T>> renderer) {
+            this->setBaseRenderer(renderer);
             this->localRendererRef = renderer;
         }
 

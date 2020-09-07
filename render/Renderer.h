@@ -15,6 +15,7 @@
 #include "../light/LightType.h"
 #include "../base/BitMask.h"
 #include "DepthOutputOverride.h"
+#include "CubeFace.h"
 
 namespace Core {
 
@@ -45,32 +46,36 @@ namespace Core {
         virtual Bool init();
         void renderScene(WeakPointer<Scene> scene, WeakPointer<Material> overrideMaterial = WeakPointer<Material>::nullPtr());
         void renderScene(WeakPointer<Object3D> rootObject, WeakPointer<Material> overrideMaterial = WeakPointer<Material>::nullPtr());
-        void renderObjectBasic(WeakPointer<Object3D> rootObject, WeakPointer<Camera> camera, Bool matchPhysicalPropertiesWithLighting);
+        void renderSceneBasic(WeakPointer<Object3D> rootObject, WeakPointer<Camera> camera, Bool matchPhysicalPropertiesWithLighting);
         void renderObjectDirect(WeakPointer<Object3D> object, WeakPointer<Camera> camera, Bool matchPhysicalPropertiesWithLighting);
         void renderObjectDirect(WeakPointer<Object3D> object, WeakPointer<Camera> camera, std::vector<WeakPointer<Light>>& lightList,
                                 Bool matchPhysicalPropertiesWithLighting);
         WeakPointer<Texture2D> getSSAOTexture();
     protected:
         Renderer();
-        void renderStandard(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
+        void renderForCamera(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
+                    Bool matchPhysicalPropertiesWithLighting);
+        void renderForCamera(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
+                    std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting);
+        void renderForStandardCamera(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
                             std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting,
                             WeakPointer<Texture2D> ssaoMap = WeakPointer<Texture2D>::nullPtr());
-        void renderCube(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
-                        std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting);
-        void render(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
-                    Bool matchPhysicalPropertiesWithLighting);
-        void render(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
-                    std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting);
-        void render(ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objectList, 
-                    std::vector<WeakPointer<Light>>& lightList,
-                    Bool matchPhysicalPropertiesWithLighting);
-        void setViewportAndMipLevelForRenderTarget(WeakPointer<RenderTarget> renderTarget, Int16 cubeFace);
-        void clearActiveRenderTarget(ViewDescriptor& viewDescriptor);
+        void getViewDescriptorForCubeCamera(WeakPointer<Camera> camera, CubeFace cubeFace, ViewDescriptor& outDescriptor);
+        void getViewDescriptorsForCubeCamera(WeakPointer<Camera> camera, ViewDescriptor& descForward, ViewDescriptor& descBackward,
+                                             ViewDescriptor& descUp, ViewDescriptor& descDown, ViewDescriptor& descLeft, ViewDescriptor& descRight);
+        void renderForCubeCamera(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
+                                 std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting);
+        void renderForViewDescriptor(ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objectList, 
+                                     std::vector<WeakPointer<Light>>& lightList, Bool matchPhysicalPropertiesWithLighting);
+        void renderForViewDescriptor(ViewDescriptor& viewDescriptor, RenderQueueManager& renderQueueManager, 
+                                     std::vector<WeakPointer<Light>>& lightList, Bool matchPhysicalPropertiesWithLighting);
         void renderSkybox(ViewDescriptor& viewDescriptor);
         void renderObjectDirect(WeakPointer<Object3D> object, ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Light>>& lightList,
                                 Bool matchPhysicalPropertiesWithLighting);
         void renderShadowMaps(std::vector<WeakPointer<Light>>& lights, LightType lightType, 
                               std::vector<WeakPointer<Object3D>>& objects, WeakPointer<Camera> renderCamera = WeakPointer<Camera>());
+        void setViewportAndMipLevelForRenderTarget(WeakPointer<RenderTarget> renderTarget, Int16 cubeFace);
+        void clearActiveRenderTarget(ViewDescriptor& viewDescriptor);
         void getViewDescriptorForCamera(WeakPointer<Camera> camera, ViewDescriptor& viewDescriptor);
         void getViewDescriptorTransformations(const Matrix4x4& worldMatrix, const Matrix4x4& projectionMatrix,
                                IntMask clearBuffers, ViewDescriptor& viewDescriptor);
@@ -89,12 +94,10 @@ namespace Core {
         void renderPositionsAndNormals(ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objects);
         void initializeSSAO();
 
-        void sortObjectsIntoRenderQueues(std::vector<WeakPointer<Object3D>>& objects, RenderQueueManager& renderQueueManager, ViewDescriptor& viewDescriptor);
+        void sortObjectsIntoRenderQueues(std::vector<WeakPointer<Object3D>>& objects, RenderQueueManager& renderQueueManager, Int32 overrideRenderQueueID=-1);
 
         static Bool isShadowCastingCapableLight(WeakPointer<Light> light);
         static Bool compareLights (WeakPointer<Light> a, WeakPointer<Light> b);
-
-        RenderQueueManager renderQueueManager;
 
         PersistentWeakPointer<DepthOnlyMaterial> depthMaterial;
         PersistentWeakPointer<NormalsMaterial> normalsMaterial;

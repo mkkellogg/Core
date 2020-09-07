@@ -18,6 +18,7 @@ namespace Core {
         WeakPointer<BaseRenderable> getBaseRenderable(UInt32 index);
 
     protected:
+        void addBaseRenderable(WeakPointer<BaseRenderable> renderable);
         void setBaseRenderer(WeakPointer<BaseObjectRenderer> renderer);
         
         PersistentWeakPointer<BaseObjectRenderer> renderer;

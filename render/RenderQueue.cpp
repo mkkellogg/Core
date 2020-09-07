@@ -20,10 +20,11 @@ namespace Core {
         this->renderItemPool.returnAll();
     }
 
-    void RenderQueue::addItem(WeakPointer<BaseObjectRenderer> objectRenderer, WeakPointer<BaseRenderable> renderable) {
+    void RenderQueue::addItem(WeakPointer<BaseObjectRenderer> objectRenderer, WeakPointer<BaseRenderable> renderable, Bool isStatic) {
         RenderItem& renderItem = this->renderItemPool.acquireObject();
         renderItem.ObjectRenderer = objectRenderer;
         renderItem.Renderable = renderable;
+        renderItem.IsStatic = isStatic;
         this->renderItems.push_back(renderItem);
     }
 

@@ -119,7 +119,8 @@ namespace Core {
         WeakPointer<typename std::enable_if<std::is_base_of<ObjectRenderer<R>, T>::value, T>::type> createRenderer(WeakPointer<Material> material,
                                                                                                                    WeakPointer<RenderableContainer<R>> owner) {
             std::shared_ptr<T> objectRenderer = std::shared_ptr<T>(new T(this->graphics, material, owner));
-            owner->setRenderer(objectRenderer);
+            WeakPointer<T> _temp = objectRenderer;
+            owner->setRenderer(_temp);
             this->objectManager.addReference(objectRenderer, CoreObjectReferenceManager::OwnerType::Single);
             return objectRenderer;
         }

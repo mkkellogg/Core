@@ -25,6 +25,7 @@ namespace Core {
             }
             PersistentWeakPointer<BaseObjectRenderer> ObjectRenderer;
             PersistentWeakPointer<BaseRenderable> Renderable;
+            Bool IsStatic;
         };
 
         RenderQueue(UInt32 id);
@@ -32,7 +33,7 @@ namespace Core {
         UInt32 getID() const;
         UInt32 getItemCount() const;
         void clear();
-        void addItem(WeakPointer<BaseObjectRenderer> objectRenderer, WeakPointer<BaseRenderable> renderable);
+        void addItem(WeakPointer<BaseObjectRenderer> objectRenderer, WeakPointer<BaseRenderable> renderable, Bool isStatic);
         RenderItem& getRenderItem(UInt32 index);
 
     protected:

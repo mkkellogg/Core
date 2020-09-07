@@ -18,6 +18,10 @@ namespace Core {
         }
     }
 
+    void BaseRenderableContainer::addBaseRenderable(WeakPointer<BaseRenderable> renderable) {
+        this->renderables.push_back(renderable);
+    }
+
     UInt32 BaseRenderableContainer::getBaseRenderableCount() const {
         return this->renderables.size();
     }
