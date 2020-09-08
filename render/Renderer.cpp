@@ -272,55 +272,6 @@ namespace Core {
         renderForViewDescriptor(viewDescriptor, objects, lights, matchPhysicalPropertiesWithLighting);
     }
 
-    void Renderer::getViewDescriptorForCubeCamera(WeakPointer<Camera> camera, CubeFace cubeFace, ViewDescriptor& outDescriptor) {
-        static bool initialized = false;
-        static Matrix4x4 forward;
-        static Matrix4x4 left;
-        static Matrix4x4 right;
-        static Matrix4x4 up;
-        static Matrix4x4 down;
-        static Matrix4x4 backward;
-        static std::vector<Matrix4x4> orientations;
-        if (!initialized) {
-            initialized = true;
-            forward.lookAt(Vector3r::Zero, Vector3r::Backward, Vector3r::Down);
-            backward.lookAt(Vector3r::Zero, Vector3r::Forward, Vector3r::Down);
-            up.lookAt(Vector3r::Zero, Vector3r::Up, Vector3r::Backward);
-            down.lookAt(Vector3r::Zero, Vector3r::Down, Vector3r::Forward);
-            left.lookAt(Vector3r::Zero, Vector3r::Left, Vector3r::Down);
-            right.lookAt(Vector3r::Zero, Vector3r::Right, Vector3r::Down);
-            orientations.push_back(forward);
-            orientations.push_back(backward);
-            orientations.push_back(up);
-            orientations.push_back(down);
-            orientations.push_back(left);
-            orientations.push_back(right);
-        }
-
-        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-        ViewDescriptor baseViewDescriptor;
-        this->getViewDescriptorForCamera(camera, baseViewDescriptor);
-    
-        ViewDescriptor viewDescriptor = baseViewDescriptor;
-        Matrix4x4 cameraTransform = camera->getOwner()->getTransform().getWorldMatrix();
-        cameraTransform.multiply(orientations[(UInt16)cubeFace]);
-        this->getViewDescriptorTransformations(cameraTransform, camera->getProjectionMatrix(),
-                                                camera->getAutoClearRenderBuffers(), viewDescriptor);
-        viewDescriptor.cubeFace = (UInt16)cubeFace;
-        viewDescriptor.overrideMaterial = camera->getOverrideMaterial();
-        outDescriptor = viewDescriptor;
-    }
-                                    
-    void Renderer::getViewDescriptorsForCubeCamera(WeakPointer<Camera> camera, ViewDescriptor& descForward, ViewDescriptor& descBackward,
-                                                   ViewDescriptor& descUp, ViewDescriptor& descDown, ViewDescriptor& descLeft, ViewDescriptor& descRight) {
-        this->getViewDescriptorForCubeCamera(camera, CubeFace::Forward, descForward);
-        this->getViewDescriptorForCubeCamera(camera, CubeFace::Backward, descBackward);
-        this->getViewDescriptorForCubeCamera(camera, CubeFace::Up, descUp);
-        this->getViewDescriptorForCubeCamera(camera, CubeFace::Down, descDown);
-        this->getViewDescriptorForCubeCamera(camera, CubeFace::Left, descLeft);
-        this->getViewDescriptorForCubeCamera(camera, CubeFace::Right, descRight);
-    }
-
     void Renderer::renderForCubeCamera(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects,
                                        std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting) {
         ViewDescriptor viewDesc;
@@ -358,7 +309,7 @@ namespace Core {
             RenderQueue& queue = renderQueueManager.getRenderQueue(q);
             UInt32 itemCount = queue.getItemCount();
             for (UInt32 i = 0; i < itemCount; i++) {
-                RenderQueue::RenderItem& item = queue.getRenderItem(i);
+                RenderItem& item = queue.getRenderItem(i);
                 item.ObjectRenderer->forwardRenderObject(viewDescriptor, item.Renderable, item.IsStatic, lightList, matchPhysicalPropertiesWithLighting);
             }
         }
@@ -375,26 +326,6 @@ namespace Core {
 
         graphics->activateRenderTarget(currentRenderTarget);
         this->setViewportAndMipLevelForRenderTarget(currentRenderTarget, -1);
-    }
-
-    void Renderer::clearActiveRenderTarget(ViewDescriptor& viewDescriptor) {
-        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-        Bool clearColorBuffer = IntMaskUtil::isBitSetForMask(viewDescriptor.clearRenderBuffers, (UInt32)RenderBufferType::Color);
-        Bool clearDepthBuffer = IntMaskUtil::isBitSetForMask(viewDescriptor.clearRenderBuffers, (UInt32)RenderBufferType::Depth);
-        Bool clearStencilBuffer = IntMaskUtil::isBitSetForMask(viewDescriptor.clearRenderBuffers, (UInt32)RenderBufferType::Stencil);
-        graphics->clearActiveRenderTarget(clearColorBuffer, clearDepthBuffer, clearStencilBuffer);
-    }
-
-    void Renderer::setViewportAndMipLevelForRenderTarget(WeakPointer<RenderTarget> renderTarget, Int16 cubeFace) {
-        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-        UInt32 targetMipLevel = renderTarget->getMipLevel();
-        if (cubeFace >= 0)
-            graphics->activateCubeRenderTargetSide((CubeTextureSide)cubeFace, targetMipLevel);
-        else
-            graphics->activateRenderTarget2DMipLevel(targetMipLevel);
-        Vector4u mipLevelScaledViewport = renderTarget->getViewportForMipLevel(targetMipLevel);
-        graphics->setViewport(mipLevelScaledViewport.x, mipLevelScaledViewport.y, mipLevelScaledViewport.z, mipLevelScaledViewport.w);
-
     }
 
     void Renderer::renderSkybox(ViewDescriptor& viewDescriptor) {
@@ -554,7 +485,76 @@ namespace Core {
             curLight++;
         }
     }
+
+    void Renderer::setViewportAndMipLevelForRenderTarget(WeakPointer<RenderTarget> renderTarget, Int16 cubeFace) {
+        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
+        UInt32 targetMipLevel = renderTarget->getMipLevel();
+        if (cubeFace >= 0)
+            graphics->activateCubeRenderTargetSide((CubeTextureSide)cubeFace, targetMipLevel);
+        else
+            graphics->activateRenderTarget2DMipLevel(targetMipLevel);
+        Vector4u mipLevelScaledViewport = renderTarget->getViewportForMipLevel(targetMipLevel);
+        graphics->setViewport(mipLevelScaledViewport.x, mipLevelScaledViewport.y, mipLevelScaledViewport.z, mipLevelScaledViewport.w);
+
+    }
+
+    void Renderer::clearActiveRenderTarget(ViewDescriptor& viewDescriptor) {
+        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
+        Bool clearColorBuffer = IntMaskUtil::isBitSetForMask(viewDescriptor.clearRenderBuffers, (UInt32)RenderBufferType::Color);
+        Bool clearDepthBuffer = IntMaskUtil::isBitSetForMask(viewDescriptor.clearRenderBuffers, (UInt32)RenderBufferType::Depth);
+        Bool clearStencilBuffer = IntMaskUtil::isBitSetForMask(viewDescriptor.clearRenderBuffers, (UInt32)RenderBufferType::Stencil);
+        graphics->clearActiveRenderTarget(clearColorBuffer, clearDepthBuffer, clearStencilBuffer);
+    }
+
+    void Renderer::getViewDescriptorForCubeCamera(WeakPointer<Camera> camera, CubeFace cubeFace, ViewDescriptor& outDescriptor) {
+        static bool initialized = false;
+        static Matrix4x4 forward;
+        static Matrix4x4 left;
+        static Matrix4x4 right;
+        static Matrix4x4 up;
+        static Matrix4x4 down;
+        static Matrix4x4 backward;
+        static std::vector<Matrix4x4> orientations;
+        if (!initialized) {
+            initialized = true;
+            forward.lookAt(Vector3r::Zero, Vector3r::Backward, Vector3r::Down);
+            backward.lookAt(Vector3r::Zero, Vector3r::Forward, Vector3r::Down);
+            up.lookAt(Vector3r::Zero, Vector3r::Up, Vector3r::Backward);
+            down.lookAt(Vector3r::Zero, Vector3r::Down, Vector3r::Forward);
+            left.lookAt(Vector3r::Zero, Vector3r::Left, Vector3r::Down);
+            right.lookAt(Vector3r::Zero, Vector3r::Right, Vector3r::Down);
+            orientations.push_back(forward);
+            orientations.push_back(backward);
+            orientations.push_back(up);
+            orientations.push_back(down);
+            orientations.push_back(left);
+            orientations.push_back(right);
+        }
+
+        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
+        ViewDescriptor baseViewDescriptor;
+        this->getViewDescriptorForCamera(camera, baseViewDescriptor);
     
+        ViewDescriptor viewDescriptor = baseViewDescriptor;
+        Matrix4x4 cameraTransform = camera->getOwner()->getTransform().getWorldMatrix();
+        cameraTransform.multiply(orientations[(UInt16)cubeFace]);
+        this->getViewDescriptorTransformations(cameraTransform, camera->getProjectionMatrix(),
+                                                camera->getAutoClearRenderBuffers(), viewDescriptor);
+        viewDescriptor.cubeFace = (UInt16)cubeFace;
+        viewDescriptor.overrideMaterial = camera->getOverrideMaterial();
+        outDescriptor = viewDescriptor;
+    }
+                                    
+    void Renderer::getViewDescriptorsForCubeCamera(WeakPointer<Camera> camera, ViewDescriptor& descForward, ViewDescriptor& descBackward,
+                                                   ViewDescriptor& descUp, ViewDescriptor& descDown, ViewDescriptor& descLeft, ViewDescriptor& descRight) {
+        this->getViewDescriptorForCubeCamera(camera, CubeFace::Forward, descForward);
+        this->getViewDescriptorForCubeCamera(camera, CubeFace::Backward, descBackward);
+        this->getViewDescriptorForCubeCamera(camera, CubeFace::Up, descUp);
+        this->getViewDescriptorForCubeCamera(camera, CubeFace::Down, descDown);
+        this->getViewDescriptorForCubeCamera(camera, CubeFace::Left, descLeft);
+        this->getViewDescriptorForCubeCamera(camera, CubeFace::Right, descRight);
+    }
+
     void Renderer::getViewDescriptorForCamera(WeakPointer<Camera> camera, ViewDescriptor& viewDescriptor) {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         WeakPointer<RenderTarget> cameraRenderTarget = camera->getRenderTarget();
@@ -875,6 +875,24 @@ namespace Core {
                     for(UInt32 i = 0; i < renderableCount; i++) {
                         WeakPointer<BaseRenderable> renderable = containerPtr->getBaseRenderable(i);
                         renderQueueManager.addItemToQueue(renderQueueID, objectRenderer, renderable, containerPtr->isStatic());
+                    }
+                }
+            }
+        }
+    }
+
+    void Renderer::buildRenderListFromObjects(std::vector<WeakPointer<Object3D>>& objects, RenderList& renderList) {
+        renderList.clear();
+         for(UInt32 i = 0; i < objects.size(); i++) {
+            WeakPointer<Object3D> object = objects[i];
+            WeakPointer<BaseRenderableContainer> containerPtr = WeakPointer<Object3D>::dynamicPointerCast<BaseRenderableContainer>(object);
+            if (containerPtr) {
+                WeakPointer<BaseObjectRenderer> objectRenderer = containerPtr->getBaseRenderer();
+                if (objectRenderer.isValid()) {
+                    UInt32 renderableCount = containerPtr->getBaseRenderableCount();
+                    for(UInt32 i = 0; i < renderableCount; i++) {
+                        WeakPointer<BaseRenderable> renderable = containerPtr->getBaseRenderable(i);
+                        renderList.addItem(objectRenderer, renderable, containerPtr->isStatic());
                     }
                 }
             }

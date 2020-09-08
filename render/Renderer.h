@@ -8,6 +8,7 @@
 #include "RenderBuffer.h"
 #include "RenderState.h"
 #include "RenderQueueManager.h"
+#include "RenderList.h"
 #include "../geometry/Vector2.h"
 #include "../geometry/Vector4.h"
 #include "../scene/Transform.h"
@@ -60,9 +61,6 @@ namespace Core {
         void renderForStandardCamera(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
                             std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting,
                             WeakPointer<Texture2D> ssaoMap = WeakPointer<Texture2D>::nullPtr());
-        void getViewDescriptorForCubeCamera(WeakPointer<Camera> camera, CubeFace cubeFace, ViewDescriptor& outDescriptor);
-        void getViewDescriptorsForCubeCamera(WeakPointer<Camera> camera, ViewDescriptor& descForward, ViewDescriptor& descBackward,
-                                             ViewDescriptor& descUp, ViewDescriptor& descDown, ViewDescriptor& descLeft, ViewDescriptor& descRight);
         void renderForCubeCamera(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
                                  std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting);
         void renderForViewDescriptor(ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objectList, 
@@ -76,6 +74,9 @@ namespace Core {
                               std::vector<WeakPointer<Object3D>>& objects, WeakPointer<Camera> renderCamera = WeakPointer<Camera>());
         void setViewportAndMipLevelForRenderTarget(WeakPointer<RenderTarget> renderTarget, Int16 cubeFace);
         void clearActiveRenderTarget(ViewDescriptor& viewDescriptor);
+        void getViewDescriptorForCubeCamera(WeakPointer<Camera> camera, CubeFace cubeFace, ViewDescriptor& outDescriptor);
+        void getViewDescriptorsForCubeCamera(WeakPointer<Camera> camera, ViewDescriptor& descForward, ViewDescriptor& descBackward,
+                                             ViewDescriptor& descUp, ViewDescriptor& descDown, ViewDescriptor& descLeft, ViewDescriptor& descRight);
         void getViewDescriptorForCamera(WeakPointer<Camera> camera, ViewDescriptor& viewDescriptor);
         void getViewDescriptorTransformations(const Matrix4x4& worldMatrix, const Matrix4x4& projectionMatrix,
                                IntMask clearBuffers, ViewDescriptor& viewDescriptor);
@@ -95,6 +96,7 @@ namespace Core {
         void initializeSSAO();
 
         void sortObjectsIntoRenderQueues(std::vector<WeakPointer<Object3D>>& objects, RenderQueueManager& renderQueueManager, Int32 overrideRenderQueueID=-1);
+        void buildRenderListFromObjects(std::vector<WeakPointer<Object3D>>& objects, RenderList& renderList);
 
         static Bool isShadowCastingCapableLight(WeakPointer<Light> light);
         static Bool compareLights (WeakPointer<Light> a, WeakPointer<Light> b);

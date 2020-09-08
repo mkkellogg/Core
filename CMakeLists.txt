@@ -136,7 +136,9 @@ set(INCLUDE_FILES
     render/RenderTarget.h
     render/RenderTarget2D.h
     render/RenderTargetCube.h
+    render/RenderItem.h
     render/RenderQueueManager.h
+    render/RenderList.h
     render/RenderQueue.h
     render/MaterialGroupedRenderQueue.h
     render/ViewDescriptor.h
@@ -247,6 +249,7 @@ set(SOURCE_FILES
     render/RenderTarget.cpp
     render/RenderTarget2D.cpp
     render/RenderTargetCube.cpp
+    render/RenderList.cpp
     render/RenderQueue.cpp
     render/RenderQueueManager.cpp
     render/MaterialGroupedRenderQueue.cpp
