@@ -10,6 +10,7 @@ namespace Core {
     class Engine;
     class CubeTexture;
     class Texture2D;
+    class ReflectionProbe;
 
     class AmbientIBLLight final : public Light {
         friend class Engine;
@@ -23,6 +24,8 @@ namespace Core {
         WeakPointer<CubeTexture> getSpecularIBLPreFilteredMap();
         void setSpecularIBLBRDFMap(WeakPointer<Texture2D> specularIBLBRDFMap);
         WeakPointer<Texture2D> getSpecularIBLBRDFMap();
+        void setReflectionProbe(WeakPointer<ReflectionProbe> reflectionProbe);
+        void updateMapsFromReflectionProbe();
               
     protected:
         AmbientIBLLight(WeakPointer<Object3D> owner);
@@ -30,5 +33,6 @@ namespace Core {
         PersistentWeakPointer<CubeTexture> irradianceMap;
         PersistentWeakPointer<CubeTexture> specularIBLPreFilteredMap;
         PersistentWeakPointer<Texture2D> specularIBLBRDFMap;
+        PersistentWeakPointer<ReflectionProbe> reflectionProbe;
     };
 }

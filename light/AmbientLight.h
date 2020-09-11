@@ -20,6 +20,5 @@ namespace Core {
               
     protected:
         AmbientLight(WeakPointer<Object3D> owner);
-
     };
 }

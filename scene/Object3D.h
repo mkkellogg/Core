@@ -20,6 +20,12 @@ namespace Core {
     class MeshRenderer;
     class Engine;
     class Object3DComponent;
+    class BaseObjectRenderer;
+    class BaseRenderableContainer;
+    class Light;
+    class AmbientIBLLight;
+    class ReflectionProbe;
+    class Camera;
 
     class Object3D: public CoreObject {
 
@@ -48,6 +54,13 @@ namespace Core {
         UInt32 childCount();
         WeakPointer<Object3D> getChild(UInt32 index);
 
+        WeakPointer<BaseObjectRenderer> getBaseRenderer();
+        WeakPointer<BaseRenderableContainer> getBaseRenderableContainer();
+        WeakPointer<Light> getLight();
+        WeakPointer<AmbientIBLLight> getAmbientIBLLight();
+        WeakPointer<ReflectionProbe> getReflectionProbe();
+        WeakPointer<Camera> getCamera();
+
     protected:
         Object3D();
 
@@ -61,9 +74,31 @@ namespace Core {
         UInt64 id;
         std::string name;
 
+        WeakPointer<BaseObjectRenderer> baseRenderer;
+        WeakPointer<BaseRenderableContainer> baseRenderableContainer;
+        WeakPointer<ReflectionProbe> reflectionProbe;
+        WeakPointer<Camera> camera;
+
+        WeakPointer<Light> light;
+        WeakPointer<AmbientIBLLight> ambientIBLLight;
+
     private:
         static UInt64 getNextID();
         static UInt64 _nextID;
+
+        template <typename T>
+        Bool testAndSetComponentMemberVar(WeakPointer<Object3DComponent> component, WeakPointer<T>& memberVar, const std::string& errComponentName) {
+            WeakPointer<T> derivedComponent = WeakPointer<Object3DComponent>::dynamicPointerCast<T>(component);
+            if (derivedComponent.isValid()) {
+                if(memberVar.isValid()) {
+                    throw Exception(std::string("Object3D::addComponent() -> Trying to add more than one ") + errComponentName + ".");
+                } else {
+                    memberVar = derivedComponent;
+                    return true;
+                }
+            }
+            return false;
+        }
         
     };
 }

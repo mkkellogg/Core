@@ -3,8 +3,11 @@
 #include "Transform.h"
 #include "Object3DComponent.h"
 #include "../light/Light.h"
+#include "../light/AmbientIBLLight.h"
 #include "../render/Camera.h"
 #include "../render/ReflectionProbe.h"
+#include "../render/BaseObjectRenderer.h"
+#include "../render/BaseRenderable.h"
 
 namespace Core {
 
@@ -23,10 +26,10 @@ namespace Core {
             WeakPointer<Object3DComponent> component = this->components[i];
             WeakPointer<Camera> cameraComponent = WeakPointer<Object3DComponent>::dynamicPointerCast<Camera>(component);
             WeakPointer<Light> lightComponent = WeakPointer<Object3DComponent>::dynamicPointerCast<Light>(component);
-            WeakPointer<Mesh> meshComponent = WeakPointer<Object3DComponent>::dynamicPointerCast<Mesh>(component);
+            WeakPointer<BaseRenderable> renderableComponent = WeakPointer<Object3DComponent>::dynamicPointerCast<BaseRenderable>(component);
             WeakPointer<BaseObjectRenderer> rendererComponent = WeakPointer<Object3DComponent>::dynamicPointerCast<BaseObjectRenderer>(component);
             WeakPointer<ReflectionProbe> reflectionProbeComponent = WeakPointer<Object3DComponent>::dynamicPointerCast<ReflectionProbe>(component);
-            if (lightComponent || cameraComponent || meshComponent || rendererComponent || reflectionProbeComponent) {
+            if (lightComponent || cameraComponent || renderableComponent || rendererComponent || reflectionProbeComponent) {
                  Engine::safeReleaseObject(component);
             }
         }
@@ -113,6 +116,20 @@ namespace Core {
             }
         }
         this->components.push_back(component);
+
+        this->testAndSetComponentMemberVar<BaseObjectRenderer>(component, this->baseRenderer, std::string("base renderer"));
+        this->testAndSetComponentMemberVar<BaseRenderableContainer>(component, this->baseRenderableContainer, std::string("base renderable container"));
+        Bool addedLight = this->testAndSetComponentMemberVar<Light>(component, this->light, std::string("light"));
+        this->testAndSetComponentMemberVar<ReflectionProbe>(component, this->reflectionProbe, std::string("reflection probe"));
+        this->testAndSetComponentMemberVar<Camera>(component, this->camera, std::string("camera"));
+
+        if (addedLight) {
+             WeakPointer<AmbientIBLLight> ambientIBLLight = WeakPointer<Light>::dynamicPointerCast<AmbientIBLLight>(this->light);
+            if (ambientIBLLight.isValid()) {
+                this->ambientIBLLight = ambientIBLLight;
+            }
+        }
+        
         return true;
     }
 
@@ -146,5 +163,30 @@ namespace Core {
 
     WeakPointer<Object3D> Object3D::getChild(UInt32 index) {
         return this->children[index];
+    }
+
+
+    WeakPointer<BaseObjectRenderer> Object3D::getBaseRenderer() {
+        return this->baseRenderer;
+    }
+
+    WeakPointer<BaseRenderableContainer> Object3D::getBaseRenderableContainer() {
+        return this->baseRenderableContainer;
+    }
+
+    WeakPointer<Light> Object3D::getLight() {
+        return this->light;
+    }
+
+    WeakPointer<AmbientIBLLight> Object3D::getAmbientIBLLight() {
+        return this->ambientIBLLight;
+    }
+
+    WeakPointer<ReflectionProbe> Object3D::getReflectionProbe() {
+        return this->reflectionProbe;
+    }
+
+    WeakPointer<Camera> Object3D::getCamera() {
+        return this->camera;
     }
 }

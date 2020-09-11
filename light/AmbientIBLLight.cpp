@@ -2,11 +2,14 @@
 #include "../Engine.h"
 #include "../render/RenderTargetCube.h"
 #include "../render/RenderTarget2D.h"
+#include "../render/ReflectionProbe.h"
+#include "../image/Texture.h"
+#include "../image/CubeTexture.h"
+#include "../image/Texture2D.h"
 
 namespace Core {
 
     AmbientIBLLight::AmbientIBLLight(WeakPointer<Object3D> owner): Light(owner, LightType::AmbientIBL) {
-        
     }
 
     AmbientIBLLight::~AmbientIBLLight() {
@@ -41,4 +44,15 @@ namespace Core {
         return this->specularIBLBRDFMap;
     }
 
+    void AmbientIBLLight::setReflectionProbe(WeakPointer<ReflectionProbe> reflectionProbe) {
+        this->reflectionProbe = reflectionProbe;
+    }
+
+    void AmbientIBLLight::updateMapsFromReflectionProbe() {
+        if (this->reflectionProbe.isValid()) {
+            this->setIrradianceMap(this->reflectionProbe->getIrradianceMap());
+            this->setSpecularIBLPreFilteredMap(this->reflectionProbe->getSpecularIBLPreFilteredMap());
+            this->setSpecularIBLBRDFMap(this->reflectionProbe->getSpecularIBLBRDFMap());
+        }
+    }
 }

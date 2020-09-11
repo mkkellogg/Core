@@ -131,18 +131,20 @@ namespace Core {
         static std::vector<WeakPointer<Camera>> cameraList;
         static std::vector<WeakPointer<Light>> lightList;
         static std::vector<WeakPointer<Light>> nonIBLLightList;
+        static std::vector<WeakPointer<AmbientIBLLight>> ambientIBLLightList;
         static std::vector<WeakPointer<ReflectionProbe>> reflectionProbeList;
         static std::vector<WeakPointer<Object3D>> renderProbeObjects;
         objectList.resize(0);
         cameraList.resize(0);
         lightList.resize(0);
         nonIBLLightList.resize(0);
+        ambientIBLLightList.resize(0);
         reflectionProbeList.resize(0);
         renderProbeObjects.resize(0);
 
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         this->collectSceneObjectsAndComputeTransforms(rootObject, objectList);
-        this->collectSceneObjectComponents(objectList, cameraList, reflectionProbeList, nonIBLLightList, lightList);
+        this->collectSceneObjectComponents(objectList, cameraList, reflectionProbeList, nonIBLLightList, ambientIBLLightList, lightList);
 
         std::sort(lightList.begin(), lightList.end(), Renderer::compareLights);
         std::sort(nonIBLLightList.begin(), nonIBLLightList.end(), Renderer::compareLights);
@@ -154,6 +156,9 @@ namespace Core {
         }*/
 
         this->renderReflectionProbes(reflectionProbeList, renderProbeObjects, nonIBLLightList, lightList);
+        for (UInt32 i = 0; i < ambientIBLLightList.size(); i++) {
+            ambientIBLLightList[i]->updateMapsFromReflectionProbe();
+        }
 
         this->renderShadowMaps(lightList, LightType::Point, objectList);
         for (auto camera : cameraList) {
@@ -170,46 +175,25 @@ namespace Core {
 
     void Renderer::collectSceneObjectComponents(std::vector<WeakPointer<Object3D>>& sceneObjects, std::vector<WeakPointer<Camera>>& cameraList,
                                                 std::vector<WeakPointer<ReflectionProbe>>& reflectionProbeList, std::vector<WeakPointer<Light>>& nonIBLLightList,
-                                                std::vector<WeakPointer<Light>>& lightList) {
+                                                std::vector<WeakPointer<AmbientIBLLight>>& ambientIBLLightList, std::vector<WeakPointer<Light>>& lightList) {
         for (WeakPointer<Object3D> object : sceneObjects) {
-            for (SceneObjectIterator<Object3DComponent> compItr = object->beginIterateComponents(); compItr != object->endIterateComponents(); ++compItr) {
-                WeakPointer<Object3DComponent> comp = (*compItr);
-                WeakPointer<Camera> camera = WeakPointer<Object3DComponent>::dynamicPointerCast<Camera>(comp);
-                if (camera.isValid() && camera->isActive()) {
-                    cameraList.push_back(camera);
-                    continue;
-                }
-                WeakPointer<ReflectionProbe> reflectionProbe = WeakPointer<Object3DComponent>::dynamicPointerCast<ReflectionProbe>(comp);
-                if (reflectionProbe.isValid() && reflectionProbe->isActive()) {
-                    reflectionProbeList.push_back(reflectionProbe);
-                    continue;
-                }
+            WeakPointer<Camera> camera = object->getCamera();
+            if (camera.isValid() && camera->isActive()) {
+                cameraList.push_back(camera);
             }
-            for (SceneObjectIterator<Object3DComponent> compItr = object->beginIterateComponents(); compItr != object->endIterateComponents(); ++compItr) {
-                WeakPointer<Object3DComponent> comp = (*compItr);
-                WeakPointer<Light> light = WeakPointer<Object3DComponent>::dynamicPointerCast<Light>(comp);
-                if (light.isValid() && light->isActive()) {
-                    if (light->getType() == LightType::AmbientIBL) {
-                        if (reflectionProbeList.size() > 0) {
-                            WeakPointer<AmbientIBLLight> ambientIBLlight = WeakPointer<Object3DComponent>::dynamicPointerCast<AmbientIBLLight>(comp);
-                            
-                            WeakPointer<CubeTexture> irradianceMap = WeakPointer<Texture>::dynamicPointerCast<CubeTexture>(reflectionProbeList[0]->getIrradianceMap()->getColorTexture());
-                            ambientIBLlight->setIrradianceMap(irradianceMap);
-                            
-                            WeakPointer<CubeTexture> specularIBLPreFilteredMap = WeakPointer<Texture>::dynamicPointerCast<CubeTexture>(reflectionProbeList[0]->getSpecularIBLPreFilteredMap()->getColorTexture());
-                            ambientIBLlight->setSpecularIBLPreFilteredMap(specularIBLPreFilteredMap);
-                            
-                            WeakPointer<Texture2D> specularIBLBRDFMap = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(reflectionProbeList[0]->getSpecularIBLBRDFMap()->getColorTexture());
-                            ambientIBLlight->setSpecularIBLBRDFMap(specularIBLBRDFMap);
-                        }
-                        else continue;
-                    }
-                    else {
-                        nonIBLLightList.push_back(light);
-                    }
-                    lightList.push_back(light);
-                    continue;
+            WeakPointer<ReflectionProbe> reflectionProbe = object->getReflectionProbe();
+            if (reflectionProbe.isValid() && reflectionProbe->isActive()) {
+                reflectionProbeList.push_back(reflectionProbe);
+            }
+            WeakPointer<Light> light = object->getLight();
+            if (light.isValid() && light->isActive()) {
+                if (light->getType() != LightType::AmbientIBL) {
+                    nonIBLLightList.push_back(light);
+                } else {
+                    WeakPointer<AmbientIBLLight> ambientIBLLight = object->getAmbientIBLLight();
+                    ambientIBLLightList.push_back(ambientIBLLight);
                 }
+                lightList.push_back(light);
             }
         }
     }
@@ -668,14 +652,14 @@ namespace Core {
         reflectionProbe->getSceneRenderTarget()->getColorTexture()->updateMipMaps();
 
         if(!specularOnly) {
-            probeCam->setRenderTarget(reflectionProbe->getIrradianceMap());
+            probeCam->setRenderTarget(reflectionProbe->getIrradianceMapRenderTarget());
             WeakPointer<Material> savedOverrideMaterial = probeCam->getOverrideMaterial();
             probeCam->setOverrideMaterial(reflectionProbe->getIrradianceRendererMaterial());
             this->renderSceneBasic(reflectionProbe->getSkyboxObject(), probeCam, true);
             probeCam->setOverrideMaterial(savedOverrideMaterial);
         }
         
-        WeakPointer<RenderTargetCube> specularIBLPreFilteredMap = reflectionProbe->getSpecularIBLPreFilteredMap();
+        WeakPointer<RenderTargetCube> specularIBLPreFilteredMap = reflectionProbe->getSpecularIBLPreFilteredMapRenderTarget();
         probeCam->setRenderTarget(specularIBLPreFilteredMap);
         WeakPointer<SpecularIBLPreFilteredRendererMaterial> specularIBLPreFilteredRendererMaterial = reflectionProbe->getSpecularIBLPreFilteredRendererMaterial();
         specularIBLPreFilteredRendererMaterial->setTextureResolution(specularIBLPreFilteredMap->getSize().x);
@@ -689,7 +673,7 @@ namespace Core {
             probeCam->setOverrideMaterial(savedOverrideMaterial);
         }
 
-        WeakPointer<RenderTarget2D> specularIBLBRDFMap = reflectionProbe->getSpecularIBLBRDFMap();
+        WeakPointer<RenderTarget2D> specularIBLBRDFMap = reflectionProbe->getSpecularIBLBRDFMapRenderTarget();
         graphics->renderFullScreenQuad(specularIBLBRDFMap, -1, reflectionProbe->getSpecularIBLBRDFRendererMaterial());
         
         reflectionProbe->setNeedsFullUpdate(false);

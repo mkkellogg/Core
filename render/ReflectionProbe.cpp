@@ -3,6 +3,8 @@
 #include "../geometry/GeometryUtils.h"
 #include "../geometry/Mesh.h"
 #include "../image/TextureAttr.h"
+#include "../image/CubeTexture.h"
+#include "../image/Texture2D.h"
 #include "../render/Camera.h"
 #include "../render/RenderTarget2D.h"
 #include "../render/RenderTargetCube.h"
@@ -22,7 +24,9 @@ namespace Core {
 
     ReflectionProbe::~ReflectionProbe() {
         if (this->skyboxCube.isValid()) Engine::safeReleaseObject(this->skyboxCube);
-        if (this->specularIBLBRDFMap.isValid()) Graphics::safeReleaseObject(this->specularIBLBRDFMap);
+        if (this->specularIBLBRDFMapRenderTarget.isValid()) Graphics::safeReleaseObject(this->specularIBLBRDFMapRenderTarget);
+        if (this->specularIBLPreFilteredMapRenderTarget.isValid()) Graphics::safeReleaseObject(this->specularIBLPreFilteredMapRenderTarget);
+        if (this->irradianceMapRenderTarget.isValid()) Graphics::safeReleaseObject(this->irradianceMapRenderTarget);
     }
 
     void ReflectionProbe::init() {
@@ -53,9 +57,13 @@ namespace Core {
 
         this->sceneRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorAttributesScene, depthAttributes, size);
         this->sceneRenderTarget->setMipLevel(0);
-        this->irradianceMap = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorAttributesIrradiance, depthAttributes, size);
-        this->specularIBLPreFilteredMap = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorAttributesSpecularIBLPreFiltered, depthAttributes, size);
-        this->specularIBLBRDFMap = Engine::instance()->getGraphicsSystem()->createRenderTarget2D(true, true, false, colorAttributesSpecularIBLBRDF, depthAttributes, size);
+        this->irradianceMapRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorAttributesIrradiance, depthAttributes, size);
+        this->specularIBLPreFilteredMapRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorAttributesSpecularIBLPreFiltered, depthAttributes, size);
+        this->specularIBLBRDFMapRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTarget2D(true, true, false, colorAttributesSpecularIBLBRDF, depthAttributes, size);
+
+        this->irradianceMap = WeakPointer<Texture>::dynamicPointerCast<CubeTexture>(this->irradianceMapRenderTarget->getColorTexture());
+        this->specularIBLPreFilteredMap = WeakPointer<Texture>::dynamicPointerCast<CubeTexture>(this->specularIBLPreFilteredMapRenderTarget->getColorTexture());
+        this->specularIBLBRDFMap = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->specularIBLBRDFMapRenderTarget->getColorTexture());
 
         this->renderCamera = Engine::instance()->createPerspectiveCamera(this->getOwner(), Core::Math::PI / 2.0f, 1.0, 0.1f, 100.0f);
         this->renderCamera->setRenderTarget(this->sceneRenderTarget);
@@ -111,15 +119,27 @@ namespace Core {
         return this->sceneRenderTarget;
     }
 
-    WeakPointer<RenderTargetCube> ReflectionProbe::getIrradianceMap() {
+    WeakPointer<RenderTargetCube> ReflectionProbe::getIrradianceMapRenderTarget() {
+        return this->irradianceMapRenderTarget;
+    }
+
+    WeakPointer<CubeTexture> ReflectionProbe::getIrradianceMap() {
         return this->irradianceMap;
     }
 
-    WeakPointer<RenderTargetCube> ReflectionProbe::getSpecularIBLPreFilteredMap() {
+    WeakPointer<RenderTargetCube> ReflectionProbe::getSpecularIBLPreFilteredMapRenderTarget() {
+        return this->specularIBLPreFilteredMapRenderTarget;
+    }
+
+    WeakPointer<CubeTexture> ReflectionProbe::getSpecularIBLPreFilteredMap() {
         return this->specularIBLPreFilteredMap;
     }
 
-    WeakPointer<RenderTarget2D> ReflectionProbe::getSpecularIBLBRDFMap() {
+    WeakPointer<RenderTarget2D> ReflectionProbe::getSpecularIBLBRDFMapRenderTarget() {
+        return this->specularIBLBRDFMapRenderTarget;
+    }
+
+    WeakPointer<Texture2D> ReflectionProbe::getSpecularIBLBRDFMap() {
         return this->specularIBLBRDFMap;
     }
 

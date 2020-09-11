@@ -18,6 +18,8 @@ namespace Core {
     class SpecularIBLPreFilteredRendererMaterial;
     class SpecularIBLBRDFRendererMaterial;
     class Skybox;
+    class CubeTexture;
+    class Texture2D;
 
     class ReflectionProbe : public Object3DComponent {
     public:
@@ -36,9 +38,12 @@ namespace Core {
         WeakPointer<Camera> getRenderCamera();
         WeakPointer<Object3D> getSkyboxObject();
         WeakPointer<RenderTargetCube> getSceneRenderTarget();
-        WeakPointer<RenderTargetCube> getIrradianceMap();
-        WeakPointer<RenderTargetCube> getSpecularIBLPreFilteredMap();
-        WeakPointer<RenderTarget2D> getSpecularIBLBRDFMap();
+        WeakPointer<RenderTargetCube> getIrradianceMapRenderTarget();
+        WeakPointer<CubeTexture> getIrradianceMap();
+        WeakPointer<RenderTargetCube> getSpecularIBLPreFilteredMapRenderTarget();
+        WeakPointer<CubeTexture> getSpecularIBLPreFilteredMap();
+        WeakPointer<RenderTarget2D> getSpecularIBLBRDFMapRenderTarget();
+        WeakPointer<Texture2D> getSpecularIBLBRDFMap();
         WeakPointer<IrradianceRendererMaterial> getIrradianceRendererMaterial();
         WeakPointer<SpecularIBLPreFilteredRendererMaterial> getSpecularIBLPreFilteredRendererMaterial();
         WeakPointer<SpecularIBLBRDFRendererMaterial> getSpecularIBLBRDFRendererMaterial();
@@ -49,15 +54,19 @@ namespace Core {
         Bool skyboxOnly;
         Bool renderWithPhysical;
         PersistentWeakPointer<RenderTargetCube> sceneRenderTarget;
-        PersistentWeakPointer<RenderTargetCube> irradianceMap;
-        PersistentWeakPointer<RenderTargetCube> specularIBLPreFilteredMap;
-        PersistentWeakPointer<RenderTarget2D> specularIBLBRDFMap;
+        PersistentWeakPointer<RenderTargetCube> irradianceMapRenderTarget;
+        PersistentWeakPointer<RenderTargetCube> specularIBLPreFilteredMapRenderTarget;
+        PersistentWeakPointer<RenderTarget2D> specularIBLBRDFMapRenderTarget;
         PersistentWeakPointer<Object3D> renderCameraObject;
         PersistentWeakPointer<Camera> renderCamera;
         PersistentWeakPointer<IrradianceRendererMaterial> irradianceRendererMaterial;
         PersistentWeakPointer<SpecularIBLPreFilteredRendererMaterial> specularIBLPreFilteredRendererMaterial;
         PersistentWeakPointer<SpecularIBLBRDFRendererMaterial> specularIBLBRDFRendererMaterial;
         PersistentWeakPointer<Object3D> skyboxCube;
+
+        PersistentWeakPointer<CubeTexture> irradianceMap;
+        PersistentWeakPointer<CubeTexture> specularIBLPreFilteredMap;
+        PersistentWeakPointer<Texture2D> specularIBLBRDFMap;
     };
 
 }
