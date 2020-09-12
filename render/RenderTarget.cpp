@@ -6,7 +6,8 @@
 namespace Core {
 
     RenderTarget::RenderTarget(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer, const TextureAttributes& colorTextureAttributes, 
-                               const TextureAttributes& depthTextureAttributes, Vector2u size) {
+                               const TextureAttributes& depthTextureAttributes, Vector2u size, Bool cube) {
+        this->cube = cube;
         this->activeColorTextures = 0;
         this->hasColorBuffer = hasColor;
         this->hasDepthBuffer = hasDepth;
@@ -42,6 +43,10 @@ namespace Core {
 
     RenderTarget::~RenderTarget() {
 
+    }
+
+    Bool RenderTarget::isCube() const {
+        return this->cube;
     }
 
     /*

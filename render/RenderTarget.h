@@ -23,6 +23,7 @@ namespace Core {
         virtual ~RenderTarget();
 
         virtual Bool init() = 0;
+        Bool isCube() const;
         Bool hasBuffer(RenderBufferType bufferType) const;
         WeakPointer<Texture> getDepthTexture();
         UInt32 getColorTextureCount() const;
@@ -42,6 +43,8 @@ namespace Core {
 
      protected:
 
+        // is this a cube render target
+        Bool cube;
         // does this render target support standard color-buffer rendering?
         Bool hasColorBuffer;
         // does this render target support depth rendering?
@@ -69,7 +72,7 @@ namespace Core {
         UInt32 mipLevel[MaxRenderTargetOutputTargets];
 
         RenderTarget(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer, const TextureAttributes& colorTextureAttributes,
-                     const TextureAttributes& depthTextureAttributes, Vector2u size);
+                     const TextureAttributes& depthTextureAttributes, Vector2u size, Bool cube);
         Bool buildAndVerifyTexture(WeakPointer<Texture> texture);
 
     };

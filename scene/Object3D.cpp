@@ -118,13 +118,20 @@ namespace Core {
         this->components.push_back(component);
 
         this->testAndSetComponentMemberVar<BaseObjectRenderer>(component, this->baseRenderer, std::string("base renderer"));
-        this->testAndSetComponentMemberVar<BaseRenderableContainer>(component, this->baseRenderableContainer, std::string("base renderable container"));
         Bool addedLight = this->testAndSetComponentMemberVar<Light>(component, this->light, std::string("light"));
         this->testAndSetComponentMemberVar<ReflectionProbe>(component, this->reflectionProbe, std::string("reflection probe"));
         this->testAndSetComponentMemberVar<Camera>(component, this->camera, std::string("camera"));
 
         if (addedLight) {
-             WeakPointer<AmbientIBLLight> ambientIBLLight = WeakPointer<Light>::dynamicPointerCast<AmbientIBLLight>(this->light);
+            WeakPointer<DirectionalLight> directionalLight = WeakPointer<Light>::dynamicPointerCast<DirectionalLight>(this->light);
+            if (directionalLight.isValid()) {
+                this->directionalLight = directionalLight;
+            }
+            WeakPointer<PointLight> pointLight = WeakPointer<Light>::dynamicPointerCast<PointLight>(this->light);
+            if (pointLight.isValid()) {
+                this->pointLight = pointLight;
+            }
+            WeakPointer<AmbientIBLLight> ambientIBLLight = WeakPointer<Light>::dynamicPointerCast<AmbientIBLLight>(this->light);
             if (ambientIBLLight.isValid()) {
                 this->ambientIBLLight = ambientIBLLight;
             }
@@ -170,12 +177,16 @@ namespace Core {
         return this->baseRenderer;
     }
 
-    WeakPointer<BaseRenderableContainer> Object3D::getBaseRenderableContainer() {
-        return this->baseRenderableContainer;
-    }
-
     WeakPointer<Light> Object3D::getLight() {
         return this->light;
+    }
+
+    WeakPointer<DirectionalLight> Object3D::getDirectionalLight() {
+        return this->directionalLight;
+    }
+
+    WeakPointer<PointLight> Object3D::getPointLight() {
+        return this->pointLight;
     }
 
     WeakPointer<AmbientIBLLight> Object3D::getAmbientIBLLight() {

@@ -131,6 +131,8 @@ namespace Core {
         static std::vector<WeakPointer<Camera>> cameraList;
         static std::vector<WeakPointer<Light>> lightList;
         static std::vector<WeakPointer<Light>> nonIBLLightList;
+        static std::vector<WeakPointer<DirectionalLight>> directionalLightList;
+        static std::vector<WeakPointer<PointLight>> pointLightList;
         static std::vector<WeakPointer<AmbientIBLLight>> ambientIBLLightList;
         static std::vector<WeakPointer<ReflectionProbe>> reflectionProbeList;
         static std::vector<WeakPointer<Object3D>> renderProbeObjects;
@@ -138,13 +140,16 @@ namespace Core {
         cameraList.resize(0);
         lightList.resize(0);
         nonIBLLightList.resize(0);
+        directionalLightList.resize(0);
+        pointLightList.resize(0);
         ambientIBLLightList.resize(0);
         reflectionProbeList.resize(0);
         renderProbeObjects.resize(0);
 
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         this->collectSceneObjectsAndComputeTransforms(rootObject, objectList);
-        this->collectSceneObjectComponents(objectList, cameraList, reflectionProbeList, nonIBLLightList, ambientIBLLightList, lightList);
+        this->collectSceneObjectComponents(objectList, cameraList, reflectionProbeList, nonIBLLightList,
+                                           directionalLightList, pointLightList, ambientIBLLightList, lightList);
 
         std::sort(lightList.begin(), lightList.end(), Renderer::compareLights);
         std::sort(nonIBLLightList.begin(), nonIBLLightList.end(), Renderer::compareLights);
@@ -155,14 +160,14 @@ namespace Core {
             if (object->isStatic()) renderProbeObjects.push_back(object);
         }*/
 
-        this->renderReflectionProbes(reflectionProbeList, renderProbeObjects, nonIBLLightList, lightList);
+        this->renderReflectionProbes(reflectionProbeList, renderProbeObjects, directionalLightList, pointLightList, nonIBLLightList, lightList);
         for (UInt32 i = 0; i < ambientIBLLightList.size(); i++) {
             ambientIBLLightList[i]->updateMapsFromReflectionProbe();
         }
 
-        this->renderShadowMaps(lightList, LightType::Point, objectList);
+        this->renderPointLightShadowMaps(pointLightList, objectList);
         for (auto camera : cameraList) {
-            this->renderShadowMaps(lightList, LightType::Directional, objectList, camera);
+            this->renderDirectionalLightShadowMaps(directionalLightList, objectList, camera);
         }
 
         for (auto camera : cameraList) {
@@ -175,6 +180,7 @@ namespace Core {
 
     void Renderer::collectSceneObjectComponents(std::vector<WeakPointer<Object3D>>& sceneObjects, std::vector<WeakPointer<Camera>>& cameraList,
                                                 std::vector<WeakPointer<ReflectionProbe>>& reflectionProbeList, std::vector<WeakPointer<Light>>& nonIBLLightList,
+                                                std::vector<WeakPointer<DirectionalLight>>& directionalLightList, std::vector<WeakPointer<PointLight>>& pointLightList,
                                                 std::vector<WeakPointer<AmbientIBLLight>>& ambientIBLLightList, std::vector<WeakPointer<Light>>& lightList) {
         for (WeakPointer<Object3D> object : sceneObjects) {
             WeakPointer<Camera> camera = object->getCamera();
@@ -187,11 +193,13 @@ namespace Core {
             }
             WeakPointer<Light> light = object->getLight();
             if (light.isValid() && light->isActive()) {
-                if (light->getType() != LightType::AmbientIBL) {
+                LightType lightType = light->getType();
+                if (lightType != LightType::AmbientIBL) {
                     nonIBLLightList.push_back(light);
+                    if (lightType == LightType::Directional) directionalLightList.push_back(object->getDirectionalLight());
+                    if (lightType == LightType::Point) pointLightList.push_back(object->getPointLight());
                 } else {
-                    WeakPointer<AmbientIBLLight> ambientIBLLight = object->getAmbientIBLLight();
-                    ambientIBLLightList.push_back(ambientIBLLight);
+                    ambientIBLLightList.push_back(object->getAmbientIBLLight());
                 }
                 lightList.push_back(light);
             }
@@ -222,8 +230,7 @@ namespace Core {
             nextRenderTarget = graphics->getDefaultRenderTarget();
         }
 
-        RenderTargetCube * renderTargetCube = dynamic_cast<RenderTargetCube*>(nextRenderTarget.get());
-        if (renderTargetCube != nullptr) {
+        if (nextRenderTarget->isCube()) {
             this->renderForCubeCamera(camera, objects, lights, matchPhysicalPropertiesWithLighting);
         }
         else {
@@ -239,7 +246,7 @@ namespace Core {
             WeakPointer<Texture2D> ssaoMap = WeakPointer<Texture2D>::nullPtr();
             if (camera->isSSAOEnabled()) {
                 this->renderSSAO(camera, objects);
-                ssaoMap = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->ssaoBlurRenderTarget->getColorTexture());
+                ssaoMap = this->ssaoBlurMap;
             }
 
             this->renderForStandardCamera(camera, objects, lights, matchPhysicalPropertiesWithLighting, ssaoMap);
@@ -352,16 +359,13 @@ namespace Core {
         }
     }
 
-    void Renderer::renderShadowMaps(std::vector<WeakPointer<Light>>& lights, LightType lightType,
-                                    std::vector<WeakPointer<Object3D>>& objects, WeakPointer<Camera> renderCamera) {
-
-        static std::vector<std::vector<WeakPointer<Object3D>>> toRenderPoint;
+    void Renderer::renderDirectionalLightShadowMaps(std::vector<WeakPointer<DirectionalLight>>& lights,
+                                                    std::vector<WeakPointer<Object3D>>& objects, WeakPointer<Camera> renderCamera) {
         static std::vector<std::vector<WeakPointer<Object3D>>> toRenderDirectional;
-        static std::vector<WeakPointer<Light>> renderLights;
+        static std::vector<WeakPointer<DirectionalLight>> renderLights;
         static RenderQueueManager shadowMapRenderQueueManager;
-        if (!this->perspectiveShadowMapCamera.isValid()) {
-            this->perspectiveShadowMapCameraObject = Engine::instance()->createObject3D();
-            this->perspectiveShadowMapCamera = Engine::instance()->createPerspectiveCamera(perspectiveShadowMapCameraObject, Math::PI / 2.0f, 1.0f, PointLight::NearPlane, PointLight::FarPlane);
+
+        if (!this->orthoShadowMapCamera.isValid()) {
             this->orthoShadowMapCameraObject = Engine::instance()->createObject3D();
             this->orthoShadowMapCamera = Engine::instance()->createOrthographicCamera(orthoShadowMapCameraObject, 1.0f, -1.0f, -1.0f, 1.0f, PointLight::NearPlane, PointLight::FarPlane);
         }
@@ -369,101 +373,116 @@ namespace Core {
         UInt32 lightCount = 0;
         renderLights.resize(0);
         for (auto light: lights) {
-            LightType cLightType = light->getType();
-            if (cLightType != lightType || !isShadowCastingCapableLight(light)) continue;
-            if (cLightType == LightType::Point) {
-                if (lightCount >= toRenderPoint.size()) {
-                    toRenderPoint.emplace_back();
-                }
-                std::vector<WeakPointer<Object3D>>& renderList = toRenderPoint[lightCount];
-                renderList.resize(0);
-            } else if (cLightType == LightType::Directional) {
-                if (lightCount >= toRenderDirectional.size()) {
-                    toRenderDirectional.emplace_back();
-                }
-                std::vector<WeakPointer<Object3D>>& renderList = toRenderDirectional[lightCount];
-                renderList.resize(0);
+            if (!this->isShadowCastingCapableLight(light)) continue;
+            if (lightCount >= toRenderDirectional.size()) {
+                toRenderDirectional.emplace_back();
             }
+            std::vector<WeakPointer<Object3D>>& renderList = toRenderDirectional[lightCount];
+            renderList.resize(0);
             lightCount++;
             renderLights.push_back(light);
         }
         for (UInt32 i = 0; i < objects.size(); i++) {
             WeakPointer<Object3D> object = objects[i];
-            std::shared_ptr<Object3D> objectShared = object.lock();
-            std::shared_ptr<BaseRenderableContainer> containerPtr = std::dynamic_pointer_cast<BaseRenderableContainer>(objectShared);
-            if (containerPtr) {
-                WeakPointer<BaseObjectRenderer> objectRenderer = containerPtr->getBaseRenderer();
-                if (objectRenderer && objectRenderer->castsShadows()) {
-                    UInt32 curLight = 0;
-                    for (auto light: renderLights) {
-                        if (lightType == LightType::Point) {
-                            std::vector<WeakPointer<Object3D>>& renderList = toRenderPoint[curLight];
-                            renderList.push_back(object);
-                        } else if (lightType == LightType::Directional) {
-                            std::vector<WeakPointer<Object3D>>& renderList = toRenderDirectional[curLight];
-                            renderList.push_back(object);
-                        }
-                        curLight++;
-                    }
+            WeakPointer<BaseObjectRenderer> objectRenderer = object->getBaseRenderer();
+            if (objectRenderer && objectRenderer->castsShadows()) {
+                UInt32 curLight = 0;
+                for (auto light: renderLights) {
+                    std::vector<WeakPointer<Object3D>>& renderList = toRenderDirectional[curLight];
+                    renderList.push_back(object);
+                    curLight++;
                 }
             }
         }
 
         UInt32 curLight = 0;
+        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         std::vector<WeakPointer<Light>> dummyLights;
-        for (auto light: renderLights) {
-            switch(lightType) {
-                case LightType::Point:
-                {
-                    WeakPointer<PointLight> pointLight = WeakPointer<Light>::dynamicPointerCast<PointLight>(light);
-                    if (pointLight->getShadowsEnabled()) {
-                        WeakPointer<RenderTarget> shadowMapRenderTarget = pointLight->getShadowMap();
-                        WeakPointer<Object3D> lightObject = light->getOwner();
-                        Matrix4x4 lightTransform = lightObject->getTransform().getWorldMatrix();
-                        this->perspectiveShadowMapCameraObject->getTransform().getWorldMatrix().copy(lightTransform);
-                        this->perspectiveShadowMapCamera->setRenderTarget(shadowMapRenderTarget);
-                        Vector4u renderTargetDimensions = shadowMapRenderTarget->getViewport();
-                        this->perspectiveShadowMapCamera->setAspectRatioFromDimensions(renderTargetDimensions.z, renderTargetDimensions.w);
-                        this->perspectiveShadowMapCamera->setOverrideMaterial(this->distanceMaterial);
-                        this->perspectiveShadowMapCamera->setDepthOutputOverride(DepthOutputOverride::Distance);
-                        std::vector<WeakPointer<Object3D>>& renderList = toRenderPoint[curLight];
-                        shadowMapRenderQueueManager.clearAll();
-                        this->sortObjectsIntoRenderQueues(renderList, shadowMapRenderQueueManager, (Int32)EngineRenderQueue::Geometry);
-                        ViewDescriptor viewDesc;
-                        for (UInt32 i = 0; i < 6; i++) {
-                            this->getViewDescriptorForCubeCamera(this->perspectiveShadowMapCamera, (CubeFace)i, viewDesc);
-                            this->renderForViewDescriptor(viewDesc, shadowMapRenderQueueManager, dummyLights, true);
-                        }
-                    }
+        for (auto directionalLight: renderLights) {
+            if (directionalLight->getShadowsEnabled()) {
+                this->depthMaterial->setFaceCullingEnabled(directionalLight->getFaceCullingEnabled());
+                this->depthMaterial->setCullFace(directionalLight->getCullFace());
+                std::vector<DirectionalLight::OrthoProjection>& projections = directionalLight->buildProjections(renderCamera);
+                Matrix4x4 viewTrans = directionalLight->getOwner()->getTransform().getWorldMatrix();
+                ViewDescriptor viewDesc;
+                viewDesc.indirectHDREnabled = false;
+                viewDesc.cubeFace = -1;
+                viewDesc.overrideMaterial = this->depthMaterial;
+                viewDesc.depthOutputOverride = DepthOutputOverride::Depth;
+                std::vector<WeakPointer<Object3D>>& renderList = toRenderDirectional[curLight];
+                shadowMapRenderQueueManager.clearAll();
+                this->sortObjectsIntoRenderQueues(renderList, shadowMapRenderQueueManager, (Int32)EngineRenderQueue::Geometry);
+                for (UInt32 i = 0; i < directionalLight->getCascadeCount(); i++) {
+                    DirectionalLight::OrthoProjection& proj = projections[i];  
+                    this->orthoShadowMapCamera->setDimensions(proj.top, proj.bottom, proj.left, proj.right);        
+                    this->orthoShadowMapCamera->setNearAndFar(proj.near, proj.far);
+                    this->getViewDescriptorTransformations(viewTrans, orthoShadowMapCamera->getProjectionMatrix(),
+                                                           this->orthoShadowMapCamera->getAutoClearRenderBuffers(), viewDesc);
+                    viewDesc.renderTarget = directionalLight->getShadowMap(i);
+                    this->renderForViewDescriptor(viewDesc, shadowMapRenderQueueManager, dummyLights, true);
                 }
-                break;
-                case LightType::Directional:
-                {
-                    WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-                    WeakPointer<DirectionalLight> directionalLight = WeakPointer<Light>::dynamicPointerCast<DirectionalLight>(light);
-                    if (directionalLight->getShadowsEnabled()) {
-                        this->depthMaterial->setFaceCullingEnabled(directionalLight->getFaceCullingEnabled());
-                        this->depthMaterial->setCullFace(directionalLight->getCullFace());
-                        std::vector<DirectionalLight::OrthoProjection>& projections = directionalLight->buildProjections(renderCamera);
-                        Matrix4x4 viewTrans = directionalLight->getOwner()->getTransform().getWorldMatrix();
-                        ViewDescriptor viewDesc;
-                        viewDesc.indirectHDREnabled = false;
-                        viewDesc.cubeFace = -1;
-                        viewDesc.overrideMaterial = this->depthMaterial;
-                        viewDesc.depthOutputOverride = DepthOutputOverride::Depth;
-                        std::vector<WeakPointer<Object3D>>& renderList = toRenderDirectional[curLight];
-                        shadowMapRenderQueueManager.clearAll();
-                        this->sortObjectsIntoRenderQueues(renderList, shadowMapRenderQueueManager, (Int32)EngineRenderQueue::Geometry);
-                        for (UInt32 i = 0; i < directionalLight->getCascadeCount(); i++) {
-                            DirectionalLight::OrthoProjection& proj = projections[i];  
-                            this->orthoShadowMapCamera->setDimensions(proj.top, proj.bottom, proj.left, proj.right);        
-                            this->orthoShadowMapCamera->setNearAndFar(proj.near, proj.far);
-                            this->getViewDescriptorTransformations(viewTrans, orthoShadowMapCamera->getProjectionMatrix(),
-                                                                   this->orthoShadowMapCamera->getAutoClearRenderBuffers(), viewDesc);
-                            viewDesc.renderTarget = directionalLight->getShadowMap(i);
-                            this->renderForViewDescriptor(viewDesc, shadowMapRenderQueueManager, dummyLights, true);
-                        }
-                    }
+            }
+            curLight++;
+        }
+    }
+
+    void Renderer::renderPointLightShadowMaps(std::vector<WeakPointer<PointLight>>& lights, std::vector<WeakPointer<Object3D>>& objects) {
+        static std::vector<std::vector<WeakPointer<Object3D>>> toRenderPoint;
+        static std::vector<WeakPointer<PointLight>> renderLights;
+        static RenderQueueManager shadowMapRenderQueueManager;
+
+        if (!this->perspectiveShadowMapCamera.isValid()) {
+            this->perspectiveShadowMapCameraObject = Engine::instance()->createObject3D();
+            this->perspectiveShadowMapCamera = Engine::instance()->createPerspectiveCamera(perspectiveShadowMapCameraObject, Math::PI / 2.0f, 1.0f, PointLight::NearPlane, PointLight::FarPlane);
+        }
+
+        UInt32 lightCount = 0;
+        renderLights.resize(0);
+        for (auto light: lights) {
+            if (!this->isShadowCastingCapableLight(light)) continue;
+            if (lightCount >= toRenderPoint.size()) {
+                toRenderPoint.emplace_back();
+            }
+            std::vector<WeakPointer<Object3D>>& renderList = toRenderPoint[lightCount];
+            renderList.resize(0);
+            lightCount++;
+            renderLights.push_back(light);
+        }
+
+        for (UInt32 i = 0; i < objects.size(); i++) {
+            WeakPointer<Object3D> object = objects[i];
+            WeakPointer<BaseObjectRenderer> objectRenderer = object->getBaseRenderer();
+            if (objectRenderer && objectRenderer->castsShadows()) {
+                UInt32 curLight = 0;
+                for (auto light: renderLights) {
+                    std::vector<WeakPointer<Object3D>>& renderList = toRenderPoint[curLight];
+                    renderList.push_back(object);
+                    curLight++;
+                }
+            }
+        }
+
+        UInt32 curLight = 0;
+        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
+        std::vector<WeakPointer<Light>> dummyLights;
+        for (auto pointLight: renderLights) {
+            if (pointLight->getShadowsEnabled()) {
+                WeakPointer<RenderTarget> shadowMapRenderTarget = pointLight->getShadowMap();
+                WeakPointer<Object3D> lightObject = pointLight->getOwner();
+                Matrix4x4 lightTransform = lightObject->getTransform().getWorldMatrix();
+                this->perspectiveShadowMapCameraObject->getTransform().getWorldMatrix().copy(lightTransform);
+                this->perspectiveShadowMapCamera->setRenderTarget(shadowMapRenderTarget);
+                Vector4u renderTargetDimensions = shadowMapRenderTarget->getViewport();
+                this->perspectiveShadowMapCamera->setAspectRatioFromDimensions(renderTargetDimensions.z, renderTargetDimensions.w);
+                this->perspectiveShadowMapCamera->setOverrideMaterial(this->distanceMaterial);
+                this->perspectiveShadowMapCamera->setDepthOutputOverride(DepthOutputOverride::Distance);
+                std::vector<WeakPointer<Object3D>>& renderList = toRenderPoint[curLight];
+                shadowMapRenderQueueManager.clearAll();
+                this->sortObjectsIntoRenderQueues(renderList, shadowMapRenderQueueManager, (Int32)EngineRenderQueue::Geometry);
+                ViewDescriptor viewDesc;
+                for (UInt32 i = 0; i < 6; i++) {
+                    this->getViewDescriptorForCubeCamera(this->perspectiveShadowMapCamera, (CubeFace)i, viewDesc);
+                    this->renderForViewDescriptor(viewDesc, shadowMapRenderQueueManager, dummyLights, true);
                 }
             }
             curLight++;
@@ -616,13 +635,14 @@ namespace Core {
     }
 
     void Renderer::renderReflectionProbes(std::vector<WeakPointer<ReflectionProbe>>& reflectionProbeList, std::vector<WeakPointer<Object3D>> renderProbeObjects,
+                                          std::vector<WeakPointer<DirectionalLight>>& directionalLightList, std::vector<WeakPointer<PointLight>>& pointLightList,
                                           std::vector<WeakPointer<Light>>& nonIBLLightList, std::vector<WeakPointer<Light>>& lightList) {
         static std::vector<WeakPointer<Object3D>> emptyObjectList;
         for (auto reflectionProbe : reflectionProbeList) {
             if (reflectionProbe->getNeedsFullUpdate() || reflectionProbe->getNeedsSpecularUpdate()) {
 
-                this->renderShadowMaps(lightList, LightType::Point, renderProbeObjects);
-                this->renderShadowMaps(lightList, LightType::Directional, renderProbeObjects, reflectionProbe->getRenderCamera());
+                this->renderPointLightShadowMaps(pointLightList, renderProbeObjects);
+                this->renderDirectionalLightShadowMaps(directionalLightList, renderProbeObjects, reflectionProbe->getRenderCamera());
 
                 Bool specularOnly = !reflectionProbe->getNeedsFullUpdate();
 
@@ -722,8 +742,7 @@ namespace Core {
     }
 
     WeakPointer<Texture2D> Renderer::getSSAOTexture() {
-        WeakPointer<Texture2D> tex2D = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->ssaoBlurRenderTarget->getColorTexture());
-        return tex2D;
+        this->ssaoBlurMap;
     }
 
     void Renderer::renderDepthAndNormals(ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objects) {
@@ -827,7 +846,7 @@ namespace Core {
                                                                                                ssaoDepthAttributes, ssaoRenderTargetSize);
         this->ssaoBlurRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTarget2D(true, true, false, ssaoColorAttributes,
                                                                                                ssaoDepthAttributes, ssaoRenderTargetSize);
-
+        this->ssaoBlurMap = WeakPointer<Texture>::dynamicPointerCast<Texture2D>(this->ssaoBlurRenderTarget->getColorTexture());
         if (!this->ssaoMaterial.isValid()) {
             this->ssaoMaterial = Engine::instance()->createMaterial<SSAOMaterial>();
             this->ssaoMaterial->setLit(false);

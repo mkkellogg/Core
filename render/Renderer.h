@@ -25,6 +25,8 @@ namespace Core {
     class Scene;
     class Camera;
     class Light;
+    class DirectionalLight;
+    class PointLight;
     class AmbientIBLLight;
     class ViewDescriptor;
     class DepthOnlyMaterial;
@@ -71,8 +73,9 @@ namespace Core {
         void renderSkybox(ViewDescriptor& viewDescriptor);
         void renderObjectDirect(WeakPointer<Object3D> object, ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Light>>& lightList,
                                 Bool matchPhysicalPropertiesWithLighting);
-        void renderShadowMaps(std::vector<WeakPointer<Light>>& lights, LightType lightType, 
-                              std::vector<WeakPointer<Object3D>>& objects, WeakPointer<Camera> renderCamera = WeakPointer<Camera>());
+        void renderDirectionalLightShadowMaps(std::vector<WeakPointer<DirectionalLight>>& lights,
+                                              std::vector<WeakPointer<Object3D>>& objects, WeakPointer<Camera> renderCamera);
+        void renderPointLightShadowMaps(std::vector<WeakPointer<PointLight>>& lights, std::vector<WeakPointer<Object3D>>& objects);
         void setViewportAndMipLevelForRenderTarget(WeakPointer<RenderTarget> renderTarget, Int16 cubeFace);
         void clearActiveRenderTarget(ViewDescriptor& viewDescriptor);
         void getViewDescriptorForCubeCamera(WeakPointer<Camera> camera, CubeFace cubeFace, ViewDescriptor& outDescriptor);
@@ -86,8 +89,10 @@ namespace Core {
         void collectSceneObjectsAndComputeTransforms(WeakPointer<Object3D> object, std::vector<WeakPointer<Object3D>>& outObjects, const Matrix4x4& curTransform);
         void collectSceneObjectComponents(std::vector<WeakPointer<Object3D>>& sceneObjects, std::vector<WeakPointer<Camera>>& cameraList,
                                           std::vector<WeakPointer<ReflectionProbe>>& reflectionProbeList, std::vector<WeakPointer<Light>>& nonIBLLightList,
+                                          std::vector<WeakPointer<DirectionalLight>>& directionalLightList, std::vector<WeakPointer<PointLight>>& pointLightList,
                                           std::vector<WeakPointer<AmbientIBLLight>>& iblLightList, std::vector<WeakPointer<Light>>& lightList);
         void renderReflectionProbes(std::vector<WeakPointer<ReflectionProbe>>& reflectionProbeList, std::vector<WeakPointer<Object3D>> staticObjects,
+                                    std::vector<WeakPointer<DirectionalLight>>& directionalLightList, std::vector<WeakPointer<PointLight>>& pointLightList,
                                     std::vector<WeakPointer<Light>>& nonIBLLightList, std::vector<WeakPointer<Light>>& lightList);
         void renderReflectionProbe(WeakPointer<ReflectionProbe> reflectionProbe, Bool specularOnly,
                                    std::vector<WeakPointer<Object3D>>& renderObjects, std::vector<WeakPointer<Light>>& renderLights);
@@ -121,6 +126,7 @@ namespace Core {
         PersistentWeakPointer<RenderTarget2D> ssaoRenderTarget;
         PersistentWeakPointer<SSAOMaterial> ssaoMaterial;
         PersistentWeakPointer<RenderTarget2D> ssaoBlurRenderTarget;
+        PersistentWeakPointer<Texture2D> ssaoBlurMap;
         PersistentWeakPointer<SSAOBlurMaterial> ssaoBlurMaterial;
         WeakPointer<Texture2D> ssaoNoise;
         std::vector<Vector3r> ssaoKernel;

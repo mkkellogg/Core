@@ -23,6 +23,8 @@ namespace Core {
     class BaseObjectRenderer;
     class BaseRenderableContainer;
     class Light;
+    class DirectionalLight;
+    class PointLight;
     class AmbientIBLLight;
     class ReflectionProbe;
     class Camera;
@@ -55,8 +57,9 @@ namespace Core {
         WeakPointer<Object3D> getChild(UInt32 index);
 
         WeakPointer<BaseObjectRenderer> getBaseRenderer();
-        WeakPointer<BaseRenderableContainer> getBaseRenderableContainer();
         WeakPointer<Light> getLight();
+        WeakPointer<DirectionalLight> getDirectionalLight();
+        WeakPointer<PointLight> getPointLight();
         WeakPointer<AmbientIBLLight> getAmbientIBLLight();
         WeakPointer<ReflectionProbe> getReflectionProbe();
         WeakPointer<Camera> getCamera();
@@ -75,11 +78,12 @@ namespace Core {
         std::string name;
 
         WeakPointer<BaseObjectRenderer> baseRenderer;
-        WeakPointer<BaseRenderableContainer> baseRenderableContainer;
         WeakPointer<ReflectionProbe> reflectionProbe;
         WeakPointer<Camera> camera;
 
         WeakPointer<Light> light;
+        WeakPointer<DirectionalLight> directionalLight;
+        WeakPointer<PointLight> pointLight;
         WeakPointer<AmbientIBLLight> ambientIBLLight;
 
     private:
