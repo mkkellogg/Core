@@ -28,6 +28,8 @@ namespace Core {
                                    Bool matchPhysicalPropertiesWithLighting) override;
         virtual Bool forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<BaseRenderable> mesh, Bool isStatic,
                                          const std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting) override;
+        Bool forwardRenderMesh(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh, Bool isStatic,
+                               const std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting);
         virtual Bool supportsRenderPath(RenderPath renderPath) override;
         virtual UInt32 getRenderQueueID() const override;
         void setMaterial(WeakPointer<Material> material);

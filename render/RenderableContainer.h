@@ -26,18 +26,18 @@ namespace Core {
     public:
         void addRenderable(WeakPointer<T> renderable) {
             this->addBaseRenderable(renderable);
+            this->renderables.push_back(renderable);
         }
 
         WeakPointer<T> getRenderable(UInt32 index) {
-            WeakPointer<BaseRenderable> baseRenderable = this->getBaseRenderable(index);
-            WeakPointer<T> renderable = WeakPointer<BaseRenderable>::dynamicPointerCast<T>(baseRenderable);
-            if (!renderable.isValid() && baseRenderable.isValid()) {
-                throw Exception("RenderableContainer::getRenderable could not dynamically cast object.");
+            if (index >= this->renderables.size()) {
+                throw OutOfRangeException("RenderableContainer::getRenderable() -> 'index' is out of range.");
             }
-            return renderable;
+            return this->renderables[index];
         }
 
     protected:
         RenderableContainer(WeakPointer<Object3D> owner): BaseRenderableContainer(owner) {}
+        std::vector<WeakPointer<T>> renderables;
     };
 }

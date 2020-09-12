@@ -96,12 +96,18 @@ namespace Core {
         }
     }
 
-    Bool MeshRenderer::forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<BaseRenderable> renderable, Bool isStatic,
+     Bool MeshRenderer::forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<BaseRenderable> renderable, Bool isStatic,
                                            const std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting) {
         WeakPointer<Mesh> mesh = WeakPointer<BaseRenderable>::dynamicPointerCast<Mesh>(renderable);
         if (!mesh.isValid()) {
             throw RenderException("MeshRenderer::forwardRenderObject() -> 'renderable' is not an instance of Mesh!");  
         }
+
+        this->forwardRenderMesh(viewDescriptor, mesh, isStatic, lights, matchPhysicalPropertiesWithLighting);
+    }
+
+    Bool MeshRenderer::forwardRenderMesh(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh, Bool isStatic,
+                                           const std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting) {
 
         Matrix4x4 tempMatrix;
         WeakPointer<Material> material;

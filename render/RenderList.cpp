@@ -17,9 +17,17 @@ namespace Core {
 
     void RenderList::addItem(WeakPointer<BaseObjectRenderer> objectRenderer, WeakPointer<BaseRenderable> renderable, Bool isStatic) {
         RenderItem& renderItem = this->renderItemPool.acquireObject();
-        renderItem.ObjectRenderer = objectRenderer;
-        renderItem.Renderable = renderable;
-        renderItem.IsStatic = isStatic;
+        renderItem.objectRenderer = objectRenderer;
+        renderItem.renderable = renderable;
+        renderItem.isStatic = isStatic;
+        this->renderItems.push_back(&renderItem);
+    }
+
+    void RenderList::addMesh(WeakPointer<MeshRenderer> meshRenderer, WeakPointer<Mesh> mesh, Bool isStatic) {
+        RenderItem& renderItem = this->renderItemPool.acquireObject();
+        renderItem.meshRenderer = meshRenderer;
+        renderItem.mesh = mesh;
+        renderItem.isStatic = isStatic;
         this->renderItems.push_back(&renderItem);
     }
 

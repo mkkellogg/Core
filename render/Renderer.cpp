@@ -301,7 +301,11 @@ namespace Core {
             UInt32 itemCount = queue.getItemCount();
             for (UInt32 i = 0; i < itemCount; i++) {
                 RenderItem& item = queue.getRenderItem(i);
-                item.ObjectRenderer->forwardRenderObject(viewDescriptor, item.Renderable, item.IsStatic, lightList, matchPhysicalPropertiesWithLighting);
+                if (item.objectRenderer) {
+                    item.objectRenderer->forwardRenderObject(viewDescriptor, item.renderable, item.isStatic, lightList, matchPhysicalPropertiesWithLighting);
+                } else if (item.meshRenderer) {
+                    item.meshRenderer->forwardRenderMesh(viewDescriptor, item.mesh, item.isStatic, lightList, matchPhysicalPropertiesWithLighting);
+                }
             }
         }
         /*for (auto object : objectList) {
@@ -873,9 +877,19 @@ namespace Core {
                         renderQueueID = objectRenderer->getRenderQueueID();
                     }
                     UInt32 renderableCount = renderableContainer->getBaseRenderableCount();
-                    for(UInt32 i = 0; i < renderableCount; i++) {
-                        WeakPointer<BaseRenderable> renderable = renderableContainer->getBaseRenderable(i);
-                        renderQueueManager.addItemToQueue(renderQueueID, objectRenderer, renderable, object->isStatic());
+
+                    WeakPointer<MeshRenderer> meshRenderer = object->getMeshRenderer();
+                    WeakPointer<MeshContainer> meshContainer = object->getMeshContainer();
+                    if (meshRenderer.isValid() && meshContainer.isValid()) {
+                        for(UInt32 i = 0; i < renderableCount; i++) {
+                            WeakPointer<Mesh> mesh = meshContainer->getRenderable(i);
+                            renderQueueManager.addMeshToQueue(renderQueueID, meshRenderer, mesh, object->isStatic());
+                        }
+                    } else {
+                        for(UInt32 i = 0; i < renderableCount; i++) {
+                            WeakPointer<BaseRenderable> renderable = renderableContainer->getBaseRenderable(i);
+                            renderQueueManager.addItemToQueue(renderQueueID, objectRenderer, renderable, object->isStatic());
+                        }
                     }
                 }
             }

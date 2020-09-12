@@ -9,6 +9,7 @@
 #include "../render/BaseObjectRenderer.h"
 #include "../render/BaseRenderable.h"
 #include "../render/MeshContainer.h"
+#include "../render/MeshRenderer.h"
 
 namespace Core {
 
@@ -119,12 +120,19 @@ namespace Core {
         }
         this->components.push_back(component);
 
-        this->testAndSetComponentMemberVar<BaseObjectRenderer>(component, this->baseRenderer, std::string("base renderer"));
+        Bool addedBaseObjectRenderer = this->testAndSetComponentMemberVar<BaseObjectRenderer>(component, this->baseRenderer, std::string("base renderer"));
         Bool addedBaseRenderableContainer = this->testAndSetComponentMemberVar<BaseRenderableContainer>(component, this->baseRenderableContainer, std::string("base renderable container"));
         Bool addedLight = this->testAndSetComponentMemberVar<Light>(component, this->light, std::string("light"));
         this->testAndSetComponentMemberVar<ReflectionProbe>(component, this->reflectionProbe, std::string("reflection probe"));
         this->testAndSetComponentMemberVar<Camera>(component, this->camera, std::string("camera"));
 
+        if (addedBaseObjectRenderer) {
+            WeakPointer<MeshRenderer> meshRenderer = WeakPointer<BaseObjectRenderer>::dynamicPointerCast<MeshRenderer>(this->baseRenderer);
+            if (meshRenderer.isValid()) {
+                this->meshRenderer = meshRenderer;
+            }
+        }
+    
         if (addedBaseRenderableContainer) {
             WeakPointer<MeshContainer> meshContainer = WeakPointer<BaseRenderableContainer>::dynamicPointerCast<MeshContainer>(this->baseRenderableContainer);
             if (meshContainer.isValid()) {
@@ -193,6 +201,10 @@ namespace Core {
 
     WeakPointer<MeshContainer> Object3D::getMeshContainer() {
         return this->meshContainer;
+    }
+
+    WeakPointer<MeshRenderer> Object3D::getMeshRenderer() {
+        return this->meshRenderer;
     }
 
     WeakPointer<Light> Object3D::getLight() {

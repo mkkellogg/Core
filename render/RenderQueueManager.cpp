@@ -20,6 +20,16 @@ namespace Core {
     }
 
     void RenderQueueManager::addItemToQueue(UInt32 queueID, WeakPointer<BaseObjectRenderer> objectRenderer, WeakPointer<BaseRenderable> renderable, Bool isStatic) {
+        RenderQueue& queue = this->getOrAddRenderQueue(queueID);
+        queue.addItem(objectRenderer, renderable, isStatic);
+    }
+
+    void RenderQueueManager::addMeshToQueue(UInt32 queueID, WeakPointer<MeshRenderer> meshRenderer, WeakPointer<Mesh> mesh, Bool isStatic) {
+        RenderQueue& queue = this->getOrAddRenderQueue(queueID);
+        queue.addMesh(meshRenderer, mesh, isStatic);
+    }
+
+    RenderQueue& RenderQueueManager::getOrAddRenderQueue(UInt32 queueID) {
         if (this->queues.find(queueID) == this->queues.end()) {
             this->queues.emplace(queueID, queueID);
             RenderQueue& queue = queues.at(queueID);
@@ -34,7 +44,6 @@ namespace Core {
             }
         }
         RenderQueue& queue = this->queues.at(queueID);
-        queue.addItem(objectRenderer, renderable, isStatic);
     }
 
     RenderQueue& RenderQueueManager::getRenderQueue(UInt32 index) {

@@ -23,6 +23,7 @@ namespace Core {
     class BaseObjectRenderer;
     class BaseRenderableContainer;
     class MeshContainer;
+    class MeshRenderer;
     class Light;
     class DirectionalLight;
     class PointLight;
@@ -61,6 +62,7 @@ namespace Core {
 
         WeakPointer<BaseRenderableContainer> getBaseRenderableContainer();
         WeakPointer<MeshContainer> getMeshContainer();
+        WeakPointer<MeshRenderer> getMeshRenderer();
 
         WeakPointer<Light> getLight();
         WeakPointer<DirectionalLight> getDirectionalLight();
@@ -87,6 +89,7 @@ namespace Core {
 
         WeakPointer<BaseRenderableContainer> baseRenderableContainer;
         WeakPointer<MeshContainer> meshContainer;
+        WeakPointer<MeshRenderer> meshRenderer;
 
         WeakPointer<ReflectionProbe> reflectionProbe;
         WeakPointer<Camera> camera;

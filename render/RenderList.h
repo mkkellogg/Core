@@ -14,6 +14,8 @@ namespace Core {
     class Object3D;
     class BaseObjectRenderer;
     class BaseRenderable;
+    class MeshRenderer;
+    class Mesh;
 
     class RenderList {
     public:
@@ -23,6 +25,7 @@ namespace Core {
         UInt32 getItemCount() const;
         void clear();
         void addItem(WeakPointer<BaseObjectRenderer> objectRenderer, WeakPointer<BaseRenderable> renderable, Bool isStatic);
+        void addMesh(WeakPointer<MeshRenderer> meshRenderer, WeakPointer<Mesh> mesh, Bool isStatic);
         RenderItem& getRenderItem(UInt32 index);
 
     protected:
