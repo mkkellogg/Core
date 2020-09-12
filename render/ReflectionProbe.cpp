@@ -87,7 +87,7 @@ namespace Core {
 
         Color cubeColor(1.0f, 1.0f, 1.0f, 1.0f);
         WeakPointer<Mesh> cubeMesh = GeometryUtils::buildBoxMesh(1.0, 1.0, 1.0, cubeColor);
-        this->skyboxCube = GeometryUtils::buildMeshContainer(cubeMesh, this->irradianceRendererMaterial, "irradianceCube");
+        this->skyboxCube = GeometryUtils::buildMeshContainerObject(cubeMesh, this->irradianceRendererMaterial, "irradianceCube");
     }
 
     void ReflectionProbe::setNeedsFullUpdate(Bool needsUpdate) {

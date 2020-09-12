@@ -58,13 +58,18 @@ namespace Core {
         skyboxMaterial->setTexture(skyboxTexture);
         skyboxMaterial->setCullFace(RenderState::CullFace::Front);
 
-        this->skyboxObj = Engine::instance()->createObject3D<MeshContainer>();
+        this->skyboxObj = Engine::instance()->createObject3D();
+        this->skyboxMeshContainer = Engine::instance()->createRenderableContainer<MeshContainer, Mesh>(this->skyboxObj);
 
         WeakPointer<MeshRenderer> skyboxRenderer = Engine::instance()->createRenderer<MeshRenderer, Mesh>(skyboxMaterial, skyboxObj);
-        this->skyboxObj->addRenderable(skyboxMesh);
+        this->skyboxMeshContainer->addRenderable(skyboxMesh);
     }
 
-     WeakPointer<MeshContainer> Skybox::getSkyboxObject() {
-         return this->skyboxObj;
-     }
+    WeakPointer<Object3D> Skybox::getSkyboxObject() {
+        return this->skyboxObj;
+    }
+
+    WeakPointer<MeshContainer> Skybox::getSkyboxMeshContainer() {
+        return this->skyboxMeshContainer;
+    }
 }

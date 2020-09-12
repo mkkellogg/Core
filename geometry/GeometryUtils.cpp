@@ -670,14 +670,13 @@ namespace Core {
         end.set(finalEndX, finalEndY, finalEndZ);
     }
 
-    WeakPointer<MeshContainer> GeometryUtils::buildMeshContainer(WeakPointer<Mesh> mesh,
-                                                                             WeakPointer<Material> material,
-                                                                             const std::string& name) {
+    WeakPointer<Object3D> GeometryUtils::buildMeshContainerObject(WeakPointer<Mesh> mesh, WeakPointer<Material> material, const std::string& name) {
         WeakPointer<Engine> engine = Engine::instance();
-        WeakPointer<MeshContainer> obj(engine->createObject3D<MeshContainer>());
+        WeakPointer<Object3D> obj(engine->createObject3D());
         obj->setName(name);
+        WeakPointer<MeshContainer> container = engine->createRenderableContainer<MeshContainer, Mesh>(obj);
         WeakPointer<MeshRenderer> renderer = engine->createRenderer<MeshRenderer, Mesh>(material, obj);
-        obj->addRenderable(mesh);
+        container->addRenderable(mesh);
         return obj;
     }
 }

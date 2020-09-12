@@ -1,8 +1,10 @@
 #pragma once
 
+#include <vector>
+
 #include "../util/PersistentWeakPointer.h"
 #include "../util/ValueIterator.h"
-#include "../scene/Object3D.h"
+#include "../scene/Object3DComponent.h"
 
 namespace Core {
 
@@ -10,16 +12,15 @@ namespace Core {
     class BaseObjectRenderer;
     class BaseRenderable;
 
-    class BaseRenderableContainer : public Object3D {
+    class BaseRenderableContainer : public Object3DComponent {
     public:
         virtual ~BaseRenderableContainer() = 0;
-        WeakPointer<BaseObjectRenderer> getBaseRenderer();
         UInt32 getBaseRenderableCount() const;
         WeakPointer<BaseRenderable> getBaseRenderable(UInt32 index);
 
     protected:
+        BaseRenderableContainer(WeakPointer<Object3D> owner);
         void addBaseRenderable(WeakPointer<BaseRenderable> renderable);
-        void setBaseRenderer(WeakPointer<BaseObjectRenderer> renderer);
         
         PersistentWeakPointer<BaseObjectRenderer> renderer;
         std::vector<PersistentWeakPointer<BaseRenderable>> renderables;

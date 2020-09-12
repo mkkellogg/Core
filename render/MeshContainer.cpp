@@ -4,6 +4,10 @@
 
 namespace Core {
 
+    MeshContainer::MeshContainer(WeakPointer<Object3D> owner): RenderableContainer<Mesh>(owner) {
+
+    }
+
     MeshContainer::~MeshContainer() {
         for (UInt32 i = 0; i < this->vertexBoneMaps.size(); i ++) {
             WeakPointer<VertexBoneMap> child = this->vertexBoneMaps[i];

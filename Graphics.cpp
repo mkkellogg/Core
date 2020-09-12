@@ -93,14 +93,14 @@ namespace Core {
     void Graphics::renderFullScreenQuad(WeakPointer<RenderTarget> destination, Int16 cubeFace, WeakPointer<Material> material) {
         static Bool initialized = false;
         static WeakPointer<Mesh> fullScreenQuadMesh;
-        static WeakPointer<MeshContainer> fullScreenQuadObject;
+        static WeakPointer<Object3D> fullScreenQuadObject;
         static WeakPointer<Mesh> fullScreenCubeMesh;
-        static WeakPointer<MeshContainer> fullScreenCubeObject;
+        static WeakPointer<Object3D> fullScreenCubeObject;
         static WeakPointer<Object3D> renderCameraObject;
         static WeakPointer<Camera> renderCamera;
         if (!initialized) {
             fullScreenQuadMesh = GeometryUtils::createGridMesh(2.0f, 2.0f, 2, 2, 1.0f, 1.0f);
-            fullScreenQuadObject = GeometryUtils::buildMeshContainer(fullScreenQuadMesh, material, "");
+            fullScreenQuadObject = GeometryUtils::buildMeshContainerObject(fullScreenQuadMesh, material, "");
             renderCameraObject = Engine::instance()->createObject3D();
             renderCameraObject->getTransform().translate(0.0f, 0.0f, 4.0f);
             renderCameraObject->getTransform().updateWorldMatrix();

@@ -26,7 +26,7 @@ namespace Core {
             equirectangularMaterial =  Engine::instance()->createMaterial<EquirectangularMaterial>();
             Color cubeColor(1.0f, 1.0f, 1.0f, 1.0f);
             WeakPointer<Mesh> cubeMesh = GeometryUtils::buildBoxMesh(1.0, 1.0, 1.0, cubeColor);
-            cubeMeshObj = Core::GeometryUtils::buildMeshContainer(cubeMesh, equirectangularMaterial, "EquirectangularCubeGeometry");
+            cubeMeshObj = Core::GeometryUtils::buildMeshContainerObject(cubeMesh, equirectangularMaterial, "EquirectangularCubeGeometry");
             initialized = true;
         }
         

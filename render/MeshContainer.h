@@ -15,8 +15,9 @@ namespace Core {
 
     class MeshContainer : public RenderableContainer<Mesh> {
 
-    public:
+        friend class Engine;
 
+    public:
         virtual ~MeshContainer();
 
         void setSkeleton(WeakPointer<Skeleton> skeleton);
@@ -25,8 +26,10 @@ namespace Core {
         WeakPointer<VertexBoneMap> getVertexBoneMap(UInt64 meshID);
         Bool hasVertexBoneMap(UInt64 meshID);
 
-    private:
+    protected:
+        MeshContainer(WeakPointer<Object3D> owner);
 
+    private:
         PersistentWeakPointer<Skeleton> skeleton;
         std::unordered_map<UInt64, PersistentWeakPointer<VertexBoneMap>> vertexBoneMaps;
         std::unordered_map<UInt64, Bool> vertexBoneMapSet;

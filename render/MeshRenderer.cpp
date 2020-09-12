@@ -68,10 +68,10 @@ namespace Core {
         Int32 skinningEnabledLocation = material->getShaderLocation(StandardUniform::SkinningEnabled);
         if (skinningEnabledLocation >= 0) shader->setUniform1i(skinningEnabledLocation, 0.0);
         if (material->isSkinningEnabled()) {
-            std::shared_ptr<MeshContainer> thisContainer = std::dynamic_pointer_cast<MeshContainer>(this->owner.lock());
-            if (thisContainer && thisContainer->hasVertexBoneMap(mesh->getObjectID())) {
+            WeakPointer<MeshContainer> meshContainer = this->owner->getMeshContainer();
+            if (meshContainer.isValid() && meshContainer->hasVertexBoneMap(mesh->getObjectID())) {
                 if (skinningEnabledLocation >= 0) shader->setUniform1i(skinningEnabledLocation, 1.0);
-                WeakPointer<VertexBoneMap> vertexBoneMap = thisContainer->getVertexBoneMap(mesh->getObjectID());
+                WeakPointer<VertexBoneMap> vertexBoneMap = meshContainer->getVertexBoneMap(mesh->getObjectID());
                 this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::BoneIndex, StandardAttribute::BoneIndex, vertexBoneMap->getIndices(), true);
                 this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::BoneWeight, StandardAttribute::BoneWeight, vertexBoneMap->getWeights(), true);
 
@@ -79,7 +79,7 @@ namespace Core {
                 rootTransformInverse.invert();
 
                 Matrix4x4 temp;
-                WeakPointer<Skeleton> skeleton = thisContainer->getSkeleton();
+                WeakPointer<Skeleton> skeleton = meshContainer->getSkeleton();
                 for(UInt32 i = 0; i < skeleton->getNodeCount(); i++) {
                     Skeleton::SkeletonNode * node = skeleton->getNodeFromList(i);
                     if (node->BoneIndex >= 0) {
@@ -463,10 +463,10 @@ namespace Core {
         this->disableShaderAttribute(mesh, material, StandardAttribute::NormalUV, mesh->getVertexNormalUVs());
 
          if (material->isSkinningEnabled()) {
-            std::shared_ptr<MeshContainer> thisContainer = std::dynamic_pointer_cast<MeshContainer>(this->owner.lock());
-            if (thisContainer) {
-                if (thisContainer->hasVertexBoneMap(mesh->getObjectID())) {
-                    WeakPointer<VertexBoneMap> vertexBoneMap = thisContainer->getVertexBoneMap(mesh->getObjectID());
+            WeakPointer<MeshContainer> meshContainer = this->owner->getMeshContainer();
+            if (meshContainer) {
+                if (meshContainer->hasVertexBoneMap(mesh->getObjectID())) {
+                    WeakPointer<VertexBoneMap> vertexBoneMap = meshContainer->getVertexBoneMap(mesh->getObjectID());
                     this->disableShaderAttribute(mesh, material, StandardAttribute::BoneIndex, vertexBoneMap->getIndices());
                     this->disableShaderAttribute(mesh, material, StandardAttribute::BoneWeight, vertexBoneMap->getWeights());
                 }
@@ -478,12 +478,12 @@ namespace Core {
 
     Bool MeshRenderer::forwardRender(const ViewDescriptor& viewDescriptor, const std::vector<WeakPointer<Light>>& lights,
                                      Bool matchPhysicalPropertiesWithLighting) {
-        std::shared_ptr<MeshContainer> thisContainer = std::dynamic_pointer_cast<MeshContainer>(this->owner.lock());
-        if (thisContainer) {
-            UInt32 renderableCount = thisContainer->getBaseRenderableCount();
+        WeakPointer<MeshContainer> meshContainer = this->owner->getMeshContainer();
+        if (meshContainer) {
+            UInt32 renderableCount = meshContainer->getBaseRenderableCount();
             for (UInt32 i = 0; i < renderableCount; i++) {
-                WeakPointer<BaseRenderable> mesh = thisContainer->getBaseRenderable(i);
-                this->forwardRenderObject(viewDescriptor, mesh, thisContainer->isStatic(), lights, matchPhysicalPropertiesWithLighting);
+                WeakPointer<BaseRenderable> mesh = meshContainer->getBaseRenderable(i);
+                this->forwardRenderObject(viewDescriptor, mesh, this->owner->isStatic(), lights, matchPhysicalPropertiesWithLighting);
             }
         }
 

@@ -228,8 +228,9 @@ namespace Core {
                 UInt32 newChildrenCount = 0;
                 if (n == node.mNumMeshes || (n > 0 && material.get() != lastMaterial.get())) {
                     // create new scene object to hold the meshes object and its renderer
-                    WeakPointer<MeshContainer> meshContainer = Engine::instance()->createObject3D<MeshContainer>();
-                    if (!meshContainer.isValid()) {
+                    WeakPointer<Object3D> meshContainerObj = Engine::instance()->createObject3D();
+                    WeakPointer<MeshContainer> meshContainer = Engine::instance()->createRenderableContainer<MeshContainer, Mesh>(meshContainerObj);
+                    if (!meshContainerObj.isValid() || !meshContainer.isValid()) {
                         throw ModelLoaderException("ModelLoader::recursiveProcessModelScene -> Could not create mesh container.");
                     };
                 
@@ -263,18 +264,18 @@ namespace Core {
                         }
                         addedCount++;
                     }
-                    meshContainer->setName(objName);
+                    meshContainerObj->setName(objName);
 
-                    WeakPointer<MeshRenderer> meshRenderer = Engine::instance()->createRenderer<MeshRenderer, Mesh>(lastMaterial, meshContainer);
+                    WeakPointer<MeshRenderer> meshRenderer = Engine::instance()->createRenderer<MeshRenderer, Mesh>(lastMaterial, meshContainerObj);
                     
                     if (hasSkeleton) {
                         Engine::instance()->addOwner(skeleton);
                         meshContainer->setSkeleton(skeleton);
                     }
 
-                    nodeObject->addChild(meshContainer);
-                    meshContainer->getTransform().getLocalMatrix().setIdentity();
-                    createdSceneObjects.push_back(meshContainer);
+                    nodeObject->addChild(meshContainerObj);
+                    meshContainerObj->getTransform().getLocalMatrix().setIdentity();
+                    createdSceneObjects.push_back(meshContainerObj);
                     newChildrenCount++;
                 }
 

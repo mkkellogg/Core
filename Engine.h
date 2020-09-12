@@ -116,11 +116,20 @@ namespace Core {
         WeakPointer<Mesh> createMesh(UInt32 size, UInt32 indexCount);
 
         template <typename T, typename R>
+        WeakPointer<typename std::enable_if<std::is_base_of<RenderableContainer<R>, T>::value, T>::type> createRenderableContainer(WeakPointer<Object3D> owner) {
+            std::shared_ptr<T> renderableContainer = std::shared_ptr<T>(new T(owner));
+            WeakPointer<T> _temp = renderableContainer;
+            owner->addComponent(_temp);
+            this->objectManager.addReference(renderableContainer, CoreObjectReferenceManager::OwnerType::Single);
+            return renderableContainer;
+        }
+
+        template <typename T, typename R>
         WeakPointer<typename std::enable_if<std::is_base_of<ObjectRenderer<R>, T>::value, T>::type> createRenderer(WeakPointer<Material> material,
-                                                                                                                   WeakPointer<RenderableContainer<R>> owner) {
+                                                                                                                   WeakPointer<Object3D> owner) {
             std::shared_ptr<T> objectRenderer = std::shared_ptr<T>(new T(this->graphics, material, owner));
             WeakPointer<T> _temp = objectRenderer;
-            owner->setRenderer(_temp);
+            owner->addComponent(_temp);
             this->objectManager.addReference(objectRenderer, CoreObjectReferenceManager::OwnerType::Single);
             return objectRenderer;
         }

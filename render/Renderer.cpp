@@ -349,10 +349,9 @@ namespace Core {
 
     void Renderer::renderObjectDirect(WeakPointer<Object3D> object, ViewDescriptor& viewDescriptor,
                             std::vector<WeakPointer<Light>>& lightList, Bool matchPhysicalPropertiesWithLighting) {
-        std::shared_ptr<Object3D> objectShared = object.lock();
-        std::shared_ptr<BaseRenderableContainer> containerPtr = std::dynamic_pointer_cast<BaseRenderableContainer>(objectShared);
-        if (containerPtr) {
-            WeakPointer<BaseObjectRenderer> objectRenderer = containerPtr->getBaseRenderer();
+        WeakPointer<BaseRenderableContainer> baseRenderableContainer = object->getBaseRenderableContainer();
+        if (baseRenderableContainer) {
+            WeakPointer<BaseObjectRenderer> objectRenderer = object->getBaseRenderer();
             if (objectRenderer) {
                 objectRenderer->forwardRender(viewDescriptor, lightList, matchPhysicalPropertiesWithLighting);
             }
@@ -858,15 +857,14 @@ namespace Core {
             this->ssaoBlurMaterial = Engine::instance()->createMaterial<SSAOBlurMaterial>();
             this->ssaoBlurMaterial->setLit(false);
         }
-
     }
 
     void Renderer::sortObjectsIntoRenderQueues(std::vector<WeakPointer<Object3D>>& objects, RenderQueueManager& renderQueueManager, Int32 overrideRenderQueueID) {
         for(UInt32 i = 0; i < objects.size(); i++) {
             WeakPointer<Object3D> object = objects[i];
-            WeakPointer<BaseRenderableContainer> containerPtr = WeakPointer<Object3D>::dynamicPointerCast<BaseRenderableContainer>(object);
-            if (containerPtr) {
-                WeakPointer<BaseObjectRenderer> objectRenderer = containerPtr->getBaseRenderer();
+            WeakPointer<BaseRenderableContainer> renderableContainer = object->getBaseRenderableContainer();
+            if (renderableContainer) {
+                WeakPointer<BaseObjectRenderer> objectRenderer = object->getBaseRenderer();
                 if (objectRenderer.isValid()) {
                     UInt32 renderQueueID = -1;
                     if (overrideRenderQueueID >= 0) {
@@ -874,10 +872,10 @@ namespace Core {
                     } else {
                         renderQueueID = objectRenderer->getRenderQueueID();
                     }
-                    UInt32 renderableCount = containerPtr->getBaseRenderableCount();
+                    UInt32 renderableCount = renderableContainer->getBaseRenderableCount();
                     for(UInt32 i = 0; i < renderableCount; i++) {
-                        WeakPointer<BaseRenderable> renderable = containerPtr->getBaseRenderable(i);
-                        renderQueueManager.addItemToQueue(renderQueueID, objectRenderer, renderable, containerPtr->isStatic());
+                        WeakPointer<BaseRenderable> renderable = renderableContainer->getBaseRenderable(i);
+                        renderQueueManager.addItemToQueue(renderQueueID, objectRenderer, renderable, object->isStatic());
                     }
                 }
             }
@@ -888,14 +886,14 @@ namespace Core {
         renderList.clear();
          for(UInt32 i = 0; i < objects.size(); i++) {
             WeakPointer<Object3D> object = objects[i];
-            WeakPointer<BaseRenderableContainer> containerPtr = WeakPointer<Object3D>::dynamicPointerCast<BaseRenderableContainer>(object);
-            if (containerPtr) {
-                WeakPointer<BaseObjectRenderer> objectRenderer = containerPtr->getBaseRenderer();
+            WeakPointer<BaseRenderableContainer> renderableContainer = object->getBaseRenderableContainer();
+            if (renderableContainer) {
+                WeakPointer<BaseObjectRenderer> objectRenderer = object->getBaseRenderer();
                 if (objectRenderer.isValid()) {
-                    UInt32 renderableCount = containerPtr->getBaseRenderableCount();
+                    UInt32 renderableCount = renderableContainer->getBaseRenderableCount();
                     for(UInt32 i = 0; i < renderableCount; i++) {
-                        WeakPointer<BaseRenderable> renderable = containerPtr->getBaseRenderable(i);
-                        renderList.addItem(objectRenderer, renderable, containerPtr->isStatic());
+                        WeakPointer<BaseRenderable> renderable = renderableContainer->getBaseRenderable(i);
+                        renderList.addItem(objectRenderer, renderable, object->isStatic());
                     }
                 }
             }

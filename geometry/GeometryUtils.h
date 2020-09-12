@@ -13,25 +13,16 @@ namespace Core {
 
     class GeometryUtils {
     public:
-       static  WeakPointer<Mesh> createGridMesh(Real width, Real height, UInt32 hSubDivisions, UInt32 vSubDivisions,
-                                            Real hTexToWorld, Real vTexToWorld);
-     
+        static  WeakPointer<Mesh> createGridMesh(Real width, Real height, UInt32 hSubDivisions, UInt32 vSubDivisions,
+                                                 Real hTexToWorld, Real vTexToWorld);
         static WeakPointer<Mesh> buildBoxMesh(Real length, Real width, Real depth, Color color);
-
         static WeakPointer<Mesh> buildArrowMesh(Real baseLength, Real baseRadius,
                                                 Real coneLength, Real coneRadius,
                                                 UInt32 subdivisions, Color color);
-
         static WeakPointer<Mesh> buildSphereMesh(Real radius, UInt32 subdivisions, Color color);
-
         static WeakPointer<Mesh> buildTorusMesh(Real radius, Real tubeRadius, UInt32 subdivisions, UInt32 tubeSubdivisions, Color color);
-
-        static WeakPointer<MeshContainer> buildMeshContainer(WeakPointer<Mesh> mesh,
-                                                             WeakPointer<Material> material,
-                                                             const std::string& name);
+        static WeakPointer<Object3D> buildMeshContainerObject(WeakPointer<Mesh> mesh, WeakPointer<Material> material, const std::string& name);
     private:
-        
-
         static void generateTorusSection(Real radius, Real tubeRadius, Real angle, Real tubeAngleStart,
                                          Real tubeAngleEnd, Point3r& start, Point3r& end);
     };

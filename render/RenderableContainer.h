@@ -28,10 +28,6 @@ namespace Core {
             this->addBaseRenderable(renderable);
         }
 
-        WeakPointer<ObjectRenderer<T>> getRenderer() {
-            return this->localRendererRef;
-        }
-
         WeakPointer<T> getRenderable(UInt32 index) {
             WeakPointer<BaseRenderable> baseRenderable = this->getBaseRenderable(index);
             WeakPointer<T> renderable = WeakPointer<BaseRenderable>::dynamicPointerCast<T>(baseRenderable);
@@ -42,14 +38,6 @@ namespace Core {
         }
 
     protected:
-        RenderableContainer() {
-        }
-
-        void setRenderer(WeakPointer<ObjectRenderer<T>> renderer) {
-            this->setBaseRenderer(renderer);
-            this->localRendererRef = renderer;
-        }
-
-        PersistentWeakPointer<ObjectRenderer<T>> localRendererRef;
+        RenderableContainer(WeakPointer<Object3D> owner): BaseRenderableContainer(owner) {}
     };
 }
