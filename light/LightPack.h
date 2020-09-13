@@ -67,7 +67,7 @@ namespace Core {
         std::vector<WeakPointer<DirectionalLight>>& getDirectionalLights() {
             return this->directionalLights;
         }
-        
+
         void addDirectionalLight(WeakPointer<DirectionalLight> light) {
             this->directionalLights.push_back(light);
             this->shadowLights.push_back(light);
@@ -126,6 +126,6 @@ namespace Core {
         std::vector<WeakPointer<ShadowLight>> shadowLights;
         std::vector<WeakPointer<Light>> nonIBLLights;
         std::vector<WeakPointer<Light>> lights;
-    };  
+    };
 
 }

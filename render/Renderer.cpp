@@ -173,9 +173,6 @@ namespace Core {
         }
         for (UInt32 i = 0; i < ambientIBLLightList.size(); i++) lightPack.addAmbientIBLLight(ambientIBLLightList[i]);
 
-        std::sort(lightList.begin(), lightList.end(), Renderer::compareLights);
-        std::sort(nonIBLLightList.begin(), nonIBLLightList.end(), Renderer::compareLights);
-
         // TODO: Decide how to classify objects as either contributors to ambient light or not
         /*for (UInt32 i = 0; i < objectList.size(); i++) {
             WeakPointer<Object3D> object = objectList[i];
@@ -242,8 +239,8 @@ namespace Core {
     }
 
     void Renderer::renderForCamera(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, Bool matchPhysicalPropertiesWithLighting) {
-        static LightPack lightPack;   
-        this->renderForCamera(camera, objects, lightPack, matchPhysicalPropertiesWithLighting);                 
+        static LightPack lightPack;
+        this->renderForCamera(camera, objects, lightPack, matchPhysicalPropertiesWithLighting);
     }
 
     void Renderer::renderForCamera(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, LightPack& lightPack,
@@ -347,11 +344,11 @@ namespace Core {
     }
 
     void Renderer::renderSkybox(ViewDescriptor& viewDescriptor) {
+        static LightPack lightPack;
         if (viewDescriptor.skybox != nullptr) {
             WeakPointer<BaseObjectRenderer> objectRenderer = viewDescriptor.skybox->getSkyboxObject()->getBaseRenderer();
             if (objectRenderer) {
                 ViewDescriptor skyboxView = viewDescriptor;
-                LightPack lightPack;
                 skyboxView.cameraTransformation.setTranslation(0.0f, 0.0f, 0.0f);
                 skyboxView.inverseCameraTransformation.copy(skyboxView.cameraTransformation);
                 skyboxView.inverseCameraTransformation.invert();
@@ -390,6 +387,7 @@ namespace Core {
         static std::vector<std::vector<WeakPointer<Object3D>>> toRenderDirectional;
         static std::vector<WeakPointer<DirectionalLight>> renderLights;
         static RenderQueueManager shadowMapRenderQueueManager;
+        static LightPack lightPack;
 
         if (!this->orthoShadowMapCamera.isValid()) {
             this->orthoShadowMapCameraObject = Engine::instance()->createObject3D();
@@ -423,7 +421,6 @@ namespace Core {
 
         UInt32 curLight = 0;
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-        LightPack lightPack;
         for (auto directionalLight: renderLights) {
             if (directionalLight->getShadowsEnabled()) {
                 this->depthMaterial->setFaceCullingEnabled(directionalLight->getFaceCullingEnabled());
@@ -456,6 +453,7 @@ namespace Core {
         static std::vector<std::vector<WeakPointer<Object3D>>> toRenderPoint;
         static std::vector<WeakPointer<PointLight>> renderLights;
         static RenderQueueManager shadowMapRenderQueueManager;
+        static LightPack lightPack;
 
         if (!this->perspectiveShadowMapCamera.isValid()) {
             this->perspectiveShadowMapCameraObject = Engine::instance()->createObject3D();
@@ -490,7 +488,6 @@ namespace Core {
 
         UInt32 curLight = 0;
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
-        LightPack lightPack;
         for (auto pointLight: renderLights) {
             if (pointLight->getShadowsEnabled()) {
                 WeakPointer<RenderTarget> shadowMapRenderTarget = pointLight->getShadowMap();
