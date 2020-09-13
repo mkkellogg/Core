@@ -149,6 +149,10 @@ namespace Core {
             if (pointLight.isValid()) {
                 this->pointLight = pointLight;
             }
+            WeakPointer<AmbientLight> ambientLight = WeakPointer<Light>::dynamicPointerCast<AmbientLight>(this->light);
+            if (ambientLight.isValid()) {
+                this->ambientLight = ambientLight;
+            }
             WeakPointer<AmbientIBLLight> ambientIBLLight = WeakPointer<Light>::dynamicPointerCast<AmbientIBLLight>(this->light);
             if (ambientIBLLight.isValid()) {
                 this->ambientIBLLight = ambientIBLLight;
@@ -217,6 +221,10 @@ namespace Core {
 
     WeakPointer<PointLight> Object3D::getPointLight() {
         return this->pointLight;
+    }
+
+    WeakPointer<AmbientLight> Object3D::getAmbientLight() {
+        return this->ambientLight;
     }
 
     WeakPointer<AmbientIBLLight> Object3D::getAmbientIBLLight() {

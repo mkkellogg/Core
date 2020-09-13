@@ -8,21 +8,20 @@
 #include "RenderPath.h"
 #include "ViewDescriptor.h"
 #include "BaseRenderable.h"
+#include "../light/LightPack.h"
 
 namespace Core {
 
     // forward declarations
     class Object3D;
     class Camera;
-    class Light;
 
     class BaseObjectRenderer : public Object3DComponent {
     public:
         BaseObjectRenderer(WeakPointer<Object3D> owner) : Object3DComponent(owner), castShadows(true) {}
-        virtual Bool forwardRender(const ViewDescriptor& viewDescriptor, const std::vector<WeakPointer<Light>>& lights,
-                                   Bool matchPhysicalPropertiesWithLighting);
+        virtual Bool forwardRender(const ViewDescriptor& viewDescriptor, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting);
         virtual Bool forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<BaseRenderable> renderable, Bool isStatic,
-                                         const std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting);
+                                         const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting);
         virtual Bool supportsRenderPath(RenderPath renderPath);
         virtual UInt32 getRenderQueueID() const = 0;
         Bool castsShadows();

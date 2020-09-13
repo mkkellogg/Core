@@ -2,13 +2,12 @@
 
 namespace Core {
 
-    Bool BaseObjectRenderer::forwardRender(const ViewDescriptor& viewDescriptor, const std::vector<WeakPointer<Light>>& lights,
-                                           Bool matchPhysicalPropertiesWithLighting) {
+    Bool BaseObjectRenderer::forwardRender(const ViewDescriptor& viewDescriptor, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
         return false;
     }
 
     Bool BaseObjectRenderer::forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<BaseRenderable> renderable, Bool isStatic,
-                                                 const std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting) {
+                                                 const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
         return false;
     }
 

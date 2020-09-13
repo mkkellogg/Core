@@ -27,6 +27,7 @@ namespace Core {
     class Light;
     class DirectionalLight;
     class PointLight;
+    class AmbientLight;
     class AmbientIBLLight;
     class ReflectionProbe;
     class Camera;
@@ -67,6 +68,7 @@ namespace Core {
         WeakPointer<Light> getLight();
         WeakPointer<DirectionalLight> getDirectionalLight();
         WeakPointer<PointLight> getPointLight();
+        WeakPointer<AmbientLight> getAmbientLight();
         WeakPointer<AmbientIBLLight> getAmbientIBLLight();
 
         WeakPointer<ReflectionProbe> getReflectionProbe();
@@ -97,6 +99,7 @@ namespace Core {
         WeakPointer<Light> light;
         WeakPointer<DirectionalLight> directionalLight;
         WeakPointer<PointLight> pointLight;
+        WeakPointer<AmbientLight> ambientLight;
         WeakPointer<AmbientIBLLight> ambientIBLLight;
 
     private:

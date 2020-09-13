@@ -157,6 +157,7 @@ set(INCLUDE_FILES
     light/AmbientIBLLight.h
     light/LightType.h
     light/LightCullType.h
+    light/LightPack.h
     image/ImageLoader.h
     image/CubeTexture.h
     image/Texture2D.h

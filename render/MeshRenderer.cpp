@@ -97,17 +97,17 @@ namespace Core {
     }
 
      Bool MeshRenderer::forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<BaseRenderable> renderable, Bool isStatic,
-                                           const std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting) {
+                                            const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
         WeakPointer<Mesh> mesh = WeakPointer<BaseRenderable>::dynamicPointerCast<Mesh>(renderable);
         if (!mesh.isValid()) {
             throw RenderException("MeshRenderer::forwardRenderObject() -> 'renderable' is not an instance of Mesh!");  
         }
 
-        this->forwardRenderMesh(viewDescriptor, mesh, isStatic, lights, matchPhysicalPropertiesWithLighting);
+        this->forwardRenderMesh(viewDescriptor, mesh, isStatic, lightPack, matchPhysicalPropertiesWithLighting);
     }
 
     Bool MeshRenderer::forwardRenderMesh(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh, Bool isStatic,
-                                           const std::vector<WeakPointer<Light>>& lights, Bool matchPhysicalPropertiesWithLighting) {
+                                         const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
 
         Matrix4x4 tempMatrix;
         WeakPointer<Material> material;
@@ -195,15 +195,39 @@ namespace Core {
         }
 
         RenderPath renderPath = material->getRenderPath();
-        if (lights.size() > 0 && material->isLit() && !renderingDepthOutput) {
+        if (lightPack.lightCount() > 0 && material->isLit() && !renderingDepthOutput) {
 
             Int32 lightCountLoc = material->getShaderLocation(StandardUniform::LightCount);
             UInt32 renderPassCount = 0;
 
-            for (UInt32 i = 0; i < lights.size(); i++) {
+            Int32 directionalLightIndex = -1;
+            Int32 pointLightIndex = -1;
+            Int32 ambientLightIndex = -1;
+            Int32 ambientIBLLightIndex = -1;
+            Int32 shadowLightIndex = -1;
 
-                WeakPointer<Light> light = lights[i];
+            for (UInt32 i = 0; i < lightPack.lightCount(); i++) {
+
+                WeakPointer<Light> light = lightPack.getLight(i);
                 LightType lightType = light->getType();
+
+                switch (lightType) {
+                    case LightType::Directional:
+                        directionalLightIndex++;
+                        shadowLightIndex++;
+                    break;
+                    case LightType::Point:
+                        pointLightIndex++;
+                        shadowLightIndex++;
+                    break;
+                    case LightType::Ambient:
+                        ambientLightIndex++;
+                    break;
+                    case LightType::AmbientIBL:
+                        ambientIBLLightIndex++;
+                    break;
+                }
+
                 if (lightType == LightType::AmbientIBL && !material->isPhysical()) continue;
                 if (matchPhysicalPropertiesWithLighting) {
                     if (lightType == LightType::Ambient && material->isPhysical()) continue;
@@ -212,7 +236,7 @@ namespace Core {
                 
                 Point3r pointLightPos;
                 if (lightType == LightType::Point) {
-                    WeakPointer<PointLight> pointLight = WeakPointer<Light>::dynamicPointerCast<PointLight>(light);
+                    WeakPointer<PointLight> pointLight = lightPack.getPointLight(pointLightIndex);
                     if (!RenderUtils::isPointLightInRangeOfMesh(pointLight, pointLightPos, mesh, this->owner)) continue;
                 }
 
@@ -268,7 +292,7 @@ namespace Core {
                 Int32 specularIBLBRDFMapLoc = material->getShaderLocation(StandardUniform::LightSpecularIBLBRDFMap, lightShaderVarLocOffset);
 
                 if (lightType == LightType::AmbientIBL) {
-                    WeakPointer<AmbientIBLLight> ambientIBLLight = WeakPointer<Light>::dynamicPointerCast<AmbientIBLLight>(light);
+                    WeakPointer<AmbientIBLLight> ambientIBLLight = lightPack.getAmbientIBLLight(ambientIBLLightIndex);
 
                     if (irradianceMapLoc >= 0) {
                         shader->setTextureCube(currentTextureSlot, irradianceMapLoc, ambientIBLLight->getIrradianceMap()->getTextureID());
@@ -302,7 +326,7 @@ namespace Core {
                 }
 
                 if (lightType == LightType::Point || lightType == LightType::Directional) {
-                    WeakPointer<ShadowLight> shadowLight = WeakPointer<Light>::dynamicPointerCast<ShadowLight>(light);
+                    WeakPointer<ShadowLight> shadowLight = lightPack.getShadowLight(shadowLightIndex);
 
                     if (lightAngularShadowBiasLoc >= 0) {
                         shader->setUniform1f(lightAngularShadowBiasLoc, shadowLight->getAngularShadowBias());
@@ -324,7 +348,7 @@ namespace Core {
                 Int32 lightShadowCubeMapLoc = material->getShaderLocation(StandardUniform::LightShadowCubeMap, lightShaderVarLocOffset);
                 if (lightType == LightType::Point) {
 
-                    WeakPointer<PointLight> pointLight = WeakPointer<Light>::dynamicPointerCast<PointLight>(light);
+                    WeakPointer<PointLight> pointLight = lightPack.getPointLight(pointLightIndex);
 
                     if (lightRangeLoc >= 0) {
                         shader->setUniform1f(lightRangeLoc, pointLight->getRadius());
@@ -358,7 +382,7 @@ namespace Core {
                 }
 
                 if (lightType == LightType::Directional) {
-                    WeakPointer<DirectionalLight> directionalLight = WeakPointer<Light>::dynamicPointerCast<DirectionalLight>(light);
+                    WeakPointer<DirectionalLight> directionalLight = lightPack.getDirectionalLight(directionalLightIndex);
 
                     Int32 lightDirectionLoc = material->getShaderLocation(StandardUniform::LightDirection, lightShaderVarLocOffset);
                     if (lightDirectionLoc >= 0) {
@@ -482,14 +506,13 @@ namespace Core {
         return true;
     }
 
-    Bool MeshRenderer::forwardRender(const ViewDescriptor& viewDescriptor, const std::vector<WeakPointer<Light>>& lights,
-                                     Bool matchPhysicalPropertiesWithLighting) {
+    Bool MeshRenderer::forwardRender(const ViewDescriptor& viewDescriptor, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
         WeakPointer<MeshContainer> meshContainer = this->owner->getMeshContainer();
         if (meshContainer) {
             UInt32 renderableCount = meshContainer->getBaseRenderableCount();
             for (UInt32 i = 0; i < renderableCount; i++) {
                 WeakPointer<BaseRenderable> mesh = meshContainer->getBaseRenderable(i);
-                this->forwardRenderObject(viewDescriptor, mesh, this->owner->isStatic(), lights, matchPhysicalPropertiesWithLighting);
+                this->forwardRenderObject(viewDescriptor, mesh, this->owner->isStatic(), lightPack, matchPhysicalPropertiesWithLighting);
             }
         }
 
