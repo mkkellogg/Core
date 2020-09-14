@@ -243,7 +243,7 @@ namespace Core {
         this->renderForCamera(camera, objects, lightPack, matchPhysicalPropertiesWithLighting);
     }
 
-    void Renderer::renderForCamera(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, LightPack& lightPack,
+    void Renderer::renderForCamera(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, const LightPack& lightPack,
                                    Bool matchPhysicalPropertiesWithLighting) {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         WeakPointer<RenderTarget> nextRenderTarget = camera->getRenderTarget();
@@ -274,7 +274,7 @@ namespace Core {
         }
     }
 
-    void Renderer::renderForStandardCamera(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, LightPack& lightPack,
+    void Renderer::renderForStandardCamera(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, const LightPack& lightPack,
                                            Bool matchPhysicalPropertiesWithLighting, WeakPointer<Texture2D> ssaoMap) {
         ViewDescriptor viewDescriptor;
         this->getViewDescriptorForCamera(camera, viewDescriptor);
@@ -284,7 +284,7 @@ namespace Core {
     }
 
     void Renderer::renderForCubeCamera(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects,
-                                       LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
+                                       const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
         ViewDescriptor viewDesc;
         for (UInt32 i = 0; i < 6; i++) {
             this->getViewDescriptorForCubeCamera(camera, (CubeFace)i, viewDesc);
@@ -293,7 +293,7 @@ namespace Core {
     }
 
     void Renderer::renderForViewDescriptor(ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objectList, 
-                                           LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
+                                           const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
         static RenderQueueManager renderQueueManager;
         renderQueueManager.clearAll();
 
@@ -303,7 +303,7 @@ namespace Core {
     }
 
     void Renderer::renderForViewDescriptor(ViewDescriptor& viewDescriptor, RenderQueueManager& renderQueueManager, 
-                                           LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
+                                           const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         WeakPointer<RenderTarget> currentRenderTarget = graphics->getCurrentRenderTarget();
 
@@ -365,14 +365,14 @@ namespace Core {
     }
 
     void Renderer::renderObjectDirect(WeakPointer<Object3D> object, WeakPointer<Camera> camera,
-                                      LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
+                                      const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
         ViewDescriptor viewDescriptor;
         this->getViewDescriptorForCamera(camera, viewDescriptor);
         this->renderObjectDirect(object, viewDescriptor, lightPack, matchPhysicalPropertiesWithLighting);
     }
 
     void Renderer::renderObjectDirect(WeakPointer<Object3D> object, ViewDescriptor& viewDescriptor,
-                                      LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
+                                      const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
         WeakPointer<BaseRenderableContainer> baseRenderableContainer = object->getBaseRenderableContainer();
         if (baseRenderableContainer) {
             WeakPointer<BaseObjectRenderer> objectRenderer = object->getBaseRenderer();
@@ -382,7 +382,7 @@ namespace Core {
         }
     }
 
-    void Renderer::renderDirectionalLightShadowMaps(std::vector<WeakPointer<DirectionalLight>>& lights,
+    void Renderer::renderDirectionalLightShadowMaps(const std::vector<WeakPointer<DirectionalLight>>& lights,
                                                     std::vector<WeakPointer<Object3D>>& objects, WeakPointer<Camera> renderCamera) {
         static std::vector<std::vector<WeakPointer<Object3D>>> toRenderDirectional;
         static std::vector<WeakPointer<DirectionalLight>> renderLights;
@@ -449,7 +449,7 @@ namespace Core {
         }
     }
 
-    void Renderer::renderPointLightShadowMaps(std::vector<WeakPointer<PointLight>>& lights, std::vector<WeakPointer<Object3D>>& objects) {
+    void Renderer::renderPointLightShadowMaps(const std::vector<WeakPointer<PointLight>>& lights, std::vector<WeakPointer<Object3D>>& objects) {
         static std::vector<std::vector<WeakPointer<Object3D>>> toRenderPoint;
         static std::vector<WeakPointer<PointLight>> renderLights;
         static RenderQueueManager shadowMapRenderQueueManager;
@@ -658,7 +658,7 @@ namespace Core {
     }
 
     void Renderer::renderReflectionProbes(std::vector<WeakPointer<ReflectionProbe>>& reflectionProbeList, std::vector<WeakPointer<Object3D>> renderProbeObjects,
-                                          LightPack& lightPack, LightPack& nonIBLLightPack) {
+                                          const LightPack& lightPack, const LightPack& nonIBLLightPack) {
         static std::vector<WeakPointer<Object3D>> emptyObjectList;
         for (auto reflectionProbe : reflectionProbeList) {
             if (reflectionProbe->getNeedsFullUpdate() || reflectionProbe->getNeedsSpecularUpdate()) {
@@ -684,7 +684,7 @@ namespace Core {
     }
 
     void Renderer::renderReflectionProbe(WeakPointer<ReflectionProbe> reflectionProbe, Bool specularOnly,
-                                         std::vector<WeakPointer<Object3D>>& renderObjects, LightPack& lightPack) {
+                                         std::vector<WeakPointer<Object3D>>& renderObjects, const LightPack& lightPack) {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         WeakPointer<Camera> probeCam = reflectionProbe->getRenderCamera();
 

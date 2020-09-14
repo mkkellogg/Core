@@ -42,7 +42,7 @@ namespace Core {
             return this->lights[index];
         }
 
-        std::vector<WeakPointer<Light>>& getLights() {
+        const std::vector<WeakPointer<Light>>& getLights() const {
             return this->lights;
         }
 
@@ -53,7 +53,7 @@ namespace Core {
             return this->shadowLights[index];
         }
 
-        std::vector<WeakPointer<Light>>& getNonIBLLights() {
+        const std::vector<WeakPointer<Light>>& getNonIBLLights() const {
             return this->nonIBLLights;
         }
 
@@ -64,7 +64,7 @@ namespace Core {
             return this->directionalLights[index];
         }
 
-        std::vector<WeakPointer<DirectionalLight>>& getDirectionalLights() {
+        const std::vector<WeakPointer<DirectionalLight>>& getDirectionalLights() const {
             return this->directionalLights;
         }
 
@@ -75,7 +75,7 @@ namespace Core {
             this->nonIBLLights.push_back(light);
         }
 
-        std::vector<WeakPointer<PointLight>>& getPointLights() {
+        const std::vector<WeakPointer<PointLight>>& getPointLights() const {
             return this->pointLights;
         }
 
