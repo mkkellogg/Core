@@ -44,6 +44,9 @@ namespace Core {
         void setSkinningVars(WeakPointer<Mesh> mesh, WeakPointer<Material> material, WeakPointer<Shader> shader);
         void drawMesh(WeakPointer<Mesh> mesh);
 
+        void testAndSetTexture2DWithInc(WeakPointer<Shader> shader, UInt32& textureSlot, Int32 shaderVarLoc, UInt32 textureID);
+        void testAndSetTextureCubeWithInc(WeakPointer<Shader> shader, UInt32& textureSlot, Int32 shaderVarLoc, UInt32 textureID);
+
         PersistentWeakPointer<Material> material;
     };
 }
