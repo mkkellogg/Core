@@ -304,6 +304,42 @@ namespace Core {
 
     void Renderer::renderForViewDescriptor(ViewDescriptor& viewDescriptor, RenderQueueManager& renderQueueManager, 
                                            const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
+        WeakPointer<RenderTarget> currentRenderTarget = this->preRenderForViewDescriptor(viewDescriptor);
+
+        UInt32 renderQueueCount = renderQueueManager.getRenderQueueCount();
+        for (UInt32 q = 0; q < renderQueueCount; q++) {
+            RenderQueue& queue = renderQueueManager.getRenderQueue(q);
+            UInt32 itemCount = queue.getItemCount();
+            for (UInt32 i = 0; i < itemCount; i++) {
+                this->renderRenderItem(viewDescriptor, queue.getRenderItem(i), lightPack, matchPhysicalPropertiesWithLighting);
+            }
+        }
+        /*for (auto object : objectList) {
+            this->renderObjectDirect(object, viewDescriptor, lightList, matchPhysicalPropertiesWithLighting);
+        }*/
+
+        this->postRenderForViewDescriptor(viewDescriptor, currentRenderTarget);
+    }
+
+    void Renderer::renderForViewDescriptor(ViewDescriptor& viewDescriptor, RenderList& renderList, 
+                                           const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
+        WeakPointer<RenderTarget> currentRenderTarget = this->preRenderForViewDescriptor(viewDescriptor);
+        for (UInt32 i = 0; i < renderList.getItemCount(); i++) {
+            this->renderRenderItem(viewDescriptor, renderList.getRenderItem(i), lightPack, matchPhysicalPropertiesWithLighting);
+        }
+        this->postRenderForViewDescriptor(viewDescriptor, currentRenderTarget);
+    }
+
+    void Renderer::renderRenderItem(ViewDescriptor& viewDescriptor, RenderItem& renderItem, 
+                                    const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
+        if (renderItem.meshRenderer) {
+            renderItem.meshRenderer->forwardRenderMesh(viewDescriptor, renderItem.mesh, renderItem.isStatic, lightPack, matchPhysicalPropertiesWithLighting);
+        } else if (renderItem.objectRenderer) {
+            renderItem.objectRenderer->forwardRenderObject(viewDescriptor, renderItem.renderable, renderItem.isStatic, lightPack, matchPhysicalPropertiesWithLighting);
+        }
+    }
+
+    WeakPointer<RenderTarget> Renderer::preRenderForViewDescriptor(ViewDescriptor& viewDescriptor) {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         WeakPointer<RenderTarget> currentRenderTarget = graphics->getCurrentRenderTarget();
 
@@ -312,26 +348,12 @@ namespace Core {
         this->setViewportAndMipLevelForRenderTarget(nextRenderTarget, viewDescriptor.cubeFace);
 
         this->clearActiveRenderTarget(viewDescriptor);
-
         this->renderSkybox(viewDescriptor);
+        return currentRenderTarget;
+    }
 
-        UInt32 renderQueueCount = renderQueueManager.getRenderQueueCount();
-        for (UInt32 q = 0; q < renderQueueCount; q++) {
-            RenderQueue& queue = renderQueueManager.getRenderQueue(q);
-            UInt32 itemCount = queue.getItemCount();
-            for (UInt32 i = 0; i < itemCount; i++) {
-                RenderItem& item = queue.getRenderItem(i);
-                if (item.objectRenderer) {
-                    item.objectRenderer->forwardRenderObject(viewDescriptor, item.renderable, item.isStatic, lightPack, matchPhysicalPropertiesWithLighting);
-                } else if (item.meshRenderer) {
-                    item.meshRenderer->forwardRenderMesh(viewDescriptor, item.mesh, item.isStatic, lightPack, matchPhysicalPropertiesWithLighting);
-                }
-            }
-        }
-        /*for (auto object : objectList) {
-            this->renderObjectDirect(object, viewDescriptor, lightList, matchPhysicalPropertiesWithLighting);
-        }*/
-
+    void Renderer::postRenderForViewDescriptor(ViewDescriptor& viewDescriptor, WeakPointer<RenderTarget> currentRenderTarget) {
+         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         if (viewDescriptor.indirectHDREnabled) {
             this->tonemapMaterial->setToneMapType(viewDescriptor.hdrToneMapType);
             this->tonemapMaterial->setExposure(viewDescriptor.hdrExposure);
