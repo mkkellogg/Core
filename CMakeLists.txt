@@ -125,8 +125,8 @@ set(INCLUDE_FILES
     render/BaseRenderableContainer.h
     render/RenderableContainer.h
     render/MeshContainer.h
-    render/BaseObjectRenderer.h
-    render/ObjectRenderer.h
+    render/BaseObject3DRenderer.h
+    render/Object3DRenderer.h
     render/Camera.h
     render/Renderer.h
     render/BaseRenderable.h
@@ -239,14 +239,13 @@ set(SOURCE_FILES
     scene/Octree.cpp
     scene/RayCaster.cpp
     scene/Skybox.cpp
-    render/BaseObjectRenderer.cpp
+    render/BaseObject3DRenderer.cpp
     render/BaseRenderableContainer.cpp
     render/RenderableContainer.cpp
     render/MeshContainer.cpp
     render/MeshRenderer.cpp
     render/Camera.cpp
     render/Renderer.cpp
-    render/ObjectRenderers.cpp
     render/RenderTarget.cpp
     render/RenderTarget2D.cpp
     render/RenderTargetCube.cpp

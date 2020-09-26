@@ -74,11 +74,14 @@ namespace Core {
                                      const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting);
         void renderForViewDescriptor(ViewDescriptor& viewDescriptor, RenderList& renderList, 
                                      const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting);
+        void renderRenderList(ViewDescriptor& viewDescriptor, RenderList& renderList, 
+                              const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting);
         void renderRenderItem(ViewDescriptor& viewDescriptor, RenderItem& renderItem, 
                               const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting);
         WeakPointer<RenderTarget> preRenderForViewDescriptor(ViewDescriptor& viewDescriptor);
         void postRenderForViewDescriptor(ViewDescriptor& viewDescriptor, WeakPointer<RenderTarget> currentRenderTarget);
 
+        void cullRenderListForPointLight(RenderList& renderList, WeakPointer<PointLight> pointLight);
         void renderSkybox(ViewDescriptor& viewDescriptor);
         void renderObjectDirect(WeakPointer<Object3D> object, ViewDescriptor& viewDescriptor, const LightPack& lightPack,
                                 Bool matchPhysicalPropertiesWithLighting);

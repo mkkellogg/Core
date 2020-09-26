@@ -8,7 +8,7 @@
 #include "../common/assert.h"
 #include "../common/complextypes.h"
 #include "../base/CoreObject.h"
-#include "../render/ObjectRenderer.h"
+#include "../render/Object3DRenderer.h"
 #include "../util/PersistentWeakPointer.h"
 #include "../util/ValueIterator.h"
 #include "Transform.h"
@@ -20,7 +20,7 @@ namespace Core {
     class MeshRenderer;
     class Engine;
     class Object3DComponent;
-    class BaseObjectRenderer;
+    class BaseObject3DRenderer;
     class BaseRenderableContainer;
     class MeshContainer;
     class MeshRenderer;
@@ -59,7 +59,7 @@ namespace Core {
         UInt32 childCount();
         WeakPointer<Object3D> getChild(UInt32 index);
 
-        WeakPointer<BaseObjectRenderer> getBaseRenderer();
+        WeakPointer<BaseObject3DRenderer> getBaseRenderer();
 
         WeakPointer<BaseRenderableContainer> getBaseRenderableContainer();
         WeakPointer<MeshContainer> getMeshContainer();
@@ -87,7 +87,7 @@ namespace Core {
         UInt64 id;
         std::string name;
 
-        WeakPointer<BaseObjectRenderer> baseRenderer;
+        WeakPointer<BaseObject3DRenderer> baseRenderer;
 
         WeakPointer<BaseRenderableContainer> baseRenderableContainer;
         WeakPointer<MeshContainer> meshContainer;

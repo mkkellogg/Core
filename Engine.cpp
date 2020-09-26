@@ -12,7 +12,7 @@
 #include "animation/AnimationManager.h"
 #include "animation/Skeleton.h"
 #include "animation/VertexBoneMap.h"
-#include "render/BaseObjectRenderer.h"
+#include "render/BaseObject3DRenderer.h"
 #include "render/ReflectionProbe.h"
 #include "scene/Scene.h"
 #include "scene/Object3D.h"

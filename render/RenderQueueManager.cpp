@@ -19,14 +19,15 @@ namespace Core {
         }
     }
 
-    void RenderQueueManager::addItemToQueue(UInt32 queueID, WeakPointer<BaseObjectRenderer> objectRenderer, WeakPointer<BaseRenderable> renderable, Bool isStatic) {
+    void RenderQueueManager::addItemToQueue(UInt32 queueID, WeakPointer<BaseObject3DRenderer> renderer,
+                                            WeakPointer<BaseRenderable> renderable, Bool isStatic, Bool isActive) {
         RenderQueue& queue = this->getOrAddRenderQueue(queueID);
-        queue.addItem(objectRenderer, renderable, isStatic);
+        queue.addItem(renderer, renderable, isStatic, isActive);
     }
 
-    void RenderQueueManager::addMeshToQueue(UInt32 queueID, WeakPointer<MeshRenderer> meshRenderer, WeakPointer<Mesh> mesh, Bool isStatic) {
+    void RenderQueueManager::addMeshToQueue(UInt32 queueID, WeakPointer<MeshRenderer> meshRenderer, WeakPointer<Mesh> mesh, Bool isStatic, Bool isActive) {
         RenderQueue& queue = this->getOrAddRenderQueue(queueID);
-        queue.addMesh(meshRenderer, mesh, isStatic);
+        queue.addMesh(meshRenderer, mesh, isStatic, isActive);
     }
 
     RenderQueue& RenderQueueManager::getOrAddRenderQueue(UInt32 queueID) {

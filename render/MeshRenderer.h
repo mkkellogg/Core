@@ -5,7 +5,7 @@
 
 #include "../material/StandardAttributes.h"
 #include "../render/BaseRenderable.h"
-#include "../render/ObjectRenderer.h"
+#include "../render/Object3DRenderer.h"
 #include "../util/PersistentWeakPointer.h"
 
 namespace Core {
@@ -19,7 +19,7 @@ namespace Core {
     class AttributeArrayBase;
     class Mesh;
     
-    class MeshRenderer : public ObjectRenderer<Mesh> {
+    class MeshRenderer : public Object3DRenderer<Mesh> {
         friend class Engine;
 
     public:

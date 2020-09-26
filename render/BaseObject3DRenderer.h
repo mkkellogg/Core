@@ -16,9 +16,9 @@ namespace Core {
     class Object3D;
     class Camera;
 
-    class BaseObjectRenderer : public Object3DComponent {
+    class BaseObject3DRenderer : public Object3DComponent {
     public:
-        BaseObjectRenderer(WeakPointer<Object3D> owner) : Object3DComponent(owner), castShadows(true) {}
+        BaseObject3DRenderer(WeakPointer<Object3D> owner) : Object3DComponent(owner), castShadows(true) {}
         virtual Bool forwardRender(const ViewDescriptor& viewDescriptor, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting);
         virtual Bool forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<BaseRenderable> renderable, Bool isStatic,
                                          const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting);

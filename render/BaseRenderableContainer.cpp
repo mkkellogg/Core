@@ -1,5 +1,5 @@
 #include "BaseRenderableContainer.h"
-#include "BaseObjectRenderer.h"
+#include "BaseObject3DRenderer.h"
 #include "BaseRenderable.h"
 
 namespace Core {

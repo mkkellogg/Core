@@ -42,6 +42,7 @@
 #include "../light/LightPack.h"
 #include "../geometry/Mesh.h"
 #include "ReflectionProbe.h"
+#include "RenderUtils.h"
 
 
 namespace Core {
@@ -308,34 +309,34 @@ namespace Core {
 
         UInt32 renderQueueCount = renderQueueManager.getRenderQueueCount();
         for (UInt32 q = 0; q < renderQueueCount; q++) {
-            RenderQueue& queue = renderQueueManager.getRenderQueue(q);
-            UInt32 itemCount = queue.getItemCount();
-            for (UInt32 i = 0; i < itemCount; i++) {
-                this->renderRenderItem(viewDescriptor, queue.getRenderItem(i), lightPack, matchPhysicalPropertiesWithLighting);
-            }
+            this->renderRenderList(viewDescriptor, renderQueueManager.getRenderQueue(q), lightPack, matchPhysicalPropertiesWithLighting);
         }
-        /*for (auto object : objectList) {
-            this->renderObjectDirect(object, viewDescriptor, lightList, matchPhysicalPropertiesWithLighting);
-        }*/
-
         this->postRenderForViewDescriptor(viewDescriptor, currentRenderTarget);
     }
 
     void Renderer::renderForViewDescriptor(ViewDescriptor& viewDescriptor, RenderList& renderList, 
                                            const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
         WeakPointer<RenderTarget> currentRenderTarget = this->preRenderForViewDescriptor(viewDescriptor);
-        for (UInt32 i = 0; i < renderList.getItemCount(); i++) {
-            this->renderRenderItem(viewDescriptor, renderList.getRenderItem(i), lightPack, matchPhysicalPropertiesWithLighting);
-        }
+        this->renderRenderList(viewDescriptor, renderList, lightPack, matchPhysicalPropertiesWithLighting);
         this->postRenderForViewDescriptor(viewDescriptor, currentRenderTarget);
+    }
+
+    void Renderer::renderRenderList(ViewDescriptor& viewDescriptor, RenderList& renderList, 
+                                    const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
+        for (UInt32 i = 0; i < renderList.getItemCount(); i++) {
+            RenderItem& renderItem = renderList.getRenderItem(i);
+            if (renderItem.isActive) {
+                this->renderRenderItem(viewDescriptor, renderList.getRenderItem(i), lightPack, matchPhysicalPropertiesWithLighting);
+            }
+        }
     }
 
     void Renderer::renderRenderItem(ViewDescriptor& viewDescriptor, RenderItem& renderItem, 
                                     const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
         if (renderItem.meshRenderer) {
             renderItem.meshRenderer->forwardRenderMesh(viewDescriptor, renderItem.mesh, renderItem.isStatic, lightPack, matchPhysicalPropertiesWithLighting);
-        } else if (renderItem.objectRenderer) {
-            renderItem.objectRenderer->forwardRenderObject(viewDescriptor, renderItem.renderable, renderItem.isStatic, lightPack, matchPhysicalPropertiesWithLighting);
+        } else if (renderItem.renderer) {
+            renderItem.renderer->forwardRenderObject(viewDescriptor, renderItem.renderable, renderItem.isStatic, lightPack, matchPhysicalPropertiesWithLighting);
         }
     }
 
@@ -365,18 +366,32 @@ namespace Core {
         this->setViewportAndMipLevelForRenderTarget(currentRenderTarget, -1);
     }
 
+    void Renderer::cullRenderListForPointLight(RenderList& renderList, WeakPointer<PointLight> pointLight) {
+        static Point3r pointLightPos;
+        pointLightPos.set(0.0f, 0.0f, 0.0f);
+        pointLight->getOwner()->getTransform().applyTransformationTo(pointLightPos);
+        for (UInt32 i = 0; i < renderList.getItemCount(); i++) {
+            RenderItem& renderItem = renderList.getRenderItem(i);
+            if (renderItem.mesh) {
+                if (!RenderUtils::isPointLightInRangeOfMesh(pointLightPos, pointLight->getRadius(), renderItem.mesh, renderItem.meshRenderer->getOwner())) {
+                    renderItem.isActive = false;
+                }
+            }
+        }
+    }
+
     void Renderer::renderSkybox(ViewDescriptor& viewDescriptor) {
         static LightPack lightPack;
         if (viewDescriptor.skybox != nullptr) {
-            WeakPointer<BaseObjectRenderer> objectRenderer = viewDescriptor.skybox->getSkyboxObject()->getBaseRenderer();
-            if (objectRenderer) {
+            WeakPointer<BaseObject3DRenderer> renderer = viewDescriptor.skybox->getSkyboxObject()->getBaseRenderer();
+            if (renderer) {
                 ViewDescriptor skyboxView = viewDescriptor;
                 skyboxView.cameraTransformation.setTranslation(0.0f, 0.0f, 0.0f);
                 skyboxView.inverseCameraTransformation.copy(skyboxView.cameraTransformation);
                 skyboxView.inverseCameraTransformation.invert();
                 skyboxView.transposedCameraTransformation.copy(skyboxView.cameraTransformation);
                 skyboxView.transposedCameraTransformation.transpose();
-                objectRenderer->forwardRender(skyboxView, lightPack, true);
+                renderer->forwardRender(skyboxView, lightPack, true);
             }
         }
     }
@@ -397,9 +412,9 @@ namespace Core {
                                       const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
         WeakPointer<BaseRenderableContainer> baseRenderableContainer = object->getBaseRenderableContainer();
         if (baseRenderableContainer) {
-            WeakPointer<BaseObjectRenderer> objectRenderer = object->getBaseRenderer();
-            if (objectRenderer) {
-                objectRenderer->forwardRender(viewDescriptor, lightPack, matchPhysicalPropertiesWithLighting);
+            WeakPointer<BaseObject3DRenderer> renderer = object->getBaseRenderer();
+            if (renderer) {
+                renderer->forwardRender(viewDescriptor, lightPack, matchPhysicalPropertiesWithLighting);
             }
         }
     }
@@ -408,8 +423,8 @@ namespace Core {
                                                     std::vector<WeakPointer<Object3D>>& objects, WeakPointer<Camera> renderCamera) {
         static std::vector<std::vector<WeakPointer<Object3D>>> toRenderDirectional;
         static std::vector<WeakPointer<DirectionalLight>> renderLights;
-        static RenderQueueManager shadowMapRenderQueueManager;
         static LightPack lightPack;
+        static RenderList renderList;
 
         if (!this->orthoShadowMapCamera.isValid()) {
             this->orthoShadowMapCameraObject = Engine::instance()->createObject3D();
@@ -423,19 +438,19 @@ namespace Core {
             if (lightCount >= toRenderDirectional.size()) {
                 toRenderDirectional.emplace_back();
             }
-            std::vector<WeakPointer<Object3D>>& renderList = toRenderDirectional[lightCount];
-            renderList.resize(0);
+            std::vector<WeakPointer<Object3D>>& renderObjects = toRenderDirectional[lightCount];
+            renderObjects.resize(0);
             lightCount++;
             renderLights.push_back(light);
         }
         for (UInt32 i = 0; i < objects.size(); i++) {
             WeakPointer<Object3D> object = objects[i];
-            WeakPointer<BaseObjectRenderer> objectRenderer = object->getBaseRenderer();
-            if (objectRenderer && objectRenderer->castsShadows()) {
+            WeakPointer<BaseObject3DRenderer> renderer = object->getBaseRenderer();
+            if (renderer && renderer->castsShadows()) {
                 UInt32 curLight = 0;
                 for (auto light: renderLights) {
-                    std::vector<WeakPointer<Object3D>>& renderList = toRenderDirectional[curLight];
-                    renderList.push_back(object);
+                    std::vector<WeakPointer<Object3D>>& renderObjects = toRenderDirectional[curLight];
+                    renderObjects.push_back(object);
                     curLight++;
                 }
             }
@@ -454,9 +469,9 @@ namespace Core {
                 viewDesc.cubeFace = -1;
                 viewDesc.overrideMaterial = this->depthMaterial;
                 viewDesc.depthOutputOverride = DepthOutputOverride::Depth;
-                std::vector<WeakPointer<Object3D>>& renderList = toRenderDirectional[curLight];
-                shadowMapRenderQueueManager.clearAll();
-                this->sortObjectsIntoRenderQueues(renderList, shadowMapRenderQueueManager, (Int32)EngineRenderQueue::Geometry);
+                std::vector<WeakPointer<Object3D>>& renderObjects = toRenderDirectional[curLight];
+                renderList.clear();
+                this->buildRenderListFromObjects(renderObjects, renderList);
                 for (UInt32 i = 0; i < directionalLight->getCascadeCount(); i++) {
                     DirectionalLight::OrthoProjection& proj = projections[i];  
                     this->orthoShadowMapCamera->setDimensions(proj.top, proj.bottom, proj.left, proj.right);        
@@ -464,7 +479,7 @@ namespace Core {
                     this->getViewDescriptorTransformations(viewTrans, orthoShadowMapCamera->getProjectionMatrix(),
                                                            this->orthoShadowMapCamera->getAutoClearRenderBuffers(), viewDesc);
                     viewDesc.renderTarget = directionalLight->getShadowMap(i);
-                    this->renderForViewDescriptor(viewDesc, shadowMapRenderQueueManager, lightPack, true);
+                    this->renderForViewDescriptor(viewDesc, renderList, lightPack, true);
                 }
             }
             curLight++;
@@ -474,8 +489,8 @@ namespace Core {
     void Renderer::renderPointLightShadowMaps(const std::vector<WeakPointer<PointLight>>& lights, std::vector<WeakPointer<Object3D>>& objects) {
         static std::vector<std::vector<WeakPointer<Object3D>>> toRenderPoint;
         static std::vector<WeakPointer<PointLight>> renderLights;
-        static RenderQueueManager shadowMapRenderQueueManager;
         static LightPack lightPack;
+        static RenderList renderList;
 
         if (!this->perspectiveShadowMapCamera.isValid()) {
             this->perspectiveShadowMapCameraObject = Engine::instance()->createObject3D();
@@ -489,20 +504,20 @@ namespace Core {
             if (lightCount >= toRenderPoint.size()) {
                 toRenderPoint.emplace_back();
             }
-            std::vector<WeakPointer<Object3D>>& renderList = toRenderPoint[lightCount];
-            renderList.resize(0);
+            std::vector<WeakPointer<Object3D>>& renderObjects = toRenderPoint[lightCount];
+            renderObjects.resize(0);
             lightCount++;
             renderLights.push_back(light);
         }
 
         for (UInt32 i = 0; i < objects.size(); i++) {
             WeakPointer<Object3D> object = objects[i];
-            WeakPointer<BaseObjectRenderer> objectRenderer = object->getBaseRenderer();
-            if (objectRenderer && objectRenderer->castsShadows()) {
+            WeakPointer<BaseObject3DRenderer> renderer = object->getBaseRenderer();
+            if (renderer && renderer->castsShadows()) {
                 UInt32 curLight = 0;
                 for (auto light: renderLights) {
-                    std::vector<WeakPointer<Object3D>>& renderList = toRenderPoint[curLight];
-                    renderList.push_back(object);
+                    std::vector<WeakPointer<Object3D>>& renderObjects = toRenderPoint[curLight];
+                    renderObjects.push_back(object);
                     curLight++;
                 }
             }
@@ -521,13 +536,14 @@ namespace Core {
                 this->perspectiveShadowMapCamera->setAspectRatioFromDimensions(renderTargetDimensions.z, renderTargetDimensions.w);
                 this->perspectiveShadowMapCamera->setOverrideMaterial(this->distanceMaterial);
                 this->perspectiveShadowMapCamera->setDepthOutputOverride(DepthOutputOverride::Distance);
-                std::vector<WeakPointer<Object3D>>& renderList = toRenderPoint[curLight];
-                shadowMapRenderQueueManager.clearAll();
-                this->sortObjectsIntoRenderQueues(renderList, shadowMapRenderQueueManager, (Int32)EngineRenderQueue::Geometry);
+                std::vector<WeakPointer<Object3D>>& renderObjects = toRenderPoint[curLight];
+                renderList.clear();
+                this->buildRenderListFromObjects(renderObjects, renderList);
+                this->cullRenderListForPointLight(renderList, pointLight);
                 ViewDescriptor viewDesc;
                 for (UInt32 i = 0; i < 6; i++) {
                     this->getViewDescriptorForCubeCamera(this->perspectiveShadowMapCamera, (CubeFace)i, viewDesc);
-                    this->renderForViewDescriptor(viewDesc, shadowMapRenderQueueManager, lightPack, true);
+                    this->renderForViewDescriptor(viewDesc, renderList, lightPack, true);
                 }
             }
             curLight++;
@@ -908,13 +924,13 @@ namespace Core {
             WeakPointer<Object3D> object = objects[i];
             WeakPointer<BaseRenderableContainer> renderableContainer = object->getBaseRenderableContainer();
             if (renderableContainer) {
-                WeakPointer<BaseObjectRenderer> objectRenderer = object->getBaseRenderer();
-                if (objectRenderer.isValid()) {
+                WeakPointer<BaseObject3DRenderer> renderer = object->getBaseRenderer();
+                if (renderer.isValid()) {
                     UInt32 renderQueueID = -1;
                     if (overrideRenderQueueID >= 0) {
                         renderQueueID = (UInt32)overrideRenderQueueID;
                     } else {
-                        renderQueueID = objectRenderer->getRenderQueueID();
+                        renderQueueID = renderer->getRenderQueueID();
                     }
                     UInt32 renderableCount = renderableContainer->getBaseRenderableCount();
 
@@ -923,12 +939,12 @@ namespace Core {
                     if (meshRenderer.isValid() && meshContainer.isValid()) {
                         for(UInt32 i = 0; i < renderableCount; i++) {
                             WeakPointer<Mesh> mesh = meshContainer->getRenderable(i);
-                            renderQueueManager.addMeshToQueue(renderQueueID, meshRenderer, mesh, object->isStatic());
+                            renderQueueManager.addMeshToQueue(renderQueueID, meshRenderer, mesh, object->isStatic(), true);
                         }
                     } else {
                         for(UInt32 i = 0; i < renderableCount; i++) {
                             WeakPointer<BaseRenderable> renderable = renderableContainer->getBaseRenderable(i);
-                            renderQueueManager.addItemToQueue(renderQueueID, objectRenderer, renderable, object->isStatic());
+                            renderQueueManager.addItemToQueue(renderQueueID, renderer, renderable, object->isStatic(), true);
                         }
                     }
                 }
@@ -942,12 +958,12 @@ namespace Core {
             WeakPointer<Object3D> object = objects[i];
             WeakPointer<BaseRenderableContainer> renderableContainer = object->getBaseRenderableContainer();
             if (renderableContainer) {
-                WeakPointer<BaseObjectRenderer> objectRenderer = object->getBaseRenderer();
-                if (objectRenderer.isValid()) {
+                WeakPointer<BaseObject3DRenderer> renderer = object->getBaseRenderer();
+                if (renderer.isValid()) {
                     UInt32 renderableCount = renderableContainer->getBaseRenderableCount();
                     for(UInt32 i = 0; i < renderableCount; i++) {
                         WeakPointer<BaseRenderable> renderable = renderableContainer->getBaseRenderable(i);
-                        renderList.addItem(objectRenderer, renderable, object->isStatic());
+                        renderList.addItem(renderer, renderable, object->isStatic(), true);
                     }
                 }
             }

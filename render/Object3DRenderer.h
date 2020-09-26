@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "../util/PersistentWeakPointer.h"
-#include "BaseObjectRenderer.h"
+#include "BaseObject3DRenderer.h"
 
 namespace Core {
 
@@ -12,9 +12,9 @@ namespace Core {
     class Graphics;
 
     template <typename T>
-    class ObjectRenderer : public BaseObjectRenderer {
+    class Object3DRenderer : public BaseObject3DRenderer {
     public:
-        ObjectRenderer(WeakPointer<Graphics> graphics, WeakPointer<Object3D> owner) : BaseObjectRenderer(owner), graphics(graphics) {}
+        Object3DRenderer(WeakPointer<Graphics> graphics, WeakPointer<Object3D> owner) : BaseObject3DRenderer(owner), graphics(graphics) {}
 
     protected:
         PersistentWeakPointer<Graphics> graphics;

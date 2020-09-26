@@ -9,7 +9,7 @@
 namespace Core {
 
     // forward declarations
-    class BaseObjectRenderer;
+    class BaseObject3DRenderer;
     class BaseRenderable;
 
     class BaseRenderableContainer : public Object3DComponent {
@@ -22,7 +22,7 @@ namespace Core {
         BaseRenderableContainer(WeakPointer<Object3D> owner);
         void addBaseRenderable(WeakPointer<BaseRenderable> renderable);
         
-        PersistentWeakPointer<BaseObjectRenderer> renderer;
+        PersistentWeakPointer<BaseObject3DRenderer> renderer;
         std::vector<PersistentWeakPointer<BaseRenderable>> renderables;
     };
 }

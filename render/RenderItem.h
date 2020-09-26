@@ -9,7 +9,7 @@
 namespace Core {
 
     // forward declarations
-    class BaseObjectRenderer;
+    class BaseObject3DRenderer;
     class BaseRenderable;
     class MeshRenderer;
     class Mesh;
@@ -18,10 +18,11 @@ namespace Core {
     public:
         RenderItem(){}
       
-        PersistentWeakPointer<BaseObjectRenderer> objectRenderer;
+        PersistentWeakPointer<BaseObject3DRenderer> renderer;
         PersistentWeakPointer<BaseRenderable> renderable;
         PersistentWeakPointer<MeshRenderer> meshRenderer;
         PersistentWeakPointer<Mesh> mesh;
         Bool isStatic;
+        Bool isActive;
     };
 }

@@ -26,7 +26,7 @@
 namespace Core {
 
     MeshRenderer::MeshRenderer(WeakPointer<Graphics> graphics, WeakPointer<Material> material, WeakPointer<Object3D> owner)
-        : ObjectRenderer<Mesh>(graphics, owner), material(material) {
+        : Object3DRenderer<Mesh>(graphics, owner), material(material) {
     }
 
     MeshRenderer::~MeshRenderer() {
@@ -237,7 +237,9 @@ namespace Core {
                 Point3r pointLightPos;
                 if (lightType == LightType::Point) {
                     WeakPointer<PointLight> pointLight = lightPack.getPointLight(pointLightIndex);
-                    if (!RenderUtils::isPointLightInRangeOfMesh(pointLight, pointLightPos, mesh, this->owner)) continue;
+                    pointLightPos.set(0.0f, 0.0f, 0.0f);
+                    pointLight->getOwner()->getTransform().applyTransformationTo(pointLightPos);
+                    if (!RenderUtils::isPointLightInRangeOfMesh(pointLightPos, pointLight->getRadius(), mesh, this->owner)) continue;
                 }
 
                 if (renderPath != RenderPath::SinglePassMultiLight) {

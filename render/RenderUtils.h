@@ -15,8 +15,8 @@ namespace Core {
     class RenderUtils {
     public:
 
-        static Bool isPointLightInRangeOfMesh(WeakPointer<PointLight> pointLight, Point3r& pointLightPos,
-                                              WeakPointer<Mesh> mesh, WeakPointer<Object3D> meshOwner);
+        static Bool isPointLightInRangeOfMesh(WeakPointer<PointLight>, WeakPointer<Mesh> mesh, WeakPointer<Object3D> meshOwner);
+        static Bool isPointLightInRangeOfMesh(const Point3r& pointLightPosition, Real radius, WeakPointer<Mesh> mesh, WeakPointer<Object3D> meshOwner);
 
     };
 

@@ -27,7 +27,7 @@ namespace Core {
     class AssetLoader;
     class CubeTexture;
     class Texture2D;
-    class BaseObjectRenderer;
+    class BaseObject3DRenderer;
     class Camera;
     class Scene;
     class ReflectionProbe;
@@ -125,13 +125,13 @@ namespace Core {
         }
 
         template <typename T, typename R>
-        WeakPointer<typename std::enable_if<std::is_base_of<ObjectRenderer<R>, T>::value, T>::type> createRenderer(WeakPointer<Material> material,
+        WeakPointer<typename std::enable_if<std::is_base_of<Object3DRenderer<R>, T>::value, T>::type> createRenderer(WeakPointer<Material> material,
                                                                                                                    WeakPointer<Object3D> owner) {
-            std::shared_ptr<T> objectRenderer = std::shared_ptr<T>(new T(this->graphics, material, owner));
-            WeakPointer<T> _temp = objectRenderer;
+            std::shared_ptr<T> renderer = std::shared_ptr<T>(new T(this->graphics, material, owner));
+            WeakPointer<T> _temp = renderer;
             owner->addComponent(_temp);
-            this->objectManager.addReference(objectRenderer, CoreObjectReferenceManager::OwnerType::Single);
-            return objectRenderer;
+            this->objectManager.addReference(renderer, CoreObjectReferenceManager::OwnerType::Single);
+            return renderer;
         }
 
         template <typename T>

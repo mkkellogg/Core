@@ -5,21 +5,27 @@
 
 namespace Core {
 
-    Bool RenderUtils::isPointLightInRangeOfMesh(WeakPointer<PointLight> pointLight, Point3r& pointLightPos, WeakPointer<Mesh> mesh, WeakPointer<Object3D> meshOwner) {
+    Bool RenderUtils::isPointLightInRangeOfMesh(WeakPointer<PointLight> pointLight, WeakPointer<Mesh> mesh, WeakPointer<Object3D> meshOwner) {
+        static Point3r pointLightPos;
+        pointLightPos.set(0.0f, 0.0f, 0.0f);
+        pointLight->getOwner()->getTransform().applyTransformationTo(pointLightPos);
+        return RenderUtils::isPointLightInRangeOfMesh(pointLightPos, pointLight->getRadius(), mesh, meshOwner);
+    }
+
+    Bool RenderUtils::isPointLightInRangeOfMesh(const Point3r& pointLightPosition, Real radius, WeakPointer<Mesh> mesh, WeakPointer<Object3D> meshOwner) {
         Vector4r boundingSphere = mesh->getBoundingSphere();
         Point3r boundingSphereCenter(0.0f, 0.0f, 0.0f);
         Matrix4x4 meshWorldMatrix =  meshOwner->getTransform().getWorldMatrix();
         meshWorldMatrix.transform(boundingSphereCenter);
-        pointLight->getOwner()->getTransform().applyTransformationTo(pointLightPos);
-        Vector3r centerToLight = pointLightPos - boundingSphereCenter;
+        Vector3r centerToLight = pointLightPosition - boundingSphereCenter;
         Real distance = centerToLight.magnitude();
 
-        Point3r pos;
-        Quaternion rot;
-        Point3r scale;
+        static Point3r pos;
+        static Quaternion rot;
+        static Point3r scale;
         meshWorldMatrix.decompose(pos, rot, scale);
         Real maxScale = Math::max(Math::max(scale.x, scale.y), scale.z);
 
-        return distance <= boundingSphere.w * maxScale + pointLight->getRadius();
+        return distance <= boundingSphere.w * maxScale + radius;
     }
 }
