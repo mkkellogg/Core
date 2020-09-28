@@ -567,7 +567,11 @@ namespace Core {
      * this matrix by a translation matrix
      */
     void Matrix4x4::translate(Real x, Real y, Real z) {
-        Matrix4x4::translate(this->data, this->data, x, y, z);
+        for (Int32 i = 0; i < ROWSIZE_MATRIX_4X4; i++) {
+            Int32 tmi = i;
+            Int32 mi = i;
+            this->data[12 + tmi] = this->data[mi] * x + this->data[4 + mi] * y + this->data[8 + mi] * z + this->data[12 + mi];
+        }
     }
 
     /*
@@ -587,7 +591,9 @@ namespace Core {
      * this matrix by a translation matrix
      */
     void Matrix4x4::preTranslate(Real x, Real y, Real z) {
-        Matrix4x4::preTranslate(this->data, this->data, x, y, z);
+        this->data[12] = this->data[12] + x;
+        this->data[13] = this->data[13] + y;
+        this->data[14] = this->data[14] + z;
     }
 
     void Matrix4x4::setTranslation(Real x, Real y, Real z) {
@@ -601,71 +607,13 @@ namespace Core {
     }
 
     /*
-     * Translate the 4x4 matrix pointed to by [src] by [vector], and store in [out]
-     *
-     * This performs a post-transformation, in that it is equivalent to post-multiplying
-     * [source] by a translation matrix
-     */
-    void Matrix4x4::translate(const Matrix4x4 &src, Matrix4x4 &out, const Vector3Components<Real> &vector) {
-        Matrix4x4::translate(src.data, out.data, vector.x, vector.y, vector.z);
-    }
-
-    /*
-     * Translate the 4x4 matrix pointed to by [source] by [x], [y], and [z], and store in [out]
-     *
-     * This performs a post-transformation, in that it is equivalent to post-multiplying
-     * [source] by a translation matrix
-     */
-    void Matrix4x4::translate(const Matrix4x4 &src, Matrix4x4 &out, Real x, Real y, Real z) {
-        Matrix4x4::translate(src.data, out.data, x, y, z);
-    }
-
-    /*
-     * Translate the 4x4 matrix pointed to by [source] by [x], [y], and [z], and store in [dest]
-     *
-     * This performs a post-transformation, in that it is equivalent to pospreTranslatet-multiplying
-     * [source] by a translation matrix
-     */
-    void Matrix4x4::translate(const Real *source, Real *dest, Real x, Real y, Real z) {
-        if (source == nullptr) throw NullPointerException("Matrix4x4::translate -> 'source' is null.");
-
-        if (source != dest) {
-            for (Int32 i = 0; i < 12; i++) {
-                dest[i] = source[i];
-            }
-        }
-
-        for (Int32 i = 0; i < ROWSIZE_MATRIX_4X4; i++) {
-            Int32 tmi = i;
-            Int32 mi = i;
-            dest[12 + tmi] = source[mi] * x + source[4 + mi] * y + source[8 + mi] * z + source[12 + mi];
-        }
-    }
-
-    /*
-     * Translate the 4x4 matrix pointed to by [source] by [x], [y], and [z], and store in [dest]
-     *
-     * This performs a pre-transformation, in that it is equivalent to pre-multiplying
-     * [source] by a translation matrix
-     */
-    void Matrix4x4::preTranslate(const Real *source, Real *dest, Real x, Real y, Real z) {
-        dest[12] = source[12] + x;
-        dest[13] = source[13] + y;
-        dest[14] = source[14] + z;
-    }
-
-    /*
-     * Rotate this matrix around the [vector] axis by [a] radians.
+     * Rotate this matrix around the [axis] by [a] radians.
      *
      * This performs a post-transformation, in that it is equivalent to post-multiplying
      * this matrix by a rotation matrix
      */
-    void Matrix4x4::rotate(const Vector3Components<Real> &vector, Real a) {
-        Real temp[SIZE_MATRIX_4X4];
-        Real r[SIZE_MATRIX_4X4];
-        Matrix4x4::makeRotation(r, vector.x, vector.y, vector.z, a);
-        Matrix4x4::multiplyMM(this->data, r, temp);
-        memcpy(this->data, temp, sizeof(Real) * SIZE_MATRIX_4X4);
+    void Matrix4x4::rotate(const Vector3Components<Real> &axis, Real a) {
+        this->rotate(axis.x, axis.y, axis.z, a);
     }
 
     /*
@@ -675,25 +623,19 @@ namespace Core {
      * this matrix by a rotation matrix
      */
     void Matrix4x4::rotate(Real x, Real y, Real z, Real a) {
-        Real temp[SIZE_MATRIX_4X4];
-        Real r[SIZE_MATRIX_4X4];
-        Matrix4x4::makeRotation(r, x, y, z, a);
-        Matrix4x4::multiplyMM(data, r, temp);
-        memcpy(data, temp, sizeof(Real) * SIZE_MATRIX_4X4);
+        static Matrix4x4 r;
+        r.makeRotation(x, y, z, a);
+        this->multiply(r);
     }
 
     /*
-     * Rotate this matrix around the [vector] axis by [a] radians.
+     * Rotate this matrix around the [axis] by [a] radians.
      *
      * This performs a pre-transformation, in that it is equivalent to pre-multiplying
      * this matrix by a rotation matrix
      */
-    void Matrix4x4::preRotate(const Vector3Components<Real> &vector, Real a) {
-        Real temp[SIZE_MATRIX_4X4];
-        Real r[SIZE_MATRIX_4X4];
-        Matrix4x4::makeRotation(r, vector.x, vector.y, vector.z, a);
-        Matrix4x4::multiplyMM(r, data, temp);
-        memcpy(data, temp, sizeof(Real) * SIZE_MATRIX_4X4);
+    void Matrix4x4::preRotate(const Vector3Components<Real> &axis, Real a) {
+        this->preRotate(axis.x, axis.y, axis.z, a);
     }
 
     /*
@@ -703,111 +645,23 @@ namespace Core {
      * this matrix by a rotation matrix
      */
     void Matrix4x4::preRotate(Real x, Real y, Real z, Real a) {
-        Real temp[SIZE_MATRIX_4X4];
-        Real r[SIZE_MATRIX_4X4];
-        Matrix4x4::makeRotation(r, x, y, z, a);
-        Matrix4x4::multiplyMM(r, data, temp);
-        memcpy(data, temp, sizeof(Real) * SIZE_MATRIX_4X4);
+        static Matrix4x4 r;
+        r.makeRotation(x, y, z, a);
+        this->preMultiply(r);
     }
 
     /*
-     * Set this matrix to be a rotation matrix, with Euler angles [x], [y], [z]
+     * Set this to be a rotation matrix, around axis [axis] by [a] radians.
      */
-    void Matrix4x4::makeRotationFromEuler(Real x, Real y, Real z) {
-        Matrix4x4::makeRotationFromEuler(this->data, x, y, z);
-    }
-
-    //  
-    Vector3r Matrix4x4::getRotationAsEuler() {
-
-        static Vector3r column0;
-        static Vector3r column1;
-        static Vector3r column2;
-        static Matrix4x4 m1;
-        static Quaternion quat;
-
-        column0.set(this->data[0], this->data[1], this->data[2]);
-        column1.set(this->data[4], this->data[5], this->data[6]);
-        column2.set(this->data[8], this->data[9], this->data[10]);
-
-		Real sx = column0.magnitude();
-		Real sy = column1.magnitude();
-		Real sz = column2.magnitude();
-
-		// if determinant is negative, we need to invert one scale
-		const Real det = this->calculateDeterminant();
-		if (det < 0.0f) sx = -sx;
-
-		// scale the rotation part
-		m1.copy(*this);
-
-		const Real invSX = 1 / sx;
-		const Real invSY = 1 / sy;
-		const Real invSZ = 1 / sz;
-
-		m1.data[ 0 ] *= invSX;
-		m1.data[ 1 ] *= invSX;
-		m1.data[ 2 ] *= invSX;
-
-		m1.data[ 4 ] *= invSY;
-		m1.data[ 5 ] *= invSY;
-		m1.data[ 6 ] *= invSY;
-
-		m1.data[ 8 ] *= invSZ;
-		m1.data[ 9 ] *= invSZ;
-		m1.data[ 10 ] *= invSZ;
-
-		quat.fromMatrix(m1);
-        return quat.euler();
-    }
-
-    void Matrix4x4::setRotationFromEuler(Real x, Real y, Real z) {
-        Matrix4x4 scaleMatrix;
-        Vector3r scaleVector = this->getScale();
-        Matrix4x4::makeScale(scaleMatrix, scaleVector);
-
-        Matrix4x4 fullMatrix;
-        Matrix4x4::makeRotationFromEuler(fullMatrix, x, y, z);
-        fullMatrix.multiply(scaleMatrix);
-
-        this->data[0] = fullMatrix.data[0];
-        this->data[1] = fullMatrix.data[1];
-        this->data[2] = fullMatrix.data[2];
-
-        this->data[4] = fullMatrix.data[4];
-        this->data[5] = fullMatrix.data[5];
-        this->data[6] = fullMatrix.data[6];
-
-        this->data[8] = fullMatrix.data[8];
-        this->data[9] = fullMatrix.data[9];
-        this->data[10] = fullMatrix.data[10];   
-    }
-
-    void Matrix4x4::setRotationFromEuler(const Vector3<Real>& euler) {
-        this->setRotationFromEuler(euler.x, euler.y, euler.z);
-    }
-
-    void Matrix4x4::setRotationFromQuaternion(const Quaternion& quaternion) {
-        Vector3r zero;
-        Vector3r one;
-        zero.set(0.0f, 0.0f, 0.0f);
-        one.set(1.0f, 1.0f, 1.0f);
-        this->buildFromComponents(zero, quaternion, one);
+    void Matrix4x4::makeRotation(const Vector3Components<Real> &axis, Real a) {
+        this->makeRotation(axis.x, axis.y, axis.z, a);
     }
 
     /*
-     * Set the 4x4 matrix [m] to be a rotation matrix, around axis [x], [y], [z] by [a] radians.
+     * Set this to be a rotation matrix, around axis [x], [y], [z] by [a] radians.
      */
-    void Matrix4x4::makeRotation(Matrix4x4 &m, Real x, Real y, Real z, Real a) {
-        Matrix4x4::makeRotation(m.data, x, y, z, a);
-    }
-
-    /*
-     * Set the 4x4 matrix [rm] to be a rotation matrix, around axis [x], [y], [z] by [a] radians.
-     */
-    void Matrix4x4::makeRotation(Real *rm, Real x, Real y, Real z, Real a) {
-        if (rm == nullptr) throw NullPointerException("Matrix4x4::makeRotation -> 'rm' is null.");
-
+    void Matrix4x4::makeRotation(Real x, Real y, Real z, Real a) {
+        Real *rm = this->data;
         rm[3] = 0;
         rm[7] = 0;
         rm[11] = 0;
@@ -875,12 +729,19 @@ namespace Core {
     }
 
     /*
-     * Set the matrix [rm] to be a rotation matrix, with Euler angles [x], [y], [z]
+     * Set this matrix to be a rotation matrix, with Euler angles from the components of [eulers]
      */
-    void Matrix4x4::makeRotationFromEuler(Real *rm, Real x, Real y, Real z) {
-        if (rm == nullptr) throw NullPointerException("Matrix4x4::makeRotationFromEuler -> 'rm' is null.");
+    void Matrix4x4::makeRotationFromEuler(const Vector3Components<Real>& eulers) {
+        this->makeRotationFromEuler(eulers.x, eulers.y, eulers.z);
+    }
 
-		const Real a = Math::cos(x), b = Math::sin(x);
+    /*
+     * Set this matrix to be a rotation matrix, with Euler angles [x], [y], [z]
+     */
+    void Matrix4x4::makeRotationFromEuler(Real x, Real y, Real z) {
+        Real * rm = this->data;
+
+        const Real a = Math::cos(x), b = Math::sin(x);
 		const Real c = Math::cos(y), d = Math::sin(y);
 		const Real e = Math::cos(z), f = Math::sin(z);
 
@@ -925,11 +786,6 @@ namespace Core {
 		rm[ 13 ] = 0;
 		rm[ 14 ] = 0;
 		rm[ 15 ] = 1;
-
-    }
-
-    void Matrix4x4::makeRotationFromEuler(Matrix4x4& m, Real x, Real y, Real z) {
-        Matrix4x4::makeRotationFromEuler(m.data, x, y, z);
     }
 
     /*
@@ -949,9 +805,24 @@ namespace Core {
      * matrix by a scale matrix
      */
     void Matrix4x4::scale(Real x, Real y, Real z) {
-        Real temp[SIZE_MATRIX_4X4];
-        Matrix4x4::scale(this->data, temp, x, y, z);
-        memcpy(data, temp, sizeof(Real) * SIZE_MATRIX_4X4);
+        for (Int32 i = 0; i < ROWSIZE_MATRIX_4X4; i++) {
+            Int32 smi = i;
+            Int32 mi = i;
+            this->data[smi] = this->data[mi] * x;
+            this->data[4 + smi] = this->data[4 + mi] * y;
+            this->data[8 + smi] = this->data[8 + mi] * z;
+            this->data[12 + smi] = this->data[12 + mi];
+        }
+    }
+
+    /*
+     * Scale this matrix by the components of [scale].
+     *
+     * This performs a pre-transformation, in that it is equivalent to pre-multiplying this
+     * matrix by a scale matrix
+     */
+    void Matrix4x4::preScale(const Vector3Components<Real>& scale) {
+        this->preScale(scale.x, scale.y, scale.z);
     }
 
     /*
@@ -961,107 +832,25 @@ namespace Core {
      * matrix by a scale matrix
      */
     void Matrix4x4::preScale(Real x, Real y, Real z) {
-        Real temp[SIZE_MATRIX_4X4];
-        Matrix4x4::preScale(this->data, temp, x, y, z);
-        memcpy(data, temp, sizeof(Real) * SIZE_MATRIX_4X4);
-    }
-
-    /*
-     * Scale this matrix by [x], [y], and [z] and store the result in [out]
-     *
-     * This performs a post-transformation, in that it is equivalent to post-multiplying this
-     * matrix by a scale matrix
-     */
-    void Matrix4x4::scale(Matrix4x4 &out, Real x, Real y, Real z) const {
-        Matrix4x4::scale(this->data, out.data, x, y, z);
-    }
-
-    Vector3r Matrix4x4::getScale() {
-        Vector3r column0(this->data[0], this->data[1], this->data[2]);
-        Vector3r column1(this->data[4], this->data[5], this->data[6]);
-        Vector3r column2(this->data[8], this->data[9], this->data[10]);
-
-        Vector3r scale(column0.magnitude(), column1.magnitude(), column2.magnitude());
-        return scale;
-    }
-
-    void Matrix4x4::setScale(const Vector3Components<Real>& scale) {
-        this->setScale(scale.x, scale.y, scale.z);
-    }
-
-    void Matrix4x4::setScale(Real x, Real y, Real z) {
-        Vector3r euler = this->getRotationAsEuler();
-        Matrix4x4 eulerMatrix;
-        eulerMatrix.makeRotationFromEuler(eulerMatrix, euler.x, euler.y, euler.z);
-
-        Matrix4x4 fullMatrix;
-        Matrix4x4::makeScale(fullMatrix, x, y, z);
-        fullMatrix.multiply(eulerMatrix);
-
-        this->data[0] = fullMatrix.data[0];
-        this->data[1] = fullMatrix.data[1];
-        this->data[2] = fullMatrix.data[2];
-
-        this->data[4] = fullMatrix.data[4];
-        this->data[5] = fullMatrix.data[5];
-        this->data[6] = fullMatrix.data[6];
-
-        this->data[8] = fullMatrix.data[8];
-        this->data[9] = fullMatrix.data[9];
-        this->data[10] = fullMatrix.data[10];   
-    }
-
-    /*
-     * Scale the matrix pointed to by [source] by [x], [y], and [z], and store
-     * the result in [dest]
-     *
-     * This performs a post-transformation, in that it is equivalent to post-multiplying
-     * [source] by a scale matrix
-     */
-    void Matrix4x4::scale(const Real *source, Real *dest, Real x, Real y, Real z) {
-        if (source == nullptr) throw NullPointerException("Matrix4x4::scale -> 'source' is null.");
-        if (dest == nullptr) throw NullPointerException("Matrix4x4::scale -> 'dest' is null.");
-
-        for (Int32 i = 0; i < ROWSIZE_MATRIX_4X4; i++) {
-            Int32 smi = i;
-            Int32 mi = i;
-            dest[smi] = source[mi] * x;
-            dest[4 + smi] = source[4 + mi] * y;
-            dest[8 + smi] = source[8 + mi] * z;
-            dest[12 + smi] = source[12 + mi];
-        }
-    }
-
-    /*
-     * Scale the matrix pointed to by [source] by [x], [y], and [z], and store
-     * the result in [dest]
-     *
-     * This performs a pre-transformation, in that it is equivalent to pre-multiplying
-     * [source] by a scale matrix
-     */
-    void Matrix4x4::preScale(const Real *source, Real *dest, Real x, Real y, Real z) {
-        if (source == nullptr) throw NullPointerException("Matrix4x4::preScale -> 'source' is null.");
-        if (dest == nullptr) throw NullPointerException("Matrix4x4::preScale -> 'dest' is null.");
-
         for (Int32 i = 0; i < ROWSIZE_MATRIX_4X4; i++) {
             Int32 smi = i;
             Int32 mi = i * 4;
-            dest[smi] = source[mi] * x;
-            dest[4 + smi] = source[1 + mi] * y;
-            dest[8 + smi] = source[2 + mi] * z;
-            dest[12 + smi] = source[3 + mi];
+            this->data[smi] = this->data[mi] * x;
+            this->data[4 + smi] = this->data[1 + mi] * y;
+            this->data[8 + smi] = this->data[2 + mi] * z;
+            this->data[12 + smi] = this->data[3 + mi];
         }
     }
 
-    void Matrix4x4::makeScale(Matrix4x4& m, Real x, Real y, Real z) {
-        m.setIdentity();
-        m.data[0] = x;
-        m.data[5] = y;
-        m.data[10] = z;
+    void Matrix4x4::makeScale(const Vector3Components<Real>& scale) {
+        this->makeScale(scale.x, scale.y, scale.z);
     }
 
-    void Matrix4x4::makeScale(Matrix4x4& m, const Vector3Components<Real>& scale) {
-        Matrix4x4::makeScale(m, scale.x, scale.y, scale.z);
+    void Matrix4x4::makeScale(Real x, Real y, Real z) {
+        this->setIdentity();
+        this->data[0] = x;
+        this->data[5] = y;
+        this->data[10] = z;
     }
 
     void Matrix4x4::lookAt(const Vector3Components<Real> &src, const Vector3Components<Real> &target, const Vector3Components<Real> &up) {

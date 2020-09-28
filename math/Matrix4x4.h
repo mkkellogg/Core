@@ -70,47 +70,34 @@ namespace Core {
         void multiply(const Matrix4x4& matrix);
         void preMultiply(const Matrix4x4& matrix);
         void multiply(const Matrix4x4& matrix, Matrix4x4& out) const;
+
         static void multiply(const Matrix4x4& lhs, const Matrix4x4& rhs, Matrix4x4& out);
         static void multiplyMV(const Real* lhsMat, const Real* rhsVec, Real* out);
         static inline void mx4transform(Real x, Real y, Real z, Real w, const Real* matrix, Real* pDest);
         static void multiplyMM(const Real* lhs, const Real* rhs, Real* out);
 
-        void translate(const Vector3Components<Real>& vector);
+        void translate(const Vector3Components<Real>& offset);
         void translate(Real x, Real y, Real z);
-        void preTranslate(const Vector3Components<Real>& vector);
+        void preTranslate(const Vector3Components<Real>& offset);
         void preTranslate(Real x, Real y, Real z);
         void setTranslation(Real x, Real y, Real z);
         Vector3r getTranslation();
-        static void translate(const Matrix4x4& src, Matrix4x4& out, const Vector3Components<Real>& vector);
-        static void translate(const Matrix4x4& src, Matrix4x4& out, Real x, Real y, Real z);
-        static void translate(const Real* source, Real* dest, Real x, Real y, Real z);
-        static void preTranslate(const Real* source, Real* dest, Real x, Real y, Real z);
 
-        void rotate(const Vector3Components<Real>& vector, Real a);
+        void rotate(const Vector3Components<Real>& axis, Real a);
         void rotate(Real x, Real y, Real z, Real a);
-        void preRotate(const Vector3Components<Real>& vector, Real a);
+        void preRotate(const Vector3Components<Real>& axis, Real a);
         void preRotate(Real x, Real y, Real z, Real a);
+        void makeRotation(const Vector3Components<Real>& axis, Real a);
+        void makeRotation(Real x, Real y, Real z, Real a);
+        void makeRotationFromEuler(const Vector3Components<Real>& eulers);
         void makeRotationFromEuler(Real x, Real y, Real z);
-        Vector3r getRotationAsEuler();
-        void setRotationFromEuler(Real x, Real y, Real z);
-        void setRotationFromEuler(const Vector3<Real>& euler);
-        void setRotationFromQuaternion(const Quaternion& quaternion);
-        static void makeRotation(Real* rm, Real x, Real y, Real z, Real a);
-        static void makeRotation(Matrix4x4& m, Real x, Real y, Real z, Real a);
-        static void makeRotationFromEuler(Real* rm, Real x, Real y, Real z);
-        static void makeRotationFromEuler(Matrix4x4& m, Real x, Real y, Real z);
 
         void scale(const Vector3Components<Real>& scale);
         void scale(Real x, Real y, Real z);
+        void preScale(const Vector3Components<Real>& scale);
         void preScale(Real x, Real y, Real z);
-        void scale(Matrix4x4& out, Real x, Real y, Real z) const;
-        Vector3r getScale();
-        void setScale(const Vector3Components<Real>& scale);
-        void setScale(Real x, Real y, Real z);
-        static void scale(const Real* source, Real* dest, Real x, Real y, Real z);
-        static void preScale(const Real* source, Real* dest, Real x, Real y, Real z);
-        static void makeScale(Matrix4x4& m, Real x, Real y, Real z);
-        static void makeScale(Matrix4x4& m, const Vector3Components<Real>& vector);
+        void makeScale(const Vector3Components<Real>& scale);
+        void makeScale(Real x, Real y, Real z);
 
         void lookAt(const Vector3Components<Real>& src, const Vector3Components<Real>& target, const Vector3Components<Real>& up);
 
