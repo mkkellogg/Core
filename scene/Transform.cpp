@@ -59,7 +59,7 @@ namespace Core {
         this->worldMatrix.transform(vector);
     }
 
-    void Transform::getWorldMatrix(WeakPointer<Object3D> target, Matrix4x4& result) {
+    void Transform::calculateWorldMatrix(WeakPointer<Object3D> target, Matrix4x4& result) {
         result.setIdentity();
         if (!target.isValid()) return;
         result.copy(target->getTransform().getLocalMatrix());
@@ -70,17 +70,17 @@ namespace Core {
         }
     }
 
-    void Transform::getWorldMatrix(Matrix4x4& result) {
+    void Transform::calculateWorldMatrix(Matrix4x4& result) {
         this->getAncestorWorldMatrix(result);
         result.multiply(this->localMatrix);
     }
 
     void Transform::getAncestorWorldMatrix(Matrix4x4& result) {
-        Transform::getWorldMatrix(this->target.getParent(), result);
+        Transform::calculateWorldMatrix(this->target.getParent(), result);
     }
 
     void Transform::updateWorldMatrix() {
-        this->getWorldMatrix(this->worldMatrix);
+        this->calculateWorldMatrix(this->worldMatrix);
     }
 
     /*
@@ -117,7 +117,7 @@ namespace Core {
      */
     void Transform::getLocalTransformationFromWorldTransformation(const Matrix4x4& newWorldTransformation, Matrix4x4& localTransformation) {
         Matrix4x4 currentFullTransformation;
-        this->getWorldMatrix(currentFullTransformation);
+        this->calculateWorldMatrix(currentFullTransformation);
         this->getLocalTransformationFromWorldTransformation(newWorldTransformation, currentFullTransformation, localTransformation);
     }
 

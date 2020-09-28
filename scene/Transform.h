@@ -52,11 +52,11 @@ namespace Core {
 
         void updateWorldMatrix();
         void getAncestorWorldMatrix(Matrix4x4& result);
-        void getWorldMatrix(Matrix4x4& result);
+        void calculateWorldMatrix(Matrix4x4& result);
 
     private:
 
-        static void getWorldMatrix(WeakPointer<Object3D> target, Matrix4x4& result);
+        static void calculateWorldMatrix(WeakPointer<Object3D> target, Matrix4x4& result);
         void getLocalTransformationFromWorldTransformation(const Matrix4x4& newWorldTransformation, Matrix4x4& localTransformation);
         void getLocalTransformationFromWorldTransformation(const Matrix4x4& newWorldTransformation, const Matrix4x4& currentFullTransformation, Matrix4x4& localTransformation);
 
