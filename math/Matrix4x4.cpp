@@ -188,27 +188,54 @@ namespace Core {
     /*
      * Build matrix from components [translation], [scale], and [rotation]
      */
-    void Matrix4x4::buildFromComponents(const Vector3Components<Real> &translation, const Quaternion &rotation, const Vector3Components<Real> &scale) {
-        Matrix4x4 rotMatrix = rotation.rotationMatrix();
+    void Matrix4x4::compose(const Vector3Components<Real> &translation, const Quaternion &rotation, const Vector3Components<Real> &scale) {
+        Real qx = rotation.x();
+        Real qy = rotation.y();
+        Real qz = rotation.z();
+        Real qw = rotation.w();
 
-        // Build the final matrix, with translation, scale, and rotation
-        A0 = scale.x * rotMatrix.A0;
-        A1 = scale.y * rotMatrix.A1;
-        A2 = scale.z * rotMatrix.A2;
-        A3 = translation.x;
-        B0 = scale.x * rotMatrix.B0;
-        B1 = scale.y * rotMatrix.B1;
-        B2 = scale.z * rotMatrix.B2;
-        B3 = translation.y;
-        C0 = scale.x * rotMatrix.C0;
-        C1 = scale.y * rotMatrix.C1;
-        C2 = scale.z * rotMatrix.C2;
-        C3 = translation.z;
+		Real x2 = qx + qx;
+        Real y2 = qy + qy;
+        Real z2 = qz + qz;
+		Real xx = qx * x2;
+        Real xy = qx * y2;
+        Real xz = qx * z2;
+		Real yy = qy * y2;
+        Real yz = qy * z2;
+        Real zz = qz * z2;
+		Real wx = qw * x2;
+        Real wy = qw * y2;
+        Real wz = qw * z2;
 
-        D0 = 0;
-        D1 = 0;
-        D2 = 0;
-        D3 = 1;
+		Real sx = scale.x;
+        Real sy = scale.y;
+        Real sz = scale.z;
+
+		this->A0 = (1.0f - (yy + zz)) * sx;
+		this->B0 = (xy + wz) * sx;
+		this->C0 = (xz - wy) * sx;
+		this->D0 = 0.0f;
+
+		this->A1 = (xy - wz) * sy;
+		this->B1 = (1.0f - (xx + zz)) * sy;
+		this->C1 = (yz + wx) * sy;
+		this->D1 = 0.0f;
+
+		this->A2 = (xz + wy) * sz;
+		this->B2 = (yz - wx) * sz;
+		this->C2 = (1.0f - (xx + yy)) * sz;
+		this->D2 = 0.0f;
+
+		this->A3 = translation.x;
+		this->B3 = translation.y;
+		this->C3 = translation.z;
+		this->D3 = 1.0f;
+    }
+
+    void Matrix4x4::compose(const Vector3Components<Real>& translation, const Vector3Components<Real>& euler, const Vector3Components<Real>& scale) {
+        this->makeRotationFromEuler(euler);
+        this->scale(scale);
+        this->preTranslate(translation);
     }
 
     void Matrix4x4::decompose(Vector3Components<Real> &translation, Quaternion &rotation, Vector3Components<Real> &scale) const {

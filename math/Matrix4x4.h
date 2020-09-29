@@ -52,7 +52,8 @@ namespace Core {
         Bool invert(Matrix4x4& out);
         static Bool invert(const Real* source, Real* dest);
 
-        void buildFromComponents(const Vector3Components<Real>& translation, const Quaternion& rotation, const Vector3Components<Real>& scale);
+        void compose(const Vector3Components<Real>& translation, const Quaternion& rotation, const Vector3Components<Real>& scale);
+        void compose(const Vector3Components<Real>& translation, const Vector3Components<Real>& euler, const Vector3Components<Real>& scale);
         void decompose(Vector3Components<Real>& translation, Quaternion& rotation, Vector3Components<Real>& scale) const;
         Bool isAffine(void) const;
         static Bool isAffine(const Real* data);
