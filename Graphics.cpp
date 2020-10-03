@@ -113,7 +113,7 @@ namespace Core {
         material->setDepthTestEnabled(false);
         material->setFaceCullingEnabled(false);
         renderCamera->setRenderTarget(destination);
-        
+
         WeakPointer<RenderTarget> currentRenderTarget = this->getCurrentRenderTarget();
         Vector4u currentViewport = currentRenderTarget->getViewport();
 
@@ -125,7 +125,7 @@ namespace Core {
         else {
             this->activateRenderTarget2DMipLevel(targetMipLevel);
         }
-        
+
         Vector4u mipLevelScaledViewport = destination->getViewportForMipLevel(targetMipLevel);
         this->setViewport(mipLevelScaledViewport.x, mipLevelScaledViewport.y, mipLevelScaledViewport.z, mipLevelScaledViewport.w);
 
