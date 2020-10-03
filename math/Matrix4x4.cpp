@@ -233,8 +233,10 @@ namespace Core {
     }
 
     void Matrix4x4::compose(const Vector3Components<Real>& translation, const Vector3Components<Real>& euler, const Vector3Components<Real>& scale) {
-        this->makeRotationFromEuler(euler);
-        this->scale(scale);
+        Matrix4x4 temp;
+        temp.makeRotationFromEuler(euler);
+        this->makeScale(scale);
+        this->preMultiply(temp);
         this->preTranslate(translation);
     }
 
@@ -895,26 +897,24 @@ namespace Core {
         Vector3r::cross(vRight, toTarget, vUp);
         vUp.normalize();
 
-        auto fullMat = this->getData();
+        this->data[0] = vRight.x;
+        this->data[1] = vRight.y;
+        this->data[2] = vRight.z;
+        this->data[3] = 0.0f;
 
-        fullMat[0] = vRight.x;
-        fullMat[1] = vRight.y;
-        fullMat[2] = vRight.z;
-        fullMat[3] = 0.0f;
+        this->data[4] = vUp.x;
+        this->data[5] = vUp.y;
+        this->data[6] = vUp.z;
+        this->data[7] = 0.0f;
 
-        fullMat[4] = vUp.x;
-        fullMat[5] = vUp.y;
-        fullMat[6] = vUp.z;
-        fullMat[7] = 0.0f;
+        this->data[8] = -toTarget.x;
+        this->data[9] = -toTarget.y;
+        this->data[10] = -toTarget.z;
+        this->data[11] = 0.0f;
 
-        fullMat[8] = -toTarget.x;
-        fullMat[9] = -toTarget.y;
-        fullMat[10] = -toTarget.z;
-        fullMat[11] = 0.0f;
-
-        fullMat[12] = src.x;
-        fullMat[13] = src.y;
-        fullMat[14] = src.z;
-        fullMat[15] = 1.0f;
+        this->data[12] = src.x;
+        this->data[13] = src.y;
+        this->data[14] = src.z;
+        this->data[15] = 1.0f;
     }
 }
