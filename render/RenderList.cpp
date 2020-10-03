@@ -17,7 +17,9 @@ namespace Core {
 
     void RenderList::addItem(WeakPointer<BaseObject3DRenderer> renderer, WeakPointer<BaseRenderable> renderable, Bool isStatic, Bool isActive) {
         RenderItem& renderItem = this->renderItemPool.acquireObject();
+        renderItem.meshRenderer =  WeakPointer<MeshRenderer>::nullPtr();
         renderItem.renderer = renderer;
+        renderItem.mesh = WeakPointer<Mesh>::nullPtr();
         renderItem.renderable = renderable;
         renderItem.isStatic = isStatic;
         renderItem.isActive = isActive;
@@ -27,7 +29,9 @@ namespace Core {
     void RenderList::addMesh(WeakPointer<MeshRenderer> meshRenderer, WeakPointer<Mesh> mesh, Bool isStatic, Bool isActive) {
         RenderItem& renderItem = this->renderItemPool.acquireObject();
         renderItem.meshRenderer = meshRenderer;
+        renderItem.renderer = WeakPointer<BaseObject3DRenderer>::nullPtr();
         renderItem.mesh = mesh;
+        renderItem.renderable = WeakPointer<BaseRenderable>::nullPtr();
         renderItem.isStatic = isStatic;
         renderItem.isActive = isActive;
         this->renderItems.push_back(&renderItem);
@@ -37,7 +41,8 @@ namespace Core {
         if (index >= this->getItemCount()) {
             throw OutOfRangeException("RenderList::getRenderItem -> Index is out of bounds.");
         }
-        return *this->renderItems[index];
+        RenderItem *ptr = this->renderItems[index];
+        return *ptr;
     }
 
     void RenderList::setAllActive() {

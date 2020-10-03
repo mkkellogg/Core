@@ -32,6 +32,7 @@ namespace Core {
     protected:
         ObjectPool<RenderItem> renderItemPool;
         std::vector<RenderItem*> renderItems;
+        UInt32 itemCount;
 
     private:
     };

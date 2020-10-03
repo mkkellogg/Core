@@ -325,18 +325,18 @@ namespace Core {
                                     const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
         for (UInt32 i = 0; i < renderList.getItemCount(); i++) {
             RenderItem& renderItem = renderList.getRenderItem(i);
-            if (renderItem.isActive) {
-                this->renderRenderItem(viewDescriptor, renderList.getRenderItem(i), lightPack, matchPhysicalPropertiesWithLighting);
-            }
+            this->renderRenderItem(viewDescriptor, renderItem, lightPack, matchPhysicalPropertiesWithLighting);
         }
     }
 
     void Renderer::renderRenderItem(ViewDescriptor& viewDescriptor, RenderItem& renderItem, 
                                     const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
-        if (renderItem.meshRenderer) {
-            renderItem.meshRenderer->forwardRenderMesh(viewDescriptor, renderItem.mesh, renderItem.isStatic, lightPack, matchPhysicalPropertiesWithLighting);
-        } else if (renderItem.renderer) {
-            renderItem.renderer->forwardRenderObject(viewDescriptor, renderItem.renderable, renderItem.isStatic, lightPack, matchPhysicalPropertiesWithLighting);
+        if (renderItem.isActive) {
+            if (renderItem.meshRenderer.isValid()) {
+                renderItem.meshRenderer->forwardRenderMesh(viewDescriptor, renderItem.mesh, renderItem.isStatic, lightPack, matchPhysicalPropertiesWithLighting);
+            } else if (renderItem.renderer.isValid()) {
+                renderItem.renderer->forwardRenderObject(viewDescriptor, renderItem.renderable, renderItem.isStatic, lightPack, matchPhysicalPropertiesWithLighting);
+            }
         }
     }
 
@@ -367,6 +367,7 @@ namespace Core {
     }
 
     void Renderer::cullRenderListForPointLight(RenderList& renderList, WeakPointer<PointLight> pointLight) {
+        return;
         static Point3r pointLightPos;
         pointLightPos.set(0.0f, 0.0f, 0.0f);
         pointLight->getOwner()->getTransform().applyTransformationTo(pointLightPos);
@@ -933,7 +934,6 @@ namespace Core {
                         renderQueueID = renderer->getRenderQueueID();
                     }
                     UInt32 renderableCount = renderableContainer->getBaseRenderableCount();
-
                     WeakPointer<MeshRenderer> meshRenderer = object->getMeshRenderer();
                     WeakPointer<MeshContainer> meshContainer = object->getMeshContainer();
                     if (meshRenderer.isValid() && meshContainer.isValid()) {
@@ -960,10 +960,19 @@ namespace Core {
             if (renderableContainer) {
                 WeakPointer<BaseObject3DRenderer> renderer = object->getBaseRenderer();
                 if (renderer.isValid()) {
+                    WeakPointer<MeshContainer> meshContainer = object->getMeshContainer();
+                    WeakPointer<MeshRenderer> meshRenderer = object->getMeshRenderer();
                     UInt32 renderableCount = renderableContainer->getBaseRenderableCount();
-                    for(UInt32 i = 0; i < renderableCount; i++) {
-                        WeakPointer<BaseRenderable> renderable = renderableContainer->getBaseRenderable(i);
-                        renderList.addItem(renderer, renderable, object->isStatic(), true);
+                    if (meshRenderer.isValid() && meshContainer.isValid()) {
+                        for(UInt32 i = 0; i < renderableCount; i++) {
+                            WeakPointer<Mesh> mesh = meshContainer->getRenderable(i);
+                            renderList.addMesh(meshRenderer, mesh, object->isStatic(), true);
+                        }
+                    } else {
+                        for(UInt32 i = 0; i < renderableCount; i++) {
+                            WeakPointer<BaseRenderable> renderable = renderableContainer->getBaseRenderable(i);
+                            renderList.addItem(renderer, renderable, object->isStatic(), true);
+                        }
                     }
                 }
             }

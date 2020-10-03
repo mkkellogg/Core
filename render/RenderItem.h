@@ -16,7 +16,12 @@ namespace Core {
 
     class RenderItem {
     public:
-        RenderItem(){}
+        RenderItem(){
+            this->renderer = WeakPointer<BaseObject3DRenderer>::nullPtr();
+            this->meshRenderer = WeakPointer<MeshRenderer>::nullPtr();
+            this->isStatic = false;
+            this->isActive = false;
+        }
       
         PersistentWeakPointer<BaseObject3DRenderer> renderer;
         PersistentWeakPointer<BaseRenderable> renderable;
