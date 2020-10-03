@@ -37,9 +37,15 @@ namespace Core {
     static std::shared_ptr<Assimp::Importer> importer = nullptr;
 
     ModelLoader::ModelLoader() {
+        this->fallbackTexturePathSet = false;
     }
 
     ModelLoader::~ModelLoader() {
+    }
+
+    void ModelLoader::setFallbackTexturePath(const std::string& path) {
+        this->fallbackTexturePath = path;
+        this->fallbackTexturePathSet = true;
     }
 
     void ModelLoader::initImporter() {
@@ -802,6 +808,16 @@ namespace Core {
                 if (fileSystem->fileExists(fullTextureFilePath)) {
                     textureImage = ImageLoader::loadImageU(fullTextureFilePath.c_str());
                     texture = Engine::instance()->getGraphicsSystem()->createTexture2D(texAttributes);
+                }
+                // check the fallback resource path for the texture
+                else if (this->fallbackTexturePathSet) {
+                    std::string fallbackTexturePath = fileSystem->fixupPathForLocalFilesystem(this->fallbackTexturePath);
+                    std::string fullFallbackTexturePath = fileSystem->getBasePath(fallbackTexturePath);
+                    fullTextureFilePath = fileSystem->concatenatePaths(fullFallbackTexturePath, filename);
+                    if (fileSystem->fileExists(fullTextureFilePath)) {
+                        textureImage = ImageLoader::loadImageU(fullTextureFilePath.c_str());
+                        texture = Engine::instance()->getGraphicsSystem()->createTexture2D(texAttributes);
+                    }
                 }
             }
         }

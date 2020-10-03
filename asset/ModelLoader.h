@@ -44,6 +44,7 @@ namespace Core {
 
         ModelLoader();
         virtual ~ModelLoader();
+        void setFallbackTexturePath(const std::string& path);
         WeakPointer<Object3D> loadModel(const std::string& filePath, Real importScale, UInt32 smoothingThreshold, 
                                         Bool castShadows, Bool receiveShadows, Bool preserveFBXPivots, Bool preferPhysicalMaterial);
         WeakPointer<Animation> loadAnimation(const std::string& filePath, Bool addLoopPadding, Bool preserveFBXPivots);
@@ -136,6 +137,7 @@ namespace Core {
 #endif
 
         ImageLoader imageLoader;
-
+        Bool fallbackTexturePathSet;
+        std::string fallbackTexturePath;
     };
 }
