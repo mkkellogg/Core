@@ -31,6 +31,10 @@ namespace Core {
         return this->worldMatrix;
     }
 
+    Matrix4x4& Transform::getTempMatrix() {
+        return this->tempMatrix;
+    }
+
     /*
      * Copy this Transform object's local matrix into [dest].
      */

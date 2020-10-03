@@ -19,6 +19,7 @@ namespace Core {
         const Matrix4x4& getConstLocalMatrix() const;
         Matrix4x4& getWorldMatrix();
         const Matrix4x4& getConstWorldMatrix() const;
+        Matrix4x4& getTempMatrix();
 
         void copyLocalMatrix(Matrix4x4& dest) const;
         void copyWorldMatrix(Matrix4x4& dest) const;
@@ -60,6 +61,7 @@ namespace Core {
         void getLocalTransformationFromWorldTransformation(const Matrix4x4& newWorldTransformation, Matrix4x4& localTransformation);
         void getLocalTransformationFromWorldTransformation(const Matrix4x4& newWorldTransformation, const Matrix4x4& currentFullTransformation, Matrix4x4& localTransformation);
 
+        Matrix4x4 tempMatrix;
         Matrix4x4 localMatrix;
         Matrix4x4 worldMatrix;
         const Object3D& target;
