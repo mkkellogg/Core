@@ -10,7 +10,7 @@ namespace Core {
 
     class TextureUtils {
     public:
-        static WeakPointer<CubeTexture> loadFromEquirectangularImage(const std::string& filePath, Bool isHDR = false);
+        static WeakPointer<CubeTexture> loadFromEquirectangularImage(const std::string& filePath, Bool isHDR, float yRotation = 0.0f);
 
     };
 }

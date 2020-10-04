@@ -604,7 +604,7 @@ namespace Core {
         Matrix4x4 cameraTransform = camera->getOwner()->getTransform().getWorldMatrix();
         cameraTransform.multiply(orientations[(UInt16)cubeFace]);
         this->getViewDescriptorTransformations(cameraTransform, camera->getProjectionMatrix(),
-                                                camera->getAutoClearRenderBuffers(), viewDescriptor);
+                                               camera->getAutoClearRenderBuffers(), viewDescriptor);
         viewDescriptor.cubeFace = (UInt16)cubeFace;
         viewDescriptor.overrideMaterial = camera->getOverrideMaterial();
         outDescriptor = viewDescriptor;

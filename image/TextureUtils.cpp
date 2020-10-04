@@ -13,7 +13,7 @@
 
 namespace Core {
 
-    WeakPointer<CubeTexture> TextureUtils::loadFromEquirectangularImage(const std::string& filePath, Bool isHDR) {
+    WeakPointer<CubeTexture> TextureUtils::loadFromEquirectangularImage(const std::string& filePath, Bool isHDR, float yRotation) {
         static WeakPointer<Object3D> cameraObj;
         static WeakPointer<Camera> renderCamera;
         static WeakPointer<EquirectangularMaterial> equirectangularMaterial;
@@ -54,12 +54,15 @@ namespace Core {
         colorAttributes.FilterMode = Core::TextureFilter::Linear;
         Core::TextureAttributes depthAttributes;
 
+        renderCamera->lookAt(Point3r(0.0f, 0.0f, -1.0f));
         WeakPointer<RenderTargetCube> renderTarget = Engine::instance()->getGraphicsSystem()->createRenderTargetCube(true, true, false, colorAttributes, depthAttributes, size);
         renderCamera->setRenderTarget(renderTarget);
         renderCamera->setAutoClearRenderBuffer(Core::RenderBufferType::Color, true);
         renderCamera->setAutoClearRenderBuffer(Core::RenderBufferType::Depth, true);
         renderCamera->setOverrideMaterial(equirectangularMaterial);
         cubeMeshObj->getTransform().lookAt(Core::Point3r(0.f, 0.0f, -1.0f));
+        cubeMeshObj->getTransform().rotate(0.0f, 1.0f, 0.0f, yRotation);
+
         Engine::instance()->getGraphicsSystem()->getRenderer()->renderSceneBasic(cubeMeshObj, renderCamera, true);
 
         Graphics::safeReleaseObject(equirectangularTexture);
