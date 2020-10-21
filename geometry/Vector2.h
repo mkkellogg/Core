@@ -9,12 +9,8 @@ namespace Core {
 
 #define VECTOR2_COMPONENT_COUNT 2
 
-    template <typename T, bool customStorage, typename Enable = void>
-    class Vector2;
-
-    template <typename T, bool customStorage>
-    class Vector2<T, customStorage, Core::enable_if_t<Core::is_numeric<T>::value>> : public VectorStorage<T, VECTOR2_COMPONENT_COUNT, customStorage>,
-                                                                                     public Vector2Components<T> {
+    template <typename T, bool customStorage = false, typename _chk = Core::enable_if_t<Core::is_numeric<T>::value>>
+    class Vector2 : public VectorStorage<T, VECTOR2_COMPONENT_COUNT, customStorage>, public Vector2Components<T> {
     public:
         Vector2() : Vector2(0.0, 0.0) {}
         Vector2(const T& x, const T& y) : Vector2Components<T>(this->data, x, y) {}

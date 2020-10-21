@@ -176,4 +176,124 @@ namespace Core {
             }
         }
     };
+
+
+
+    template <typename T>
+    class ScalarAttributeArray final: public AttributeArrayBase {
+    public:
+
+        ScalarAttributeArray(UInt32 attributeCount) : AttributeArrayBase(attributeCount, 1), attributes(nullptr) {
+            allocate();
+        }
+
+        virtual  ~ScalarAttributeArray() {
+            deallocate();
+        }
+
+        T* getAttributes() {
+            return this->attributes;
+        }
+
+        T& getAttribute(UInt32 index) {
+            if (index >= this->attributeCount) {
+                throw OutOfRangeException("AttributeArray::getAttribute() -> 'index' is out of range.");
+            }
+            return this->attributes[index];
+        }
+
+        void store(const T* data) {
+            memcpy(this->attributes, data, this->getSize());
+            this->updateGPUStorageData();
+        }
+
+        void setGPUStorage(WeakPointer<AttributeArrayGPUStorage> storage) { 
+            this->deallocateGPUStorage();
+            this->gpuStorage = storage;
+            this->updateGPUStorageData();
+        }
+
+        void updateGPUStorageData() {
+            if (this->gpuStorage) {
+                this->gpuStorage->updateBufferData((void *)this->attributes);
+            }
+        }
+
+        class iterator {
+            ScalarAttributeArray<T>* array;
+            UInt32 index;
+
+        public:
+            iterator(ScalarAttributeArray<T>* array, UInt32 index) : array(array), index(index) {
+            }
+
+            T& operator *() {
+                return array->attributes[index];
+            }
+
+            iterator operator ++() {
+                if (this->index < this->array->getAttributeCount()) {
+                    ++this->index;
+                }
+                return *this;
+            }
+
+            iterator operator ++(int i) {
+                if (this->index < this->array->getAttributeCount()) {
+                    this->index++;
+                }
+                return *this;
+            }
+
+            Bool operator ==(const iterator& other) {
+                if (this == &other) return true;
+                return this->index == other.index && this->array == other.array;
+            }
+
+            Bool operator !=(const iterator& other) {
+                return this->operator==(other);
+            }
+        };
+
+        iterator begin() {
+            return iterator(this, 0);
+        }
+
+        iterator end() {
+            return iterator(this, this->getAttributeCount());
+        }
+
+        UInt32 getSize() const {
+            return this->attributeCount * sizeof(T);
+        }
+
+    protected:
+        T* attributes;
+
+        void allocate() {
+            this->deallocate();
+
+            this->attributes = new (std::nothrow) T[this->attributeCount];
+            if (this->attributes == nullptr) {
+                throw AllocationException("ScalarAttributeArray::allocate() -> Unable to allocate storage!");
+            }
+        }
+
+        void deallocate() {
+            if (this->attributes != nullptr) {
+                delete this->attributes;
+                this->attributes = nullptr;
+            }
+            this->deallocateGPUStorage();
+        }
+
+        void deallocateGPUStorage() {
+            if(this->gpuStorage.isValid()) {
+               Engine::safeReleaseObject(this->gpuStorage);
+            }
+        }
+    };
+
+
+
 }

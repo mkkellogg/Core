@@ -11,12 +11,8 @@ namespace Core {
 
 #define VECTOR3_COMPONENT_COUNT 4
 
-    template <typename T, bool customStorage = false, typename Enable = void>
-    class Vector3Base;
-
-    template <typename T, bool customStorage>
-    class Vector3Base<T, customStorage, Core::enable_if_t<Core::is_numeric<T>::value>> : public VectorStorage<T, VECTOR3_COMPONENT_COUNT, customStorage>,
-                                                                                         public Vector3Components<T> {
+    template <typename T, Bool customStorage = false, typename _chk = Core::enable_if_t<Core::is_numeric<T>::value>>
+    class Vector3Base : public VectorStorage<T, VECTOR3_COMPONENT_COUNT, customStorage>, public Vector3Components<T> {
     public:
         Vector3Base() : Vector3Base(0.0, 0.0, 0.0) {}
         Vector3Base(const Vector3Base& src) : Vector3Base(src.x, src.y, src.z) {}
