@@ -14,6 +14,7 @@ set(INCLUDE_DIRS
     geometry
     scene
     render
+    particles
     material
     color
     math
@@ -149,6 +150,10 @@ set(INCLUDE_FILES
     render/ReflectionProbe.h
     render/ToneMapType.h
     render/RenderUtils.h
+    particles/ParticleSystem.h
+    particles/ParticleSystemSnapShot.h
+    particles/ParticleSystemRenderer.h
+    particles/ParticleSystemAnimatedSpriteRenderer.h
     light/Light.h
     light/ShadowLight.h
     light/PointLight.h
@@ -256,6 +261,10 @@ set(SOURCE_FILES
     render/MeshOutlinePostProcessor.cpp
     render/ReflectionProbe.cpp
     render/RenderUtils.cpp
+    particles/ParticleSystem.cpp
+    particles/ParticleSystemSnapShot.cpp
+    particles/ParticleSystemRenderer.cpp
+    particles/ParticleSystemAnimatedSpriteRenderer.cpp
     light/Light.cpp
     light/ShadowLight.cpp
     light/PointLight.cpp
