@@ -30,7 +30,7 @@ namespace Core {
             Real far;
         };
 
-        ~DirectionalLight();
+        ~DirectionalLight() override;
 
         void init() override;
 

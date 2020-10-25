@@ -25,7 +25,7 @@ namespace Core {
     class RenderTargetCubeGL final : public RenderTargetCube, public RenderTargetGL {
         friend class GraphicsGL;
     public:
-        virtual ~RenderTargetCubeGL();
+        ~RenderTargetCubeGL() override;
         virtual Bool init() override;
         virtual Bool addColorTexture(TextureAttributes attributes) override;
         virtual void destroyColorBuffer(UInt32 index = 0) override;

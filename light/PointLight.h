@@ -17,7 +17,7 @@ namespace Core {
         static const Real NearPlane;
         static const Real FarPlane;
 
-        virtual ~PointLight();
+        ~PointLight() override;
 
         void init() override;
 

@@ -13,6 +13,7 @@ namespace Core {
         
     public:
         UInt64 getObjectID() const;
+        virtual ~CoreObject();
 
     protected:
         CoreObject();

@@ -12,7 +12,7 @@ namespace Core {
         friend class GraphicsGL;
 
     public:
-        virtual ~CubeTextureGL();
+        ~CubeTextureGL() override;
         void buildFromImages(WeakPointer<StandardImage> frontData, WeakPointer<StandardImage> backData, 
                              WeakPointer<StandardImage> topData,WeakPointer<StandardImage> bottomData, 
                              WeakPointer<StandardImage> leftData, WeakPointer<StandardImage> rightData) override;

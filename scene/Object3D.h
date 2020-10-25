@@ -37,7 +37,7 @@ namespace Core {
         friend class Engine;
 
     public:
-        virtual ~Object3D();
+        virtual ~Object3D() override;
 
         UInt64 getID() const;
         Transform& getTransform();

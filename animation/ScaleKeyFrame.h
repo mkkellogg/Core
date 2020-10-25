@@ -18,7 +18,7 @@
 
 namespace Core {
 
-	class ScaleKeyFrame : public KeyFrame {
+	class ScaleKeyFrame final: public KeyFrame {
 	public:
 
 		// scale transformation
@@ -26,7 +26,7 @@ namespace Core {
 
 		ScaleKeyFrame();
 		ScaleKeyFrame(Real normalizedTime, Real realTime, Real realTimeTicks, const Vector3r& scale);
-		virtual ~ScaleKeyFrame() override;
+		~ScaleKeyFrame() override;
 	};
 
 }

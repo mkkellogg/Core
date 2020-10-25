@@ -18,7 +18,7 @@
 
 namespace Core {
 
-	class RotationKeyFrame : public KeyFrame {
+	class RotationKeyFrame final : public KeyFrame {
 	public:
 
 		// The rotation transformation
@@ -26,6 +26,6 @@ namespace Core {
 
 		RotationKeyFrame();
 		RotationKeyFrame(Real normalizedTime, Real realTime, Real realTimeTicks, const Quaternion& rotation);
-		virtual ~RotationKeyFrame() override;
+		~RotationKeyFrame() override;
 	};
 }

@@ -12,7 +12,7 @@ namespace Core {
     class ShaderManagerGL final: public ShaderManager {
     public:
 
-        virtual ~ShaderManagerGL();
+        ~ShaderManagerGL() override;
         ShaderManagerGL();
 
         std::string Common_vertex;

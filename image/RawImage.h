@@ -9,7 +9,7 @@
 
 namespace Core {
 
-    template <typename T = Byte, UInt16 channels = 4> class RawImage {
+    template <typename T = Byte, UInt16 channels = 4> class RawImage final {
         friend class ImageLoader;
 
     public:
@@ -19,7 +19,7 @@ namespace Core {
             imageData = nullptr;
         }
 
-        virtual ~RawImage() {
+        ~RawImage() {
             destroy();
         }
 

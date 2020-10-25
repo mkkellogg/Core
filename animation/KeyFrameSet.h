@@ -20,7 +20,7 @@
 
 namespace Core {
 	
-	class KeyFrameSet {
+	class KeyFrameSet final {
 	public:
 
 		// is this key frame set active?
@@ -33,6 +33,6 @@ namespace Core {
 		std::vector<RotationKeyFrame> RotationKeyFrames;
 
 		KeyFrameSet();
-		virtual ~KeyFrameSet();
+		~KeyFrameSet();
 	};
 }

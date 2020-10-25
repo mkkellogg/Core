@@ -24,13 +24,13 @@ namespace Core {
     class Transform;
     //class SkeletonNode;
 
-    class Bone {
+    class Bone final {
     public:
 
         Bone();
         Bone(const std::string& name);
         Bone(const std::string& name, UInt32 id);
-        virtual ~Bone();
+        ~Bone();
 
         // the bone's (unique) name. Used for linking this Bone object
         // to its corresponding node in a Skeleton or scene object hierarchy.

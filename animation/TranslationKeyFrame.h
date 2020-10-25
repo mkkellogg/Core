@@ -18,7 +18,7 @@
 
 namespace Core
 {
-	class TranslationKeyFrame : public KeyFrame {
+	class TranslationKeyFrame final: public KeyFrame {
 	public:
 
 		// translation transformation
@@ -26,6 +26,6 @@ namespace Core
 
 		TranslationKeyFrame();
 		TranslationKeyFrame(Real normalizedTime, Real realTime, Real realTimeTicks, const Vector3r& translation);
-		virtual ~TranslationKeyFrame() override;
+		~TranslationKeyFrame() override;
 	};
 }

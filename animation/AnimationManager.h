@@ -26,14 +26,14 @@ namespace Core {
 	class Animation;
 	class Skeleton;
 
-	class AnimationManager {
+	class AnimationManager final {
 
 		// necessary to trigger lifecycle events and manage allocation
 		friend class Engine;
 
 	public:
 
-		virtual ~AnimationManager();
+		~AnimationManager();
 		Bool isCompatible(WeakPointer<Skeleton> skeleton, WeakPointer<Animation> animation) const;
 		void update();
 		WeakPointer<Animation> createAnimation(Real durationTicks, Real ticksPerSecond);

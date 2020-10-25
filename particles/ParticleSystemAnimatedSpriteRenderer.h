@@ -12,11 +12,11 @@ namespace Core {
     class Object3D;
     class Graphics;
 
-    class ParticleSystemAnimatedSpriteRenderer : public ParticleSystemRenderer {
+    class ParticleSystemAnimatedSpriteRenderer final: public ParticleSystemRenderer {
         friend class Engine;
 
     public:
-        virtual ~ParticleSystemAnimatedSpriteRenderer();
+        ~ParticleSystemAnimatedSpriteRenderer() override;
         virtual Bool forwardRender(const ViewDescriptor& viewDescriptor, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) override;
         virtual Bool forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<BaseRenderable> renderable, Bool isStatic,
                                          const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) override;

@@ -7,7 +7,7 @@
 
 namespace Core {
 
-    template <typename T> class ObjectPool {
+    template <typename T> class ObjectPool final {
     public:
         ObjectPool(UInt32 initialCapacity) {
             this->capacity = 0;

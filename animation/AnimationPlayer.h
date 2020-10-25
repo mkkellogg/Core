@@ -41,14 +41,14 @@ namespace Core {
 		PingPong = 2
 	};
 
-	class AnimationPlayer {
+	class AnimationPlayer final {
 
 		friend class Engine;
 		friend class AnimationManager;
 
 	public:
 
-		virtual ~AnimationPlayer();
+		~AnimationPlayer();
 		void addAnimation(WeakPointer<Animation> animation);
 		void setSpeed(WeakPointer<Animation> animation, Real speedFactor);
 		void play(WeakPointer<Animation> animation);

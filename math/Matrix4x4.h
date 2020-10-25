@@ -13,12 +13,12 @@ namespace Core {
 #define SIZE_MATRIX_4X4 16
 #define ROWSIZE_MATRIX_4X4 4
 
-    class Matrix4x4 {
+    class Matrix4x4 final {
     public:
         Matrix4x4();
         explicit Matrix4x4(const Real* sourceData);
         Matrix4x4(const Matrix4x4& source);
-        virtual ~Matrix4x4();
+        ~Matrix4x4();
 
         Real& A0 = data[0];
         Real& A1 = data[4];

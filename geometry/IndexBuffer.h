@@ -5,7 +5,7 @@
 
 namespace Core {
 
-    class IndexBuffer : public CoreObject {
+    class IndexBuffer: public CoreObject {
     public:
         IndexBuffer(UInt32 size);
         virtual ~IndexBuffer();

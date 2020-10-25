@@ -10,7 +10,7 @@
 
 namespace Core {
 
-    class CoreObjectReferenceManager {
+    class CoreObjectReferenceManager final {
     public:
 
         enum class OwnerType {
@@ -19,7 +19,7 @@ namespace Core {
         };
 
         CoreObjectReferenceManager();
-        virtual ~CoreObjectReferenceManager();
+        ~CoreObjectReferenceManager();
 
         void addReference(std::shared_ptr<CoreObject> object, OwnerType ownerType);
         void removeReference(WeakPointer<CoreObject> object);

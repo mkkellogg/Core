@@ -9,6 +9,10 @@ namespace Core {
         this->objectID = _cur_id++;
     }
 
+    CoreObject::~CoreObject() {
+        
+    }
+
     UInt64 CoreObject::getObjectID() const {
         return this->objectID;
     }

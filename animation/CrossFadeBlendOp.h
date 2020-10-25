@@ -24,7 +24,7 @@ namespace Core {
 	class Transform;
 	class SkeletonNode;
 
-	class CrossFadeBlendOp : public BlendOp {
+	class CrossFadeBlendOp final: public BlendOp {
 
 		// necessary since AnimationPlayer directly controls this class
 		friend class AnimationPlayer;
@@ -38,7 +38,7 @@ namespace Core {
 
 	protected:
 
-		virtual ~CrossFadeBlendOp()  override;
+		~CrossFadeBlendOp() override;
 
 	public:
 

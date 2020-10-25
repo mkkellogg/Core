@@ -8,7 +8,7 @@ namespace Core {
     class IndexBufferGL final: public IndexBuffer {
     public:
         IndexBufferGL(UInt32 size);
-        virtual ~IndexBufferGL();
+        ~IndexBufferGL() override;
         Int32 getBufferID() const;
         void setIndices(UInt32 * indices) override;
         void initIndices() override;

@@ -38,7 +38,7 @@ namespace Core {
     class Bone;
     class Transform;
 
-    class Skeleton : public CoreObject {
+    class Skeleton final: public CoreObject {
 
         friend class Engine;
 
@@ -70,7 +70,7 @@ namespace Core {
             virtual SkeletonNode * fullClone() const = 0;
         };
 
-        virtual ~Skeleton();
+        ~Skeleton();
         UInt32 getBoneCount() const;
         UInt32 getNodeCount() const;
 

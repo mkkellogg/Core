@@ -15,7 +15,7 @@ namespace Core {
         friend class GraphicsGL;
 
     public:
-        virtual ~ShaderGL();
+        ~ShaderGL() override;
 
         Bool isReady() const;
         Bool build() override;

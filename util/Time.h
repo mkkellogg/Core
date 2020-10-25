@@ -6,7 +6,7 @@
 
 namespace Core {
 
-	class Time {
+	class Time final {
 
 	public:
 
@@ -30,6 +30,6 @@ namespace Core {
 		static void initialize();
 
 		Time();
-		virtual ~Time();
+		~Time();
 	};
 }

@@ -25,7 +25,7 @@ namespace Core {
     class RenderTarget2DGL final : public RenderTarget2D, public RenderTargetGL {
         friend class GraphicsGL;
     public:
-        virtual ~RenderTarget2DGL();
+        ~RenderTarget2DGL() override;
         virtual Bool init() override;
         virtual Bool addColorTexture(TextureAttributes attributes) override;
         virtual void destroyColorBuffer(UInt32 index = 0) override;

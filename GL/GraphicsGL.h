@@ -33,7 +33,7 @@ namespace Core {
             Three = 3,
         };
 
-        virtual ~GraphicsGL();
+        ~GraphicsGL() override;
         void init() override;
         WeakPointer<Renderer> getRenderer() override;
         void preRender() override;

@@ -59,7 +59,7 @@ namespace Core {
             allocate();
         }
 
-        virtual  ~AttributeArray() {
+        ~AttributeArray() override{
             deallocate();
         }
 
@@ -207,7 +207,7 @@ namespace Core {
             allocate();
         }
 
-        virtual  ~ScalarAttributeArray() {
+        ~ScalarAttributeArray() override{
             deallocate();
         }
 

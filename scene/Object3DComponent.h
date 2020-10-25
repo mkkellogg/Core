@@ -13,7 +13,7 @@ namespace Core {
     class Object3DComponent: public CoreObject {
     public:
         Object3DComponent(WeakPointer<Object3D> owner);
-        virtual ~Object3DComponent();
+        virtual ~Object3DComponent() override;
 
         WeakPointer<Object3D> getOwner() {
             return this->owner;

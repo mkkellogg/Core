@@ -8,12 +8,12 @@ namespace Core {
     // forward declarations
     class Object3D;
 
-    class Transform {
+    class Transform final {
     public:
 
         Transform(const Object3D& target);
         explicit Transform(const Object3D& target, const Matrix4x4& matrix);
-        virtual ~Transform();
+        ~Transform();
 
         Matrix4x4& getLocalMatrix();
         const Matrix4x4& getConstLocalMatrix() const;

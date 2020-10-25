@@ -16,7 +16,7 @@ namespace Core {
         friend class Engine;
 
     public:
-        virtual ~AmbientIBLLight();
+        ~AmbientIBLLight() override;
         void init() override;
         void setIrradianceMap(WeakPointer<CubeTexture> irradianceMap);
         WeakPointer<CubeTexture> getIrradianceMap();
