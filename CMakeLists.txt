@@ -154,6 +154,7 @@ set(INCLUDE_FILES
     particles/ParticleSystemSnapShot.h
     particles/ParticleSystemRenderer.h
     particles/ParticleSystemAnimatedSpriteRenderer.h
+    particles/ParticleStateInitializer.h
     light/Light.h
     light/ShadowLight.h
     light/PointLight.h
@@ -265,6 +266,7 @@ set(SOURCE_FILES
     particles/ParticleSystemSnapShot.cpp
     particles/ParticleSystemRenderer.cpp
     particles/ParticleSystemAnimatedSpriteRenderer.cpp
+    particles/ParticleStateInitializer.cpp
     light/Light.cpp
     light/ShadowLight.cpp
     light/PointLight.cpp

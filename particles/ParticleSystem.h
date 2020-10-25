@@ -5,10 +5,11 @@
 #include "../scene/Object3DComponent.h"
 #include "ParticleEmitter.h"
 #include "ParticleSystemRenderer.h"
+#include "ParticleState.h"
 
 namespace Core {
 
-    class ParticleSystem : public Object3DComponent {
+    class ParticleSystem final: public Object3DComponent {
     public:
         ParticleSystem(WeakPointer<Object3D> owner, UInt32 maximumActiveParticles);
         ~ParticleSystem();
@@ -28,5 +29,6 @@ namespace Core {
 
         UInt32 maximumActiveParticles;
         std::shared_ptr<ParticleEmitter> particleEmitter;
+        ParticleStateAttributeArray particleStates;
     };
 }

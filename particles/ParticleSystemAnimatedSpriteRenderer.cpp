@@ -22,8 +22,8 @@ namespace Core {
     Bool ParticleSystemAnimatedSpriteRenderer::forwardRenderParticleSystem(const ViewDescriptor& viewDescriptor, WeakPointer<ParticleSystem> particleSystem, Bool isStatic,
                                                                            const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
         UInt32 maxActiveParticles = particleSystem->getMaximumActiveParticles();
-        if (maxActiveParticles != this->particleAttributes.getParticleCount()) {
-            this->particleAttributes.setParticleCount(maxActiveParticles);
+        if (maxActiveParticles != this->renderAttributes.getParticleCount()) {
+            this->renderAttributes.setParticleCount(maxActiveParticles);
         }
     }
 

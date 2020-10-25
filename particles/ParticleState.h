@@ -10,8 +10,6 @@ namespace Core {
 
     class ParticleState {
     public:
-        ParticleState();
-
         Real lifetime;
         Real age;
         UInt32 sequenceNumber;
@@ -22,13 +20,15 @@ namespace Core {
         Real rotationalSpeed;
         Real radius;
         Color color;
-
     };
 
-    class ParticleStateAttributeArray {
+    class ParticleStateArrayBase {
     public:
-        ParticleStateAttributeArray() {
+        ParticleStateArrayBase() {
             this->particleCount = 0;
+        }
+
+        virtual ~ParticleStateArrayBase(){
         }
     
         void setParticleCount(UInt32 particleCount) {
@@ -42,13 +42,21 @@ namespace Core {
         UInt32 getParticleCount() {
             return this->particleCount;
         }
+    protected:
+        virtual void allocate(UInt32 particleCount) = 0;
+        virtual void deallocate() = 0;
 
-    private:
+        UInt32 particleCount;
+    };
 
-        void deallocate() {
+    class ParticleStateAttributeArray final: public ParticleStateArrayBase {
+    public:
+        ParticleStateAttributeArray() {
         }
 
-        void allocate(UInt32 particleCount) {
+    protected:
+
+        virtual void allocate(UInt32 particleCount) override {
             this->lifetimes = std::make_shared<ScalarAttributeArray<Real>>(particleCount);
             this->ages = std::make_shared<ScalarAttributeArray<Real>>(particleCount);
             this->sequenceNumbers = std::make_shared<ScalarAttributeArray<UInt32>>(particleCount);
@@ -61,7 +69,9 @@ namespace Core {
             this->colors = std::make_shared<AttributeArray<ColorS>>(particleCount);
         }
 
-        UInt32 particleCount;
+        virtual void deallocate() override {
+        }
+
         std::shared_ptr<ScalarAttributeArray<Real>> lifetimes;
         std::shared_ptr<ScalarAttributeArray<Real>> ages;
         std::shared_ptr<ScalarAttributeArray<UInt32>> sequenceNumbers;

@@ -30,6 +30,6 @@ namespace Core {
     protected:
         ParticleSystemAnimatedSpriteRenderer(WeakPointer<Graphics> graphics, WeakPointer<Object3D> owner);
 
-        ParticleStateAttributeArray particleAttributes;
+        ParticleStateAttributeArray renderAttributes;
     };
 }
