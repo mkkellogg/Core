@@ -77,20 +77,11 @@ namespace Core {
 
     void VertexBoneMap::buildAttributeArray() {
         try {
-            this->boneWeights = std::make_shared<AttributeArray<Vector4rs>>(this->vertexCount);
-            this->boneIndices = std::make_shared<AttributeArray<Vector4is>>(this->vertexCount);
+            this->boneWeights = std::make_shared<AttributeArray<Vector4rs>>(this->vertexCount, AttributeType::Float, false);
+            this->boneIndices = std::make_shared<AttributeArray<Vector4is>>(this->vertexCount, AttributeType::Int, false);
         } catch(...) {
             throw AllocationException("VertexBoneMap::buildAttributeArray() -> Unable to allocate array.");
         }
-
-        WeakPointer<AttributeArrayGPUStorage> boneWeightsGpuStorage =
-            Engine::instance()->createGPUStorage(this->vertexCount * Constants::MaxBonesPerVertex * sizeof(Real), Constants::MaxBonesPerVertex, AttributeType::Float, false);
-        this->boneWeights->setGPUStorage(boneWeightsGpuStorage);
-
-
-        WeakPointer<AttributeArrayGPUStorage> boneIndicesGpuStorage =
-            Engine::instance()->createGPUStorage(this->vertexCount * Constants::MaxBonesPerVertex * sizeof(Int32), Constants::MaxBonesPerVertex, AttributeType::Int, false);
-        this->boneIndices->setGPUStorage(boneIndicesGpuStorage);
 
         Real* boneWeightsDataArray = new (std::nothrow) Real[this->vertexCount * Constants::MaxBonesPerVertex];
         if (boneWeightsDataArray == nullptr) {

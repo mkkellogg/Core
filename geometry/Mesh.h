@@ -87,15 +87,11 @@ namespace Core {
         template <typename T>
         Bool initVertexAttributes(std::shared_ptr<AttributeArray<T>>* attributes, UInt32 vertexCount) {          
             try {
-                *attributes = std::make_shared<AttributeArray<T>>(vertexCount);
+                *attributes = std::make_shared<AttributeArray<T>>(vertexCount, AttributeType::Float, false);
             }
             catch(...) {
                 throw AllocationException("MeshGL::initVertexAttributes() -> Unable to allocate array.");
             }
-
-            WeakPointer<AttributeArrayGPUStorage> gpuStorage =
-                Engine::instance()->createGPUStorage((*attributes)->getSize(), T::ComponentCount, AttributeType::Float, false);
-            (*attributes)->setGPUStorage(gpuStorage);
             return true;
         }
 

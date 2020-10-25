@@ -9,6 +9,7 @@
 #include "../common/assert.h"
 #include "../common/types.h"
 #include "../Graphics.h"
+#include "../geometry/AttributeType.h"
 #include "AttributeArrayGPUStorage.h"
 
 namespace Core {
@@ -45,6 +46,16 @@ namespace Core {
     public:
 
         AttributeArray(UInt32 attributeCount) : AttributeArrayBase(attributeCount, T::ComponentCount), storage(nullptr), attributes(nullptr) {
+            this->gpuAttributeType = AttributeType::Float;
+            this->normalizeGPUData = false;
+            this->autoAllocateGPUSorage = false;
+            allocate();
+        }
+
+        AttributeArray(UInt32 attributeCount, AttributeType gpuAttributeType, Bool normalizeGPUData) : AttributeArrayBase(attributeCount, T::ComponentCount), storage(nullptr), attributes(nullptr) {
+            this->gpuAttributeType = gpuAttributeType;
+            this->normalizeGPUData = normalizeGPUData;
+            this->autoAllocateGPUSorage = true;
             allocate();
         }
 
@@ -133,6 +144,9 @@ namespace Core {
         }
 
     protected:
+        AttributeType gpuAttributeType;
+        Bool normalizeGPUData;
+        Bool autoAllocateGPUSorage;
         typename T::ComponentType* storage;
         T* attributes;
 
@@ -153,6 +167,14 @@ namespace Core {
             for (UInt32 i = 0; i < this->attributeCount; i++) {
                 new (this->attributes + i) T(this->storage + (i * T::ComponentCount));
             }
+
+            if (this->autoAllocateGPUSorage) this->allocateGPUStorage();
+        }
+
+        void allocateGPUStorage() {
+            WeakPointer<AttributeArrayGPUStorage> gpuStorage =
+            Engine::instance()->createGPUStorage(this->getSize(), T::ComponentCount, this->gpuAttributeType, this->normalizeGPUData);
+            this->setGPUStorage(gpuStorage);
         }
 
         void deallocate() {
@@ -176,8 +198,6 @@ namespace Core {
             }
         }
     };
-
-
 
     template <typename T>
     class ScalarAttributeArray final: public AttributeArrayBase {
