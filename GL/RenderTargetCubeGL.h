@@ -26,10 +26,10 @@ namespace Core {
         friend class GraphicsGL;
     public:
         ~RenderTargetCubeGL() override;
-        virtual Bool init() override;
-        virtual Bool addColorTexture(TextureAttributes attributes) override;
-        virtual void destroyColorBuffer(UInt32 index = 0) override;
-        virtual void destroyDepthBuffer() override;
+        Bool init() override;
+        Bool addColorTexture(TextureAttributes attributes) override;
+        void destroyColorBuffer(UInt32 index = 0) override;
+        void destroyDepthBuffer() override;
 
     private:
 

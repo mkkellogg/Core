@@ -17,13 +17,13 @@ namespace Core {
 
     public:
         ~ParticleSystemAnimatedSpriteRenderer() override;
-        virtual Bool forwardRender(const ViewDescriptor& viewDescriptor, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) override;
-        virtual Bool forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<BaseRenderable> renderable, Bool isStatic,
+        Bool forwardRender(const ViewDescriptor& viewDescriptor, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) override;
+        Bool forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<BaseRenderable> renderable, Bool isStatic,
                                          const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) override;
         Bool forwardRenderParticleSystem(const ViewDescriptor& viewDescriptor, WeakPointer<ParticleSystem> particleSystem, Bool isStatic,
                                          const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting);
-        virtual Bool supportsRenderPath(RenderPath renderPath) override;
-        virtual UInt32 getRenderQueueID() const override;
+        Bool supportsRenderPath(RenderPath renderPath) override;
+        UInt32 getRenderQueueID() const override;
 
         void init();
 

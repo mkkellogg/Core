@@ -56,7 +56,7 @@ namespace Core {
 
     protected:
 
-        virtual void allocate(UInt32 particleCount) override {
+        void allocate(UInt32 particleCount) override {
             this->lifetimes = std::make_shared<ScalarAttributeArray<Real>>(particleCount);
             this->ages = std::make_shared<ScalarAttributeArray<Real>>(particleCount);
             this->sequenceNumbers = std::make_shared<ScalarAttributeArray<UInt32>>(particleCount);
@@ -69,7 +69,7 @@ namespace Core {
             this->colors = std::make_shared<AttributeArray<ColorS>>(particleCount);
         }
 
-        virtual void deallocate() override {
+        void deallocate() override {
         }
 
         std::shared_ptr<ScalarAttributeArray<Real>> lifetimes;

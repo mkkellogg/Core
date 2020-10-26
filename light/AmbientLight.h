@@ -14,7 +14,7 @@ namespace Core {
         friend class Engine;
 
     public:
-        virtual ~AmbientLight();
+        ~AmbientLight();
 
         void init() override;
               
