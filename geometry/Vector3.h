@@ -104,6 +104,24 @@ namespace Core {
             }
         }Eq;
 
+        void subtract(const T& x, const T& y, const T& z) {
+            this->x -= x;
+            this->y -= y;
+            this->z -= z;
+        }
+
+        void add(const T& x, const T& y, const T& z) {
+            this->x += x;
+            this->y += y;
+            this->z += z;
+        }
+
+        void multiply(const T& x) {
+            this->x *= x;
+            this->y *= x;
+            this->z *= x;
+        }
+
     protected:
         T& w = this->data[3];
 
@@ -118,20 +136,6 @@ namespace Core {
             Vector3Base<T, false> vec = *this;
             vec.scale(scale);
             return vec;
-        }
-
-        template <Bool otherCustomStorage>
-        void subtract(const Vector3Base<T, otherCustomStorage>& other) {
-            this->x -= other.x;
-            this->y -= other.y;
-            this->z -= other.z;
-        }
-
-        template <Bool otherCustomStorage>
-        void add(const Vector3Base<T, otherCustomStorage>& other) {
-            this->x += other.x;
-            this->y += other.y;
-            this->z += other.z;
         }
     };
 
@@ -189,14 +193,14 @@ namespace Core {
         template <Bool otherCustomStorage>
         Vector3<T, false> operator-(const Vector3<T, otherCustomStorage>& other) const {
             Vector3<T, false> temp(this->x, this->y, this->z);
-            temp.subtract(other);
+            temp.subtractVector(other);
             return temp;
         }
 
         template <Bool otherCustomStorage>
         Vector3<T, false> operator+(const Vector3<T, otherCustomStorage>& other) const {
             Vector3<T, false> temp(this->x, this->y, this->z);
-            temp.add(other);
+            temp.addVector(other);
             return temp;
         }
 
@@ -213,11 +217,22 @@ namespace Core {
             return result;
         }
 
+        template <Bool otherCustomStorage>
+        void subtractVector(const Vector3<T, otherCustomStorage>& other) {
+            Vector3Base<T, customStorage>::subtract(other.x, other.y, other.z);
+        }
+
+        template <Bool otherCustomStorage>
+        void addVector(const Vector3<T, otherCustomStorage>& other) {
+            Vector3Base<T, customStorage>::add(other.x, other.y, other.z);
+        }
+
         static void cross(const Vector3& a, const Vector3& b, Vector3& result) {
             result.x = (a.y * b.z) - (a.z * b.y);
             result.y = (a.z * b.x) - (a.x * b.z);
             result.z = (a.x * b.y) - (a.y * b.x);
         }
+        
     
     private:
 
@@ -281,22 +296,32 @@ namespace Core {
         template <Bool otherCustomStorage>
         Point3<T, false> operator-(const Vector3<T, otherCustomStorage>& other) const {
             Point3<T, false> temp(this->x, this->y, this->z);
-            temp.subtract(other);
+            temp.subtractVector(other);
             return temp;
         }
 
         template <Bool otherCustomStorage>
         Vector3<T, false> operator-(const Point3<T, otherCustomStorage>& other) const {
             Vector3<T, false> temp(this->x, this->y, this->z);
-            Vector3<T, false> othertemp(other.x, other.y, other.z);
-            return temp - othertemp;
+            temp.subtract(other.x, other.y, other.z);
+            return temp;
         }
 
         template <Bool otherCustomStorage>
         Point3<T, false> operator+(const Vector3<T, otherCustomStorage>& other) const {
             Point3<T, false> temp(this->x, this->y, this->z);
-            temp.add(other);
+            temp.addVector(other);
             return temp;
+        }
+
+        template <Bool otherCustomStorage>
+        void subtractVector(const Vector3<T, otherCustomStorage>& other) {
+            Vector3Base<T, customStorage>::subtract(other.x, other.y, other.z);
+        }
+
+        template <Bool otherCustomStorage>
+        void addVector(const Vector3<T, otherCustomStorage>& other) {
+            Vector3Base<T, customStorage>::add(other.x, other.y, other.z);
         }
 
     };

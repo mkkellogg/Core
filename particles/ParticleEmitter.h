@@ -25,21 +25,11 @@ namespace Core {
             this->emitCount = 0;
             this->age = 0.0f;
             this->timeActive = 0.0f;
-            this->started = false;
             this->activeCount = 0;
         }
         virtual ~ParticleEmitter();
 
-        void start() {
-            if (!this->started) {
-                this->started = true;
-                this->startTime = Time::getRealTimeSinceStartup();
-                this->lastUpdateTime = this->startTime;
-            }
-        }
-
-        virtual UInt32 update() {
-            Real timeDelta;
+        virtual UInt32 update(Real timeDelta) {
             this->internalUpdate(timeDelta);
             return 0;
         }
@@ -49,26 +39,17 @@ namespace Core {
 
     protected:
 
-        Bool internalUpdate (Real& timeDelta) {
-            if (this->started) {
-                Real currentTime = Time::getRealTimeSinceStartup();
-                timeDelta = currentTime - this->lastUpdateTime;
-                this->age = currentTime - this->startTime;
-                this->timeActive = Math::max(currentTime - this->emissionRelativeStartTime, 0.0f);
-                this->lastUpdateTime = currentTime;
-                return this->age >= this->emissionRelativeStartTime &&
-                       (this->emissionDuration == 0.0f || (this->timeActive <= emissionDuration));
-            }
-            return false;
+        Bool internalUpdate (Real timeDelta) {
+            this->age += timeDelta;
+            this->timeActive = Math::max(this->age - this->emissionRelativeStartTime, 0.0f);
+            return this->age >= this->emissionRelativeStartTime &&
+                    (this->emissionDuration == 0.0f || (this->timeActive <= emissionDuration));
         }
 
         void updateEmitCount(UInt32 count) {
             this->emitCount += count;
         }
 
-        Bool started;
-        Real startTime;
-        Real lastUpdateTime;
         Real age;
         Real timeActive;
         UInt32 emitCount;
@@ -87,8 +68,7 @@ namespace Core {
             this->timeSinceLastBurst = 0.0f;
         }
 
-        virtual UInt32 update() override {
-            Real timeDelta;
+        virtual UInt32 update(Real timeDelta) override {
             if (this->internalUpdate(timeDelta)) {
                 this->timeSinceLastBurst += timeDelta;
                 if (this->burstCount < this->maxBursts || this->maxBursts == 0) {
@@ -126,8 +106,7 @@ namespace Core {
 
         ConstantParticleEmitter() {}
 
-        virtual UInt32 update() override {
-            Real timeDelta;
+        virtual UInt32 update(Real timeDelta) override {
             if (this->internalUpdate(timeDelta)) {
                 Real effectiveEmissionRate = 0.0f;
                 if (this->timeActive > 0.0f) effectiveEmissionRate = (Real)this->emitCount / this->timeActive;

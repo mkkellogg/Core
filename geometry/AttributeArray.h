@@ -78,6 +78,23 @@ namespace Core {
             return this->attributes[index];
         }
 
+        void setAttribute(const T& attribute, UInt32 index) {
+            if (index >= this->attributeCount) {
+                throw OutOfRangeException("AttributeArray::setAttribute() -> 'index' is out of range.");
+            }
+            this->attributes[index] = attribute;
+        }
+
+        void copyAttribute(UInt32 srcIndex, UInt32 destIndex) {
+            if (srcIndex >= this->attributeCount) {
+                throw OutOfRangeException("AttributeArray::copyAttribute() -> 'srcIndex' is out of range.");
+            }
+            if (destIndex >= this->attributeCount) {
+                throw OutOfRangeException("AttributeArray::copyAttribute() -> 'destIndex' is out of range.");
+            }
+            this->attributes[destIndex] = this->attributes[srcIndex];
+        }
+
         void store(const typename T::ComponentType* data) {
             memcpy(this->storage, data, this->getSize());
             this->updateGPUStorageData();
@@ -220,6 +237,23 @@ namespace Core {
                 throw OutOfRangeException("AttributeArray::getAttribute() -> 'index' is out of range.");
             }
             return this->attributes[index];
+        }
+
+        void setAttribute(const T& attribute, UInt32 index) {
+            if (index >= this->attributeCount) {
+                throw OutOfRangeException("AttributeArray::setAttribute() -> 'index' is out of range.");
+            }
+            this->attributes[index] = attribute;
+        }
+
+        void copyAttribute(UInt32 srcIndex, UInt32 destIndex) {
+            if (srcIndex >= this->attributeCount) {
+                throw OutOfRangeException("AttributeArray::copyAttribute() -> 'srcIndex' is out of range.");
+            }
+            if (destIndex >= this->attributeCount) {
+                throw OutOfRangeException("AttributeArray::copyAttribute() -> 'destIndex' is out of range.");
+            }
+            this->attributes[destIndex] = this->attributes[srcIndex];
         }
 
         void store(const T* data) {
