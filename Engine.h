@@ -23,6 +23,8 @@ namespace Core {
     // forward declarations
     class Graphics;
     class AnimationManager;
+    class ParticleSystemManager;
+    class ParticleSystem;
     class ImageLoader;
     class AssetLoader;
     class CubeTexture;
@@ -58,6 +60,7 @@ namespace Core {
 
         WeakPointer<Graphics> getGraphicsSystem();
         WeakPointer<AnimationManager> getAnimationManager();
+        WeakPointer<ParticleSystemManager> getParticleSystemManager();
 
         static void safeReleaseObject(WeakPointer<CoreObject> object);
         void addOwner(WeakPointer<CoreObject> object);
@@ -152,6 +155,8 @@ namespace Core {
 
         WeakPointer<ReflectionProbe> createReflectionProbe(WeakPointer<Object3D> owner);
 
+        WeakPointer<ParticleSystem> createParticleSystem(WeakPointer<Object3D> owner, UInt32 maxParticleCount);
+
         void setImageLoader(WeakPointer<ImageLoader> imageLoader);
         WeakPointer<ImageLoader> getImageLoader();
         void setAssetLoader(WeakPointer<AssetLoader> assetLoader);
@@ -174,7 +179,7 @@ namespace Core {
         static void errorIfShuttingDown();
 
         CoreObjectReferenceManager objectManager;
-
+        std::shared_ptr<ParticleSystemManager> particleSystemManager;
         std::shared_ptr<AnimationManager> animationManager;
         std::shared_ptr<Graphics> graphics;
 

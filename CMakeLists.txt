@@ -150,6 +150,7 @@ set(INCLUDE_FILES
     render/ReflectionProbe.h
     render/ToneMapType.h
     render/RenderUtils.h
+    particles/ParticleSystemManager.h
     particles/ParticleSystem.h
     particles/ParticleSystemSnapShot.h
     particles/ParticleSystemRenderer.h
@@ -266,6 +267,7 @@ set(SOURCE_FILES
     render/MeshOutlinePostProcessor.cpp
     render/ReflectionProbe.cpp
     render/RenderUtils.cpp
+    particles/ParticleSystemManager.cpp
     particles/ParticleSystem.cpp
     particles/ParticleSystemSnapShot.cpp
     particles/ParticleSystemRenderer.cpp

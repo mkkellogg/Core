@@ -7,20 +7,16 @@ namespace Core {
         this->maximumActiveParticles = maximumActiveParticles;
         this->activeParticleCount = 0;
         this->emitterInitialized = false;
-        this->pauseCarryOverTimeDelta = 0.0f;
+
         this->particleStates.setParticleCount(maximumActiveParticles);
     }
 
     ParticleSystem::~ParticleSystem() {
     }
 
-    void ParticleSystem::update() {
+    void ParticleSystem::update(Real timeDelta) {
         if (this->emitterInitialized && this->systemState == SystemState::Running) {
-            Real currentTime = Time::getRealTimeSinceStartup();
-            Real timeDelta = currentTime - this->lastUpdateTime + this->pauseCarryOverTimeDelta;
             UInt32 particlesToEmit = this->particleEmitter->update(timeDelta);
-            this->lastUpdateTime = currentTime;
-            this->pauseCarryOverTimeDelta = 0.0f;
             if (particlesToEmit > 0) this->activateParticles(particlesToEmit);
             this->advanceActiveParticles(timeDelta);
         }
@@ -28,7 +24,6 @@ namespace Core {
 
     void ParticleSystem::start() {
         if (this->systemState == SystemState::NotStarted || this->systemState == SystemState::Paused) {
-            this->lastUpdateTime = Time::getRealTimeSinceStartup();
             this->systemState = SystemState::Running;
         } else {
             // TODO: Decide how to handle this case
@@ -37,8 +32,6 @@ namespace Core {
 
     void ParticleSystem::pause() {
         if (this->systemState == SystemState::Running) {
-            Real currentTime = Time::getRealTimeSinceStartup();
-            this->pauseCarryOverTimeDelta = currentTime - this->lastUpdateTime;
             this->systemState = SystemState::Paused;
         }
     }

@@ -26,7 +26,7 @@ namespace Core {
         ParticleSystem(WeakPointer<Object3D> owner, UInt32 maximumActiveParticles);
         ~ParticleSystem();
 
-        void update();
+        void update(Real timeDelta);
         void start();
         void pause();
         void stop();
@@ -71,8 +71,6 @@ namespace Core {
 
         Bool emitterInitialized;
         SystemState systemState;
-        Real lastUpdateTime;
-        Real pauseCarryOverTimeDelta;
         UInt32 maximumActiveParticles;
         UInt32 activeParticleCount;
         std::shared_ptr<ParticleEmitter> particleEmitter;

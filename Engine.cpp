@@ -25,6 +25,8 @@
 #include "material/BasicTexturedLitMaterial.h"
 #include "material/StandardPhysicalMaterial.h"
 #include "material/AmbientPhysicalMaterial.h"
+#include "particles/ParticleSystemManager.h"
+#include "particles/ParticleSystem.h"
 
 namespace Core {
 
@@ -65,6 +67,7 @@ namespace Core {
         this->graphics->init();
 
         this->animationManager = std::shared_ptr<AnimationManager>(new AnimationManager());
+        this->particleSystemManager = std::shared_ptr<ParticleSystemManager>(new ParticleSystemManager());
 
         WeakPointer<BasicMaterial> basicMaterial = this->createMaterial<BasicMaterial>();
         WeakPointer<BasicTexturedMaterial> basicTexturedMaterial = this->createMaterial<BasicTexturedMaterial>();
@@ -113,6 +116,7 @@ namespace Core {
         static std::vector<LifecycleEventCallback> tempPersistentUpdateCallbacks;
         Time::update();
         this->animationManager->update();
+        this->particleSystemManager->update();
         if (this->updateCallbacks.size() > 0) {
             
             for (auto func : this->updateCallbacks) {
@@ -182,6 +186,11 @@ namespace Core {
     WeakPointer<AnimationManager> Engine::getAnimationManager() {
         errorIfShuttingDown();
         return this->animationManager;
+    }
+
+    WeakPointer<ParticleSystemManager> Engine::getParticleSystemManager() {
+        errorIfShuttingDown();
+        return this->particleSystemManager;
     }
 
     void Engine::safeReleaseObject(WeakPointer<CoreObject> object) {
@@ -298,6 +307,19 @@ namespace Core {
         WeakPointer<ReflectionProbe> wpReflectionProbe(spReflectionProbe);
         owner->addComponent(wpReflectionProbe);
         return spReflectionProbe;
+    }
+
+    WeakPointer<ParticleSystem> Engine::createParticleSystem(WeakPointer<Object3D> owner, UInt32 maxParticleCount) {
+        ParticleSystem* newParticleSystemPtr = new(std::nothrow) ParticleSystem(owner, maxParticleCount);
+        if (newParticleSystemPtr == nullptr) {
+            throw AllocationException("Engine::createParticleSystem -> Unable to allocate new ParticleSystem");
+        }
+        std::shared_ptr<ParticleSystem> spParticleSystem = std::shared_ptr<ParticleSystem>(newParticleSystemPtr);
+        this->objectManager.addReference(spParticleSystem, CoreObjectReferenceManager::OwnerType::Single);
+        WeakPointer<ParticleSystem> wpParticleSystem(spParticleSystem);
+        owner->addComponent(wpParticleSystem);
+        this->particleSystemManager->addParticleSystem(wpParticleSystem);
+        return spParticleSystem;
     }
 
     void Engine::setImageLoader(WeakPointer<ImageLoader> imageLoader) {
