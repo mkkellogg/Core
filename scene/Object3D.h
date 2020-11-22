@@ -31,6 +31,8 @@ namespace Core {
     class AmbientIBLLight;
     class ReflectionProbe;
     class Camera;
+    class ParticleSystem;
+    class ParticleSystemRenderer;
 
     class Object3D: public CoreObject {
 
@@ -60,10 +62,11 @@ namespace Core {
         WeakPointer<Object3D> getChild(UInt32 index);
 
         WeakPointer<BaseObject3DRenderer> getBaseRenderer();
+        WeakPointer<MeshRenderer> getMeshRenderer();
+        WeakPointer<ParticleSystemRenderer> getParticleSystemRenderer();
 
         WeakPointer<BaseRenderableContainer> getBaseRenderableContainer();
         WeakPointer<MeshContainer> getMeshContainer();
-        WeakPointer<MeshRenderer> getMeshRenderer();
 
         WeakPointer<Light> getLight();
         WeakPointer<DirectionalLight> getDirectionalLight();
@@ -73,6 +76,8 @@ namespace Core {
 
         WeakPointer<ReflectionProbe> getReflectionProbe();
         WeakPointer<Camera> getCamera();
+
+        WeakPointer<ParticleSystem> getParticleSystem();
 
     protected:
         Object3D();
@@ -88,10 +93,11 @@ namespace Core {
         std::string name;
 
         WeakPointer<BaseObject3DRenderer> baseRenderer;
+        WeakPointer<MeshRenderer> meshRenderer;
+        WeakPointer<ParticleSystemRenderer> particleSystemRenderer;
 
         WeakPointer<BaseRenderableContainer> baseRenderableContainer;
         WeakPointer<MeshContainer> meshContainer;
-        WeakPointer<MeshRenderer> meshRenderer;
 
         WeakPointer<ReflectionProbe> reflectionProbe;
         WeakPointer<Camera> camera;
@@ -101,6 +107,8 @@ namespace Core {
         WeakPointer<PointLight> pointLight;
         WeakPointer<AmbientLight> ambientLight;
         WeakPointer<AmbientIBLLight> ambientIBLLight;
+
+        WeakPointer<ParticleSystem> particleSystem;
 
     private:
         static UInt64 getNextID();

@@ -17,23 +17,25 @@ namespace Core {
 
     void RenderList::addItem(WeakPointer<BaseObject3DRenderer> renderer, WeakPointer<BaseRenderable> renderable, Bool isStatic, Bool isActive) {
         RenderItem& renderItem = this->renderItemPool.acquireObject();
-        renderItem.meshRenderer =  WeakPointer<MeshRenderer>::nullPtr();
+        this->initRenderItem(renderItem, isStatic, isActive);
         renderItem.renderer = renderer;
-        renderItem.mesh = WeakPointer<Mesh>::nullPtr();
         renderItem.renderable = renderable;
-        renderItem.isStatic = isStatic;
-        renderItem.isActive = isActive;
         this->renderItems.push_back(&renderItem);
     }
 
     void RenderList::addMesh(WeakPointer<MeshRenderer> meshRenderer, WeakPointer<Mesh> mesh, Bool isStatic, Bool isActive) {
         RenderItem& renderItem = this->renderItemPool.acquireObject();
+        this->initRenderItem(renderItem, isStatic, isActive);
         renderItem.meshRenderer = meshRenderer;
-        renderItem.renderer = WeakPointer<BaseObject3DRenderer>::nullPtr();
         renderItem.mesh = mesh;
-        renderItem.renderable = WeakPointer<BaseRenderable>::nullPtr();
-        renderItem.isStatic = isStatic;
-        renderItem.isActive = isActive;
+        this->renderItems.push_back(&renderItem);
+    }
+
+    void RenderList::addParticleSystem(WeakPointer<ParticleSystemRenderer> particleSystemRenderer, WeakPointer<ParticleSystem> particleSystem, Bool isStatic, Bool isActive) {
+        RenderItem& renderItem = this->renderItemPool.acquireObject();
+        this->initRenderItem(renderItem, isStatic, isActive);
+        renderItem.particleSystemRenderer = particleSystemRenderer;
+        renderItem.particleSystem = particleSystem;
         this->renderItems.push_back(&renderItem);
     }
 
@@ -49,6 +51,17 @@ namespace Core {
         for (UInt32 i = 0; i < this->getItemCount(); i++) {
             this->renderItems[i]->isActive = true;
         }
+    }
+
+    void RenderList::initRenderItem(RenderItem& renderItem, Bool isStatic, Bool isActive) {
+        renderItem.meshRenderer = WeakPointer<MeshRenderer>::nullPtr();
+        renderItem.renderer = WeakPointer<BaseObject3DRenderer>::nullPtr();
+        renderItem.particleSystem = WeakPointer<ParticleSystem>::nullPtr();
+        renderItem.mesh = WeakPointer<Mesh>::nullPtr();
+        renderItem.renderable = WeakPointer<BaseRenderable>::nullPtr();
+        renderItem.particleSystemRenderer = WeakPointer<ParticleSystemRenderer>::nullPtr();
+        renderItem.isStatic = isStatic;
+        renderItem.isActive = isActive;
     }
 
 }

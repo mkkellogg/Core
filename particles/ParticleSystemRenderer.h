@@ -7,16 +7,19 @@
 namespace Core {
 
     // forward declarations
+    class Engine;
     class Graphics;
     class ParticleSystem;
 
     class ParticleSystemRenderer : public Object3DRenderer<ParticleSystem> {
+        friend class Engine;
     public:
-        ParticleSystemRenderer(WeakPointer<Graphics> graphics, WeakPointer<Object3D> owner);
+        virtual Bool forwardRenderParticleSystem(const ViewDescriptor& viewDescriptor, WeakPointer<ParticleSystem> particleSystem, Bool isStatic,
+                                         const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) = 0;
         virtual ~ParticleSystemRenderer() = 0;
 
     protected:
-
+        ParticleSystemRenderer(WeakPointer<Graphics> graphics, WeakPointer<Object3D> owner);
         UInt32 maxParticleCount;
     };
 }

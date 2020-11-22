@@ -27,7 +27,9 @@ namespace Core {
             this->timeActive = 0.0f;
             this->activeCount = 0;
         }
-        virtual ~ParticleEmitter();
+        virtual ~ParticleEmitter() {
+            
+        }
 
         virtual UInt32 update(Real timeDelta) {
             this->internalUpdate(timeDelta);

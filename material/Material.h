@@ -20,6 +20,7 @@ namespace Core {
     public:
         Material(WeakPointer<Graphics> graphics);
         Material(WeakPointer<Graphics> graphics, WeakPointer<Shader> shader);
+        virtual ~Material();
         WeakPointer<Shader> getShader();
         
         virtual Bool build() = 0;

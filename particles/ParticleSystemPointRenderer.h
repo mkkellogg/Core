@@ -12,11 +12,11 @@ namespace Core {
     class Object3D;
     class Graphics;
 
-    class ParticleSystemAnimatedSpriteRenderer final: public ParticleSystemRenderer {
+    class ParticleSystemPointRenderer final: public ParticleSystemRenderer {
         friend class Engine;
 
     public:
-        ~ParticleSystemAnimatedSpriteRenderer() override;
+        ~ParticleSystemPointRenderer() override;
         Bool forwardRender(const ViewDescriptor& viewDescriptor, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) override;
         Bool forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<BaseRenderable> renderable, Bool isStatic,
                                          const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) override;
@@ -28,7 +28,7 @@ namespace Core {
         void init();
 
     protected:
-        ParticleSystemAnimatedSpriteRenderer(WeakPointer<Graphics> graphics, WeakPointer<Object3D> owner);
+        ParticleSystemPointRenderer(WeakPointer<Graphics> graphics, WeakPointer<Object3D> owner);
 
         ParticleStateAttributeArray renderAttributes;
     };

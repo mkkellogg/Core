@@ -152,9 +152,12 @@ set(INCLUDE_FILES
     render/RenderUtils.h
     particles/ParticleSystemManager.h
     particles/ParticleSystem.h
+    particles/ParticleEmitter.h
+    particles/ParticleState.h
     particles/ParticleSystemSnapShot.h
     particles/ParticleSystemRenderer.h
     particles/ParticleSystemAnimatedSpriteRenderer.h
+    particles/ParticleSystemPointRenderer.h
     particles/initializer/ParticleStateInitializer.h
     particles/initializer/BoxPositionInitializer.h
     particles/initializer/RandomVelocityInitializer.h
@@ -272,6 +275,7 @@ set(SOURCE_FILES
     particles/ParticleSystemSnapShot.cpp
     particles/ParticleSystemRenderer.cpp
     particles/ParticleSystemAnimatedSpriteRenderer.cpp
+    particles/ParticleSystemPointRenderer.cpp
     particles/initializer/ParticleStateInitializer.cpp
     particles/initializer/BoxPositionInitializer.cpp
     particles/initializer/RandomVelocityInitializer.cpp

@@ -27,6 +27,7 @@
 #include "material/AmbientPhysicalMaterial.h"
 #include "particles/ParticleSystemManager.h"
 #include "particles/ParticleSystem.h"
+#include "particles/operator/BasicParticleStateOperator.h"
 
 namespace Core {
 
@@ -319,6 +320,7 @@ namespace Core {
         WeakPointer<ParticleSystem> wpParticleSystem(spParticleSystem);
         owner->addComponent(wpParticleSystem);
         this->particleSystemManager->addParticleSystem(wpParticleSystem);
+        wpParticleSystem->addParticleStateOperator<BasicParticleStateOperator>();
         return spParticleSystem;
     }
 

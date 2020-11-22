@@ -24,6 +24,8 @@ namespace Core {
         this->setShader(shader);
     }
 
+    Material::~Material() {}
+
     WeakPointer<Shader> Material::getShader() {
         return this->shader;
     }

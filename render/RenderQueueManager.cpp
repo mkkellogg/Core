@@ -30,6 +30,12 @@ namespace Core {
         queue.addMesh(meshRenderer, mesh, isStatic, isActive);
     }
 
+    void RenderQueueManager::addParticleSystemToQueue(UInt32 queueID, WeakPointer<ParticleSystemRenderer> particleSystemRenderer,
+                                                      WeakPointer<ParticleSystem> particleSystem, Bool isStatic, Bool isActive) {
+        RenderQueue& queue = this->getOrAddRenderQueue(queueID);
+        queue.addParticleSystem(particleSystemRenderer, particleSystem, isStatic, isActive);
+    }
+
     RenderQueue& RenderQueueManager::getOrAddRenderQueue(UInt32 queueID) {
         if (this->queues.find(queueID) == this->queues.end()) {
             this->queues.emplace(queueID, queueID);

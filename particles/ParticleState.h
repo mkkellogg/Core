@@ -130,6 +130,7 @@ namespace Core {
             ptr.velocity = &this->velocities->getAttribute(index);
             ptr.normal = &this->normals->getAttribute(index);
             ptr.rotation = &this->rotations->getAttribute(index);
+            ptr.rotationalSpeed = &this->rotationalSpeeds->getAttribute(index);
             ptr.radius = &this->radiuses->getAttribute(index);
             ptr.color = &this->colors->getAttribute(index);
         }

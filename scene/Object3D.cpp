@@ -10,6 +10,8 @@
 #include "../render/BaseRenderable.h"
 #include "../render/MeshContainer.h"
 #include "../render/MeshRenderer.h"
+#include "../particles/ParticleSystem.h"
+#include "../particles/ParticleSystemRenderer.h"
 
 namespace Core {
 
@@ -32,7 +34,9 @@ namespace Core {
             WeakPointer<BaseRenderableContainer> renderableContainerComponent = WeakPointer<Object3DComponent>::dynamicPointerCast<BaseRenderableContainer>(component);
             WeakPointer<BaseObject3DRenderer> rendererComponent = WeakPointer<Object3DComponent>::dynamicPointerCast<BaseObject3DRenderer>(component);
             WeakPointer<ReflectionProbe> reflectionProbeComponent = WeakPointer<Object3DComponent>::dynamicPointerCast<ReflectionProbe>(component);
-            if (lightComponent || cameraComponent || renderableComponent || rendererComponent || renderableContainerComponent || reflectionProbeComponent) {
+            WeakPointer<ParticleSystem> particleSystemComponent = WeakPointer<Object3DComponent>::dynamicPointerCast<ParticleSystem>(component);
+            if (lightComponent || cameraComponent || renderableComponent || rendererComponent || renderableContainerComponent ||
+                reflectionProbeComponent || particleSystemComponent) {
                  Engine::safeReleaseObject(component);
             }
         }
@@ -125,14 +129,19 @@ namespace Core {
         Bool addedLight = this->testAndSetComponentMemberVar<Light>(component, this->light, std::string("light"));
         this->testAndSetComponentMemberVar<ReflectionProbe>(component, this->reflectionProbe, std::string("reflection probe"));
         this->testAndSetComponentMemberVar<Camera>(component, this->camera, std::string("camera"));
+        this->testAndSetComponentMemberVar<ParticleSystem>(component, this->particleSystem, std::string("particle system"));
 
         if (addedBaseObject3DRenderer) {
             WeakPointer<MeshRenderer> meshRenderer = WeakPointer<BaseObject3DRenderer>::dynamicPointerCast<MeshRenderer>(this->baseRenderer);
             if (meshRenderer.isValid()) {
                 this->meshRenderer = meshRenderer;
             }
+            WeakPointer<ParticleSystemRenderer> particleSystemRenderer = WeakPointer<BaseObject3DRenderer>::dynamicPointerCast<ParticleSystemRenderer>(this->baseRenderer);
+            if (particleSystemRenderer.isValid()) {
+                this->particleSystemRenderer = particleSystemRenderer;
+            }
         }
-    
+
         if (addedBaseRenderableContainer) {
             WeakPointer<MeshContainer> meshContainer = WeakPointer<BaseRenderableContainer>::dynamicPointerCast<MeshContainer>(this->baseRenderableContainer);
             if (meshContainer.isValid()) {
@@ -194,9 +203,16 @@ namespace Core {
         return this->children[index];
     }
 
-
     WeakPointer<BaseObject3DRenderer> Object3D::getBaseRenderer() {
         return this->baseRenderer;
+    }
+
+    WeakPointer<MeshRenderer> Object3D::getMeshRenderer() {
+        return this->meshRenderer;
+    }
+
+    WeakPointer<ParticleSystemRenderer> Object3D::getParticleSystemRenderer() {
+        return this->particleSystemRenderer;
     }
 
     WeakPointer<BaseRenderableContainer> Object3D::getBaseRenderableContainer() {
@@ -207,8 +223,8 @@ namespace Core {
         return this->meshContainer;
     }
 
-    WeakPointer<MeshRenderer> Object3D::getMeshRenderer() {
-        return this->meshRenderer;
+    WeakPointer<ParticleSystem> Object3D::getParticleSystem() {
+        return this->particleSystem;
     }
 
     WeakPointer<Light> Object3D::getLight() {

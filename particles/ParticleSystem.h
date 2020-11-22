@@ -34,9 +34,9 @@ namespace Core {
         SystemState getSystemState();
 
         template <typename T, typename... Args>
-        Core::enable_if_t<std::is_base_of<ParticleEmitter, T>::value, Bool>& setEmitter(Args... args) {
+        Core::enable_if_t<std::is_base_of<ParticleEmitter, T>::value, T>& setEmitter(Args... args) {
             std::shared_ptr<T> emitter = std::make_shared<T>(args...);
-            emitter.maxActiveParticles = this->maximumActiveParticles;
+            emitter->maxActiveParticles = this->maximumActiveParticles;
             this->particleEmitter = emitter;
             this->emitterInitialized = true;
             return *(emitter.get());
@@ -44,7 +44,7 @@ namespace Core {
         WeakPointer<ParticleEmitter> getEmitter();
 
         template <typename T, typename... Args>
-        Core::enable_if_t<std::is_base_of<ParticleStateInitializer, T>::value, Bool>& addParticleStateInitializer(Args... args) {
+        Core::enable_if_t<std::is_base_of<ParticleStateInitializer, T>::value, T>& addParticleStateInitializer(Args... args) {
             std::shared_ptr<T> initializer = std::make_shared<T>(args...);
             this->particleStateInitializers.push_back(initializer);
             return *(initializer.get());
@@ -52,7 +52,7 @@ namespace Core {
         WeakPointer<ParticleStateInitializer> getParticleStateInitializer(UInt32 index);
 
         template <typename T, typename... Args>
-        Core::enable_if_t<std::is_base_of<ParticleStateOperator, T>::value, Bool>& addParticleStateOperator(Args... args) {
+        Core::enable_if_t<std::is_base_of<ParticleStateOperator, T>::value, T>& addParticleStateOperator(Args... args) {
             std::shared_ptr<T> particleStateOperator = std::make_shared<T>(args...);
             this->particleStateOperators.push_back(particleStateOperator);
             return *(particleStateOperator.get());

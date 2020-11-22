@@ -13,6 +13,8 @@ namespace Core {
     class Object3D;
     class MeshRenderer;
     class Mesh;
+    class ParticleSystemRenderer;
+    class ParticleSystem;
 
     class RenderQueueManager {
     public:
@@ -24,6 +26,8 @@ namespace Core {
         void addItemToQueue(UInt32 queueID, WeakPointer<BaseObject3DRenderer> renderer,
                             WeakPointer<BaseRenderable> renderable, Bool isStatic, Bool isActive);
         void addMeshToQueue(UInt32 queueID, WeakPointer<MeshRenderer> meshRenderer, WeakPointer<Mesh> mesh, Bool isStatic, Bool isActive);
+        void addParticleSystemToQueue(UInt32 queueID, WeakPointer<ParticleSystemRenderer> particleSystemRenderer,
+                                      WeakPointer<ParticleSystem> particleSystem, Bool isStatic, Bool isActive);
         RenderQueue& getRenderQueue(UInt32 index);
 
     protected:

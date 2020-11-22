@@ -6,4 +6,7 @@ namespace Core {
         this->maxParticleCount = maxParticleCount;
     }
 
+    ParticleSystemRenderer::~ParticleSystemRenderer() {
+
+    }
 }

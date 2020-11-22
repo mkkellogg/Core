@@ -17,6 +17,7 @@
 #include "../render/MeshRenderer.h"
 #include "../render/RenderableContainer.h"
 #include "../render/EngineRenderQueue.h"
+#include "../particles/ParticleSystemRenderer.h"
 #include "../scene/Scene.h"
 #include "../scene/Skybox.h"
 #include "../image/TextureAttr.h"
@@ -334,6 +335,8 @@ namespace Core {
         if (renderItem.isActive) {
             if (renderItem.meshRenderer.isValid()) {
                 renderItem.meshRenderer->forwardRenderMesh(viewDescriptor, renderItem.mesh, renderItem.isStatic, lightPack, matchPhysicalPropertiesWithLighting);
+            } else if(renderItem.particleSystemRenderer.isValid()) {
+                renderItem.particleSystemRenderer->forwardRenderParticleSystem(viewDescriptor, renderItem.particleSystem, renderItem.isStatic, lightPack, matchPhysicalPropertiesWithLighting);
             } else if (renderItem.renderer.isValid()) {
                 renderItem.renderer->forwardRenderObject(viewDescriptor, renderItem.renderable, renderItem.isStatic, lightPack, matchPhysicalPropertiesWithLighting);
             }
@@ -923,29 +926,32 @@ namespace Core {
     void Renderer::sortObjectsIntoRenderQueues(std::vector<WeakPointer<Object3D>>& objects, RenderQueueManager& renderQueueManager, Int32 overrideRenderQueueID) {
         for(UInt32 i = 0; i < objects.size(); i++) {
             WeakPointer<Object3D> object = objects[i];
-            WeakPointer<BaseRenderableContainer> renderableContainer = object->getBaseRenderableContainer();
-            if (renderableContainer) {
-                WeakPointer<BaseObject3DRenderer> renderer = object->getBaseRenderer();
-                if (renderer.isValid()) {
-                    UInt32 renderQueueID = -1;
-                    if (overrideRenderQueueID >= 0) {
-                        renderQueueID = (UInt32)overrideRenderQueueID;
-                    } else {
-                        renderQueueID = renderer->getRenderQueueID();
+            WeakPointer<BaseObject3DRenderer> renderer = object->getBaseRenderer();
+            if (renderer.isValid()) {
+                UInt32 renderQueueID = -1;
+                if (overrideRenderQueueID >= 0) {
+                    renderQueueID = (UInt32)overrideRenderQueueID;
+                } else {
+                    renderQueueID = renderer->getRenderQueueID();
+                }
+                WeakPointer<BaseRenderableContainer> renderableContainer = object->getBaseRenderableContainer();
+                WeakPointer<MeshRenderer> meshRenderer = object->getMeshRenderer();
+                WeakPointer<MeshContainer> meshContainer = object->getMeshContainer();
+                WeakPointer<ParticleSystemRenderer> particleSystemRenderer = object->getParticleSystemRenderer();
+                WeakPointer<ParticleSystem> particleSystem = object->getParticleSystem();
+                if (meshRenderer.isValid() && meshContainer.isValid()) {
+                    UInt32 renderableCount = meshContainer->getBaseRenderableCount();
+                    for(UInt32 i = 0; i < renderableCount; i++) {
+                        WeakPointer<Mesh> mesh = meshContainer->getRenderable(i);
+                        renderQueueManager.addMeshToQueue(renderQueueID, meshRenderer, mesh, object->isStatic(), true);
                     }
+                } if (particleSystemRenderer.isValid() && particleSystem.isValid()) {
+                    renderQueueManager.addParticleSystemToQueue(renderQueueID, particleSystemRenderer, particleSystem, object->isStatic(), true);
+                } else if (renderableContainer.isValid()) {
                     UInt32 renderableCount = renderableContainer->getBaseRenderableCount();
-                    WeakPointer<MeshRenderer> meshRenderer = object->getMeshRenderer();
-                    WeakPointer<MeshContainer> meshContainer = object->getMeshContainer();
-                    if (meshRenderer.isValid() && meshContainer.isValid()) {
-                        for(UInt32 i = 0; i < renderableCount; i++) {
-                            WeakPointer<Mesh> mesh = meshContainer->getRenderable(i);
-                            renderQueueManager.addMeshToQueue(renderQueueID, meshRenderer, mesh, object->isStatic(), true);
-                        }
-                    } else {
-                        for(UInt32 i = 0; i < renderableCount; i++) {
-                            WeakPointer<BaseRenderable> renderable = renderableContainer->getBaseRenderable(i);
-                            renderQueueManager.addItemToQueue(renderQueueID, renderer, renderable, object->isStatic(), true);
-                        }
+                    for(UInt32 i = 0; i < renderableCount; i++) {
+                        WeakPointer<BaseRenderable> renderable = renderableContainer->getBaseRenderable(i);
+                        renderQueueManager.addItemToQueue(renderQueueID, renderer, renderable, object->isStatic(), true);
                     }
                 }
             }
@@ -956,23 +962,26 @@ namespace Core {
         renderList.clear();
          for(UInt32 i = 0; i < objects.size(); i++) {
             WeakPointer<Object3D> object = objects[i];
-            WeakPointer<BaseRenderableContainer> renderableContainer = object->getBaseRenderableContainer();
-            if (renderableContainer) {
-                WeakPointer<BaseObject3DRenderer> renderer = object->getBaseRenderer();
-                if (renderer.isValid()) {
-                    WeakPointer<MeshContainer> meshContainer = object->getMeshContainer();
-                    WeakPointer<MeshRenderer> meshRenderer = object->getMeshRenderer();
+            WeakPointer<BaseObject3DRenderer> renderer = object->getBaseRenderer();
+            if (renderer.isValid()) {
+                WeakPointer<BaseRenderableContainer> renderableContainer = object->getBaseRenderableContainer();
+                WeakPointer<MeshContainer> meshContainer = object->getMeshContainer();
+                WeakPointer<MeshRenderer> meshRenderer = object->getMeshRenderer();
+                WeakPointer<ParticleSystemRenderer> particleSystemRenderer = object->getParticleSystemRenderer();
+                WeakPointer<ParticleSystem> particleSystem = object->getParticleSystem();
+                if (meshRenderer.isValid() && meshContainer.isValid()) {
+                    UInt32 renderableCount = meshContainer->getBaseRenderableCount();
+                    for(UInt32 i = 0; i < renderableCount; i++) {
+                        WeakPointer<Mesh> mesh = meshContainer->getRenderable(i);
+                        renderList.addMesh(meshRenderer, mesh, object->isStatic(), true);
+                    }
+                } if (particleSystemRenderer.isValid() && particleSystem.isValid()) {
+                    renderList.addParticleSystem(particleSystemRenderer, particleSystem, object->isStatic(), true);
+                } else if (renderableContainer.isValid()) {
                     UInt32 renderableCount = renderableContainer->getBaseRenderableCount();
-                    if (meshRenderer.isValid() && meshContainer.isValid()) {
-                        for(UInt32 i = 0; i < renderableCount; i++) {
-                            WeakPointer<Mesh> mesh = meshContainer->getRenderable(i);
-                            renderList.addMesh(meshRenderer, mesh, object->isStatic(), true);
-                        }
-                    } else {
-                        for(UInt32 i = 0; i < renderableCount; i++) {
-                            WeakPointer<BaseRenderable> renderable = renderableContainer->getBaseRenderable(i);
-                            renderList.addItem(renderer, renderable, object->isStatic(), true);
-                        }
+                    for(UInt32 i = 0; i < renderableCount; i++) {
+                        WeakPointer<BaseRenderable> renderable = renderableContainer->getBaseRenderable(i);
+                        renderList.addItem(renderer, renderable, object->isStatic(), true);
                     }
                 }
             }

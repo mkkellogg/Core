@@ -16,6 +16,8 @@ namespace Core {
     class BaseRenderable;
     class MeshRenderer;
     class Mesh;
+    class ParticleSystemRenderer;
+    class ParticleSystem;
 
     class RenderList {
     public:
@@ -26,10 +28,12 @@ namespace Core {
         void clear();
         void addItem(WeakPointer<BaseObject3DRenderer> renderer, WeakPointer<BaseRenderable> renderable, Bool isStatic, Bool isActive);
         void addMesh(WeakPointer<MeshRenderer> meshRenderer, WeakPointer<Mesh> mesh, Bool isStatic, Bool isActive);
+        void addParticleSystem(WeakPointer<ParticleSystemRenderer> particleSystemRenderer, WeakPointer<ParticleSystem> particleSystem, Bool isStatic, Bool isActive);
         RenderItem& getRenderItem(UInt32 index);
         void setAllActive();
 
     protected:
+        void initRenderItem(RenderItem& renderItem, Bool isStatic, Bool isActive);
         ObjectPool<RenderItem> renderItemPool;
         std::vector<RenderItem*> renderItems;
         UInt32 itemCount;
