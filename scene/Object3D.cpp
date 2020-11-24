@@ -75,6 +75,8 @@ namespace Core {
     }
 
     void Object3D::addChild(WeakPointer<Object3D> object) {
+
+        if (object->parent.isValid() && object->parent.get() == this) return;
         
         if (object->parent.isValid()) {
             object->parent->removeChild(object);

@@ -16,7 +16,6 @@ namespace Core {
     }
 
     void BoxPositionInitializer::initializeState(ParticleStatePtr& state) {
-        ParticleStateInitializer::initializeState(state);
         state.position->x = Math::random() * this->range.x + this->offset.x;
         state.position->y = Math::random() * this->range.y + this->offset.y;
         state.position->z = Math::random() * this->range.z + this->offset.z;

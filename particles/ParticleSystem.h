@@ -60,6 +60,8 @@ namespace Core {
         WeakPointer<ParticleStateOperator> getParticleStateOperator(UInt32 index);
 
         UInt32 getMaximumActiveParticles();
+        UInt32 getActiveParticleCount();
+        ParticleStatePtr& getParticleStatePtr(UInt32 index);
 
     private:
 
@@ -69,6 +71,7 @@ namespace Core {
         Bool advanceActiveParticle(UInt32 index, Real timeDelta);
         void copyParticleInArray(UInt32 srcIndex, UInt32 destIndex);
 
+        Bool simulateInWorldSpace;
         Bool emitterInitialized;
         SystemState systemState;
         UInt32 maximumActiveParticles;

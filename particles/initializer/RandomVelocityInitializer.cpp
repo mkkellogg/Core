@@ -21,7 +21,6 @@ namespace Core {
 
     void RandomVelocityInitializer::initializeState(ParticleStatePtr& state) {
         static Vector3r tempVector;
-        ParticleStateInitializer::initializeState(state);
         tempVector.x = Math::random() * this->range.x + this->offset.x;
         tempVector.y = Math::random() * this->range.y + this->offset.y;
         tempVector.z = Math::random() * this->range.z + this->offset.z;

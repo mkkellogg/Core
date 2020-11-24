@@ -7,6 +7,7 @@ namespace Core {
         this->maximumActiveParticles = maximumActiveParticles;
         this->activeParticleCount = 0;
         this->emitterInitialized = false;
+        this->simulateInWorldSpace = false;
 
         this->particleStates.setParticleCount(maximumActiveParticles);
     }
@@ -40,7 +41,7 @@ namespace Core {
 
     }
 
-    void ParticleSystem::activateParticles(UInt32 particleCount) {
+    void ParticleSystem::activateParticles(UInt32 particleCount) { 
         UInt32 newActiveParticleCount = Math::clamp(this->activeParticleCount + particleCount, 0, this->maximumActiveParticles);
         for (UInt32 i = this->activeParticleCount; i < newActiveParticleCount; i++) {
             this->activateParticle(i);
@@ -50,6 +51,7 @@ namespace Core {
 
     void ParticleSystem::activateParticle(UInt32 index) {
         ParticleStatePtr statePtr = this->particleStates.getParticleStatePtr(index);
+        *statePtr.age = 0.0f;
         for (UInt32 i = 0; i < this->particleStateInitializers.size(); i++) {
             std::shared_ptr<ParticleStateInitializer> particleStateInitializer = this->particleStateInitializers[i];
             particleStateInitializer->initializeState(statePtr);
@@ -59,12 +61,13 @@ namespace Core {
     void ParticleSystem::advanceActiveParticles(Real timeDelta) {
         UInt32 i = 0;
         while (i < this->activeParticleCount) {
-            Bool particleIsActive = this->advanceActiveParticle(i, timeDelta);
+            ParticleStatePtr statePtr = this->particleStates.getParticleStatePtr(i);
+            Bool particleIsActive = this->advanceActiveParticle(i, timeDelta); 
             if (!particleIsActive) {
                 if (i < this->activeParticleCount - 1) {
                     this->copyParticleInArray(this->activeParticleCount - 1, i);
                 }
-                this->activeParticleCount--;
+                this->activeParticleCount--; 
                 continue;
             }
             i++;
@@ -76,7 +79,8 @@ namespace Core {
         for (UInt32 i = 0; i < this->particleStateOperators.size(); i++) {
             std::shared_ptr<ParticleStateOperator> particleStateOperator = this->particleStateOperators[i];
             particleStateOperator->updateState(statePtr, timeDelta);
-            if (*statePtr.age >= *statePtr.lifetime) {
+            Real particleLifeTime = *statePtr.lifetime;
+            if (particleLifeTime != 0.0f && *statePtr.age >= particleLifeTime) {
                 return false;
             }
         }
@@ -111,5 +115,16 @@ namespace Core {
 
     UInt32 ParticleSystem::getMaximumActiveParticles() {
         return this->maximumActiveParticles;
+    }
+
+    UInt32 ParticleSystem::getActiveParticleCount() {
+        return this->activeParticleCount;
+    }
+
+    ParticleStatePtr& ParticleSystem::getParticleStatePtr(UInt32 index) {
+        if (index >= this->activeParticleCount) {
+            throw OutOfRangeException("ParticleSystem::getParticleStatePtr() -> 'index' is out of range.");
+        }
+        return this->particleStates.getParticleStatePtr(index);
     }
 }

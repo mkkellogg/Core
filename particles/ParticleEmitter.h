@@ -112,11 +112,11 @@ namespace Core {
             if (this->internalUpdate(timeDelta)) {
                 Real effectiveEmissionRate = 0.0f;
                 if (this->timeActive > 0.0f) effectiveEmissionRate = (Real)this->emitCount / this->timeActive;
-                Real emissionRateDelta = this->emissionRate - effectiveEmissionRate;
-                if (emissionRateDelta > 1.0f) {
-                    UInt32 toEmitThisFrame = (UInt32) emissionRateDelta;
-                    this->updateEmitCount(toEmitThisFrame);
-                    return toEmitThisFrame;
+                Real toEmitThisFrame = this->emissionRate * this->timeActive - (Real)this->emitCount;
+                if (toEmitThisFrame >= 1.0f) {
+                    UInt32 iToEmitThisFrame = (UInt32)toEmitThisFrame;
+                    this->updateEmitCount(iToEmitThisFrame);
+                    return iToEmitThisFrame;
                 }
             }
             return 0;

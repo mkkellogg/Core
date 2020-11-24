@@ -9,7 +9,7 @@ namespace Core {
     }
 
     void ParticleStateInitializer::initializeState(ParticleStatePtr& state) {
-        *state.lifetime = 1.0f;
+        *state.lifetime = 0.0f;
         *state.age = 0.0f;
         *state.sequenceNumber = 0;
         (*state.position).set(0.0f, 0.0f, 0.0f);

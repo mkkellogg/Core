@@ -161,6 +161,7 @@ set(INCLUDE_FILES
     particles/initializer/ParticleStateInitializer.h
     particles/initializer/BoxPositionInitializer.h
     particles/initializer/RandomVelocityInitializer.h
+    particles/initializer/LifetimeInitializer.h
     particles/operator/ParticleStateOperator.h
     particles/operator/BasicParticleStateOperator.h
     light/Light.h
@@ -279,6 +280,7 @@ set(SOURCE_FILES
     particles/initializer/ParticleStateInitializer.cpp
     particles/initializer/BoxPositionInitializer.cpp
     particles/initializer/RandomVelocityInitializer.cpp
+    particles/initializer/LifetimeInitializer.cpp
     particles/operator/ParticleStateOperator.cpp
     particles/operator/BasicParticleStateOperator.cpp
     light/Light.cpp

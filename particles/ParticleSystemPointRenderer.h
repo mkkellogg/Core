@@ -11,6 +11,8 @@ namespace Core {
     class Engine;
     class Object3D;
     class Graphics;
+    class Mesh;
+    class MeshRenderer;
 
     class ParticleSystemPointRenderer final: public ParticleSystemRenderer {
         friend class Engine;
@@ -29,7 +31,12 @@ namespace Core {
 
     protected:
         ParticleSystemPointRenderer(WeakPointer<Graphics> graphics, WeakPointer<Object3D> owner);
+        void updatePointMeshCount(WeakPointer<ParticleSystem> particleSystem);
 
+        std::vector<PersistentWeakPointer<Mesh>> pointMeshes;
+        std::vector<PersistentWeakPointer<Object3D>> pointMeshRoots;
+        PersistentWeakPointer<Object3D> localRenderRoot;
+        PersistentWeakPointer<Object3D> worldRenderRoot;
         ParticleStateAttributeArray renderAttributes;
     };
 }
