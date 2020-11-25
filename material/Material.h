@@ -18,8 +18,8 @@ namespace Core {
 
     class Material : public CoreObject {
     public:
-        Material(WeakPointer<Graphics> graphics);
-        Material(WeakPointer<Graphics> graphics, WeakPointer<Shader> shader);
+        Material();
+        Material(WeakPointer<Shader> shader);
         virtual ~Material();
         WeakPointer<Shader> getShader();
         
@@ -103,7 +103,6 @@ namespace Core {
         Bool buildFromSource(const std::string& vertexSource, const std::string& geometrySource, const std::string& fragmentSource);
         void setShader(WeakPointer<Shader> shader);
 
-        PersistentWeakPointer<Graphics> graphics;
         PersistentWeakPointer<Shader> shader;
 
     private:

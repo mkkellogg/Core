@@ -6,7 +6,7 @@
 
 namespace Core {
 
-    BasicExtrusionMaterial::BasicExtrusionMaterial(WeakPointer<Graphics> graphics) : BaseMaterial(graphics) {
+    BasicExtrusionMaterial::BasicExtrusionMaterial() {
         this->objectColorLocation = -1;
         this->averagedNormalLocation = -1;
         this->zOffsetLocation = -1;

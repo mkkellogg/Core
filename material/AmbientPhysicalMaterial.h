@@ -15,6 +15,6 @@ namespace Core {
     public:
          
     protected:
-        AmbientPhysicalMaterial(WeakPointer<Graphics> graphics);
+        AmbientPhysicalMaterial();
     };
 }

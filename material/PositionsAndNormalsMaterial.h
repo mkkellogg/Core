@@ -21,7 +21,7 @@ namespace Core {
         void setConvertToViewSpace(Bool convertToViewSpace);
 
     private:
-        PositionsAndNormalsMaterial(WeakPointer<Graphics> graphics);
+        PositionsAndNormalsMaterial();
 
         Int32 viewSpaceLocation;
 

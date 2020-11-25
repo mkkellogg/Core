@@ -13,6 +13,6 @@ namespace Core {
     public:
 
     protected:
-        IrradianceRendererMaterial(WeakPointer<Graphics> graphics);
+        IrradianceRendererMaterial();
     };
 }

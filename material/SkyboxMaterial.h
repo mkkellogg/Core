@@ -24,9 +24,9 @@ namespace Core {
         void setTexture(WeakPointer<CubeTexture> texture);
 
     protected:
-        SkyboxMaterial(WeakPointer<Graphics> graphics);
-        SkyboxMaterial(const std::string& builtInShaderName, WeakPointer<Graphics> graphics);
-        SkyboxMaterial(const std::string& vertShaderName, const std::string& fragShaderName, WeakPointer<Graphics> graphics);
+        SkyboxMaterial();
+        SkyboxMaterial(const std::string& builtInShaderName);
+        SkyboxMaterial(const std::string& vertShaderName, const std::string& fragShaderName);
         
         Int32 cubeTextureLocation;
         PersistentWeakPointer<CubeTexture> texture;

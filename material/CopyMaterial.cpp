@@ -7,7 +7,7 @@
 
 namespace Core {
 
-    CopyMaterial::CopyMaterial(WeakPointer<Graphics> graphics) : BaseMaterial(graphics) {
+    CopyMaterial::CopyMaterial() {
     }
 
     CopyMaterial::~CopyMaterial() {

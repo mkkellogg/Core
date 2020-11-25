@@ -18,6 +18,6 @@ namespace Core {
         virtual WeakPointer<Material> clone() override;
 
     private:
-        DistanceOnlyMaterial(WeakPointer<Graphics> graphics);
+        DistanceOnlyMaterial();
     };
 }

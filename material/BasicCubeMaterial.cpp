@@ -8,7 +8,7 @@
 
 namespace Core {
 
-    BasicCubeMaterial::BasicCubeMaterial(WeakPointer<Graphics> graphics) : BaseMaterial(graphics) {
+    BasicCubeMaterial::BasicCubeMaterial() {
         this->cubeTextureLocation = -1;
         this->rectTextureLocation = -1;
     }

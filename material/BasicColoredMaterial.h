@@ -25,7 +25,7 @@ namespace Core {
         void setZOffset(Real offset);
 
     private:
-        BasicColoredMaterial(WeakPointer<Graphics> graphics);
+        BasicColoredMaterial();
 
         Color objectColor;
         Real zOffset;

@@ -6,7 +6,7 @@
 
 namespace Core {
 
-    BasicColoredMaterial::BasicColoredMaterial(WeakPointer<Graphics> graphics) : BaseMaterial(graphics) {
+    BasicColoredMaterial::BasicColoredMaterial() {
         this->objectColorLocation = -1;
         this->zOffsetLocation = -1;
         this->zOffset = 0.0f;

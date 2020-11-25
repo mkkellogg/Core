@@ -2,7 +2,7 @@
 
 namespace Core {
 
-    IrradianceRendererMaterial::IrradianceRendererMaterial(WeakPointer<Graphics> graphics) : SkyboxMaterial("IrradianceRenderer", graphics) {
+    IrradianceRendererMaterial::IrradianceRendererMaterial() : SkyboxMaterial("IrradianceRenderer") {
         this->setPhysical(true);
     }
 }

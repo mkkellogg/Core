@@ -2,7 +2,7 @@
 
 namespace Core {
 
-    PhysicalSkyboxMaterial::PhysicalSkyboxMaterial(WeakPointer<Graphics> graphics) : SkyboxMaterial("PhysicalSkybox", graphics) {
+    PhysicalSkyboxMaterial::PhysicalSkyboxMaterial() : SkyboxMaterial("PhysicalSkybox") {
         this->exposureLocation = -1;
         this->exposure = 1.0f;
         this->setPhysical(true);

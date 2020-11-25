@@ -7,7 +7,7 @@
 
 namespace Core {
 
-    RedColorSetMaterial::RedColorSetMaterial(WeakPointer<Graphics> graphics) : BaseMaterial(graphics) {
+    RedColorSetMaterial::RedColorSetMaterial() {
         this->outputColor.set(1.0, 0.0, 1.0, 1.0);
     }
 

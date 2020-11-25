@@ -6,7 +6,7 @@
 
 namespace Core {
 
-    NormalsMaterial::NormalsMaterial(WeakPointer<Graphics> graphics) : BaseMaterial(graphics) {
+    NormalsMaterial::NormalsMaterial() {
         this->convertToViewSpace = false;
     }
 

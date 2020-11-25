@@ -18,6 +18,6 @@ namespace Core {
         virtual WeakPointer<Material> clone() override;
 
     protected:
-        BasicLitMaterial(WeakPointer<Graphics> graphics);
+        BasicLitMaterial();
     };
 }

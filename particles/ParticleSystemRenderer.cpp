@@ -2,7 +2,7 @@
 
 namespace Core {
 
-    ParticleSystemRenderer::ParticleSystemRenderer(WeakPointer<Graphics> graphics, WeakPointer<Object3D> owner): Object3DRenderer(graphics, owner) {
+    ParticleSystemRenderer::ParticleSystemRenderer(WeakPointer<Object3D> owner): Object3DRenderer(owner) {
         this->maxParticleCount = maxParticleCount;
     }
 

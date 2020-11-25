@@ -7,7 +7,7 @@
 
 namespace Core {
 
-    BufferOutlineMaterial::BufferOutlineMaterial(WeakPointer<Graphics> graphics) : BaseMaterial(graphics) {
+    BufferOutlineMaterial::BufferOutlineMaterial() {
         this->outlineColorLocation = -1;
         this->outlineSizeLocation = -1;
         this->silhouetteLocation = -1;

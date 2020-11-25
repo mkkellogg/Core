@@ -76,7 +76,7 @@ namespace Core {
         void reverseVertexAttributeWindingOrder();
 
     protected:
-        Mesh(WeakPointer<Graphics> graphics, UInt32 vertexCount, UInt32 indexCount);
+        Mesh(UInt32 vertexCount, UInt32 indexCount);
         void initAttributes();
         Bool initIndices();
         void calculateFaceNormal(UInt32 faceIndex, Vector3r& result);
@@ -96,7 +96,6 @@ namespace Core {
         }
 
         std::string name;
-        PersistentWeakPointer<Graphics> graphics;
         Bool initialized;
         StandardAttributeSet enabledAttributes;
         UInt32 vertexCount;

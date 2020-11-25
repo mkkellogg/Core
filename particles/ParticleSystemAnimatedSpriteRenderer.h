@@ -28,7 +28,7 @@ namespace Core {
         void init();
 
     protected:
-        ParticleSystemAnimatedSpriteRenderer(WeakPointer<Graphics> graphics, WeakPointer<Object3D> owner);
+        ParticleSystemAnimatedSpriteRenderer(WeakPointer<Object3D> owner);
 
         ParticleStateAttributeArray renderAttributes;
     };

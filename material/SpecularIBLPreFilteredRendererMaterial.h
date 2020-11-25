@@ -21,7 +21,7 @@ namespace Core {
         void setTextureResolution(UInt32 resolution);
 
     protected:
-        SpecularIBLPreFilteredRendererMaterial(WeakPointer<Graphics> graphics);
+        SpecularIBLPreFilteredRendererMaterial();
 
         Real roughness;
         UInt32 textureResolution;

@@ -11,7 +11,7 @@
 
 namespace Core {
 
-    StandardPhysicalMaterialMultiLight::StandardPhysicalMaterialMultiLight(WeakPointer<Graphics> graphics): StandardPhysicalMaterial("StandardPhysicalMulti", graphics) {
+    StandardPhysicalMaterialMultiLight::StandardPhysicalMaterialMultiLight(): StandardPhysicalMaterial("StandardPhysicalMulti") {
         this->setRenderPath(RenderPath::SinglePassMultiLight);
     }
 

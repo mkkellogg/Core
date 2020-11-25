@@ -19,7 +19,7 @@ namespace Core {
         virtual ~ParticleSystemRenderer() = 0;
 
     protected:
-        ParticleSystemRenderer(WeakPointer<Graphics> graphics, WeakPointer<Object3D> owner);
+        ParticleSystemRenderer(WeakPointer<Object3D> owner);
         UInt32 maxParticleCount;
     };
 }

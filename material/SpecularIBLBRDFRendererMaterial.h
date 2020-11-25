@@ -19,7 +19,7 @@ namespace Core {
         virtual WeakPointer<Material> clone() override;
         
     protected:
-        SpecularIBLBRDFRendererMaterial(WeakPointer<Graphics> graphics);
-        SpecularIBLBRDFRendererMaterial(const std::string& vertShaderName, const std::string& fragShaderName, WeakPointer<Graphics> graphics);
+        SpecularIBLBRDFRendererMaterial();
+        SpecularIBLBRDFRendererMaterial(const std::string& vertShaderName, const std::string& fragShaderName);
     };
 }

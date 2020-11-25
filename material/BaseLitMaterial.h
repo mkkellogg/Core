@@ -20,7 +20,7 @@ namespace Core {
         virtual void copyTo(WeakPointer<Material> target) override;
 
     protected:
-        BaseLitMaterial(WeakPointer<Graphics> graphics);
+        BaseLitMaterial();
 
         Int32 lightPositionLocation[Constants::MaxShaderLights];
         Int32 lightDirectionLocation[Constants::MaxShaderLights];

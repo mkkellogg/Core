@@ -21,7 +21,7 @@ namespace Core {
         virtual void copyTo(WeakPointer<Material> target) override;
 
     protected:
-        BaseMaterial(WeakPointer<Graphics> graphics);
+        BaseMaterial();
 
         Int32 positionLocation;
         Int32 normalLocation;

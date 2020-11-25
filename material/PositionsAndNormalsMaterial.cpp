@@ -6,7 +6,7 @@
 
 namespace Core {
 
-    PositionsAndNormalsMaterial::PositionsAndNormalsMaterial(WeakPointer<Graphics> graphics) : BaseMaterial(graphics) {
+    PositionsAndNormalsMaterial::PositionsAndNormalsMaterial() {
         this->convertToViewSpace = false;
     }
 

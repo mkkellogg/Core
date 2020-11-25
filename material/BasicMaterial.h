@@ -16,6 +16,6 @@ namespace Core {
         virtual WeakPointer<Material> clone() override;
 
     private:
-        BasicMaterial(WeakPointer<Graphics> graphics);
+        BasicMaterial();
     };
 }

@@ -24,7 +24,7 @@ namespace Core {
         void setExtrusionFactor(Real extrusionFactor);
 
     private:
-        BasicExtrusionMaterial(WeakPointer<Graphics> graphics);
+        BasicExtrusionMaterial();
 
         Color objectColor;
         Real zOffset;

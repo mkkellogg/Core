@@ -28,7 +28,7 @@ namespace Core {
         void setKernelSize(UInt32 kernelSize);
 
     private:
-        BlurMaterial(WeakPointer<Graphics> graphics);
+        BlurMaterial();
 
         Int32 inputLocation;
         Int32 kernelSizeLocation;

@@ -7,7 +7,7 @@
 
 namespace Core {
 
-    BlurMaterial::BlurMaterial(WeakPointer<Graphics> graphics) : BaseMaterial(graphics) {
+    BlurMaterial::BlurMaterial() {
         this->kernelSize = 2;
     }
 

@@ -27,7 +27,7 @@ namespace Core {
         void setSSAOInput(WeakPointer<Texture> ssaoInput);
 
     private:
-        SSAOBlurMaterial(WeakPointer<Graphics> graphics);
+        SSAOBlurMaterial();
 
         Int32 ssaoInputLocation;
 

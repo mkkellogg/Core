@@ -25,8 +25,8 @@
 
 namespace Core {
 
-    MeshRenderer::MeshRenderer(WeakPointer<Graphics> graphics, WeakPointer<Material> material, WeakPointer<Object3D> owner)
-        : Object3DRenderer<Mesh>(graphics, owner), material(material) {
+    MeshRenderer::MeshRenderer(WeakPointer<Material> material, WeakPointer<Object3D> owner)
+        : Object3DRenderer<Mesh>(owner), material(material) {
     }
 
     MeshRenderer::~MeshRenderer() {
@@ -36,8 +36,9 @@ namespace Core {
     }
 
     void MeshRenderer::setRenderStateForMaterial(WeakPointer<Material> material, Bool renderingDepthOutput) {
-        this->graphics->setColorWriteEnabled(material->getColorWriteEnabled());
-        this->graphics->setRenderStyle(material->getRenderStyle());
+        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
+        graphics->setColorWriteEnabled(material->getColorWriteEnabled());
+        graphics->setRenderStyle(material->getRenderStyle());
         if (material->getBlendingMode() != RenderState::BlendingMode::None && !renderingDepthOutput) {
             graphics->setBlendingEnabled(true);
             if (material->getBlendingMode() == RenderState::BlendingMode::Custom) {
@@ -129,7 +130,8 @@ namespace Core {
             }
         }
         WeakPointer<Shader> shader = material->getShader();
-        this->graphics->activateShader(shader);
+        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
+        graphics->activateShader(shader);
 
         this->setRenderStateForMaterial(material, renderingDepthOutput);
         
@@ -181,7 +183,7 @@ namespace Core {
                 shader->setTexture2D(currentTextureSlot, ssaoMapLoc, viewDescriptor.ssaoMap->getTextureID());
                 if (ssaoEnabledLoc >= 0) shader->setUniform1i(ssaoEnabledLoc, 1.0);
             } else {
-                shader->setTexture2D(currentTextureSlot, ssaoMapLoc, this->graphics->getPlaceHolderTexture2D()->getTextureID());
+                shader->setTexture2D(currentTextureSlot, ssaoMapLoc, graphics->getPlaceHolderTexture2D()->getTextureID());
                 if (ssaoEnabledLoc >= 0) shader->setUniform1i(ssaoEnabledLoc, 0.0);
             }
             currentTextureSlot++;
@@ -294,9 +296,9 @@ namespace Core {
                     this->testAndSetTextureCubeWithInc(shader, currentTextureSlot, specularIBLPreFilteredMapLoc, ambientIBLLight->getSpecularIBLPreFilteredMap()->getTextureID());
                     this->testAndSetTexture2DWithInc(shader, currentTextureSlot, specularIBLBRDFMapLoc, ambientIBLLight->getSpecularIBLBRDFMap()->getTextureID());
                 } else {
-                    this->testAndSetTextureCubeWithInc(shader, currentTextureSlot, irradianceMapLoc, this->graphics->getPlaceHolderCubeTexture()->getTextureID());
-                    this->testAndSetTextureCubeWithInc(shader, currentTextureSlot, specularIBLPreFilteredMapLoc, this->graphics->getPlaceHolderCubeTexture()->getTextureID());
-                    this->testAndSetTexture2DWithInc(shader, currentTextureSlot, specularIBLBRDFMapLoc, this->graphics->getPlaceHolderTexture2D()->getTextureID());
+                    this->testAndSetTextureCubeWithInc(shader, currentTextureSlot, irradianceMapLoc, graphics->getPlaceHolderCubeTexture()->getTextureID());
+                    this->testAndSetTextureCubeWithInc(shader, currentTextureSlot, specularIBLPreFilteredMapLoc, graphics->getPlaceHolderCubeTexture()->getTextureID());
+                    this->testAndSetTexture2DWithInc(shader, currentTextureSlot, specularIBLBRDFMapLoc, graphics->getPlaceHolderTexture2D()->getTextureID());
                 }
 
                 if (lightType == LightType::Point || lightType == LightType::Directional) {
@@ -308,7 +310,7 @@ namespace Core {
                 }
 
                 Int32 lightShadowCubeMapLoc = material->getShaderLocation(StandardUniform::LightShadowCubeMap, lightShaderVarLocOffset);
-                Int32 shadowMapTextureID = this->graphics->getPlaceHolderCubeTexture()->getTextureID();
+                Int32 shadowMapTextureID = graphics->getPlaceHolderCubeTexture()->getTextureID();
                 if (lightType == LightType::Point) {
                     WeakPointer<PointLight> pointLight = lightPack.getPointLight(pointLightIndex);
                     if (lightRangeLoc >= 0) shader->setUniform1f(lightRangeLoc, pointLight->getRadius());
@@ -317,7 +319,7 @@ namespace Core {
                     if (lightPositionLoc >= 0) shader->setUniform4f(lightPositionLoc, pointLightPos.x, pointLightPos.y, pointLightPos.z, 1.0f);
                     if (lightShadowsEnabledLoc >= 0) shader->setUniform1i(lightShadowsEnabledLoc, pointLight->getShadowsEnabled() ? 1.0 : 0.0);
                     shadowMapTextureID = pointLight->getShadowsEnabled() ? pointLight->getShadowMap()->getColorTexture()->getTextureID() :
-                                                                           this->graphics->getPlaceHolderCubeTexture()->getTextureID();
+                                                                           graphics->getPlaceHolderCubeTexture()->getTextureID();
                 }
                 this->testAndSetTextureCubeWithInc(shader, currentTextureSlot, lightShadowCubeMapLoc, shadowMapTextureID);
 
@@ -341,7 +343,7 @@ namespace Core {
                         Int32 lightCascadeShaderVarLocOffset = lightShaderVarLocOffset * Constants::MaxDirectionalCascades + l;
                         Int32 shadowMapLoc = material->getShaderLocation(StandardUniform::LightShadowMap, lightCascadeShaderVarLocOffset);
                         shadowMapTextureID = directionalLight->getShadowsEnabled() ? directionalLight->getShadowMap(l)->getDepthTexture()->getTextureID() :
-                                                                                     this->graphics->getPlaceHolderTexture2D()->getTextureID();
+                                                                                     graphics->getPlaceHolderTexture2D()->getTextureID();
                         this->testAndSetTexture2DWithInc(shader, currentTextureSlot, shadowMapLoc, shadowMapTextureID);
                         Int32 viewProjectionLoc = material->getShaderLocation(StandardUniform::LightViewProjection, lightCascadeShaderVarLocOffset);
                         if (viewProjectionLoc >= 0) shader->setUniformMatrix4(viewProjectionLoc, directionalLight->getViewProjectionMatrix(l));
@@ -360,7 +362,7 @@ namespace Core {
                 for (UInt32 l = cascadeCount; l < Constants::MaxDirectionalCascades; l++) {
                     Int32 lightCascadeShaderVarLocOffset = lightShaderVarLocOffset * Constants::MaxDirectionalCascades + l;
                     Int32 shadowMapLoc = material->getShaderLocation(StandardUniform::LightShadowMap, lightCascadeShaderVarLocOffset);
-                    this->testAndSetTexture2DWithInc(shader, currentTextureSlot, shadowMapLoc, this->graphics->getPlaceHolderTexture2D()->getTextureID());
+                    this->testAndSetTexture2DWithInc(shader, currentTextureSlot, shadowMapLoc, graphics->getPlaceHolderTexture2D()->getTextureID());
                 }
 
                 if (renderPath != RenderPath::SinglePassMultiLight) {
@@ -458,7 +460,7 @@ namespace Core {
         }
     }
 
-     void MeshRenderer::disableShaderAttribute(WeakPointer<Mesh> mesh, WeakPointer<Material> material, StandardAttribute attribute, 
+    void MeshRenderer::disableShaderAttribute(WeakPointer<Mesh> mesh, WeakPointer<Material> material, StandardAttribute attribute,
                                               WeakPointer<AttributeArrayBase> array) {
         if (mesh->isAttributeEnabled(attribute)) {
             Int32 shaderLocation = material->getShaderLocation(attribute);
@@ -470,9 +472,9 @@ namespace Core {
 
     void MeshRenderer::drawMesh(WeakPointer<Mesh> mesh) {
         if (mesh->isIndexed()) {
-            this->graphics->drawBoundVertexBuffer(mesh->getIndexCount(), mesh->getIndexBuffer());
+            Engine::instance()->getGraphicsSystem()->drawBoundVertexBuffer(mesh->getIndexCount(), mesh->getIndexBuffer());
         } else {
-            this->graphics->drawBoundVertexBuffer(mesh->getVertexCount());
+            Engine::instance()->getGraphicsSystem()->drawBoundVertexBuffer(mesh->getVertexCount());
         }
     }
 

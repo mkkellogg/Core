@@ -35,13 +35,13 @@ namespace Core {
         }
     
     protected:
-        ShaderMaterial(const std::string& vertexShaderName, const std::string& fragmentShaderName, WeakPointer<Graphics> graphics) : T(graphics) {
+        ShaderMaterial(const std::string& vertexShaderName, const std::string& fragmentShaderName) {
             this->vertexShaderName = vertexShaderName;
             this->fragmentShaderName = fragmentShaderName;
             this->useBuiltInShader = false;
         }
 
-        ShaderMaterial(const std::string& builtInShaderName, WeakPointer<Graphics> graphics) : T(graphics) {
+        ShaderMaterial(const std::string& builtInShaderName) {
             this->builtInShaderName = builtInShaderName;
             this->useBuiltInShader = true;
         }

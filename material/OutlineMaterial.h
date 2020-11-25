@@ -30,7 +30,7 @@ namespace Core {
         void setOpacityMap(WeakPointer<Texture> opacityMap);
 
     private:
-        OutlineMaterial(WeakPointer<Graphics> graphics);
+        OutlineMaterial();
 
         Color outlineColor;
         Real edgeWidth;

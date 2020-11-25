@@ -1,5 +1,6 @@
 #include <memory>
 
+#include "../Engine.h"
 #include "Material.h"
 #include "Shader.h"
 #include "../Graphics.h"
@@ -8,7 +9,7 @@
 
 namespace Core {
 
-    Material::Material(WeakPointer<Graphics> graphics): graphics(graphics) {
+    Material::Material() {
         this->lit = false;
         this->physical = false;
         this->skinningEnabled = false;
@@ -20,7 +21,7 @@ namespace Core {
         this->customDepthOutputStateCopyExcludeFaceCulling = false;
     }
 
-    Material::Material(WeakPointer<Graphics> graphics, WeakPointer<Shader> shader): Material(graphics) {
+    Material::Material(WeakPointer<Shader> shader): Material() {
         this->setShader(shader);
     }
 
@@ -257,7 +258,7 @@ namespace Core {
     }
 
     Bool Material::buildFromSource(const std::string& vertexSource, const std::string& fragmentSource) {
-        WeakPointer<Shader> shader = this->graphics->createShader(vertexSource, fragmentSource);
+        WeakPointer<Shader> shader = Engine::instance()->getGraphicsSystem()->createShader(vertexSource, fragmentSource);
         Bool success = shader->build();
         if (!success) {
             this->ready = false;
@@ -268,7 +269,7 @@ namespace Core {
     }
 
     Bool Material::buildFromSource(const std::string& vertexSource, const std::string& geometrySource, const std::string& fragmentSource) {
-        WeakPointer<Shader> shader = this->graphics->createShader(vertexSource, geometrySource, fragmentSource);
+        WeakPointer<Shader> shader = Engine::instance()->getGraphicsSystem()->createShader(vertexSource, geometrySource, fragmentSource);
         Bool success = shader->build();
         if (!success) {
             this->ready = false;

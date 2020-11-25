@@ -9,7 +9,7 @@
 
 namespace Core {
 
-    DepthOnlyMaterial::DepthOnlyMaterial(WeakPointer<Graphics> graphics) : BaseMaterial(graphics) {
+    DepthOnlyMaterial::DepthOnlyMaterial() {
     }
 
     DepthOnlyMaterial::~DepthOnlyMaterial() {

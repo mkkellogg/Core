@@ -5,12 +5,12 @@
 
 namespace Core {
 
-    SpecularIBLBRDFRendererMaterial::SpecularIBLBRDFRendererMaterial(const std::string& vertShaderName, const std::string& fragShaderName, WeakPointer<Graphics> graphics):
-        ShaderMaterial<BaseMaterial>(vertShaderName, fragShaderName, graphics) {
+    SpecularIBLBRDFRendererMaterial::SpecularIBLBRDFRendererMaterial(const std::string& vertShaderName, const std::string& fragShaderName):
+        ShaderMaterial<BaseMaterial>(vertShaderName, fragShaderName) {
     }
     
-    SpecularIBLBRDFRendererMaterial::SpecularIBLBRDFRendererMaterial(WeakPointer<Graphics> graphics):
-        ShaderMaterial<BaseMaterial>("SpecularIBLBRDFRenderer", graphics) {
+    SpecularIBLBRDFRendererMaterial::SpecularIBLBRDFRendererMaterial():
+        ShaderMaterial<BaseMaterial>("SpecularIBLBRDFRenderer") {
     }
 
     SpecularIBLBRDFRendererMaterial::~SpecularIBLBRDFRendererMaterial() {

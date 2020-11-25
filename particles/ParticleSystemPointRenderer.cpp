@@ -9,8 +9,8 @@
 
 namespace Core {
 
-    ParticleSystemPointRenderer::ParticleSystemPointRenderer(WeakPointer<Graphics> graphics, WeakPointer<Object3D> owner):
-        ParticleSystemRenderer(graphics, owner) {}
+    ParticleSystemPointRenderer::ParticleSystemPointRenderer(WeakPointer<Object3D> owner):
+        ParticleSystemRenderer(owner) {}
 
     ParticleSystemPointRenderer::~ParticleSystemPointRenderer() {}
 

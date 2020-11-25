@@ -3,17 +3,17 @@
 
 namespace Core {
 
-    SkyboxMaterial::SkyboxMaterial(const std::string& vertShaderName, const std::string& fragShaderName, WeakPointer<Graphics> graphics):
-        ShaderMaterial<BaseMaterial>(vertShaderName, fragShaderName, graphics) {
+    SkyboxMaterial::SkyboxMaterial(const std::string& vertShaderName, const std::string& fragShaderName):
+        ShaderMaterial<BaseMaterial>(vertShaderName, fragShaderName) {
             this->cubeTextureLocation = -1;
     }
 
-    SkyboxMaterial::SkyboxMaterial(const std::string& builtInShaderName, WeakPointer<Graphics> graphics):
-        ShaderMaterial<BaseMaterial>(builtInShaderName, graphics) {
+    SkyboxMaterial::SkyboxMaterial(const std::string& builtInShaderName):
+        ShaderMaterial<BaseMaterial>(builtInShaderName) {
             this->cubeTextureLocation = -1;
     }
     
-    SkyboxMaterial::SkyboxMaterial(WeakPointer<Graphics> graphics) : SkyboxMaterial("Skybox", graphics) {
+    SkyboxMaterial::SkyboxMaterial() : SkyboxMaterial("Skybox") {
     }
 
     SkyboxMaterial::~SkyboxMaterial() {

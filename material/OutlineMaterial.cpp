@@ -8,7 +8,7 @@
 
 namespace Core {
 
-    OutlineMaterial::OutlineMaterial(WeakPointer<Graphics> graphics) : BaseMaterial(graphics) {
+    OutlineMaterial::OutlineMaterial() {
         this->outlineColorLocation = -1;
         this->edgeWidthLocation = -1;
         this->pctExtendLocation = -1;
@@ -67,7 +67,7 @@ namespace Core {
             this->shader->setUniform1i(this->opacityMapLocation, 0);
         } else {
             this->shader->setUniform1f(this->opacityMapEnabledLocation, 0.0);
-            this->shader->setTexture2D(0, this->graphics->getPlaceHolderTexture2D()->getTextureID());
+            this->shader->setTexture2D(0, Engine::instance()->getGraphicsSystem()->getPlaceHolderTexture2D()->getTextureID());
             this->shader->setUniform1i(this->opacityMapLocation, 0);
         }
     }

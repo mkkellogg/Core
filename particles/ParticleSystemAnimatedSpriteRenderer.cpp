@@ -3,8 +3,8 @@
 
 namespace Core {
 
-    ParticleSystemAnimatedSpriteRenderer::ParticleSystemAnimatedSpriteRenderer(WeakPointer<Graphics> graphics, WeakPointer<Object3D> owner):
-        ParticleSystemRenderer(graphics, owner) {}
+    ParticleSystemAnimatedSpriteRenderer::ParticleSystemAnimatedSpriteRenderer(WeakPointer<Object3D> owner):
+        ParticleSystemRenderer(owner) {}
 
     ParticleSystemAnimatedSpriteRenderer::~ParticleSystemAnimatedSpriteRenderer() {}
 

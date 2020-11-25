@@ -29,7 +29,7 @@ namespace Core {
         void setOutlineSize(UInt32 outlineSize);
 
     private:
-        BufferOutlineMaterial(WeakPointer<Graphics> graphics);
+        BufferOutlineMaterial();
 
         Int32 silhouetteLocation;
         Int32 outlineColorLocation;

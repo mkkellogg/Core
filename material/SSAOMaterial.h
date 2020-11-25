@@ -36,7 +36,7 @@ namespace Core {
         void setScreenHeight(Real screenHeight);
 
     private:
-        SSAOMaterial(WeakPointer<Graphics> graphics);
+        SSAOMaterial();
 
         Int32 viewPositionsLocation;
         Int32 viewNormalsLocation;

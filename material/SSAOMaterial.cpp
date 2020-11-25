@@ -7,7 +7,7 @@
 
 namespace Core {
 
-    SSAOMaterial::SSAOMaterial(WeakPointer<Graphics> graphics) : BaseMaterial(graphics) {
+    SSAOMaterial::SSAOMaterial() {
         this->radius = 2.0f;
     }
 

@@ -24,7 +24,7 @@ namespace Core {
         void setTexture(WeakPointer<Texture> texture);
 
     protected:
-        BasicTexturedFullScreenQuadMaterial(WeakPointer<Graphics> graphics);
+        BasicTexturedFullScreenQuadMaterial();
     
         Int32 uvLocation;
         PersistentWeakPointer<Texture> texture;

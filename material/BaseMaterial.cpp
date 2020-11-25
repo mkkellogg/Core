@@ -8,7 +8,7 @@
 
 namespace Core {
 
-    BaseMaterial::BaseMaterial(WeakPointer<Graphics> graphics) : Material(graphics) {
+    BaseMaterial::BaseMaterial() {
         this->positionLocation = -1;
         this->normalLocation = -1;
         this->averagedNormalLocation = -1;

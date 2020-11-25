@@ -19,7 +19,7 @@ namespace Core {
         void setExposure(Real exposure);
 
     protected:
-        PhysicalSkyboxMaterial(WeakPointer<Graphics> graphics);
+        PhysicalSkyboxMaterial();
 
         Real exposure;
         Int32 exposureLocation;

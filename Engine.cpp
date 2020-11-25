@@ -251,7 +251,7 @@ namespace Core {
     }
 
     WeakPointer<Mesh> Engine::createMesh(UInt32 size, UInt32 indexCount) {
-        Mesh* newMeshPtr = new(std::nothrow) Mesh(this->graphics, size, indexCount);
+        Mesh* newMeshPtr = new(std::nothrow) Mesh(size, indexCount);
         if (newMeshPtr == nullptr) {
             throw AllocationException("Engine::createMesh -> Unable to allocate new Mesh");
         }

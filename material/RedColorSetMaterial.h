@@ -28,7 +28,7 @@ namespace Core {
         void setOutputColor(Color outputColor);
 
     private:
-        RedColorSetMaterial(WeakPointer<Graphics> graphics);
+        RedColorSetMaterial();
 
         Int32 inputLocation;
         Int32 outputColorLocation;

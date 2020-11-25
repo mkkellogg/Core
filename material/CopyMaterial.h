@@ -26,7 +26,7 @@ namespace Core {
 
 
     private:
-        CopyMaterial(WeakPointer<Graphics> graphics);
+        CopyMaterial();
 
         Int32 textureLocation;
     };

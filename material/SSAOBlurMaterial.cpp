@@ -7,7 +7,7 @@
 
 namespace Core {
 
-    SSAOBlurMaterial::SSAOBlurMaterial(WeakPointer<Graphics> graphics) : BaseMaterial(graphics) {
+    SSAOBlurMaterial::SSAOBlurMaterial() {
     }
 
     SSAOBlurMaterial::~SSAOBlurMaterial() {

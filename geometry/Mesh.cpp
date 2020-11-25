@@ -10,7 +10,7 @@
 
 namespace Core {
 
-    Mesh::Mesh(WeakPointer<Graphics> graphics, UInt32 vertexCount, UInt32 indexCount): graphics(graphics), vertexCount(vertexCount), indexCount(indexCount) {
+    Mesh::Mesh(UInt32 vertexCount, UInt32 indexCount): vertexCount(vertexCount), indexCount(indexCount) {
         this->vertexCrossMap = nullptr;
         this->initialized = false;
         this->indexed = indexCount > 0 ? true : false;

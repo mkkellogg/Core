@@ -19,6 +19,6 @@ namespace Core {
         virtual UInt32 maxLightCount() const override;
         void copyAttributesFromStandardPhysicalMaterial(WeakPointer<StandardPhysicalMaterial> source);
     protected:
-        StandardPhysicalMaterialMultiLight(WeakPointer<Graphics> graphics);
+        StandardPhysicalMaterialMultiLight();
     };
 }

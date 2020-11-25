@@ -26,7 +26,7 @@ namespace Core {
         void setRectTexture(WeakPointer<Texture2D> texture);
 
     private:
-        BasicCubeMaterial(WeakPointer<Graphics> graphics);
+        BasicCubeMaterial();
 
         Int32 cubeTextureLocation;
         Int32 rectTextureLocation;

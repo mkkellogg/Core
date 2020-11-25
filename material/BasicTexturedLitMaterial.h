@@ -30,7 +30,7 @@ namespace Core {
         void setNormalMap(WeakPointer<Texture> normalMap);
 
     protected:
-        BasicTexturedLitMaterial(WeakPointer<Graphics> graphics);
+        BasicTexturedLitMaterial();
 
         Color albedo;
         PersistentWeakPointer<Texture> albedoMap;

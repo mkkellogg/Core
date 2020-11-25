@@ -30,9 +30,9 @@ namespace Core {
         void setToneMapType(ToneMapType type);
         
     protected:
-        TonemapMaterial(WeakPointer<Graphics> graphics);
-        TonemapMaterial(const std::string& builtInShaderName, WeakPointer<Graphics> graphics);
-        TonemapMaterial(const std::string& vertShaderName, const std::string& fragShaderName, WeakPointer<Graphics> graphics);
+        TonemapMaterial();
+        TonemapMaterial(const std::string& builtInShaderName);
+        TonemapMaterial(const std::string& vertShaderName, const std::string& fragShaderName);
 
         Real exposure;
         Real gamma;

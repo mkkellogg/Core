@@ -14,9 +14,6 @@ namespace Core {
     template <typename T>
     class Object3DRenderer : public BaseObject3DRenderer {
     public:
-        Object3DRenderer(WeakPointer<Graphics> graphics, WeakPointer<Object3D> owner) : BaseObject3DRenderer(owner), graphics(graphics) {}
-
-    protected:
-        PersistentWeakPointer<Graphics> graphics;
+        Object3DRenderer(WeakPointer<Object3D> owner) : BaseObject3DRenderer(owner) {}
     };
 }

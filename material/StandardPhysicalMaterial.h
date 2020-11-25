@@ -58,9 +58,9 @@ namespace Core {
         const UInt32 OPACITY_CHANNEL_RED_MASK = 0x1;
         const UInt32 OPACITY_CHANNEL_ALPHA_MASK = 0x1 << 3;
 
-        StandardPhysicalMaterial(const std::string& vertexShader, const std::string& fragmentShader, WeakPointer<Graphics> graphics);
-        StandardPhysicalMaterial(const std::string& buildInShaderName, WeakPointer<Graphics> graphics);
-        StandardPhysicalMaterial(WeakPointer<Graphics> graphics);
+        StandardPhysicalMaterial(const std::string& vertexShader, const std::string& fragmentShader);
+        StandardPhysicalMaterial(const std::string& buildInShaderName);
+        StandardPhysicalMaterial();
         UInt32 getEnabledMapMask();
         UInt32 getEnabledOpacityChannelMask();
 

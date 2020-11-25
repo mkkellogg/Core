@@ -18,6 +18,6 @@ namespace Core {
         virtual WeakPointer<Material> clone();
 
     private:
-        DepthOnlyMaterial(WeakPointer<Graphics> graphics);
+        DepthOnlyMaterial();
     };
 }

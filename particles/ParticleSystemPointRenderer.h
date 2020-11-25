@@ -30,7 +30,7 @@ namespace Core {
         void init();
 
     protected:
-        ParticleSystemPointRenderer(WeakPointer<Graphics> graphics, WeakPointer<Object3D> owner);
+        ParticleSystemPointRenderer(WeakPointer<Object3D> owner);
         void updatePointMeshCount(WeakPointer<ParticleSystem> particleSystem);
 
         std::vector<PersistentWeakPointer<Mesh>> pointMeshes;

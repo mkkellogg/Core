@@ -8,7 +8,7 @@
 
 namespace Core {
 
-    BasicTexturedLitMaterial::BasicTexturedLitMaterial(WeakPointer<Graphics> graphics): BaseLitMaterial(graphics) {
+    BasicTexturedLitMaterial::BasicTexturedLitMaterial() {
         this->albedoMapEnabledLocation = -1;
         this->normalMapEnabledLocation = -1;
         this->albedoUVLocation = -1;

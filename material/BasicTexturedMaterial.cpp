@@ -8,7 +8,7 @@
 
 namespace Core {
 
-    BasicTexturedMaterial::BasicTexturedMaterial(WeakPointer<Graphics> graphics): BaseMaterial(graphics) {
+    BasicTexturedMaterial::BasicTexturedMaterial() {
         this->uvLocation = -1;
     }
 

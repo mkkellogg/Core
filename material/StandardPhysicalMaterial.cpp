@@ -11,17 +11,17 @@
 
 namespace Core {
 
-    StandardPhysicalMaterial::StandardPhysicalMaterial(const std::string& vertexShader, const std::string& fragmentShader, WeakPointer<Graphics> graphics):
-        ShaderMaterial<BaseLitMaterial>(vertexShader, fragmentShader, graphics)  {
+    StandardPhysicalMaterial::StandardPhysicalMaterial(const std::string& vertexShader, const std::string& fragmentShader):
+        ShaderMaterial<BaseLitMaterial>(vertexShader, fragmentShader)  {
             this->setInitialParams();
     }
 
-    StandardPhysicalMaterial::StandardPhysicalMaterial(const std::string& builtInShaderName, WeakPointer<Graphics> graphics):
-        ShaderMaterial<BaseLitMaterial>(builtInShaderName, graphics) {
+    StandardPhysicalMaterial::StandardPhysicalMaterial(const std::string& builtInShaderName):
+        ShaderMaterial<BaseLitMaterial>(builtInShaderName) {
             this->setInitialParams();
     }
 
-    StandardPhysicalMaterial::StandardPhysicalMaterial(WeakPointer<Graphics> graphics): StandardPhysicalMaterial("StandardPhysical", graphics) {
+    StandardPhysicalMaterial::StandardPhysicalMaterial(): StandardPhysicalMaterial("StandardPhysical") {
     }
 
     StandardPhysicalMaterial::~StandardPhysicalMaterial() {
@@ -202,7 +202,7 @@ namespace Core {
         }
         else {
             this->shader->setUniform4f(this->albedoLocation, this->albedo.r, this->albedo.g, this->albedo.b, this->albedo.a);
-            this->shader->setTexture2D(textureLoc, this->graphics->getPlaceHolderTexture2D()->getTextureID());
+            this->shader->setTexture2D(textureLoc, Engine::instance()->getGraphicsSystem()->getPlaceHolderTexture2D()->getTextureID());
             this->shader->setUniform1i(this->albedoMapLocation, textureLoc);
         }
         textureLoc++;
@@ -211,7 +211,7 @@ namespace Core {
             this->shader->setTexture2D(textureLoc, this->normalMap->getTextureID());
             this->shader->setUniform1i(this->normalMapLocation, textureLoc);
         } else {
-            this->shader->setTexture2D(textureLoc, this->graphics->getPlaceHolderTexture2D()->getTextureID());
+            this->shader->setTexture2D(textureLoc, Engine::instance()->getGraphicsSystem()->getPlaceHolderTexture2D()->getTextureID());
             this->shader->setUniform1i(this->normalMapLocation, textureLoc);
         }
         textureLoc++;
@@ -222,7 +222,7 @@ namespace Core {
         }
         else {
             this->shader->setUniform1f(this->metallicLocation, this->metallic);
-            this->shader->setTexture2D(textureLoc, this->graphics->getPlaceHolderTexture2D()->getTextureID());
+            this->shader->setTexture2D(textureLoc, Engine::instance()->getGraphicsSystem()->getPlaceHolderTexture2D()->getTextureID());
             this->shader->setUniform1i(this->metallicMapLocation, textureLoc);
         }
         textureLoc++;
@@ -233,7 +233,7 @@ namespace Core {
         }
         else {
             this->shader->setUniform1f(this->roughnessLocation, this->roughness);
-            this->shader->setTexture2D(textureLoc, this->graphics->getPlaceHolderTexture2D()->getTextureID());
+            this->shader->setTexture2D(textureLoc, Engine::instance()->getGraphicsSystem()->getPlaceHolderTexture2D()->getTextureID());
             this->shader->setUniform1i(this->roughnessMapLocation, textureLoc);
         }
         textureLoc++;
@@ -244,7 +244,7 @@ namespace Core {
         }
         else {
             this->shader->setUniform1f(this->opacityLocation, this->opacity);
-            this->shader->setTexture2D(textureLoc, this->graphics->getPlaceHolderTexture2D()->getTextureID());
+            this->shader->setTexture2D(textureLoc, Engine::instance()->getGraphicsSystem()->getPlaceHolderTexture2D()->getTextureID());
             this->shader->setUniform1i(this->opacityMapLocation, textureLoc);
         }
         textureLoc++;

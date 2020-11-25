@@ -24,7 +24,7 @@ namespace Core {
         void setTexture(WeakPointer<Texture2D> texture);
 
     private:
-        EquirectangularMaterial(WeakPointer<Graphics> graphics);
+        EquirectangularMaterial();
         
         Int32 textureLocation;
         PersistentWeakPointer<Texture2D> texture;

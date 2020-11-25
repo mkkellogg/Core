@@ -7,7 +7,7 @@
 
 namespace Core {
 
-    EquirectangularMaterial::EquirectangularMaterial(WeakPointer<Graphics> graphics) : BaseMaterial(graphics) {
+    EquirectangularMaterial::EquirectangularMaterial() {
     }
 
     EquirectangularMaterial::~EquirectangularMaterial() {

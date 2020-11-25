@@ -4,17 +4,17 @@
 
 namespace Core {
 
-    TonemapMaterial::TonemapMaterial(const std::string& vertShaderName, const std::string& fragShaderName, WeakPointer<Graphics> graphics):
-        ShaderMaterial<BaseMaterial>(vertShaderName, fragShaderName, graphics) {
+    TonemapMaterial::TonemapMaterial(const std::string& vertShaderName, const std::string& fragShaderName):
+        ShaderMaterial<BaseMaterial>(vertShaderName, fragShaderName) {
             this->setInitialParams();
     }
 
-    TonemapMaterial::TonemapMaterial(const std::string& builtInShaderName, WeakPointer<Graphics> graphics):
-        ShaderMaterial<BaseMaterial>(builtInShaderName, graphics) {
+    TonemapMaterial::TonemapMaterial(const std::string& builtInShaderName):
+        ShaderMaterial<BaseMaterial>(builtInShaderName) {
             this->setInitialParams();
     }
     
-    TonemapMaterial::TonemapMaterial(WeakPointer<Graphics> graphics) : TonemapMaterial("Tonemap", graphics) {
+    TonemapMaterial::TonemapMaterial() : TonemapMaterial("Tonemap") {
     }
 
     TonemapMaterial::~TonemapMaterial() {

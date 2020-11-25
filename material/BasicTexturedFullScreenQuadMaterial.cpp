@@ -8,7 +8,7 @@
 
 namespace Core {
 
-    BasicTexturedFullScreenQuadMaterial::BasicTexturedFullScreenQuadMaterial(WeakPointer<Graphics> graphics): BaseMaterial(graphics) {
+    BasicTexturedFullScreenQuadMaterial::BasicTexturedFullScreenQuadMaterial() {
         this->uvLocation = -1;
     }
 

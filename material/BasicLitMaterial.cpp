@@ -6,7 +6,7 @@
 
 namespace Core {
 
-    BasicLitMaterial::BasicLitMaterial(WeakPointer<Graphics> graphics): BaseLitMaterial(graphics) {
+    BasicLitMaterial::BasicLitMaterial() {
     }
 
     Bool BasicLitMaterial::build() {

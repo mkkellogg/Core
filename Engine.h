@@ -130,7 +130,7 @@ namespace Core {
         template <typename T, typename R>
         WeakPointer<typename std::enable_if<std::is_base_of<Object3DRenderer<R>, T>::value, T>::type> createRenderer(WeakPointer<Material> material,
                                                                                                                      WeakPointer<Object3D> owner) {
-            std::shared_ptr<T> renderer = std::shared_ptr<T>(new T(this->graphics, material, owner));
+            std::shared_ptr<T> renderer = std::shared_ptr<T>(new T(material, owner));
             WeakPointer<T> _temp = renderer;
             owner->addComponent(_temp);
             this->objectManager.addReference(renderer, CoreObjectReferenceManager::OwnerType::Single);
@@ -139,7 +139,7 @@ namespace Core {
 
         template <typename T, typename R>
         WeakPointer<typename std::enable_if<std::is_base_of<Object3DRenderer<R>, T>::value, T>::type> createRenderer(WeakPointer<Object3D> owner) {
-            std::shared_ptr<T> renderer = std::shared_ptr<T>(new T(this->graphics, owner));
+            std::shared_ptr<T> renderer = std::shared_ptr<T>(new T(owner));
             WeakPointer<T> _temp = renderer;
             owner->addComponent(_temp);
             this->objectManager.addReference(renderer, CoreObjectReferenceManager::OwnerType::Single);
@@ -148,7 +148,7 @@ namespace Core {
 
         template <typename T>
         WeakPointer<typename std::enable_if<std::is_base_of<Material, T>::value, T>::type> createMaterial(Bool build = true) {
-            std::shared_ptr<T> spMaterial = std::shared_ptr<T>(new T(this->graphics));
+            std::shared_ptr<T> spMaterial = std::shared_ptr<T>(new T());
             if (build) {
                 spMaterial->build();
             }

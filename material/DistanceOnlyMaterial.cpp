@@ -6,7 +6,7 @@
 
 namespace Core {
 
-    DistanceOnlyMaterial::DistanceOnlyMaterial(WeakPointer<Graphics> graphics) : BaseMaterial(graphics) {
+    DistanceOnlyMaterial::DistanceOnlyMaterial() {
     }
 
     DistanceOnlyMaterial::~DistanceOnlyMaterial() {

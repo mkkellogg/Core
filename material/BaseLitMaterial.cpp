@@ -6,7 +6,7 @@
 
 namespace Core {
 
-    BaseLitMaterial::BaseLitMaterial(WeakPointer<Graphics> graphics) : BaseMaterial(graphics) {
+    BaseLitMaterial::BaseLitMaterial() {
         for (UInt32 i = 0; i < Constants::MaxShaderLights; i++) {
             this->lightPositionLocation[i] = -1;
             this->lightDirectionLocation[i] = -1;

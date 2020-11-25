@@ -6,7 +6,7 @@
 
 namespace Core {
 
-    BasicMaterial::BasicMaterial(WeakPointer<Graphics> graphics) : BaseMaterial(graphics) {
+    BasicMaterial::BasicMaterial() {
     }
 
     Bool BasicMaterial::build() {
