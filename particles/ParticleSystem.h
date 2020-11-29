@@ -6,7 +6,7 @@
 #include "../common/types.h"
 #include "../scene/Object3DComponent.h"
 #include "ParticleEmitter.h"
-#include "ParticleSystemRenderer.h"
+#include "renderer/ParticleSystemRenderer.h"
 #include "ParticleState.h"
 #include "initializer/ParticleStateInitializer.h"
 #include "operator/ParticleStateOperator.h"
@@ -62,6 +62,9 @@ namespace Core {
         UInt32 getMaximumActiveParticles();
         UInt32 getActiveParticleCount();
         ParticleStatePtr& getParticleStatePtr(UInt32 index);
+
+        Bool getSimulateInWorldSpace();
+        void setSimulateInWorldSpace(Bool simulateInWorldSpace);
 
     private:
 

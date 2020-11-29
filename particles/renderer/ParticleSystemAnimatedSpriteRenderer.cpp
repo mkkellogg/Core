@@ -1,5 +1,5 @@
 #include "ParticleSystemAnimatedSpriteRenderer.h"
-#include "ParticleSystem.h"
+#include "../ParticleSystem.h"
 
 namespace Core {
 

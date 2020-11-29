@@ -17,7 +17,7 @@
 #include "../render/MeshRenderer.h"
 #include "../render/RenderableContainer.h"
 #include "../render/EngineRenderQueue.h"
-#include "../particles/ParticleSystemRenderer.h"
+#include "../particles/renderer/ParticleSystemRenderer.h"
 #include "../scene/Scene.h"
 #include "../scene/Skybox.h"
 #include "../image/TextureAttr.h"

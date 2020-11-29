@@ -57,6 +57,7 @@ namespace Core {
         void renderObjectDirect(WeakPointer<Object3D> object, WeakPointer<Camera> camera, const LightPack& lightPack,
                                 Bool matchPhysicalPropertiesWithLighting);
         WeakPointer<Texture2D> getSSAOTexture();
+
     protected:
         Renderer();
         void renderForCamera(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects, 
@@ -95,7 +96,7 @@ namespace Core {
                                              ViewDescriptor& descUp, ViewDescriptor& descDown, ViewDescriptor& descLeft, ViewDescriptor& descRight);
         void getViewDescriptorForCamera(WeakPointer<Camera> camera, ViewDescriptor& viewDescriptor);
         void getViewDescriptorTransformations(const Matrix4x4& worldMatrix, const Matrix4x4& projectionMatrix,
-                               IntMask clearBuffers, ViewDescriptor& viewDescriptor);
+                                              IntMask clearBuffers, ViewDescriptor& viewDescriptor);
         void collectSceneObjectsAndComputeTransforms(WeakPointer<Scene> scene, std::vector<WeakPointer<Object3D>>& outObjects);
         void collectSceneObjectsAndComputeTransforms(WeakPointer<Object3D> object, std::vector<WeakPointer<Object3D>>& outObjects);
         void collectSceneObjectsAndComputeTransforms(WeakPointer<Object3D> object, std::vector<WeakPointer<Object3D>>& outObjects, const Matrix4x4& curTransform);

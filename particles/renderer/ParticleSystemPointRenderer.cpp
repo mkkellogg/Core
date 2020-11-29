@@ -1,11 +1,11 @@
 #include "ParticleSystemPointRenderer.h"
-#include "ParticleSystem.h"
-#include "ParticleState.h"
-#include "../geometry/GeometryUtils.h"
-#include "../render/MeshContainer.h"
-#include "../render/MeshRenderer.h"
-#include "../geometry/Mesh.h"
-#include "../material/BasicMaterial.h"
+#include "../ParticleSystem.h"
+#include "../ParticleState.h"
+#include "../../geometry/GeometryUtils.h"
+#include "../../render/MeshContainer.h"
+#include "../../render/MeshRenderer.h"
+#include "../../geometry/Mesh.h"
+#include "../../material/BasicMaterial.h"
 
 namespace Core {
 
@@ -37,12 +37,18 @@ namespace Core {
         for (UInt32 i = 0; i < particleSystem->getActiveParticleCount(); i++) {
             ParticleStatePtr& particleState = particleSystem->getParticleStatePtr(i);
             WeakPointer<Object3D> meshRoot = this->pointMeshRoots[i];
-             meshRoot->setActive(true);
+            meshRoot->setActive(true);
             WeakPointer<Object3D> meshRootParent = meshRoot->getParent();
-            if (!meshRootParent.isValid() || meshRootParent.get() != this->localRenderRoot.get()) {
-                this->localRenderRoot->addChild(meshRoot);
-                setParent = true;
+            if (particleSystem->getSimulateInWorldSpace()) {
+                if(!meshRootParent.isValid() || meshRootParent.get() != this->worldRenderRoot.get()) {
+                    this->worldRenderRoot->addChild(meshRoot);
+                }
+            } else {
+                if(!meshRootParent.isValid() || meshRootParent.get() != this->localRenderRoot.get()) {
+                    this->localRenderRoot->addChild(meshRoot);
+                }
             }
+            setParent = true;
             const Point3rs& pos = *particleState.position;
             meshRoot->getTransform().setLocalPosition(pos.x, pos.y, pos.z);
         }
@@ -67,8 +73,11 @@ namespace Core {
             this->localRenderRoot = Engine::instance()->createObject3D<Object3D>();
             this->owner->addChild(this->localRenderRoot);
             this->localRenderRoot->getTransform().setLocalPosition(0.0f, 0.0f, 0.0f);
+
+            Point3r worldPosition = this->owner->getTransform().getWorldPosition();
             this->worldRenderRoot = Engine::instance()->createObject3D<Object3D>();
-            this->worldRenderRoot->getTransform().setLocalPosition(0.0f, 0.0f, 0.0f);
+            this->owner->addChild(this->worldRenderRoot);
+            this->worldRenderRoot->getTransform().setLocalPosition(-worldPosition.x, -worldPosition.y, -worldPosition.z);
         }
         for (UInt32 i = this->pointMeshes.size(); i < particleSystem->getMaximumActiveParticles(); i++) {
             WeakPointer<Mesh> sphereMesh = GeometryUtils::buildSphereMesh(0.15f, 32, sphereColor);
@@ -84,5 +93,4 @@ namespace Core {
             this->pointMeshRoots.push_back(meshRoot);
         }
     }
-
 }

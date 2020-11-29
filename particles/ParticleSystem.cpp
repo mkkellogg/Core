@@ -56,6 +56,8 @@ namespace Core {
             std::shared_ptr<ParticleStateInitializer> particleStateInitializer = this->particleStateInitializers[i];
             particleStateInitializer->initializeState(statePtr);
         }
+        Point3r worldPosition = this->owner->getTransform().getWorldPosition();
+        if (this->simulateInWorldSpace) statePtr.position->add(worldPosition.x, worldPosition.y, worldPosition.z);
     }
 
     void ParticleSystem::advanceActiveParticles(Real timeDelta) {
@@ -126,5 +128,13 @@ namespace Core {
             throw OutOfRangeException("ParticleSystem::getParticleStatePtr() -> 'index' is out of range.");
         }
         return this->particleStates.getParticleStatePtr(index);
+    }
+
+    Bool ParticleSystem::getSimulateInWorldSpace() {
+        return this->simulateInWorldSpace;
+    }
+
+    void ParticleSystem::setSimulateInWorldSpace(Bool simulateInWorldSpace) {
+        this->simulateInWorldSpace = simulateInWorldSpace;
     }
 }

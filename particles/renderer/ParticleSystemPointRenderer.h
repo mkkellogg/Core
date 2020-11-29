@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../util/PersistentWeakPointer.h"
-#include "../common/types.h"
+#include "../../util/PersistentWeakPointer.h"
+#include "../../common/types.h"
 #include "ParticleSystemRenderer.h"
-#include "ParticleState.h"
+#include "../ParticleState.h"
 
 namespace Core {
 

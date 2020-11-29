@@ -11,7 +11,7 @@
 #include "../render/MeshContainer.h"
 #include "../render/MeshRenderer.h"
 #include "../particles/ParticleSystem.h"
-#include "../particles/ParticleSystemRenderer.h"
+#include "../particles/renderer/ParticleSystemRenderer.h"
 
 namespace Core {
 

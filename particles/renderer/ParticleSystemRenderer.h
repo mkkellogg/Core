@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../util/PersistentWeakPointer.h"
-#include "../common/types.h"
-#include "../render/Object3DRenderer.h"
+#include "../../util/PersistentWeakPointer.h"
+#include "../../common/types.h"
+#include "../../render/Object3DRenderer.h"
 
 namespace Core {
 
