@@ -95,6 +95,10 @@ namespace Core {
             return this->particleStatePointers.get()[index];
         }
 
+        std::shared_ptr<AttributeArray<Point3rs>> getPositions() {return this->positions;}
+        std::shared_ptr<ScalarAttributeArray<Real>> getRadiuses() {return this->radiuses;}
+        std::shared_ptr<ScalarAttributeArray<Real>> getRotations() {return this->rotations;}
+
     protected:
 
         void allocate(UInt32 particleCount) override {

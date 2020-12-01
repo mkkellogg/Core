@@ -63,6 +63,8 @@ namespace Core {
         UInt32 getActiveParticleCount();
         ParticleStatePtr& getParticleStatePtr(UInt32 index);
 
+        ParticleStateAttributeArray& getParticleStates();
+
         Bool getSimulateInWorldSpace();
         void setSimulateInWorldSpace(Bool simulateInWorldSpace);
 

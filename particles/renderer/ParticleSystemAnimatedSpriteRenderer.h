@@ -11,6 +11,7 @@ namespace Core {
     class Engine;
     class Object3D;
     class Graphics;
+    class ParticleStandardMaterial;
 
     class ParticleSystemAnimatedSpriteRenderer final: public ParticleSystemRenderer {
         friend class Engine;
@@ -31,5 +32,6 @@ namespace Core {
         ParticleSystemAnimatedSpriteRenderer(WeakPointer<Object3D> owner);
 
         ParticleStateAttributeArray renderAttributes;
+        PersistentWeakPointer<ParticleStandardMaterial> material;
     };
 }

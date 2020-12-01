@@ -200,6 +200,10 @@ namespace Core {
         this->setShaderSource(ShaderType::Vertex, "Equirectangular", ShaderManagerGL::Equirectangular_vertex);
         this->setShaderSource(ShaderType::Fragment, "Equirectangular", ShaderManagerGL::Equirectangular_fragment);
 
+        this->setShaderSource(ShaderType::Vertex, "ParticleStandard", ShaderManagerGL::ParticleStandard_vertex);
+        this->setShaderSource(ShaderType::Geometry, "ParticleStandard", ShaderManagerGL::ParticleStandard_geometry);
+        this->setShaderSource(ShaderType::Fragment, "ParticleStandard", ShaderManagerGL::ParticleStandard_fragment);
+
         this->setShaderSource(ShaderType::Vertex, "Outline", ShaderManagerGL::Outline_vertex);
         this->setShaderSource(ShaderType::Geometry, "Outline", ShaderManagerGL::Outline_geometry);
         this->setShaderSource(ShaderType::Fragment, "Outline", ShaderManagerGL::Outline_fragment);
@@ -428,6 +432,108 @@ namespace Core {
             "{\n"
             "    vec3 color =  texture(cubeTexture, TexCoord0.xyz).rgb; \n "
             "    out_color = vec4(color, 1.0);\n"
+            "}\n";
+
+        /*
+        Real lifetime;
+        Real age;
+        UInt32 sequenceNumber;
+        Point3r position;
+        Vector3r velocity;
+        Vector3r normal;
+        Real rotation;
+        Real rotationalSpeed;
+        Real radius;
+        Color color;
+        */
+
+        this->ParticleStandard_vertex = 
+            "#version 330\n"
+            "precision highp float;\n"
+            + PROJECTION_MATRIX_DEF
+            + VIEW_MATRIX_DEF +
+            "in vec4 worldPosition;\n"
+            "in float rotation;\n"
+            "in float size;\n"
+            "out vec4 vViewPosition;\n"
+            "out float vRotation\n"
+            "out float vSize\n"
+            "void main()\n"
+            "{\n"
+            "   vViewPosition = " + VIEW_MATRIX + " * worldPosition;\n"
+            "   vRotation = rotation;\n"
+            "   gl_Position = " + PROJECTION_MATRIX + " * vViewPosition;\n"
+            "}\n";
+
+        this->ParticleStandard_geometry =
+            "#version 330\n"
+            "precision highp float;\n"
+            "layout( points ) in;\n"
+            + PROJECTION_MATRIX_DEF +
+            "layout( triangle_strip, max_vertices = 4) out;\n"
+            "in vec4 vViewPosition[];\n"
+            "in float vRotation[]\n"
+            "in float vSize[]\n"
+            "void main()\n"
+            "{\n"
+            /*"   const vec2 right = vec2(1.0, 0.0);\n"
+            "   const vec2 up = vec2(0.0, 1.0);\n"
+            "   const vec2 left = vec2(-1.0, 0.0);\n"
+            "   const vec2 down = vec2(0.0, -1.0);\n"
+
+            "   const vec2 uRight = vec2(1.0, 1.0);\n"
+            "   const vec2 uLeft = vec2(-1.0, 1.0);\n"
+            "   const vec2 dLeft = vec2(-1.0, -1.0);\n"
+            "   const vec2 dRight = vec2(1.0, -1.0);\n"
+
+            "   const particleSize = 2.0;\n"
+
+            "   float rotation = vRotation[0];\n"
+            "   mat2 rotMat = mat2(cos(rotation), -sin(rotation), sin(rotation), cos(rotation));\n"
+            "   gl_Position = " + PROJECTION_MATRIX + " * (vec4(particleSize * rotMat * uLeft, vViewPosition[0].z, 1.0) + vViewPosition[0]);\n"
+            "   EmitVertex();\n"
+            "   gl_Position = " + PROJECTION_MATRIX + " * (vec4(particleSize * rotMat * dLeft, vViewPosition[0].z, 1.0) + vViewPosition[0]);\n"
+            "   EmitVertex();\n"
+            "   gl_Position = " + PROJECTION_MATRIX + " * (vec4(particleSize * rotMat * dRight, vViewPosition[0].z, 1.0) + vViewPosition[0]);\n"
+            "   EmitVertex();\n"
+            "   gl_Position = " + PROJECTION_MATRIX + " * (vec4(particleSize * rotMat * uRight, vViewPosition[0].z, 1.0) + vViewPosition[0]);\n"
+            "   EmitVertex();\n"*/
+
+            "   const globalUp = vec4(0.0, 1.0, 0.0, 1.0);\n"
+            "   vec4 toPos = vViewPosition[0];\n"
+            "   vec4 forward = normalize(toPos);\n"
+            "   vec4 right = normalize(cross(forward, globalUp));\n"
+            "   vec4 up = normalize(cross(right, forward));\n"
+
+            "   const particleSize = vSize[0];\n"
+            "   float rotation = vRotation[0];\n"
+            "   float cosRot = cos(rotation);\n"
+            "   float sinRot = sin(rotation);\n"
+
+            "   vec4 rotRight = right * cosRot + sinRot * up;\n"
+            "   vec4 rotUp = up * cosRot + sinRot * -right;\n"
+
+            "   vec4 uRight = (rotRight + rotUp) * particleSize\n"
+            "   vec4 uLeft = (-rotRight + rotUp) * particleSize\n"
+            "   vec4 dLeft = (-rotRight - rotUp) * particleSize\n"
+            "   vec4 dRight = (rotRight - rotUp) * particleSize;\n"
+
+            "   gl_Position = " + PROJECTION_MATRIX + " * (vViewPosition[0] + uLeft * particleSize);\n"
+            "   EmitVertex();\n"
+            "   gl_Position = " + PROJECTION_MATRIX + " * (vViewPosition[0] + dLeft * particleSize);\n"
+            "   EmitVertex();\n"
+            "   gl_Position = " + PROJECTION_MATRIX + " * (vViewPosition[0] + dRight * particleSize);\n"
+            "   EmitVertex();\n"
+            "   gl_Position = " + PROJECTION_MATRIX + " * (vViewPosition[0] + uRight * particleSize);\n"
+            "   EmitVertex();\n"
+
+            "}\n";
+
+        this->ParticleStandard_fragment =
+            "#version 330\n"
+            "precision highp float;\n"
+            "void main() {\n"
+            "   out_color = vec4(1.0, 0.0, 0.0, 1.0);\n"
             "}\n";
 
         this->Outline_vertex =

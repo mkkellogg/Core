@@ -30,6 +30,10 @@ namespace Core {
         std::string Skybox_vertex;
         std::string Skybox_fragment;
 
+        std::string ParticleStandard_vertex;
+        std::string ParticleStandard_geometry;
+        std::string ParticleStandard_fragment;
+
         std::string Outline_vertex;
         std::string Outline_geometry;
         std::string Outline_fragment;

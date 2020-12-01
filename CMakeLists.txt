@@ -164,6 +164,7 @@ set(INCLUDE_FILES
     particles/initializer/LifetimeInitializer.h
     particles/operator/ParticleStateOperator.h
     particles/operator/BasicParticleStateOperator.h
+    particles/material/ParticleStandardMaterial.h
     light/Light.h
     light/ShadowLight.h
     light/PointLight.h
@@ -283,6 +284,7 @@ set(SOURCE_FILES
     particles/initializer/LifetimeInitializer.cpp
     particles/operator/ParticleStateOperator.cpp
     particles/operator/BasicParticleStateOperator.cpp
+    particles/material/ParticleStandardMaterial.cpp
     light/Light.cpp
     light/ShadowLight.cpp
     light/PointLight.cpp

@@ -130,6 +130,10 @@ namespace Core {
         return this->particleStates.getParticleStatePtr(index);
     }
 
+    ParticleStateAttributeArray& ParticleSystem::getParticleStates() {
+        return this->particleStates;
+    }
+
     Bool ParticleSystem::getSimulateInWorldSpace() {
         return this->simulateInWorldSpace;
     }
