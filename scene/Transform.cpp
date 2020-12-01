@@ -6,6 +6,7 @@ namespace Core {
     Transform::Transform(const Object3D& target) : target(target) {
         this->localMatrix.setIdentity();
         this->worldMatrix.setIdentity();
+        this->matrixAutoUpdate = true;
     }
 
     Transform::Transform(const Object3D& target, const Matrix4x4& matrix) : target(target) {
@@ -77,6 +78,14 @@ namespace Core {
     void Transform::calculateWorldMatrix(Matrix4x4& result) {
         this->getAncestorWorldMatrix(result);
         result.multiply(this->localMatrix);
+    }
+
+    Bool Transform::getMatrixAutoUpdate() {
+        return this->matrixAutoUpdate;
+    }
+
+    void Transform::setMatrixAutoUpdate(Bool matrixAutoUpdate) {
+        this->matrixAutoUpdate = matrixAutoUpdate;
     }
 
     void Transform::getAncestorWorldMatrix(Matrix4x4& result) {

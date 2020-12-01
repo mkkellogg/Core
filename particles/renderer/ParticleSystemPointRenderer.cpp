@@ -56,6 +56,7 @@ namespace Core {
             WeakPointer<Object3D> meshRoot = this->pointMeshRoots[i];
             meshRoot->setActive(false);
         }
+        this->worldRenderRoot->getTransform().getWorldMatrix().setIdentity();
     }
 
     Bool ParticleSystemPointRenderer::supportsRenderPath(RenderPath renderPath) {
@@ -74,10 +75,9 @@ namespace Core {
             this->owner->addChild(this->localRenderRoot);
             this->localRenderRoot->getTransform().setLocalPosition(0.0f, 0.0f, 0.0f);
 
-            Point3r worldPosition = this->owner->getTransform().getWorldPosition();
             this->worldRenderRoot = Engine::instance()->createObject3D<Object3D>();
             this->owner->addChild(this->worldRenderRoot);
-            this->worldRenderRoot->getTransform().setLocalPosition(-worldPosition.x, -worldPosition.y, -worldPosition.z);
+            this->worldRenderRoot->getTransform().setMatrixAutoUpdate(false);
         }
         for (UInt32 i = this->pointMeshes.size(); i < particleSystem->getMaximumActiveParticles(); i++) {
             WeakPointer<Mesh> sphereMesh = GeometryUtils::buildSphereMesh(0.15f, 32, sphereColor);

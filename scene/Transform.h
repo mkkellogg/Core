@@ -55,12 +55,16 @@ namespace Core {
         void getAncestorWorldMatrix(Matrix4x4& result);
         void calculateWorldMatrix(Matrix4x4& result);
 
+        Bool getMatrixAutoUpdate();
+        void setMatrixAutoUpdate(Bool matrixAutoUpdate);
+
     private:
 
         static void calculateWorldMatrix(WeakPointer<Object3D> target, Matrix4x4& result);
         void getLocalTransformationFromWorldTransformation(const Matrix4x4& newWorldTransformation, Matrix4x4& localTransformation);
         void getLocalTransformationFromWorldTransformation(const Matrix4x4& newWorldTransformation, const Matrix4x4& currentFullTransformation, Matrix4x4& localTransformation);
 
+        Bool matrixAutoUpdate;
         Matrix4x4 tempMatrix;
         Matrix4x4 localMatrix;
         Matrix4x4 worldMatrix;

@@ -687,10 +687,15 @@ namespace Core {
     void Renderer::collectSceneObjectsAndComputeTransforms(WeakPointer<Object3D> object, std::vector<WeakPointer<Object3D>>& outObjects, const Matrix4x4& curTransform) {
 
         if (!object->isActive()) return;
-        Matrix4x4 nextTransform = curTransform;
         Transform& objTransform = object->getTransform();
-        nextTransform.multiply(objTransform.getLocalMatrix());
-        objTransform.getWorldMatrix().copy(nextTransform);
+
+        Matrix4x4& worldMatrix = objTransform.getWorldMatrix();
+        if (objTransform.getMatrixAutoUpdate()) {
+            worldMatrix.copy(curTransform);
+            worldMatrix.multiply(objTransform.getLocalMatrix());
+        }
+        Matrix4x4 nextTransform = worldMatrix;
+
         outObjects.push_back(object);
 
         for (SceneObjectIterator<Object3D> itr = object->beginIterateChildren(); itr != object->endIterateChildren(); ++itr) {
