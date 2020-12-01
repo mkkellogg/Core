@@ -26,7 +26,7 @@ namespace Core {
         Bool supportsRenderPath(RenderPath renderPath) override;
         UInt32 getRenderQueueID() const override;
 
-        void init();
+        virtual Bool init() override;
 
     protected:
         ParticleSystemAnimatedSpriteRenderer(WeakPointer<Object3D> owner);

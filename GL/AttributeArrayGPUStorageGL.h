@@ -36,7 +36,7 @@ namespace Core {
             return stride;
         }
 
-        void sendToShader(UInt32 location) override {
+        void enableAndSendToActiveShader(UInt32 location) override {
             glBindBuffer(GL_ARRAY_BUFFER, this->bufferID);
             glEnableVertexAttribArray(location);
             if (this->type == GL_INT || this->type == GL_UNSIGNED_INT) {

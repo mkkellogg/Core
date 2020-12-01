@@ -456,12 +456,13 @@ namespace Core {
             "in float rotation;\n"
             "in float size;\n"
             "out vec4 vViewPosition;\n"
-            "out float vRotation\n"
-            "out float vSize\n"
+            "out float vRotation;\n"
+            "out float vSize;\n"
             "void main()\n"
             "{\n"
             "   vViewPosition = " + VIEW_MATRIX + " * worldPosition;\n"
             "   vRotation = rotation;\n"
+            "   vSize = size;\n"
             "   gl_Position = " + PROJECTION_MATRIX + " * vViewPosition;\n"
             "}\n";
 
@@ -472,8 +473,8 @@ namespace Core {
             + PROJECTION_MATRIX_DEF +
             "layout( triangle_strip, max_vertices = 4) out;\n"
             "in vec4 vViewPosition[];\n"
-            "in float vRotation[]\n"
-            "in float vSize[]\n"
+            "in float vRotation[];\n"
+            "in float vSize[];\n"
             "void main()\n"
             "{\n"
             /*"   const vec2 right = vec2(1.0, 0.0);\n"
@@ -499,32 +500,32 @@ namespace Core {
             "   gl_Position = " + PROJECTION_MATRIX + " * (vec4(particleSize * rotMat * uRight, vViewPosition[0].z, 1.0) + vViewPosition[0]);\n"
             "   EmitVertex();\n"*/
 
-            "   const globalUp = vec4(0.0, 1.0, 0.0, 1.0);\n"
-            "   vec4 toPos = vViewPosition[0];\n"
-            "   vec4 forward = normalize(toPos);\n"
-            "   vec4 right = normalize(cross(forward, globalUp));\n"
-            "   vec4 up = normalize(cross(right, forward));\n"
+            "   const vec3 globalUp = vec3(0.0, 1.0, 0.0);\n"
+            "   vec3 toPos = vec3(vViewPosition[0]);\n"
+            "   vec3 forward = normalize(toPos);\n"
+            "   vec3 right = normalize(cross(forward, globalUp));\n"
+            "   vec3 up = normalize(cross(right, forward));\n"
 
-            "   const particleSize = vSize[0];\n"
+            "   float particleSize = vSize[0];\n"
             "   float rotation = vRotation[0];\n"
             "   float cosRot = cos(rotation);\n"
             "   float sinRot = sin(rotation);\n"
 
-            "   vec4 rotRight = right * cosRot + sinRot * up;\n"
-            "   vec4 rotUp = up * cosRot + sinRot * -right;\n"
+            "   vec3 rotRight = right * cosRot + sinRot * up;\n"
+            "   vec3 rotUp = up * cosRot + sinRot * -right;\n"
 
-            "   vec4 uRight = (rotRight + rotUp) * particleSize\n"
-            "   vec4 uLeft = (-rotRight + rotUp) * particleSize\n"
-            "   vec4 dLeft = (-rotRight - rotUp) * particleSize\n"
-            "   vec4 dRight = (rotRight - rotUp) * particleSize;\n"
+            "   vec3 uRight = (rotRight + rotUp) * particleSize;\n"
+            "   vec3 uLeft = (-rotRight + rotUp) * particleSize;\n"
+            "   vec3 dLeft = (-rotRight - rotUp) * particleSize;\n"
+            "   vec3 dRight = (rotRight - rotUp) * particleSize;\n"
 
-            "   gl_Position = " + PROJECTION_MATRIX + " * (vViewPosition[0] + uLeft * particleSize);\n"
+            "   gl_Position = " + PROJECTION_MATRIX + " * (vViewPosition[0] + vec4(uLeft, 0.0) * particleSize);\n"
             "   EmitVertex();\n"
-            "   gl_Position = " + PROJECTION_MATRIX + " * (vViewPosition[0] + dLeft * particleSize);\n"
+            "   gl_Position = " + PROJECTION_MATRIX + " * (vViewPosition[0] + vec4(dLeft, 0.0) * particleSize);\n"
             "   EmitVertex();\n"
-            "   gl_Position = " + PROJECTION_MATRIX + " * (vViewPosition[0] + dRight * particleSize);\n"
+            "   gl_Position = " + PROJECTION_MATRIX + " * (vViewPosition[0] + vec4(dRight, 0.0) * particleSize);\n"
             "   EmitVertex();\n"
-            "   gl_Position = " + PROJECTION_MATRIX + " * (vViewPosition[0] + uRight * particleSize);\n"
+            "   gl_Position = " + PROJECTION_MATRIX + " * (vViewPosition[0] + vec4(uRight, 0.0) * particleSize);\n"
             "   EmitVertex();\n"
 
             "}\n";
@@ -532,6 +533,7 @@ namespace Core {
         this->ParticleStandard_fragment =
             "#version 330\n"
             "precision highp float;\n"
+            "layout( location = 0 ) out vec4 out_color;\n"
             "void main() {\n"
             "   out_color = vec4(1.0, 0.0, 0.0, 1.0);\n"
             "}\n";

@@ -14,7 +14,8 @@ namespace Core {
 
     ParticleSystemPointRenderer::~ParticleSystemPointRenderer() {}
 
-    void ParticleSystemPointRenderer::init() {
+    Bool ParticleSystemPointRenderer::init() {
+        return true;
     }
 
     Bool ParticleSystemPointRenderer::forwardRender(const ViewDescriptor& viewDescriptor, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {

@@ -134,6 +134,7 @@ set(INCLUDE_FILES
     render/MeshRenderer.h
     render/RenderState.h
     render/RenderStyle.h
+    render/PrimitiveType.h
     render/RenderTarget.h
     render/RenderTarget2D.h
     render/RenderTargetCube.h

@@ -134,6 +134,7 @@ namespace Core {
             WeakPointer<T> _temp = renderer;
             owner->addComponent(_temp);
             this->objectManager.addReference(renderer, CoreObjectReferenceManager::OwnerType::Single);
+            renderer->init();
             return renderer;
         }
 
@@ -143,6 +144,7 @@ namespace Core {
             WeakPointer<T> _temp = renderer;
             owner->addComponent(_temp);
             this->objectManager.addReference(renderer, CoreObjectReferenceManager::OwnerType::Single);
+            renderer->init();
             return renderer;
         }
 

@@ -3,6 +3,9 @@
 #include "../material/ParticleStandardMaterial.h"
 #include "../../material/Shader.h"
 #include "../ParticleState.h"
+#include "../../geometry/AttributeArray.h"
+#include "../../geometry/AttributeArrayGPUStorage.h"
+#include "../../render/PrimitiveType.h"
 
 namespace Core {
 
@@ -15,8 +18,9 @@ namespace Core {
         }
     }
 
-    void ParticleSystemAnimatedSpriteRenderer::init() {
+    Bool ParticleSystemAnimatedSpriteRenderer::init() {
         this->material = Engine::instance()->createMaterial<ParticleStandardMaterial>();
+        return this->material.isValid();
     }
 
     Bool ParticleSystemAnimatedSpriteRenderer::forwardRender(const ViewDescriptor& viewDescriptor, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
@@ -45,10 +49,30 @@ namespace Core {
         if (viewMatrixLoc >= 0) shader->setUniformMatrix4(viewMatrixLoc, viewDescriptor.inverseCameraTransformation);
 
         ParticleStateAttributeArray& particleStates = particleSystem->getParticleStates();
+
         Int32 worldPositionLocation = this->material->getWorldPositionLocation();
-        if (particleStates.getPositions()->getGPUStorage()) {
-            particleStates.getPositions()->getGPUStorage()->sendToShader(worldPositionLocation);
-        }
+        WeakPointer<AttributeArray<Point3rs>> positions = particleStates.getPositions();
+        WeakPointer<AttributeArrayGPUStorage> positionsGPUStorage = positions->getGPUStorage();
+        positions->updateGPUStorageData();
+        if (positionsGPUStorage.isValid()) positionsGPUStorage->enableAndSendToActiveShader(worldPositionLocation);
+
+        Int32 sizeLocation = this->material->getSizeLocation();
+        WeakPointer<ScalarAttributeArray<Real>> radiuses = particleStates.getRotations();
+        WeakPointer<AttributeArrayGPUStorage> radiusesGPUStorage = radiuses->getGPUStorage();
+        radiuses->updateGPUStorageData();
+        if (radiusesGPUStorage.isValid()) radiusesGPUStorage->enableAndSendToActiveShader(sizeLocation);
+
+        Int32 rotationLocation = this->material->getRotationLocation();
+        WeakPointer<ScalarAttributeArray<Real>> rotations = particleStates.getRotations();
+        WeakPointer<AttributeArrayGPUStorage> rotationsGPUStorage = rotations->getGPUStorage();
+        rotations->updateGPUStorageData();
+        if (rotationsGPUStorage.isValid()) rotationsGPUStorage->enableAndSendToActiveShader(rotationLocation);
+
+        Engine::instance()->getGraphicsSystem()->drawBoundVertexBuffer(particleSystem->getActiveParticleCount(), PrimitiveType::Points);
+
+        positionsGPUStorage->disable(worldPositionLocation);
+        radiusesGPUStorage->disable(sizeLocation);
+        rotationsGPUStorage->disable(rotationLocation);
     }
 
     Bool ParticleSystemAnimatedSpriteRenderer::supportsRenderPath(RenderPath renderPath) {

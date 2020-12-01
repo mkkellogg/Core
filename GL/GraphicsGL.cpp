@@ -138,15 +138,17 @@ namespace Core {
         return spIndexBuffer;
     }
 
-    void GraphicsGL::drawBoundVertexBuffer(UInt32 vertexCount) {
+    void GraphicsGL::drawBoundVertexBuffer(UInt32 vertexCount, PrimitiveType primitiveType) {
+        GLenum glPrimitiveType = getGLPrimitiveType(primitiveType);
         glPolygonMode(GL_FRONT_AND_BACK, getGLRenderStyle(this->renderStyle));
-        glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+        glDrawArrays(glPrimitiveType, 0, vertexCount);
     }
 
-    void GraphicsGL::drawBoundVertexBuffer(UInt32 vertexCount, WeakPointer<IndexBuffer> indices) {
+    void GraphicsGL::drawBoundVertexBuffer(UInt32 vertexCount, WeakPointer<IndexBuffer> indices, PrimitiveType primitiveType) {
+        GLenum glPrimitiveType = getGLPrimitiveType(primitiveType);
         glPolygonMode(GL_FRONT_AND_BACK, getGLRenderStyle(this->renderStyle));
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices->getBufferID());
-        glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, (void*)(0));
+        glDrawElements(glPrimitiveType, vertexCount, GL_UNSIGNED_INT, (void*)(0));
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
@@ -651,6 +653,16 @@ namespace Core {
                 return GL_LINE;
         }
         return GL_FILL;
+    }
+
+    GLenum GraphicsGL::getGLPrimitiveType(PrimitiveType type) {
+        switch(type) {
+            case PrimitiveType::Points:
+                return GL_POINTS;
+            case PrimitiveType::Triangles:
+                return GL_TRIANGLES;
+        }
+        return GL_TRIANGLES;
     }
 
     GLenum GraphicsGL::getGLStencilFunction(RenderState::StencilFunction function) {

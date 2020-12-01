@@ -31,6 +31,7 @@ namespace Core {
                                const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting);
         virtual Bool supportsRenderPath(RenderPath renderPath) override;
         virtual UInt32 getRenderQueueID() const override;
+        virtual Bool init() override;
         void setMaterial(WeakPointer<Material> material);
         WeakPointer<Material> getMaterial();
 

@@ -35,6 +35,10 @@ namespace Core {
         }
     }
 
+    Bool MeshRenderer::init() {
+        return true;
+    }
+
     void MeshRenderer::setRenderStateForMaterial(WeakPointer<Material> material, Bool renderingDepthOutput) {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         graphics->setColorWriteEnabled(material->getColorWriteEnabled());
@@ -455,7 +459,7 @@ namespace Core {
         if (mesh->isAttributeEnabled(checkAttribute) || force) {
             Int32 shaderLocation = material->getShaderLocation(setAttribute);
             if (array->getGPUStorage()) {
-                array->getGPUStorage()->sendToShader(shaderLocation);
+                array->getGPUStorage()->enableAndSendToActiveShader(shaderLocation);
             }
         }
     }
@@ -464,9 +468,8 @@ namespace Core {
                                               WeakPointer<AttributeArrayBase> array) {
         if (mesh->isAttributeEnabled(attribute)) {
             Int32 shaderLocation = material->getShaderLocation(attribute);
-            if (array->getGPUStorage()) {
-                array->getGPUStorage()->disable(shaderLocation);
-            }
+            WeakPointer<AttributeArrayGPUStorage> gpuStorage = array->getGPUStorage();
+            if (gpuStorage) gpuStorage->disable(shaderLocation);
         }
     }
 

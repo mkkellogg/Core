@@ -5,6 +5,7 @@
 #include "../geometry/Vector3.h"
 #include "../color/Color.h"
 #include "../geometry/AttributeArray.h"
+#include "../geometry/AttributeType.h"
 
 namespace Core {
 
@@ -102,16 +103,16 @@ namespace Core {
     protected:
 
         void allocate(UInt32 particleCount) override {
-            this->lifetimes = std::make_shared<ScalarAttributeArray<Real>>(particleCount);
-            this->ages = std::make_shared<ScalarAttributeArray<Real>>(particleCount);
-            this->sequenceNumbers = std::make_shared<ScalarAttributeArray<UInt32>>(particleCount);
-            this->positions = std::make_shared<AttributeArray<Point3rs>>(particleCount);
-            this->velocities = std::make_shared<AttributeArray<Vector3rs>>(particleCount);
-            this->normals = std::make_shared<AttributeArray<Vector3rs>>(particleCount);
-            this->rotations = std::make_shared<ScalarAttributeArray<Real>>(particleCount);
-            this->rotationalSpeeds = std::make_shared<ScalarAttributeArray<Real>>(particleCount);
-            this->radiuses = std::make_shared<ScalarAttributeArray<Real>>(particleCount);
-            this->colors = std::make_shared<AttributeArray<ColorS>>(particleCount);
+            this->lifetimes = std::make_shared<ScalarAttributeArray<Real>>(particleCount, AttributeType::Float, false);
+            this->ages = std::make_shared<ScalarAttributeArray<Real>>(particleCount, AttributeType::Float, false);
+            this->sequenceNumbers = std::make_shared<ScalarAttributeArray<UInt32>>(particleCount, AttributeType::Float, false);
+            this->positions = std::make_shared<AttributeArray<Point3rs>>(particleCount, AttributeType::Float, false);
+            this->velocities = std::make_shared<AttributeArray<Vector3rs>>(particleCount, AttributeType::Float, false);
+            this->normals = std::make_shared<AttributeArray<Vector3rs>>(particleCount, AttributeType::Float, false);
+            this->rotations = std::make_shared<ScalarAttributeArray<Real>>(particleCount, AttributeType::Float, false);
+            this->rotationalSpeeds = std::make_shared<ScalarAttributeArray<Real>>(particleCount, AttributeType::Float, false);
+            this->radiuses = std::make_shared<ScalarAttributeArray<Real>>(particleCount, AttributeType::Float, false);
+            this->colors = std::make_shared<AttributeArray<ColorS>>(particleCount, AttributeType::Float, false);
 
             ParticleStatePtr* particleStatePointers = new(std::nothrow) ParticleStatePtr[particleCount];
             if (particleStatePointers == nullptr) {

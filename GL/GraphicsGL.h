@@ -51,8 +51,8 @@ namespace Core {
         WeakPointer<Shader> createShader(const char vertex[], const char geometry[], const char fragment[]) override;
         void activateShader(WeakPointer<Shader> shader) override;
 
-        void drawBoundVertexBuffer(UInt32 vertexCount) override;
-        void drawBoundVertexBuffer(UInt32 vertexCount, WeakPointer<IndexBuffer> indices) override;
+        void drawBoundVertexBuffer(UInt32 vertexCount, PrimitiveType primitiveType = PrimitiveType::Triangles) override;
+        void drawBoundVertexBuffer(UInt32 vertexCount, WeakPointer<IndexBuffer> indices, PrimitiveType primitiveType = PrimitiveType::Triangles) override;
 
         ShaderManager& getShaderManager() override;
 
@@ -108,6 +108,7 @@ namespace Core {
         static GLenum getGLPixelFormat(TextureFormat format);
         static GLenum getGLPixelType(TextureFormat format);
         static GLenum getGLRenderStyle(RenderStyle style);
+        static GLenum getGLPrimitiveType(PrimitiveType type);
         static GLenum getGLStencilFunction(RenderState::StencilFunction function);
         static GLenum getGLStencilAction(RenderState::StencilAction action);
         static GLint getColorAttachmentID(UInt32 index);

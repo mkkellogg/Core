@@ -221,6 +221,16 @@ namespace Core {
     public:
 
         ScalarAttributeArray(UInt32 attributeCount) : AttributeArrayBase(attributeCount, 1), attributes(nullptr) {
+            this->gpuAttributeType = AttributeType::Float;
+            this->normalizeGPUData = false;
+            this->autoAllocateGPUSorage = false;
+            allocate();
+        }
+
+        ScalarAttributeArray(UInt32 attributeCount, AttributeType gpuAttributeType, Bool normalizeGPUData) : AttributeArrayBase(attributeCount, 1), attributes(nullptr) {
+            this->gpuAttributeType = gpuAttributeType;
+            this->normalizeGPUData = normalizeGPUData;
+            this->autoAllocateGPUSorage = true;
             allocate();
         }
 
@@ -322,6 +332,9 @@ namespace Core {
         }
 
     protected:
+        AttributeType gpuAttributeType;
+        Bool normalizeGPUData;
+        Bool autoAllocateGPUSorage;
         T* attributes;
 
         void allocate() {
@@ -331,6 +344,8 @@ namespace Core {
             if (this->attributes == nullptr) {
                 throw AllocationException("ScalarAttributeArray::allocate() -> Unable to allocate storage!");
             }
+
+            if (this->autoAllocateGPUSorage) this->allocateGPUStorage();
         }
 
         void deallocate() {
@@ -339,6 +354,12 @@ namespace Core {
                 this->attributes = nullptr;
             }
             this->deallocateGPUStorage();
+        }
+
+        void allocateGPUStorage() {
+            WeakPointer<AttributeArrayGPUStorage> gpuStorage =
+            Engine::instance()->createGPUStorage(this->getSize(), 1, this->gpuAttributeType, this->normalizeGPUData);
+            this->setGPUStorage(gpuStorage);
         }
 
         void deallocateGPUStorage() {

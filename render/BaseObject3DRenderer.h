@@ -24,6 +24,7 @@ namespace Core {
                                          const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting);
         virtual Bool supportsRenderPath(RenderPath renderPath);
         virtual UInt32 getRenderQueueID() const = 0;
+        virtual Bool init() = 0;
         Bool castsShadows();
         void setCastShadows(Bool castShadows);
 
