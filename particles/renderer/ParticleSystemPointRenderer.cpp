@@ -15,6 +15,7 @@ namespace Core {
     ParticleSystemPointRenderer::~ParticleSystemPointRenderer() {}
 
     Bool ParticleSystemPointRenderer::init() {
+        this->setCastShadows(false);
         return true;
     }
 

@@ -471,43 +471,43 @@ namespace Core {
             "precision highp float;\n"
             "layout( points ) in;\n"
             + PROJECTION_MATRIX_DEF +
-            "layout( triangle_strip, max_vertices = 4) out;\n"
+            "layout( triangle_strip, max_vertices = 6) out;\n"
             "in vec4 vViewPosition[];\n"
             "in float vRotation[];\n"
             "in float vSize[];\n"
             "void main()\n"
             "{\n"
-            /*"   const vec2 right = vec2(1.0, 0.0);\n"
+            "   const vec2 right = vec2(1.0, 0.0);\n"
             "   const vec2 up = vec2(0.0, 1.0);\n"
             "   const vec2 left = vec2(-1.0, 0.0);\n"
             "   const vec2 down = vec2(0.0, -1.0);\n"
+
+            "   float particleSize = vSize[0];\n"
 
             "   const vec2 uRight = vec2(1.0, 1.0);\n"
             "   const vec2 uLeft = vec2(-1.0, 1.0);\n"
             "   const vec2 dLeft = vec2(-1.0, -1.0);\n"
             "   const vec2 dRight = vec2(1.0, -1.0);\n"
 
-            "   const particleSize = 2.0;\n"
-
             "   float rotation = vRotation[0];\n"
             "   mat2 rotMat = mat2(cos(rotation), -sin(rotation), sin(rotation), cos(rotation));\n"
-            "   gl_Position = " + PROJECTION_MATRIX + " * (vec4(particleSize * rotMat * uLeft, vViewPosition[0].z, 1.0) + vViewPosition[0]);\n"
+            "   gl_Position = " + PROJECTION_MATRIX + " * (vec4(rotMat * dLeft * particleSize, 0.0, 0.0) + vViewPosition[0]);\n"
             "   EmitVertex();\n"
-            "   gl_Position = " + PROJECTION_MATRIX + " * (vec4(particleSize * rotMat * dLeft, vViewPosition[0].z, 1.0) + vViewPosition[0]);\n"
+            "   gl_Position = " + PROJECTION_MATRIX + " * (vec4(rotMat * uLeft * particleSize, 0.0, 0.0) + vViewPosition[0]);\n"
             "   EmitVertex();\n"
-            "   gl_Position = " + PROJECTION_MATRIX + " * (vec4(particleSize * rotMat * dRight, vViewPosition[0].z, 1.0) + vViewPosition[0]);\n"
+            "   gl_Position = " + PROJECTION_MATRIX + " * (vec4(rotMat * dRight * particleSize, 0.0, 0.0) + vViewPosition[0]);\n"
             "   EmitVertex();\n"
-            "   gl_Position = " + PROJECTION_MATRIX + " * (vec4(particleSize * rotMat * uRight, vViewPosition[0].z, 1.0) + vViewPosition[0]);\n"
-            "   EmitVertex();\n"*/
+            "   gl_Position = " + PROJECTION_MATRIX + " * (vec4(rotMat * uRight * particleSize, 0.0, 0.0) + vViewPosition[0]);\n"
+            "   EmitVertex();\n"
 
-            "   const vec3 globalUp = vec3(0.0, 1.0, 0.0);\n"
+            /*"   const vec3 globalUp = vec3(0.0, 1.0, 0.0);\n"
             "   vec3 toPos = vec3(vViewPosition[0]);\n"
             "   vec3 forward = normalize(toPos);\n"
             "   vec3 right = normalize(cross(forward, globalUp));\n"
             "   vec3 up = normalize(cross(right, forward));\n"
 
             "   float particleSize = vSize[0];\n"
-            "   float rotation = vRotation[0];\n"
+            "   float rotation = 0.0; //vRotation[0];\n"
             "   float cosRot = cos(rotation);\n"
             "   float sinRot = sin(rotation);\n"
 
@@ -519,13 +519,13 @@ namespace Core {
             "   vec3 dLeft = (-rotRight - rotUp) * particleSize;\n"
             "   vec3 dRight = (rotRight - rotUp) * particleSize;\n"
 
-            "   gl_Position = " + PROJECTION_MATRIX + " * (vViewPosition[0] + vec4(uLeft, 0.0) * particleSize);\n"
+            "   gl_Position = " + PROJECTION_MATRIX + " * (vViewPosition[0] + vec4(dLeft, 0.0) );\n"
             "   EmitVertex();\n"
-            "   gl_Position = " + PROJECTION_MATRIX + " * (vViewPosition[0] + vec4(dLeft, 0.0) * particleSize);\n"
+            "   gl_Position = " + PROJECTION_MATRIX + " * (vViewPosition[0] + vec4(uLeft, 0.0));\n"
             "   EmitVertex();\n"
-            "   gl_Position = " + PROJECTION_MATRIX + " * (vViewPosition[0] + vec4(dRight, 0.0) * particleSize);\n"
+            "   gl_Position = " + PROJECTION_MATRIX + " * (vViewPosition[0] + vec4(dRight, 0.0));\n"
             "   EmitVertex();\n"
-            "   gl_Position = " + PROJECTION_MATRIX + " * (vViewPosition[0] + vec4(uRight, 0.0) * particleSize);\n"
+            "   gl_Position = " + PROJECTION_MATRIX + " * (vViewPosition[0] + vec4(uRight, 0.0));\n"*/
             "   EmitVertex();\n"
 
             "}\n";

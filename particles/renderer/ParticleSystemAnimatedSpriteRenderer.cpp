@@ -19,6 +19,7 @@ namespace Core {
     }
 
     Bool ParticleSystemAnimatedSpriteRenderer::init() {
+        this->setCastShadows(false);
         this->material = Engine::instance()->createMaterial<ParticleStandardMaterial>();
         return this->material.isValid();
     }
@@ -57,10 +58,12 @@ namespace Core {
         if (positionsGPUStorage.isValid()) positionsGPUStorage->enableAndSendToActiveShader(worldPositionLocation);
 
         Int32 sizeLocation = this->material->getSizeLocation();
-        WeakPointer<ScalarAttributeArray<Real>> radiuses = particleStates.getRotations();
+        WeakPointer<ScalarAttributeArray<Real>> radiuses = particleStates.getRadiuses();
         WeakPointer<AttributeArrayGPUStorage> radiusesGPUStorage = radiuses->getGPUStorage();
         radiuses->updateGPUStorageData();
-        if (radiusesGPUStorage.isValid()) radiusesGPUStorage->enableAndSendToActiveShader(sizeLocation);
+        if (radiusesGPUStorage.isValid()) {
+            radiusesGPUStorage->enableAndSendToActiveShader(sizeLocation);
+        }
 
         Int32 rotationLocation = this->material->getRotationLocation();
         WeakPointer<ScalarAttributeArray<Real>> rotations = particleStates.getRotations();

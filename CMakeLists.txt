@@ -160,6 +160,7 @@ set(INCLUDE_FILES
     particles/renderer/ParticleSystemAnimatedSpriteRenderer.h
     particles/renderer/ParticleSystemPointRenderer.h
     particles/initializer/ParticleStateInitializer.h
+    particles/initializer/BasicParticleStateInitializer.h
     particles/initializer/BoxPositionInitializer.h
     particles/initializer/RandomVelocityInitializer.h
     particles/initializer/LifetimeInitializer.h
@@ -280,6 +281,7 @@ set(SOURCE_FILES
     particles/renderer/ParticleSystemAnimatedSpriteRenderer.cpp
     particles/renderer/ParticleSystemPointRenderer.cpp
     particles/initializer/ParticleStateInitializer.cpp
+    particles/initializer/BasicParticleStateInitializer.cpp
     particles/initializer/BoxPositionInitializer.cpp
     particles/initializer/RandomVelocityInitializer.cpp
     particles/initializer/LifetimeInitializer.cpp

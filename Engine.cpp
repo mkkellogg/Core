@@ -27,6 +27,7 @@
 #include "material/AmbientPhysicalMaterial.h"
 #include "particles/ParticleSystemManager.h"
 #include "particles/ParticleSystem.h"
+#include "particles/initializer/BasicParticleStateInitializer.h"
 #include "particles/operator/BasicParticleStateOperator.h"
 
 namespace Core {
@@ -321,6 +322,7 @@ namespace Core {
         owner->addComponent(wpParticleSystem);
         this->particleSystemManager->addParticleSystem(wpParticleSystem);
         wpParticleSystem->addParticleStateOperator<BasicParticleStateOperator>();
+        wpParticleSystem->addParticleStateInitializer<BasicParticleStateInitializer>();
         return spParticleSystem;
     }
 

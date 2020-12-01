@@ -23,6 +23,7 @@ namespace Core {
         graphics->activateShader(this->shader);
         this->bindShaderVarLocations();
         this->setSkinningEnabled(false);
+        this->setDepthWriteEnabled(false);
         return true;
     }
 
@@ -77,7 +78,7 @@ namespace Core {
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
         this->worldPositionLocation = this->shader->getAttributeLocation("worldPosition");
-        this->sizeLocation = this->shader->getUniformLocation("size");
-        this->rotationLocation = this->shader->getUniformLocation("rotation");
+        this->sizeLocation = this->shader->getAttributeLocation("size");
+        this->rotationLocation = this->shader->getAttributeLocation("rotation");
     }
 }
