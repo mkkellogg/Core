@@ -27,6 +27,18 @@ namespace Core {
         return true;
     }
 
+    void ParticleStandardMaterial::sendCustomUniformsToShader() {
+        if (this->atlas.AtlasTexture.isValid() && this->atlasTextureLocation >= 0) {
+            this->shader->setTexture2D(0, atlasTextureLocation, this->atlas.AtlasTexture->getTextureID());
+            if (this->atlasHorizontalSectionsLocation >= 0) {
+                this->shader->setUniform1i(this->atlasHorizontalSectionsLocation, this->atlas.HorizontalSections);
+            }
+            if (this->atlasVerticalSectionsLocation >= 0) {
+                this->shader->setUniform1i(this->atlasVerticalSectionsLocation, this->atlas.VerticalSections);
+            }
+        }
+    }
+
     Int32 ParticleStandardMaterial::getShaderLocation(StandardAttribute attribute, UInt32 offset) {
         return -1;
     }
@@ -54,15 +66,24 @@ namespace Core {
         return this->rotationLocation;
     }
 
+    Int32 ParticleStandardMaterial::getSequenceNumberLocation() {
+        return this->sequenceNumberLocation;
+    }
+
     void ParticleStandardMaterial::copyTo(WeakPointer<Material> target) {
         WeakPointer<ParticleStandardMaterial> particleMaterial = WeakPointer<Material>::dynamicPointerCast<ParticleStandardMaterial>(target);
         if (particleMaterial.isValid()) {
             Material::copyTo(target);
+            particleMaterial->atlas = this->atlas;
             particleMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
             particleMaterial->viewMatrixLocation = this->viewMatrixLocation;
+            particleMaterial->atlasTextureLocation = this->atlasTextureLocation;
+            particleMaterial->atlasHorizontalSectionsLocation = this->atlasHorizontalSectionsLocation;
+            particleMaterial->atlasVerticalSectionsLocation = this->atlasVerticalSectionsLocation;
             particleMaterial->worldPositionLocation = this->worldPositionLocation;
             particleMaterial->sizeLocation = this->sizeLocation;
             particleMaterial->rotationLocation = this->rotationLocation;
+            particleMaterial->sequenceNumberLocation = this->sequenceNumberLocation;
         } else {
             throw InvalidArgumentException("ParticleStandardMaterial::copyTo() -> 'target must be same material.");
         }
@@ -77,8 +98,20 @@ namespace Core {
     void ParticleStandardMaterial::bindShaderVarLocations() {
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
+        this->atlasTextureLocation = this->shader->getUniformLocation("atlasTexture");
+        this->atlasHorizontalSectionsLocation = this->shader->getUniformLocation("atlasHorizontalSections");
+        this->atlasVerticalSectionsLocation = this->shader->getUniformLocation("atlasVerticalSections");
         this->worldPositionLocation = this->shader->getAttributeLocation("worldPosition");
         this->sizeLocation = this->shader->getAttributeLocation("size");
         this->rotationLocation = this->shader->getAttributeLocation("rotation");
+        this->sequenceNumberLocation = this->shader->getAttributeLocation("sequenceNumber");
+    }
+
+    const GridAtlas& ParticleStandardMaterial::getAtlas() const {
+        return this->atlas;
+    }
+
+    void ParticleStandardMaterial::setAtlas(const GridAtlas& atlas) {
+        this->atlas = atlas;
     }
 }

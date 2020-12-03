@@ -164,6 +164,7 @@ set(INCLUDE_FILES
     particles/initializer/BoxPositionInitializer.h
     particles/initializer/RandomVelocityInitializer.h
     particles/initializer/LifetimeInitializer.h
+    particles/initializer/SizeInitializer.h
     particles/operator/ParticleStateOperator.h
     particles/operator/BasicParticleStateOperator.h
     particles/material/ParticleStandardMaterial.h
@@ -184,6 +185,7 @@ set(INCLUDE_FILES
     image/RawImage.h
     image/ImagePainter.h
     image/TextureUtils.h
+    image/GridAtlas.h
     color/Color.h
     color/Color4Components.h
     color/IntColor.h
@@ -243,6 +245,7 @@ set(SOURCE_FILES
     image/CubeTexture.cpp
     image/ImagePainter.cpp
     image/TextureUtils.cpp
+    image/GridAtlas.cpp
     geometry/AttributeArrayGPUStorage.cpp
     geometry/IndexBuffer.cpp
     geometry/Mesh.cpp
@@ -285,6 +288,7 @@ set(SOURCE_FILES
     particles/initializer/BoxPositionInitializer.cpp
     particles/initializer/RandomVelocityInitializer.cpp
     particles/initializer/LifetimeInitializer.cpp
+    particles/initializer/SizeInitializer.cpp
     particles/operator/ParticleStateOperator.cpp
     particles/operator/BasicParticleStateOperator.cpp
     particles/material/ParticleStandardMaterial.cpp

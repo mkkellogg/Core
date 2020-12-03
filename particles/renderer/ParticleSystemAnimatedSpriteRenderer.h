@@ -27,6 +27,8 @@ namespace Core {
         UInt32 getRenderQueueID() const override;
 
         virtual Bool init() override;
+        void setRenderState();
+        WeakPointer<ParticleStandardMaterial> getMaterial();
 
     protected:
         ParticleSystemAnimatedSpriteRenderer(WeakPointer<Object3D> owner);

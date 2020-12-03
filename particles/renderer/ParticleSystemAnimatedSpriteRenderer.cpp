@@ -6,6 +6,8 @@
 #include "../../geometry/AttributeArray.h"
 #include "../../geometry/AttributeArrayGPUStorage.h"
 #include "../../render/PrimitiveType.h"
+#include "../../render/RenderState.h"
+#include "../../render/EngineRenderQueue.h"
 
 namespace Core {
 
@@ -21,7 +23,45 @@ namespace Core {
     Bool ParticleSystemAnimatedSpriteRenderer::init() {
         this->setCastShadows(false);
         this->material = Engine::instance()->createMaterial<ParticleStandardMaterial>();
+        this->material->setBlendingMode(RenderState::BlendingMode::Custom);
+        this->material->setSourceBlendingFactor(RenderState::BlendingFactor::SrcAlpha);
+        this->material->setDestBlendingFactor(RenderState::BlendingFactor::OneMinusSrcAlpha);
+        this->material->setRenderQueue(EngineRenderQueue::Transparent);
         return this->material.isValid();
+    }
+
+     void ParticleSystemAnimatedSpriteRenderer::setRenderState() {
+        WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
+        graphics->setColorWriteEnabled(this->material->getColorWriteEnabled());
+        graphics->setRenderStyle(this->material->getRenderStyle());
+        if (this->material->getBlendingMode() != RenderState::BlendingMode::None) {
+            graphics->setBlendingEnabled(true);
+            if (this->material->getBlendingMode() == RenderState::BlendingMode::Custom) {
+                graphics->setBlendingEquation(this->material->getBlendingEquation());
+            }
+            graphics->setBlendingFactors(this->material->getSourceBlendingFactor(), this->material->getDestBlendingFactor());
+        }
+        else {
+            graphics->setBlendingEnabled(false);
+        }
+        
+        graphics->setDepthWriteEnabled(this->material->getDepthWriteEnabled());
+        graphics->setDepthTestEnabled(this->material->getDepthTestEnabled());
+        graphics->setDepthFunction(this->material->getDepthFunction());
+
+        graphics->setFaceCullingEnabled(this->material->getFaceCullingEnabled());
+        graphics->setCullFace(this->material->getCullFace());
+
+        graphics->setStencilTestEnabled(this->material->getStencilTestEnabled());
+        graphics->setStencilWriteMask(this->material->getStencilWriteMask());
+        if (material->getStencilTestEnabled()) {
+            graphics->setStencilFunction(this->material->getStencilComparisonFunction(), this->material->getStencilRef(), this->material->getStencilReadMask());
+            graphics->setStencilOperation(this->material->getStencilFailActionStencil(), this->material->getStencilFailActionDepth(), this->material->getStencilAllPassAction());
+        }
+    }
+
+    WeakPointer<ParticleStandardMaterial> ParticleSystemAnimatedSpriteRenderer::getMaterial() {
+        return this->material;
     }
 
     Bool ParticleSystemAnimatedSpriteRenderer::forwardRender(const ViewDescriptor& viewDescriptor, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
@@ -44,6 +84,8 @@ namespace Core {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         graphics->activateShader(shader);
 
+        this->setRenderState();
+
         Int32 projectionLoc = this->material->getShaderLocation(StandardUniform::ProjectionMatrix);
         Int32 viewMatrixLoc = this->material->getShaderLocation(StandardUniform::ViewMatrix);
         if (projectionLoc >= 0) shader->setUniformMatrix4(projectionLoc, viewDescriptor.projectionMatrix);
@@ -58,11 +100,11 @@ namespace Core {
         if (positionsGPUStorage.isValid()) positionsGPUStorage->enableAndSendToActiveShader(worldPositionLocation);
 
         Int32 sizeLocation = this->material->getSizeLocation();
-        WeakPointer<ScalarAttributeArray<Real>> radiuses = particleStates.getRadiuses();
-        WeakPointer<AttributeArrayGPUStorage> radiusesGPUStorage = radiuses->getGPUStorage();
-        radiuses->updateGPUStorageData();
-        if (radiusesGPUStorage.isValid()) {
-            radiusesGPUStorage->enableAndSendToActiveShader(sizeLocation);
+        WeakPointer<ScalarAttributeArray<Real>> sizes = particleStates.getSizes();
+        WeakPointer<AttributeArrayGPUStorage> sizesGPUStorage = sizes->getGPUStorage();
+        sizes->updateGPUStorageData();
+        if (sizesGPUStorage.isValid()) {
+            sizesGPUStorage->enableAndSendToActiveShader(sizeLocation);
         }
 
         Int32 rotationLocation = this->material->getRotationLocation();
@@ -71,10 +113,18 @@ namespace Core {
         rotations->updateGPUStorageData();
         if (rotationsGPUStorage.isValid()) rotationsGPUStorage->enableAndSendToActiveShader(rotationLocation);
 
+        Int32 sequenceNumberLocation = this->material->getSequenceNumberLocation();
+        WeakPointer<ScalarAttributeArray<UInt32>> sequenceNumbers = particleStates.getSequenceNumbers();
+        WeakPointer<AttributeArrayGPUStorage> sequenceNumbersGPUStorage = sequenceNumbers->getGPUStorage();
+        sequenceNumbers->updateGPUStorageData();
+        if (sequenceNumbersGPUStorage.isValid()) sequenceNumbersGPUStorage->enableAndSendToActiveShader(sequenceNumberLocation);
+
+        this->material->sendCustomUniformsToShader();
+
         Engine::instance()->getGraphicsSystem()->drawBoundVertexBuffer(particleSystem->getActiveParticleCount(), PrimitiveType::Points);
 
         positionsGPUStorage->disable(worldPositionLocation);
-        radiusesGPUStorage->disable(sizeLocation);
+        sizesGPUStorage->disable(sizeLocation);
         rotationsGPUStorage->disable(rotationLocation);
     }
 

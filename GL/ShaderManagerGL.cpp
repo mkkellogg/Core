@@ -455,26 +455,33 @@ namespace Core {
             "in vec4 worldPosition;\n"
             "in float rotation;\n"
             "in float size;\n"
+            "in int sequenceNumber;\n"
             "out vec4 vViewPosition;\n"
             "out float vRotation;\n"
             "out float vSize;\n"
+            "out int vSequenceNumber;\n"
             "void main()\n"
             "{\n"
             "   vViewPosition = " + VIEW_MATRIX + " * worldPosition;\n"
             "   vRotation = rotation;\n"
             "   vSize = size;\n"
+            "   vSequenceNumber = sequenceNumber;\n"
             "   gl_Position = " + PROJECTION_MATRIX + " * vViewPosition;\n"
             "}\n";
 
         this->ParticleStandard_geometry =
             "#version 330\n"
             "precision highp float;\n"
+            "uniform int atlasHorizontalSections;\n"
+            "uniform int atlasVerticalSections;\n"
             "layout( points ) in;\n"
             + PROJECTION_MATRIX_DEF +
             "layout( triangle_strip, max_vertices = 6) out;\n"
             "in vec4 vViewPosition[];\n"
             "in float vRotation[];\n"
             "in float vSize[];\n"
+            "in int vSequenceNumber[];\n"
+            "out vec2 vUV;\n"
             "void main()\n"
             "{\n"
             "   const vec2 right = vec2(1.0, 0.0);\n"
@@ -489,15 +496,29 @@ namespace Core {
             "   const vec2 dLeft = vec2(-1.0, -1.0);\n"
             "   const vec2 dRight = vec2(1.0, -1.0);\n"
 
+            "   int sequenceNumber = vSequenceNumber[0];\n"
+
+            "   float atlasTileWidth = 1.0 / atlasHorizontalSections;\n"
+            "   float atlasTileHeight = 1.0 / atlasVerticalSections;\n"
+            "   float SNOverHS = float(sequenceNumber) / atlasHorizontalSections;\n"
+            "   int yTile = int(SNOverHS);\n"
+            "   int xTile = int((SNOverHS - float(yTile)) * atlasHorizontalSections);\n"
+            "   float uvLeft = float(xTile) * atlasTileWidth;\n"
+            "   float uvTop = float(yTile) * atlasTileHeight;\n"
+
             "   float rotation = vRotation[0];\n"
             "   mat2 rotMat = mat2(cos(rotation), -sin(rotation), sin(rotation), cos(rotation));\n"
             "   gl_Position = " + PROJECTION_MATRIX + " * (vec4(rotMat * dLeft * particleSize, 0.0, 0.0) + vViewPosition[0]);\n"
+            "   vUV = vec2(uvLeft, uvTop);\n"
             "   EmitVertex();\n"
             "   gl_Position = " + PROJECTION_MATRIX + " * (vec4(rotMat * uLeft * particleSize, 0.0, 0.0) + vViewPosition[0]);\n"
+            "   vUV = vec2(uvLeft, uvTop + atlasTileHeight);\n"
             "   EmitVertex();\n"
             "   gl_Position = " + PROJECTION_MATRIX + " * (vec4(rotMat * dRight * particleSize, 0.0, 0.0) + vViewPosition[0]);\n"
+            "   vUV = vec2(uvLeft + atlasTileWidth, uvTop);\n"
             "   EmitVertex();\n"
             "   gl_Position = " + PROJECTION_MATRIX + " * (vec4(rotMat * uRight * particleSize, 0.0, 0.0) + vViewPosition[0]);\n"
+            "   vUV = vec2(uvLeft + atlasTileWidth, uvTop + atlasTileHeight);\n"
             "   EmitVertex();\n"
 
             /*"   const vec3 globalUp = vec3(0.0, 1.0, 0.0);\n"
@@ -525,17 +546,20 @@ namespace Core {
             "   EmitVertex();\n"
             "   gl_Position = " + PROJECTION_MATRIX + " * (vViewPosition[0] + vec4(dRight, 0.0));\n"
             "   EmitVertex();\n"
-            "   gl_Position = " + PROJECTION_MATRIX + " * (vViewPosition[0] + vec4(uRight, 0.0));\n"*/
-            "   EmitVertex();\n"
+            "   gl_Position = " + PROJECTION_MATRIX + " * (vViewPosition[0] + vec4(uRight, 0.0));\n"
+            "   EmitVertex();\n"*/
 
             "}\n";
 
         this->ParticleStandard_fragment =
             "#version 330\n"
             "precision highp float;\n"
+            "uniform sampler2D atlasTexture;\n"
             "layout( location = 0 ) out vec4 out_color;\n"
+            "in vec2 vUV;\n"
             "void main() {\n"
-            "   out_color = vec4(1.0, 0.0, 0.0, 1.0);\n"
+            "   vec4 color = texture(atlasTexture, vUV);\n"
+            "   out_color = color;\n"
             "}\n";
 
         this->Outline_vertex =
