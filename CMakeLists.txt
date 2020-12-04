@@ -361,17 +361,21 @@ add_library(${EXECUTABLE_NAME} ${SOURCE_FILES})
 include_directories(/usr/local/include)
 target_link_libraries(${EXECUTABLE_NAME} ${OPENGL_LIBRARIES})
 
-set(DEVIL_DIR ../../devil/devil-src/DevIL)
-include_directories(${DEVIL_DIR}/include)
-link_directories(${DEVIL_DIR}/build/lib/x64/)
+# If you need to specify a custom DevIL library & header location, uncomment the following lines
+# set(DEVIL_DIR <Set directory here>)
+# include_directories(${DEVIL_DIR}/include)
+# link_directories(${DEVIL_DIR}/build/lib/x64/)
 target_link_libraries(${EXECUTABLE_NAME} IL)
 
-set(ASSIMP_INCLUDE_DIR1 ../../assimp/build/include)
-set(ASSIMP_INCLUDE_DIR2 ../../assimp/include)
-set(ASSIMP_BUILD_DIR ../../assimp/build/code)
-include_directories(${ASSIMP_INCLUDE_DIR1})
-include_directories(${ASSIMP_INCLUDE_DIR2})
-link_directories(${ASSIMP_BUILD_DIR})
+set(ASSIMP_DIR ../../assimp)
+# The Asset importer library seems to have multiple locations for required header files, both within
+# the build directory, and the source directory
+set(ASSIMP_BUILD_INCLUDE ${ASSIMP_DIR}/build/include)
+set(ASSIMP_SRC_INCLUDE ${ASSIMP_DIR}/assimp/include)
+set(ASSIMP_BINARY_DIR ${ASSIMP_DIR}/build/bin)
+include_directories(${ASSIMP_BUILD_INCLUDE})
+include_directories(${ASSIMP_SRC_INCLUDE})
+link_directories(${ASSIMP_BINARY_DIR})
 target_link_libraries(${EXECUTABLE_NAME} assimp)
 
 add_custom_target(MakeIncludeDir ALL COMMAND ${CMAKE_COMMAND} -E make_directory "include")
