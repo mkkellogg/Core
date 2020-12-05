@@ -33,13 +33,14 @@ Dynamic versions of the above libraries are required.
 Standard CMake build is currently supported. 
 
 #### External Libraries
-You will need to modify the locations of the Assimp and DevIL libraries in CMakeLists.txt. The relevant variables are DEVIL_DIR, ASSIMP_INCLUDE_DIR, and ASSIMP_BUILD_DIR. 
+You will need to modify the locations of the Assimp and DevIL libraries in CMakeLists.txt. The relevant variables are DEVIL_DIR and ASSIMP_DIR.
 
-**Important:** Currently only version 3.1.1 of the Asset Import Library works 100% correctly with animations, so you'll want to make sure you either build or install that version if the animations feature is necessary for you.
-
-#### OpenGL & Linux
+#### Linux notes
 In order for CMake to find your OpenGL installation on some Linux distributions, it may be necessary to run the following command to install the Mesa development packages:
 
      sudo apt-get install libgl1-mesa-dev
 
+The DevIL library can be installed via:
+
+     sudo apt-get install libdevil-dev
 
