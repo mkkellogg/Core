@@ -434,19 +434,6 @@ namespace Core {
             "    out_color = vec4(color, 1.0);\n"
             "}\n";
 
-        /*
-        Real lifetime;
-        Real age;
-        UInt32 sequenceNumber;
-        Point3r position;
-        Vector3r velocity;
-        Vector3r normal;
-        Real rotation;
-        Real rotationalSpeed;
-        Real radius;
-        Color color;
-        */
-
         this->ParticleStandard_vertex = 
             "#version 330\n"
             "precision highp float;\n"
@@ -1273,16 +1260,19 @@ namespace Core {
             "        }\n"
             "        else { \n"
             "            vec3 lightLocalPos, toLight, halfwayVec, radiance; \n"
-            "            float NdotL, bias, attenuation; \n"  
+            "            float NdotL, bias, attenuation; \n"
+            "            float directAmbientFactor = 0.0; \n"
             "            if (" + LIGHT_TYPE + "[@lightIndex] == DIRECTIONAL_LIGHT) {\n"
             "                getDirLightParameters@lightIndex(worldNormal, V, toLight, halfwayVec, NdotL, bias); \n"
             "                vec4 lightColor = getDirLightColor@lightIndex(worldPos, bias); \n"
             "                radiance = lightColor.rgb; \n"
+            "                directAmbientFactor = 1.0; \n"
             "            }\n"
             "            else if (" + LIGHT_TYPE + "[@lightIndex] == POINT_LIGHT) {\n"
             "                getPointLightParameters@lightIndex(worldPos, worldNormal, V, lightLocalPos, toLight, halfwayVec, NdotL, bias, attenuation); \n"
             "                vec4 lightColor = getPointLightColor@lightIndex(lightLocalPos, bias);\n"
             "                radiance = lightColor.rgb * attenuation; \n"
+            "                directAmbientFactor = 0.0; \n"
             "            }\n"
 
             "            float NDF = distributionGGX(worldNormal, halfwayVec, roughness); \n "
@@ -1299,7 +1289,7 @@ namespace Core {
                             
             "            vec3 Lo = (kD * albedo.rgb / PI + specular) * radiance * NdotL; \n "
 
-            "            vec3 ambient = vec3(0.03) * albedo.rgb * ao; \n"
+            "            vec3 ambient = vec3(0.03) * albedo.rgb * ao * directAmbientFactor; \n"
             "            vec3 color = ambient + Lo;  \n"
 
             "            return vec4(color, albedo.a); \n"
