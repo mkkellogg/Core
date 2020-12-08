@@ -491,7 +491,12 @@ namespace Core {
             "   int yTile = int(SNOverHS);\n"
             "   int xTile = int((SNOverHS - float(yTile)) * atlasHorizontalSections);\n"
             "   float uvLeft = float(xTile) * atlasTileWidth;\n"
-            "   float uvTop = float(yTile) * atlasTileHeight;\n"
+            "   float uvTop = 1.0 - ((float(yTile) + 1) * atlasTileHeight);\n"
+
+            "   uvLeft = 1.0 / 16.0; \n"
+            "   uvTop = 1.0 / 8.0 * 6.0; \n"
+            "   atlasTileWidth = 1.0 / 16.0; \n"
+            "   atlasTileHeight = 1.0 / 8.0; \n"
 
             "   float rotation = vRotation[0];\n"
             "   mat2 rotMat = mat2(cos(rotation), -sin(rotation), sin(rotation), cos(rotation));\n"
@@ -545,7 +550,7 @@ namespace Core {
             "layout( location = 0 ) out vec4 out_color;\n"
             "in vec2 vUV;\n"
             "void main() {\n"
-            "   vec4 color = texture(atlasTexture, vUV);\n"
+            "   vec4 color = texture(atlasTexture, vUV) * 0.5 + vec4(1.0, 0.0, 0.0, 1.0) * 0.5;\n"
             "   out_color = color;\n"
             "}\n";
 
