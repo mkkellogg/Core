@@ -141,4 +141,15 @@ namespace Core {
     void ParticleSystem::setSimulateInWorldSpace(Bool simulateInWorldSpace) {
         this->simulateInWorldSpace = simulateInWorldSpace;
     }
+
+    WeakPointer<ParticleSequence> ParticleSystem::createParticleSequence(UInt32 start, UInt32 length) {
+        UInt32 sequenceIndex = this->particleSequences.size();
+        ParticleSequence* sequencePtr = new(std::nothrow) ParticleSequence(start, length);
+        if (sequencePtr == nullptr) {
+            throw AllocationException("ParticleSystem::createParticleSequence -> Could not allocate new particle sequence.");
+        }
+        std::shared_ptr<ParticleSequence> sequence = std::shared_ptr<ParticleSequence>(sequencePtr);
+        this->particleSequences.push_back(sequence);
+        return sequence;
+    }
 }

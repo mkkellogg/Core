@@ -1,4 +1,5 @@
 #include "ParticleStateInitializer.h"
+#include "../ParticleSystem.h"
 
 namespace Core {
 

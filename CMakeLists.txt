@@ -156,6 +156,7 @@ set(INCLUDE_FILES
     particles/ParticleEmitter.h
     particles/ParticleState.h
     particles/ParticleSystemSnapShot.h
+    particles/ParticleSequence.h
     particles/renderer/ParticleSystemRenderer.h
     particles/renderer/ParticleSystemAnimatedSpriteRenderer.h
     particles/renderer/ParticleSystemPointRenderer.h
@@ -165,8 +166,10 @@ set(INCLUDE_FILES
     particles/initializer/RandomVelocityInitializer.h
     particles/initializer/LifetimeInitializer.h
     particles/initializer/SizeInitializer.h
+    particles/initializer/SequenceInitializer.h
     particles/operator/ParticleStateOperator.h
     particles/operator/BasicParticleStateOperator.h
+    particles/operator/SequenceOperator.h
     particles/material/ParticleStandardMaterial.h
     light/Light.h
     light/ShadowLight.h
@@ -280,6 +283,7 @@ set(SOURCE_FILES
     particles/ParticleSystemManager.cpp
     particles/ParticleSystem.cpp
     particles/ParticleSystemSnapShot.cpp
+    particles/ParticleSequence.cpp
     particles/renderer/ParticleSystemRenderer.cpp
     particles/renderer/ParticleSystemAnimatedSpriteRenderer.cpp
     particles/renderer/ParticleSystemPointRenderer.cpp
@@ -289,8 +293,10 @@ set(SOURCE_FILES
     particles/initializer/RandomVelocityInitializer.cpp
     particles/initializer/LifetimeInitializer.cpp
     particles/initializer/SizeInitializer.cpp
+    particles/initializer/SequenceInitializer.cpp
     particles/operator/ParticleStateOperator.cpp
     particles/operator/BasicParticleStateOperator.cpp
+    particles/operator/SequenceOperator.cpp
     particles/material/ParticleStandardMaterial.cpp
     light/Light.cpp
     light/ShadowLight.cpp

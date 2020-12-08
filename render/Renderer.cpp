@@ -258,7 +258,7 @@ namespace Core {
         }
         else {
 
-            // TODO: Decided if only static object should be involved in rendering SSAO texture
+            // TODO: Decide if only static object should be involved in rendering SSAO texture
             /*static std::vector<WeakPointer<Object3D>> staticObjects;
             staticObjects.resize(0);
             for (UInt32 i = 0; i < objects.size(); i++) {
