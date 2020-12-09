@@ -11,7 +11,7 @@ namespace Core {
     }
 
     void SequenceInitializer::initializeState(ParticleStatePtr& state) {
-        *state.sequenceNumber = this->particleSequence->start;
+        *state.sequenceElement = this->particleSequence->start;
     }
 
 }

@@ -143,7 +143,6 @@ namespace Core {
     }
 
     WeakPointer<ParticleSequence> ParticleSystem::createParticleSequence(UInt32 start, UInt32 length) {
-        UInt32 sequenceIndex = this->particleSequences.size();
         ParticleSequence* sequencePtr = new(std::nothrow) ParticleSequence(start, length);
         if (sequencePtr == nullptr) {
             throw AllocationException("ParticleSystem::createParticleSequence -> Could not allocate new particle sequence.");

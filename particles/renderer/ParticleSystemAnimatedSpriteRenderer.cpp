@@ -113,11 +113,11 @@ namespace Core {
         rotations->updateGPUStorageData();
         if (rotationsGPUStorage.isValid()) rotationsGPUStorage->enableAndSendToActiveShader(rotationLocation);
 
-        Int32 sequenceNumberLocation = this->material->getSequenceNumberLocation();
-        WeakPointer<ScalarAttributeArray<UInt32>> sequenceNumbers = particleStates.getSequenceNumbers();
-        WeakPointer<AttributeArrayGPUStorage> sequenceNumbersGPUStorage = sequenceNumbers->getGPUStorage();
-        sequenceNumbers->updateGPUStorageData();
-        if (sequenceNumbersGPUStorage.isValid()) sequenceNumbersGPUStorage->enableAndSendToActiveShader(sequenceNumberLocation);
+        Int32 sequenceElementLocation = this->material->getSequenceElementLocation();
+        WeakPointer<ScalarAttributeArray<UInt32>> sequenceElements = particleStates.getSequenceElements();
+        WeakPointer<AttributeArrayGPUStorage> sequenceElementsGPUStorage = sequenceElements->getGPUStorage();
+        sequenceElements->updateGPUStorageData();
+        if (sequenceElementsGPUStorage.isValid()) sequenceElementsGPUStorage->enableAndSendToActiveShader(sequenceElementLocation);
 
         this->material->sendCustomUniformsToShader();
 

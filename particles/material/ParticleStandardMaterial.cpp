@@ -66,8 +66,8 @@ namespace Core {
         return this->rotationLocation;
     }
 
-    Int32 ParticleStandardMaterial::getSequenceNumberLocation() {
-        return this->sequenceNumberLocation;
+    Int32 ParticleStandardMaterial::getSequenceElementLocation() {
+        return this->sequenceElementLocation;
     }
 
     void ParticleStandardMaterial::copyTo(WeakPointer<Material> target) {
@@ -83,7 +83,7 @@ namespace Core {
             particleMaterial->worldPositionLocation = this->worldPositionLocation;
             particleMaterial->sizeLocation = this->sizeLocation;
             particleMaterial->rotationLocation = this->rotationLocation;
-            particleMaterial->sequenceNumberLocation = this->sequenceNumberLocation;
+            particleMaterial->sequenceElementLocation = this->sequenceElementLocation;
         } else {
             throw InvalidArgumentException("ParticleStandardMaterial::copyTo() -> 'target must be same material.");
         }
@@ -104,7 +104,7 @@ namespace Core {
         this->worldPositionLocation = this->shader->getAttributeLocation("worldPosition");
         this->sizeLocation = this->shader->getAttributeLocation("size");
         this->rotationLocation = this->shader->getAttributeLocation("rotation");
-        this->sequenceNumberLocation = this->shader->getAttributeLocation("sequenceNumber");
+        this->sequenceElementLocation = this->shader->getAttributeLocation("sequenceElement");
     }
 
     const GridAtlas& ParticleStandardMaterial::getAtlas() const {

@@ -18,9 +18,9 @@ namespace Core {
         if (this->timeDeltaSinceLastIndexChange >= this->speed) {
             Real f = (this->timeDeltaSinceLastIndexChange / this->speed);
             UInt32 iCount = (UInt32)f;
-            *state.sequenceNumber += iCount;
-            if (*state.sequenceNumber >= this->particleSequence->start + this->particleSequence->length) {
-                *state.sequenceNumber = this->particleSequence->start;
+            *state.sequenceElement += iCount;
+            if (*state.sequenceElement >= this->particleSequence->start + this->particleSequence->length) {
+                *state.sequenceElement = this->particleSequence->start;
             }
             this->timeDeltaSinceLastIndexChange = this->timeDeltaSinceLastIndexChange - (Real)(iCount) * this->speed;
         }

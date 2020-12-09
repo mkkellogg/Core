@@ -13,7 +13,7 @@ namespace Core {
     public:
         Real lifetime;
         Real age;
-        UInt32 sequenceNumber;
+        UInt32 sequenceElement;
         Point3r position;
         Vector3r velocity;
         Vector3r normal;
@@ -27,7 +27,7 @@ namespace Core {
     public:
         Real* lifetime;
         Real* age;
-        UInt32* sequenceNumber;
+        UInt32* sequenceElement;
         Point3rs* position;
         Vector3rs* velocity;
         Vector3rs* normal;
@@ -79,7 +79,7 @@ namespace Core {
 
             this->lifetimes->copyAttribute(srcIndex, destIndex);
             this->ages->copyAttribute(srcIndex, destIndex);
-            this->sequenceNumbers->copyAttribute(srcIndex, destIndex);
+            this->sequenceElements->copyAttribute(srcIndex, destIndex);
             this->positions->copyAttribute(srcIndex, destIndex);
             this->velocities->copyAttribute(srcIndex, destIndex);
             this->normals->copyAttribute(srcIndex, destIndex);
@@ -99,14 +99,14 @@ namespace Core {
         std::shared_ptr<AttributeArray<Point3rs>> getPositions() {return this->positions;}
         std::shared_ptr<ScalarAttributeArray<Real>> getSizes() {return this->sizes;}
         std::shared_ptr<ScalarAttributeArray<Real>> getRotations() {return this->rotations;}
-        std::shared_ptr<ScalarAttributeArray<UInt32>> getSequenceNumbers() {return this->sequenceNumbers;}
+        std::shared_ptr<ScalarAttributeArray<UInt32>> getSequenceElements() {return this->sequenceElements;}
 
     protected:
 
         void allocate(UInt32 particleCount) override {
             this->lifetimes = std::make_shared<ScalarAttributeArray<Real>>(particleCount, AttributeType::Float, false);
             this->ages = std::make_shared<ScalarAttributeArray<Real>>(particleCount, AttributeType::Float, false);
-            this->sequenceNumbers = std::make_shared<ScalarAttributeArray<UInt32>>(particleCount, AttributeType::Float, false);
+            this->sequenceElements = std::make_shared<ScalarAttributeArray<UInt32>>(particleCount, AttributeType::Float, false);
             this->positions = std::make_shared<AttributeArray<Point3rs>>(particleCount, AttributeType::Float, false);
             this->velocities = std::make_shared<AttributeArray<Vector3rs>>(particleCount, AttributeType::Float, false);
             this->normals = std::make_shared<AttributeArray<Vector3rs>>(particleCount, AttributeType::Float, false);
@@ -131,7 +131,7 @@ namespace Core {
         void bindParticleStatePtr(UInt32 index, ParticleStatePtr& ptr) {
             ptr.lifetime = &this->lifetimes->getAttribute(index);
             ptr.age = &this->ages->getAttribute(index);
-            ptr.sequenceNumber = &this->sequenceNumbers->getAttribute(index);
+            ptr.sequenceElement = &this->sequenceElements->getAttribute(index);
             ptr.position = &this->positions->getAttribute(index);
             ptr.velocity = &this->velocities->getAttribute(index);
             ptr.normal = &this->normals->getAttribute(index);
@@ -144,7 +144,7 @@ namespace Core {
         std::shared_ptr<ParticleStatePtr> particleStatePointers;
         std::shared_ptr<ScalarAttributeArray<Real>> lifetimes;
         std::shared_ptr<ScalarAttributeArray<Real>> ages;
-        std::shared_ptr<ScalarAttributeArray<UInt32>> sequenceNumbers;
+        std::shared_ptr<ScalarAttributeArray<UInt32>> sequenceElements;
         std::shared_ptr<AttributeArray<Point3rs>> positions;
         std::shared_ptr<AttributeArray<Vector3rs>> velocities;
         std::shared_ptr<AttributeArray<Vector3rs>> normals;
