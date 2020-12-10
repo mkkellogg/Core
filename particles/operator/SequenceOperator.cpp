@@ -15,12 +15,13 @@ namespace Core {
 
     void SequenceOperator::updateState(ParticleStatePtr& state, Real timeDelta) {
         this->timeDeltaSinceLastIndexChange += timeDelta;
+        Vector2us& sequenceElement = *state.sequenceElement;
         if (this->timeDeltaSinceLastIndexChange >= this->speed) {
             Real f = (this->timeDeltaSinceLastIndexChange / this->speed);
             UInt32 iCount = (UInt32)f;
-            *state.sequenceElement += iCount;
-            if (*state.sequenceElement >= this->particleSequence->start + this->particleSequence->length) {
-                *state.sequenceElement = this->particleSequence->start;
+            sequenceElement.x += iCount;
+            if (sequenceElement.x >= this->particleSequence->start + this->particleSequence->length) {
+                sequenceElement.x = this->particleSequence->start;
             }
             this->timeDeltaSinceLastIndexChange = this->timeDeltaSinceLastIndexChange - (Real)(iCount) * this->speed;
         }

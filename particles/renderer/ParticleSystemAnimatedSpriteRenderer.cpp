@@ -3,6 +3,7 @@
 #include "../material/ParticleStandardMaterial.h"
 #include "../../material/Shader.h"
 #include "../ParticleState.h"
+#include "../../geometry/Vector2.h"
 #include "../../geometry/AttributeArray.h"
 #include "../../geometry/AttributeArrayGPUStorage.h"
 #include "../../render/PrimitiveType.h"
@@ -114,7 +115,7 @@ namespace Core {
         if (rotationsGPUStorage.isValid()) rotationsGPUStorage->enableAndSendToActiveShader(rotationLocation);
 
         Int32 sequenceElementLocation = this->material->getSequenceElementLocation();
-        WeakPointer<ScalarAttributeArray<UInt32>> sequenceElements = particleStates.getSequenceElements();
+        WeakPointer<AttributeArray<Vector2us>> sequenceElements = particleStates.getSequenceElements();
         WeakPointer<AttributeArrayGPUStorage> sequenceElementsGPUStorage = sequenceElements->getGPUStorage();
         sequenceElements->updateGPUStorageData();
         if (sequenceElementsGPUStorage.isValid()) sequenceElementsGPUStorage->enableAndSendToActiveShader(sequenceElementLocation);
