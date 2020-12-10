@@ -70,6 +70,7 @@ namespace Core {
         void setSimulateInWorldSpace(Bool simulateInWorldSpace);
 
         WeakPointer<ParticleSequence> createParticleSequence(UInt32 start, UInt32 length);
+        WeakPointer<ParticleSequence> createParticleSequence(UInt32 id, UInt32 start, UInt32 length);
 
     private:
 

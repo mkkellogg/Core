@@ -13,7 +13,7 @@ namespace Core {
     void SequenceInitializer::initializeState(ParticleStatePtr& state) {
         Vector2rs& sequenceElement = *state.sequenceElement;
         sequenceElement.x = (Real)this->particleSequence->start;
-        sequenceElement.y = 0.0f;
+        sequenceElement.y = (Real)this->particleSequence->id;
     }
 
 }
