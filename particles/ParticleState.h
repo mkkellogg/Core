@@ -14,7 +14,7 @@ namespace Core {
     public:
         Real lifetime;
         Real age;
-        Vector2u sequenceElement;
+        Vector2r sequenceElement;
         Point3r position;
         Vector3r velocity;
         Vector3r normal;
@@ -28,7 +28,7 @@ namespace Core {
     public:
         Real* lifetime;
         Real* age;
-        Vector2us* sequenceElement;
+        Vector2rs* sequenceElement;
         Point3rs* position;
         Vector3rs* velocity;
         Vector3rs* normal;
@@ -100,14 +100,14 @@ namespace Core {
         std::shared_ptr<AttributeArray<Point3rs>> getPositions() {return this->positions;}
         std::shared_ptr<ScalarAttributeArray<Real>> getSizes() {return this->sizes;}
         std::shared_ptr<ScalarAttributeArray<Real>> getRotations() {return this->rotations;}
-        std::shared_ptr<AttributeArray<Vector2us>> getSequenceElements() {return this->sequenceElements;}
+        std::shared_ptr<AttributeArray<Vector2rs>> getSequenceElements() {return this->sequenceElements;}
 
     protected:
 
         void allocate(UInt32 particleCount) override {
             this->lifetimes = std::make_shared<ScalarAttributeArray<Real>>(particleCount, AttributeType::Float, false);
             this->ages = std::make_shared<ScalarAttributeArray<Real>>(particleCount, AttributeType::Float, false);
-            this->sequenceElements = std::make_shared<AttributeArray<Vector2us>>(particleCount, AttributeType::Float, false);
+            this->sequenceElements = std::make_shared<AttributeArray<Vector2rs>>(particleCount, AttributeType::Float, false);
             this->positions = std::make_shared<AttributeArray<Point3rs>>(particleCount, AttributeType::Float, false);
             this->velocities = std::make_shared<AttributeArray<Vector3rs>>(particleCount, AttributeType::Float, false);
             this->normals = std::make_shared<AttributeArray<Vector3rs>>(particleCount, AttributeType::Float, false);
@@ -145,7 +145,7 @@ namespace Core {
         std::shared_ptr<ParticleStatePtr> particleStatePointers;
         std::shared_ptr<ScalarAttributeArray<Real>> lifetimes;
         std::shared_ptr<ScalarAttributeArray<Real>> ages;
-        std::shared_ptr<AttributeArray<Vector2us>> sequenceElements;
+        std::shared_ptr<AttributeArray<Vector2rs>> sequenceElements;
         std::shared_ptr<AttributeArray<Point3rs>> positions;
         std::shared_ptr<AttributeArray<Vector3rs>> velocities;
         std::shared_ptr<AttributeArray<Vector3rs>> normals;

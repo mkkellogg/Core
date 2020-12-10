@@ -11,9 +11,9 @@ namespace Core {
     }
 
     void SequenceInitializer::initializeState(ParticleStatePtr& state) {
-        Vector2us& sequenceElement = *state.sequenceElement;
-        sequenceElement.x = this->particleSequence->start;
-        sequenceElement.y = 0;
+        Vector2rs& sequenceElement = *state.sequenceElement;
+        sequenceElement.x = (Real)this->particleSequence->start;
+        sequenceElement.y = 0.0f;
     }
 
 }
