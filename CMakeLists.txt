@@ -188,6 +188,7 @@ set(INCLUDE_FILES
     image/RawImage.h
     image/ImagePainter.h
     image/TextureUtils.h
+    image/Atlas.h
     image/GridAtlas.h
     color/Color.h
     color/Color4Components.h
@@ -248,6 +249,7 @@ set(SOURCE_FILES
     image/CubeTexture.cpp
     image/ImagePainter.cpp
     image/TextureUtils.cpp
+    image/Atlas.cpp
     image/GridAtlas.cpp
     geometry/AttributeArrayGPUStorage.cpp
     geometry/IndexBuffer.cpp
