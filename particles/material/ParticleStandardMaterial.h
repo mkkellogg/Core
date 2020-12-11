@@ -4,7 +4,7 @@
 #include "../../common/Constants.h"
 #include "../../material/Material.h"
 #include "../../color/Color.h"
-#include "../../image/GridAtlas.h"
+#include "../../image/Atlas.h"
 
 namespace Core {
 
@@ -28,17 +28,16 @@ namespace Core {
         virtual WeakPointer<Material> clone() override;
         void bindShaderVarLocations();
 
-        const GridAtlas& getAtlas() const;
-        void setAtlas(const GridAtlas& atlas);
+        const Atlas& getAtlas() const;
+        void setAtlas(const Atlas& atlas);
 
     private:
 
         ParticleStandardMaterial();
 
-        GridAtlas atlas;
+        Atlas atlas;
         Int32 atlasTextureLocation;
-        Int32 atlasHorizontalSectionsLocation;
-        Int32 atlasVerticalSectionsLocation;
+        Int32 atlasTileArayLocation[Constants::MaxAtlasTileArrays];
         Int32 worldPositionLocation;
         Int32 sizeLocation;
         Int32 rotationLocation;

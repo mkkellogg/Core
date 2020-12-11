@@ -31,10 +31,13 @@ namespace Core {
         Atlas(WeakPointer<Texture2D> texture);
         virtual ~Atlas();
 
+        WeakPointer<Texture2D> getTexture();
+        UInt32 getTileArrayCount () const;
         void addTileArray(UInt32 length, Real x, Real y, Real width, Real height);
+        TileArrayDescriptor& getTileArray(UInt32 index);
 
     private:
-        PersistentWeakPointer<Texture2D> AtlasTexture;
+        PersistentWeakPointer<Texture2D> texture;
         std::vector<TileArrayDescriptor> tileArrays;
     };
 }

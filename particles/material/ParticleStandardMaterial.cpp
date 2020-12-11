@@ -28,13 +28,15 @@ namespace Core {
     }
 
     void ParticleStandardMaterial::sendCustomUniformsToShader() {
-        if (this->atlas.AtlasTexture.isValid() && this->atlasTextureLocation >= 0) {
-            this->shader->setTexture2D(0, atlasTextureLocation, this->atlas.AtlasTexture->getTextureID());
-            if (this->atlasHorizontalSectionsLocation >= 0) {
-                this->shader->setUniform1i(this->atlasHorizontalSectionsLocation, this->atlas.HorizontalSections);
-            }
-            if (this->atlasVerticalSectionsLocation >= 0) {
-                this->shader->setUniform1i(this->atlasVerticalSectionsLocation, this->atlas.VerticalSections);
+        WeakPointer<Texture2D> atlasTexture = this->atlas.getTexture();
+        if (atlasTexture.isValid() && this->atlasTextureLocation >= 0) {
+            this->shader->setTexture2D(0, atlasTextureLocation, atlasTexture->getTextureID());
+            if (this->atlasTileArayLocation >= 0) {
+                UInt32 atlasTileArrayCount = this->atlas.getTileArrayCount();
+                for (UInt32 i = 0; i < atlasTileArrayCount; i++) {
+                    Atlas::TileArrayDescriptor& tileArray = this->atlas.getTileArray(i);
+                    this->shader->setUniform4f(atlasTileArayLocation[i], tileArray.x, tileArray.y, tileArray.width, tileArray.height);
+                }
             }
         }
     }
@@ -78,8 +80,9 @@ namespace Core {
             particleMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
             particleMaterial->viewMatrixLocation = this->viewMatrixLocation;
             particleMaterial->atlasTextureLocation = this->atlasTextureLocation;
-            particleMaterial->atlasHorizontalSectionsLocation = this->atlasHorizontalSectionsLocation;
-            particleMaterial->atlasVerticalSectionsLocation = this->atlasVerticalSectionsLocation;
+            for (UInt32 i = 0; i < Constants::MaxAtlasTileArrays; i++) {
+                particleMaterial->atlasTileArayLocation[i] = this->atlasTileArayLocation[i];
+            }
             particleMaterial->worldPositionLocation = this->worldPositionLocation;
             particleMaterial->sizeLocation = this->sizeLocation;
             particleMaterial->rotationLocation = this->rotationLocation;
@@ -99,19 +102,20 @@ namespace Core {
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
         this->atlasTextureLocation = this->shader->getUniformLocation("atlasTexture");
-        this->atlasHorizontalSectionsLocation = this->shader->getUniformLocation("atlasHorizontalSections");
-        this->atlasVerticalSectionsLocation = this->shader->getUniformLocation("atlasVerticalSections");
+        for (UInt32 i = 0; i < Constants::MaxAtlasTileArrays; i++) {
+            this->atlasTileArayLocation[i] = this->shader->getUniformLocation("atlasTileArray", i);
+        }
         this->worldPositionLocation = this->shader->getAttributeLocation("worldPosition");
         this->sizeLocation = this->shader->getAttributeLocation("size");
         this->rotationLocation = this->shader->getAttributeLocation("rotation");
         this->sequenceElementLocation = this->shader->getAttributeLocation("sequenceElement");
     }
 
-    const GridAtlas& ParticleStandardMaterial::getAtlas() const {
+    const Atlas& ParticleStandardMaterial::getAtlas() const {
         return this->atlas;
     }
 
-    void ParticleStandardMaterial::setAtlas(const GridAtlas& atlas) {
+    void ParticleStandardMaterial::setAtlas(const Atlas& atlas) {
         this->atlas = atlas;
     }
 }

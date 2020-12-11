@@ -15,6 +15,7 @@ namespace Core {
         static const UInt32 MaxBonesPerVertex = 4;
         static const UInt32 MaxBones = 128;
         static const UInt32 SSAOSamples = 64;
+        static const UInt32 MaxAtlasTileArrays = 16;
         #ifdef CORE_USE_PRIVATE_INCLUDES
         static constexpr UInt32 TempRenderTargetSize = 4096;
         static constexpr UInt32 EffectsBuffer2DSize = 1024;

@@ -437,6 +437,8 @@ namespace Core {
         this->ParticleStandard_vertex = 
             "#version 330\n"
             "precision highp float;\n"
+            "const int MAX_ATLAS_TILE_ARRAYS = 16; \n"
+            "uniform vec4 atlasTileArray[MAX_ATLAS_TILE_ARRAYS]; \n"
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF +
             "in vec4 worldPosition;\n"
@@ -448,21 +450,21 @@ namespace Core {
             "out float vSize;\n"
             "out int vSequenceElement;\n"
             "out int vSequenceNumber;\n"
+            "out vec4 vAtlasTileArray;\n"
             "void main()\n"
             "{\n"
             "   vViewPosition = " + VIEW_MATRIX + " * worldPosition;\n"
             "   vRotation = rotation;\n"
             "   vSize = size;\n"
             "   vSequenceElement = int(sequenceElement.x);\n"
-             "  vSequenceNumber = int(sequenceElement.y);\n"
+            "   vSequenceNumber = int(sequenceElement.y);\n"
+            "   vAtlasTileArray = atlasTileArray[vSequenceNumber]; \n"
             "   gl_Position = " + PROJECTION_MATRIX + " * vViewPosition;\n"
             "}\n";
 
         this->ParticleStandard_geometry =
             "#version 330\n"
             "precision highp float;\n"
-            "uniform int atlasHorizontalSections;\n"
-            "uniform int atlasVerticalSections;\n"
             "layout( points ) in;\n"
             + PROJECTION_MATRIX_DEF +
             "layout( triangle_strip, max_vertices = 4) out;\n"
@@ -471,6 +473,7 @@ namespace Core {
             "in float vSize[];\n"
             "in int vSequenceElement[];\n"
             "in int vSequenceNumber[];\n"
+            "in vec4 vAtlasTileArray[];\n"
             "out vec2 vUV;\n"
             "void main()\n"
             "{\n"
@@ -487,28 +490,62 @@ namespace Core {
             "   const vec2 dRight = vec2(1.0, -1.0);\n"
 
             "   int sequenceElement = vSequenceElement[0];\n"
+            "   int sequenceNumber = vSequenceNumber[0];\n"
+            "   vec4 atlasTileArray = vAtlasTileArray[0];\n"
 
-            "   float atlasTileWidth = 1.0 / atlasHorizontalSections;\n"
+            /*"   float atlasTileWidth = 1.0 / atlasHorizontalSections;\n"
             "   float atlasTileHeight = 1.0 / atlasVerticalSections;\n"
             "   float SNOverHS = float(sequenceElement) / atlasHorizontalSections;\n"
             "   int yTile = int(SNOverHS);\n"
             "   int xTile = int((SNOverHS - float(yTile)) * atlasHorizontalSections);\n"
             "   float uvLeft = float(xTile) * atlasTileWidth;\n"
-            "   float uvTop = 1.0 - ((float(yTile) + 1) * atlasTileHeight);\n"
+            "   float uvTop = 1.0 - ((float(yTile) + 1) * atlasTileHeight);\n"*/
+
+            /*"   float atlasTileWidth = atlasTileArray.z; \n"
+            "   float atlasTileHeight = atlasTileArray.w; \n"
+            "   float tileX = atlasTileArray.x + atlasTileWidth * float(sequenceElement); \n"
+            "   float tileY = atlasTileArray.y; \n"
+            "   float uvLeft = tileX;\n"
+            "   float uvBottom = 1.0 - (tileY + atlasTileHeight);\n"*/
+
+
+
+            "   float atlasTileWidth = atlasTileArray.z; \n"
+            "   float atlasTileHeight = atlasTileArray.w; \n"
+            "   float atlasTileX = atlasTileArray.x; \n"
+            "   float atlasTileY = atlasTileArray.y; \n"
+            "   int firstRowSections = int((1.0 - atlasTileX) / atlasTileWidth); \n"
+            "   int maxRowSections = int(1.0 / atlasTileWidth); \n"
+
+            "   float firstRowX = atlasTileX + atlasTileWidth * float(sequenceElement); \n"
+            "   float firstRowY = 1.0 - (atlasTileY + atlasTileHeight); \n"
+
+            "   int nRowSequenceElement = sequenceElement - firstRowSections; \n"
+            "   float SNOverHS = float(nRowSequenceElement) / maxRowSections;\n"
+            "   int nRowYTile = int(SNOverHS);\n"
+            "   int nRowXTile = int((SNOverHS - float(nRowYTile)) * maxRowSections);\n"
+            "   float nRowX = nRowXTile * atlasTileWidth;\n"
+            "   float nRowY = 1.0 - ((nRowYTile + 1) * (atlasTileHeight) + atlasTileY + atlasTileHeight);\n"
+
+            "   float nRow = step(float(firstRowSections), float(sequenceElement)); \n"
+            "   float uvLeft = nRow * nRowX + (1.0 - nRow) * firstRowX; \n"
+            "   float uvBottom = nRow * nRowY + (1.0 - nRow) * firstRowY; \n"
+
+
 
             "   float rotation = vRotation[0];\n"
             "   mat2 rotMat = mat2(cos(rotation), -sin(rotation), sin(rotation), cos(rotation));\n"
             "   gl_Position = " + PROJECTION_MATRIX + " * (vec4(rotMat * dLeft * particleSize, 0.0, 0.0) + vViewPosition[0]);\n"
-            "   vUV = vec2(uvLeft, uvTop);\n"
+            "   vUV = vec2(uvLeft, uvBottom);\n"
             "   EmitVertex();\n"
             "   gl_Position = " + PROJECTION_MATRIX + " * (vec4(rotMat * uLeft * particleSize, 0.0, 0.0) + vViewPosition[0]);\n"
-            "   vUV = vec2(uvLeft, uvTop + atlasTileHeight);\n"
+            "   vUV = vec2(uvLeft, uvBottom + atlasTileHeight);\n"
             "   EmitVertex();\n"
             "   gl_Position = " + PROJECTION_MATRIX + " * (vec4(rotMat * dRight * particleSize, 0.0, 0.0) + vViewPosition[0]);\n"
-            "   vUV = vec2(uvLeft + atlasTileWidth, uvTop);\n"
+            "   vUV = vec2(uvLeft + atlasTileWidth, uvBottom);\n"
             "   EmitVertex();\n"
             "   gl_Position = " + PROJECTION_MATRIX + " * (vec4(rotMat * uRight * particleSize, 0.0, 0.0) + vViewPosition[0]);\n"
-            "   vUV = vec2(uvLeft + atlasTileWidth, uvTop + atlasTileHeight);\n"
+            "   vUV = vec2(uvLeft + atlasTileWidth, uvBottom + atlasTileHeight);\n"
             "   EmitVertex();\n"
 
             /*"   const vec3 globalUp = vec3(0.0, 1.0, 0.0);\n"
