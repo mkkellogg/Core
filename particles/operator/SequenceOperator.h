@@ -8,16 +8,19 @@
 
 namespace Core {
 
+    // forward declarations
+    class ParticleSequenceGroup;
+
     class SequenceOperator: public ParticleStateOperator {
     public:
-        SequenceOperator(WeakPointer<ParticleSequence> particleSequence, Real speed, Bool loop);
+        SequenceOperator(WeakPointer<ParticleSequenceGroup> particleSequences, Real speed, Bool loop);
         virtual ~SequenceOperator();
 
         virtual void updateState(ParticleStatePtr& state, Real timeDelta) override;
     
     private:
 
-        PersistentWeakPointer<ParticleSequence> particleSequence;
+        PersistentWeakPointer<ParticleSequenceGroup> particleSequences;
         Real timeDeltaSinceLastIndexChange;
         Real speed;
         Bool loop;

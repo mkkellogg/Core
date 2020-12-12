@@ -1,4 +1,5 @@
 #include "ParticleSequenceGroup.h"
+#include "ParticleSequence.h"
 
 namespace Core {
 
@@ -9,8 +10,29 @@ namespace Core {
 
     }
 
-    void ParticleSequenceGroup::addSequence(WeakPointer<ParticleSequence> particleSequence) {
-        this->particleSequences.push_back(particleSequence);
+    WeakPointer<ParticleSequence> ParticleSequenceGroup::addParticleSequence(UInt32 id, UInt32 start, UInt32 length) {
+        if (this->hasID(id)) {
+            throw Exception("ParticleSequenceGroup::addParticleSequence -> Tried to add sequence with duplicate ID.");
+        }
+
+        ParticleSequence* sequencePtr = new(std::nothrow) ParticleSequence(id, start, length);
+        if (sequencePtr == nullptr) {
+            throw AllocationException("ParticleSystem::createParticleSequence -> Could not allocate new particle sequence.");
+        }
+        std::shared_ptr<ParticleSequence> sequence = std::shared_ptr<ParticleSequence>(sequencePtr);
+        this->particleSequences[id] = sequence;
+        return sequence;
+    }
+
+    WeakPointer<ParticleSequence> ParticleSequenceGroup::getSequence(UInt32 id) {
+        if (!this->hasID(id)) {
+            throw InvalidArgumentException("ParticleSequenceGroup::getSequence -> Invalid ID.");
+        }
+        return this->particleSequences[id];
+    }
+
+    Bool ParticleSequenceGroup::hasID(UInt32 id) {
+        return !(this->particleSequences.find(id) == this->particleSequences.end());
     }
 
 }

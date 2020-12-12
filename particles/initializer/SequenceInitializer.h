@@ -11,19 +11,20 @@ namespace Core {
 
     //forward declaration
     class ParticleSequenceGroup;
+    class ParticleSequence;
 
     class SequenceInitializer: public ParticleStateInitializer {
     public:
         SequenceInitializer();
-        SequenceInitializer(WeakPointer<ParticleSequence> particleSequence);
+        SequenceInitializer(WeakPointer<ParticleSequenceGroup> particleSequences);
         virtual ~SequenceInitializer();
 
-        void addSequence(WeakPointer<ParticleSequence> particleSequence);
+        void setParticleSequences(WeakPointer<ParticleSequenceGroup> particleSequences);
         virtual void initializeState(ParticleStatePtr& state) override;
 
     private:
 
-        std::vector<PersistentWeakPointer<ParticleSequence>> particleSequences;
+        PersistentWeakPointer<ParticleSequenceGroup> particleSequences;
 
     };
 }

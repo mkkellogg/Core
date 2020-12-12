@@ -9,6 +9,7 @@
 #include "renderer/ParticleSystemRenderer.h"
 #include "ParticleState.h"
 #include "ParticleSequence.h"
+#include "ParticleSequenceGroup.h"
 #include "initializer/ParticleStateInitializer.h"
 #include "operator/ParticleStateOperator.h"
 
@@ -69,8 +70,9 @@ namespace Core {
         Bool getSimulateInWorldSpace();
         void setSimulateInWorldSpace(Bool simulateInWorldSpace);
 
-        WeakPointer<ParticleSequence> createParticleSequence(UInt32 start, UInt32 length);
-        WeakPointer<ParticleSequence> createParticleSequence(UInt32 id, UInt32 start, UInt32 length);
+        void addParticleSequence(UInt32 start, UInt32 length);
+        void addParticleSequence(UInt32 id, UInt32 start, UInt32 length);
+        WeakPointer<ParticleSequenceGroup> getParticleSequences();
 
     private:
 
@@ -89,6 +91,6 @@ namespace Core {
         std::vector<std::shared_ptr<ParticleStateInitializer>> particleStateInitializers;
         std::vector<std::shared_ptr<ParticleStateOperator>> particleStateOperators;
         ParticleStateAttributeArray particleStates;
-        std::vector<std::shared_ptr<ParticleSequence>> particleSequences;
+        std::shared_ptr<ParticleSequenceGroup> particleSequences;
     };
 }

@@ -1,26 +1,28 @@
 #include "SequenceInitializer.h"
 #include "../ParticleSequence.h"
+#include "../ParticleSequenceGroup.h"
 
 namespace Core {
 
-    SequenceInitializer() {
+    SequenceInitializer::SequenceInitializer() {
     }
 
-    SequenceInitializer::SequenceInitializer(WeakPointer<ParticleSequence> particleSequence) {
-        this->addSequence(particleSequence);
+    SequenceInitializer::SequenceInitializer(WeakPointer<ParticleSequenceGroup> particleSequences) {
+        this->setParticleSequences(particleSequences);
     }
 
     SequenceInitializer::~SequenceInitializer() {
     }
 
-    void SequenceInitializer::addSequence(WeakPointer<ParticleSequence> particleSequence) {
-        this->particleSequences.push_back(particleSequence);
+    void SequenceInitializer::setParticleSequences(WeakPointer<ParticleSequenceGroup> particleSequences) {
+        this->particleSequences = particleSequences;
     }
 
     void SequenceInitializer::initializeState(ParticleStatePtr& state) {
+        WeakPointer<ParticleSequence> sequence = this->particleSequences->getSequence(0);
         Vector2rs& sequenceElement = *state.sequenceElement;
-        sequenceElement.x = (Real)this->particleSequence->start;
-        sequenceElement.y = (Real)this->particleSequence->id;
+        sequenceElement.x = (Real)sequence->start;
+        sequenceElement.y = (Real)sequence->id;
     }
 
 }

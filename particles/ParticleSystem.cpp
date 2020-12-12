@@ -1,4 +1,5 @@
 #include "ParticleSystem.h"
+#include "ParticleSequenceGroup.h"
 
 namespace Core {
 
@@ -10,6 +11,12 @@ namespace Core {
         this->simulateInWorldSpace = false;
 
         this->particleStates.setParticleCount(maximumActiveParticles);
+
+        ParticleSequenceGroup* sequencesPtr = new(std::nothrow) ParticleSequenceGroup();
+        if (sequencesPtr == nullptr) {
+            throw AllocationException("ParticleSystem::ParticleSystem() -> Could not allocate ParticleSequenceGroup.");
+        }
+        this->particleSequences = std::shared_ptr<ParticleSequenceGroup>(sequencesPtr);
     }
 
     ParticleSystem::~ParticleSystem() {
@@ -142,17 +149,15 @@ namespace Core {
         this->simulateInWorldSpace = simulateInWorldSpace;
     }
 
-    WeakPointer<ParticleSequence> ParticleSystem::createParticleSequence(UInt32 start, UInt32 length) {
-        return this->createParticleSequence(0, start, length);
+    void ParticleSystem::addParticleSequence(UInt32 start, UInt32 length) {
+        this->addParticleSequence(0, start, length);
     }
 
-    WeakPointer<ParticleSequence> ParticleSystem::createParticleSequence(UInt32 id, UInt32 start, UInt32 length) {
-        ParticleSequence* sequencePtr = new(std::nothrow) ParticleSequence(id, start, length);
-        if (sequencePtr == nullptr) {
-            throw AllocationException("ParticleSystem::createParticleSequence -> Could not allocate new particle sequence.");
-        }
-        std::shared_ptr<ParticleSequence> sequence = std::shared_ptr<ParticleSequence>(sequencePtr);
-        this->particleSequences.push_back(sequence);
-        return sequence;
+    void ParticleSystem::addParticleSequence(UInt32 id, UInt32 start, UInt32 length) {
+        this->particleSequences->addParticleSequence(id, start, length);
+    }
+
+    WeakPointer<ParticleSequenceGroup> ParticleSystem::getParticleSequences() {
+        return this->particleSequences;
     }
 }
