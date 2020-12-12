@@ -3,11 +3,18 @@
 
 namespace Core {
 
+    SequenceInitializer() {
+    }
+
     SequenceInitializer::SequenceInitializer(WeakPointer<ParticleSequence> particleSequence) {
-        this->particleSequence = particleSequence;
+        this->addSequence(particleSequence);
     }
 
     SequenceInitializer::~SequenceInitializer() {
+    }
+
+    void SequenceInitializer::addSequence(WeakPointer<ParticleSequence> particleSequence) {
+        this->particleSequences.push_back(particleSequence);
     }
 
     void SequenceInitializer::initializeState(ParticleStatePtr& state) {

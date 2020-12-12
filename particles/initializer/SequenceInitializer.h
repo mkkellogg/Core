@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "../../util/PersistentWeakPointer.h"
 #include "../../common/types.h"
 #include "../ParticleState.h"
@@ -8,18 +10,20 @@
 namespace Core {
 
     //forward declaration
-    class ParticleSequence;
+    class ParticleSequenceGroup;
 
     class SequenceInitializer: public ParticleStateInitializer {
     public:
+        SequenceInitializer();
         SequenceInitializer(WeakPointer<ParticleSequence> particleSequence);
         virtual ~SequenceInitializer();
 
+        void addSequence(WeakPointer<ParticleSequence> particleSequence);
         virtual void initializeState(ParticleStatePtr& state) override;
 
     private:
 
-        PersistentWeakPointer<ParticleSequence> particleSequence;
+        std::vector<PersistentWeakPointer<ParticleSequence>> particleSequences;
 
     };
 }

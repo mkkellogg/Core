@@ -157,6 +157,7 @@ set(INCLUDE_FILES
     particles/ParticleState.h
     particles/ParticleSystemSnapShot.h
     particles/ParticleSequence.h
+    particles/ParticleSequenceGroup.h
     particles/renderer/ParticleSystemRenderer.h
     particles/renderer/ParticleSystemAnimatedSpriteRenderer.h
     particles/renderer/ParticleSystemPointRenderer.h
@@ -286,6 +287,7 @@ set(SOURCE_FILES
     particles/ParticleSystem.cpp
     particles/ParticleSystemSnapShot.cpp
     particles/ParticleSequence.cpp
+    particles/ParticleSequenceGroup.cpp
     particles/renderer/ParticleSystemRenderer.cpp
     particles/renderer/ParticleSystemAnimatedSpriteRenderer.cpp
     particles/renderer/ParticleSystemPointRenderer.cpp
