@@ -21,6 +21,7 @@ namespace Core {
         }
         std::shared_ptr<ParticleSequence> sequence = std::shared_ptr<ParticleSequence>(sequencePtr);
         this->particleSequences[id] = sequence;
+        this->ids.push_back(id);
         return sequence;
     }
 
@@ -29,6 +30,10 @@ namespace Core {
             throw InvalidArgumentException("ParticleSequenceGroup::getSequence -> Invalid ID.");
         }
         return this->particleSequences[id];
+    }
+
+    const std::vector<UInt32>& ParticleSequenceGroup::getSequenceIDs() {
+        return this->ids;
     }
 
     Bool ParticleSequenceGroup::hasID(UInt32 id) {

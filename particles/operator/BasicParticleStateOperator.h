@@ -12,7 +12,7 @@ namespace Core {
         BasicParticleStateOperator();
         virtual ~BasicParticleStateOperator();
 
-        virtual void updateState(ParticleStatePtr& state, Real timeDelta) override;
+        virtual Bool updateState(ParticleStatePtr& state, Real timeDelta) override;
     
     private:
 

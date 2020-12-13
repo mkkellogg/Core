@@ -122,7 +122,7 @@ namespace Core {
             return 0;
         }
 
-        UInt32 emissionRate;
+        Real emissionRate;
     };
 
     class NoiseParticleEmitter: public ContinuousParticleEmitter {

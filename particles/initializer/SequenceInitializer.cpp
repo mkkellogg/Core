@@ -4,10 +4,9 @@
 
 namespace Core {
 
-    SequenceInitializer::SequenceInitializer() {
-    }
-
-    SequenceInitializer::SequenceInitializer(WeakPointer<ParticleSequenceGroup> particleSequences) {
+    SequenceInitializer::SequenceInitializer(WeakPointer<ParticleSequenceGroup> particleSequences): randomDist(0.0f, (Real)particleSequences->getSequenceIDs().size())  {
+        std::random_device rd;
+        this->mt = std::mt19937(rd());
         this->setParticleSequences(particleSequences);
     }
 
@@ -19,7 +18,12 @@ namespace Core {
     }
 
     void SequenceInitializer::initializeState(ParticleStatePtr& state) {
-        WeakPointer<ParticleSequence> sequence = this->particleSequences->getSequence(0);
+        const std::vector<UInt32> sequenceIDs = this->particleSequences->getSequenceIDs();
+        Real r = randomDist(this->mt);
+        if (r == (Real)sequenceIDs.size()) r--;
+        UInt32 ir = (UInt32)r;
+        UInt32 sequenceID = sequenceIDs[ir];
+        WeakPointer<ParticleSequence> sequence = this->particleSequences->getSequence(sequenceID);
         Vector2rs& sequenceElement = *state.sequenceElement;
         sequenceElement.x = (Real)sequence->start;
         sequenceElement.y = (Real)sequence->id;

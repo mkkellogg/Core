@@ -9,7 +9,7 @@ namespace Core {
     BasicParticleStateOperator::~BasicParticleStateOperator() {
     }
 
-    void BasicParticleStateOperator::updateState(ParticleStatePtr& state, Real timeDelta) {
+    Bool BasicParticleStateOperator::updateState(ParticleStatePtr& state, Real timeDelta) {
         static Vector3r timeScaledVelocity;
         Vector3rs& stateVelocity = *state.velocity;
         timeScaledVelocity.set(stateVelocity.x, stateVelocity.y, stateVelocity.z);
@@ -21,5 +21,6 @@ namespace Core {
         Real currentRotation = *state.rotation;
         Real currentRotationalSpeed = *state.rotationalSpeed;
         *state.rotation = currentRotation + timeDelta * currentRotationalSpeed;
+        return true;
     }
 }

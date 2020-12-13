@@ -16,12 +16,11 @@ namespace Core {
         SequenceOperator(WeakPointer<ParticleSequenceGroup> particleSequences, Real speed, Bool loop);
         virtual ~SequenceOperator();
 
-        virtual void updateState(ParticleStatePtr& state, Real timeDelta) override;
-    
+        virtual Bool updateState(ParticleStatePtr& state, Real timeDelta) override;
+
     private:
 
         PersistentWeakPointer<ParticleSequenceGroup> particleSequences;
-        Real timeDeltaSinceLastIndexChange;
         Real speed;
         Bool loop;
 

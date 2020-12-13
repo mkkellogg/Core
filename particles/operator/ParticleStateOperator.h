@@ -12,6 +12,6 @@ namespace Core {
         ParticleStateOperator();
         virtual ~ParticleStateOperator();
 
-        virtual void updateState(ParticleStatePtr& state, Real timeDelta) = 0;
+        virtual Bool updateState(ParticleStatePtr& state, Real timeDelta) = 0;
     };
 }

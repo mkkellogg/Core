@@ -87,9 +87,9 @@ namespace Core {
         ParticleStatePtr statePtr = this->particleStates.getParticleStatePtr(index);
         for (UInt32 i = 0; i < this->particleStateOperators.size(); i++) {
             std::shared_ptr<ParticleStateOperator> particleStateOperator = this->particleStateOperators[i];
-            particleStateOperator->updateState(statePtr, timeDelta);
+            Bool stillAlive = particleStateOperator->updateState(statePtr, timeDelta);
             Real particleLifeTime = *statePtr.lifetime;
-            if (particleLifeTime != 0.0f && *statePtr.age >= particleLifeTime) {
+            if (!stillAlive || particleLifeTime != 0.0f && *statePtr.age >= particleLifeTime) {
                 return false;
             }
         }
