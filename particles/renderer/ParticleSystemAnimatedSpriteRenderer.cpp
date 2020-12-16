@@ -101,7 +101,7 @@ namespace Core {
         if (positionsGPUStorage.isValid()) positionsGPUStorage->enableAndSendToActiveShader(worldPositionLocation);
 
         Int32 sizeLocation = this->material->getSizeLocation();
-        WeakPointer<ScalarAttributeArray<Real>> sizes = particleStates.getSizes();
+        WeakPointer<AttributeArray<Vector2rs>> sizes = particleStates.getSizes();
         WeakPointer<AttributeArrayGPUStorage> sizesGPUStorage = sizes->getGPUStorage();
         sizes->updateGPUStorageData();
         if (sizesGPUStorage.isValid()) {

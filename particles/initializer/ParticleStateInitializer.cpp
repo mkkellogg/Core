@@ -18,7 +18,7 @@ namespace Core {
         (*state.normal).set(0.0f, 0.0f, 1.0f);
         *state.rotation = 0.0f;
         *state.rotationalSpeed = 0.0f;
-        *state.size = 1.0f;
+        (*state.size).set(1.0f, 1.0f);
         (*state.color).set(1.0f, 1.0f, 1.0f, 1.0f);
     }
 }

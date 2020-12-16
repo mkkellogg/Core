@@ -20,7 +20,7 @@ namespace Core {
         Vector3r normal;
         Real rotation;
         Real rotationalSpeed;
-        Real size;
+        Vector2r size;
         Color color;
     };
 
@@ -34,7 +34,7 @@ namespace Core {
         Vector3rs* normal;
         Real* rotation;
         Real* rotationalSpeed;
-        Real* size;
+        Vector2rs* size;
         ColorS* color;
     };
 
@@ -98,7 +98,7 @@ namespace Core {
         }
 
         std::shared_ptr<AttributeArray<Point3rs>> getPositions() {return this->positions;}
-        std::shared_ptr<ScalarAttributeArray<Real>> getSizes() {return this->sizes;}
+        std::shared_ptr<AttributeArray<Vector2rs>> getSizes() {return this->sizes;}
         std::shared_ptr<ScalarAttributeArray<Real>> getRotations() {return this->rotations;}
         std::shared_ptr<AttributeArray<Vector2rs>> getSequenceElements() {return this->sequenceElements;}
 
@@ -113,7 +113,7 @@ namespace Core {
             this->normals = std::make_shared<AttributeArray<Vector3rs>>(particleCount, AttributeType::Float, false);
             this->rotations = std::make_shared<ScalarAttributeArray<Real>>(particleCount, AttributeType::Float, false);
             this->rotationalSpeeds = std::make_shared<ScalarAttributeArray<Real>>(particleCount, AttributeType::Float, false);
-            this->sizes = std::make_shared<ScalarAttributeArray<Real>>(particleCount, AttributeType::Float, false);
+            this->sizes = std::make_shared<AttributeArray<Vector2rs>>(particleCount, AttributeType::Float, false);
             this->colors = std::make_shared<AttributeArray<ColorS>>(particleCount, AttributeType::Float, false);
 
             ParticleStatePtr* particleStatePointers = new(std::nothrow) ParticleStatePtr[particleCount];
@@ -151,7 +151,7 @@ namespace Core {
         std::shared_ptr<AttributeArray<Vector3rs>> normals;
         std::shared_ptr<ScalarAttributeArray<Real>> rotations;
         std::shared_ptr<ScalarAttributeArray<Real>> rotationalSpeeds;
-        std::shared_ptr<ScalarAttributeArray<Real>> sizes;
+        std::shared_ptr<AttributeArray<Vector2rs>> sizes;
         std::shared_ptr<AttributeArray<ColorS>> colors;
     };
 }

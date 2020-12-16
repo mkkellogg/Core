@@ -3,7 +3,7 @@
 
 namespace Core {
 
-    SizeInitializer::SizeInitializer(Real range, Real offset) {
+    SizeInitializer::SizeInitializer(const Vector2r& range, const Vector2r& offset) {
         this->sizeRange = range;
         this->sizeOffset = offset;
     }
@@ -12,7 +12,7 @@ namespace Core {
     }
 
     void SizeInitializer::initializeState(ParticleStatePtr& state) {
-        *state.size = Math::random() * this->sizeRange + this->sizeOffset;
+        (*state.size).set(Math::random() * this->sizeRange.x + this->sizeOffset.x, Math::random() * this->sizeRange.y + this->sizeOffset.y);
     }
 
 }
