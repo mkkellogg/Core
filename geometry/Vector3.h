@@ -182,7 +182,9 @@ namespace Core {
 
         template <Bool otherCustomStorage>
         void copy(const Vector3<T, otherCustomStorage>& other) {
-            BaseVector<T, VECTOR3_COMPONENT_COUNT>::copy(other);
+            this->x = other.x;
+            this->y = other.y;
+            this->z = other.z;
         }
 
         template <Bool otherCustomStorage>
@@ -280,7 +282,9 @@ namespace Core {
 
         template <Bool otherCustomStorage>
         void copy(const Point3<T, otherCustomStorage>& other) {
-            BaseVector<T, VECTOR3_COMPONENT_COUNT>::copy(other);
+            this->x = other.x;
+            this->y = other.y;
+            this->z = other.z;
         }
 
         template <Bool otherCustomStorage>

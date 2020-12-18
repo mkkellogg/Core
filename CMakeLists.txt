@@ -171,6 +171,8 @@ set(INCLUDE_FILES
     particles/operator/ParticleStateOperator.h
     particles/operator/BasicParticleStateOperator.h
     particles/operator/SequenceOperator.h
+    particles/operator/OpacityInterpolatorOperator.h
+    particles/operator/InterpolatorOperator.h
     particles/material/ParticleStandardMaterial.h
     light/Light.h
     light/ShadowLight.h
@@ -201,6 +203,7 @@ set(INCLUDE_FILES
     util/ValueIterator.h
     util/ObjectPool.h
     util/Tree.h
+    util/ContinuousArray.h
     math/Math.h
     math/Quaternion.h
     math/Matrix4x4.h
@@ -301,6 +304,7 @@ set(SOURCE_FILES
     particles/operator/ParticleStateOperator.cpp
     particles/operator/BasicParticleStateOperator.cpp
     particles/operator/SequenceOperator.cpp
+    particles/operator/OpacityInterpolatorOperator.cpp
     particles/material/ParticleStandardMaterial.cpp
     light/Light.cpp
     light/ShadowLight.cpp
@@ -353,6 +357,7 @@ set(SOURCE_FILES
     math/Quaternion.cpp
     util/Time.cpp
     util/String.cpp
+    util/ContinuousArray.cpp
     Engine.cpp
     Graphics.cpp
     GL/GraphicsGL.cpp

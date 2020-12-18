@@ -19,6 +19,12 @@ namespace Core {
         Vector2(T* storage) : Vector2(storage, 0.0, 0.0) {}
         Vector2(T* storage, const T& x, const T& y) : VectorStorage<T, VECTOR2_COMPONENT_COUNT, true>(storage), Vector2Components<T>(this->data, x, y) {}
 
+        template <Bool otherCustomStorage>
+        void copy(const Vector2<T, otherCustomStorage>& other) {
+            this->x = other.x;
+            this->y = other.y;
+        }
+
         Vector2& operator=(const Vector2& other) {
             if (this == &other) return *this;
             this->copy(other);
