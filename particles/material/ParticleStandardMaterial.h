@@ -24,6 +24,7 @@ namespace Core {
         Int32 getSizeLocation();
         Int32 getRotationLocation();
         Int32 getSequenceElementLocation();
+        Int32 getColorLocation();
         virtual void copyTo(WeakPointer<Material> target) override;
         virtual WeakPointer<Material> clone() override;
         void bindShaderVarLocations();
@@ -42,6 +43,7 @@ namespace Core {
         Int32 sizeLocation;
         Int32 rotationLocation;
         Int32 sequenceElementLocation;
+        Int32 colorLocation;
         Int32 projectionMatrixLocation;
         Int32 viewMatrixLocation;
 

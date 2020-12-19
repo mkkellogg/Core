@@ -12,6 +12,8 @@ namespace Core {
         this->worldPositionLocation = -1;
         this->sizeLocation = -1;
         this->rotationLocation = -1;
+        this->sequenceElementLocation = -1;
+        this->colorLocation = -1;
         this->projectionMatrixLocation = -1;
         this->viewMatrixLocation = -1;
     }
@@ -72,6 +74,10 @@ namespace Core {
         return this->sequenceElementLocation;
     }
 
+    Int32 ParticleStandardMaterial::getColorLocation() {
+        return this->colorLocation;;
+    }
+
     void ParticleStandardMaterial::copyTo(WeakPointer<Material> target) {
         WeakPointer<ParticleStandardMaterial> particleMaterial = WeakPointer<Material>::dynamicPointerCast<ParticleStandardMaterial>(target);
         if (particleMaterial.isValid()) {
@@ -87,6 +93,7 @@ namespace Core {
             particleMaterial->sizeLocation = this->sizeLocation;
             particleMaterial->rotationLocation = this->rotationLocation;
             particleMaterial->sequenceElementLocation = this->sequenceElementLocation;
+            particleMaterial->colorLocation = this->colorLocation;
         } else {
             throw InvalidArgumentException("ParticleStandardMaterial::copyTo() -> 'target must be same material.");
         }
@@ -109,6 +116,7 @@ namespace Core {
         this->sizeLocation = this->shader->getAttributeLocation("size");
         this->rotationLocation = this->shader->getAttributeLocation("rotation");
         this->sequenceElementLocation = this->shader->getAttributeLocation("sequenceElement");
+        this->colorLocation = this->shader->getAttributeLocation("color");
     }
 
     const Atlas& ParticleStandardMaterial::getAtlas() const {

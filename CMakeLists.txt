@@ -168,10 +168,13 @@ set(INCLUDE_FILES
     particles/initializer/LifetimeInitializer.h
     particles/initializer/SizeInitializer.h
     particles/initializer/SequenceInitializer.h
+    particles/initializer/RotationalSpeedInitializer.h
+    particles/initializer/RotationInitializer.h
     particles/operator/ParticleStateOperator.h
     particles/operator/BasicParticleStateOperator.h
     particles/operator/SequenceOperator.h
     particles/operator/OpacityInterpolatorOperator.h
+    particles/operator/SizeInterpolatorOperator.h
     particles/operator/InterpolatorOperator.h
     particles/material/ParticleStandardMaterial.h
     light/Light.h
@@ -301,10 +304,13 @@ set(SOURCE_FILES
     particles/initializer/LifetimeInitializer.cpp
     particles/initializer/SizeInitializer.cpp
     particles/initializer/SequenceInitializer.cpp
+    particles/initializer/RotationalSpeedInitializer.cpp
+    particles/initializer/RotationInitializer.cpp
     particles/operator/ParticleStateOperator.cpp
     particles/operator/BasicParticleStateOperator.cpp
     particles/operator/SequenceOperator.cpp
     particles/operator/OpacityInterpolatorOperator.cpp
+    particles/operator/SizeInterpolatorOperator.cpp
     particles/material/ParticleStandardMaterial.cpp
     light/Light.cpp
     light/ShadowLight.cpp

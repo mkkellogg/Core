@@ -28,6 +28,14 @@ namespace Core {
             this->copy(other);
             return *this;
         }
+
+        template <Bool otherCustomStorage>
+        void copy(const Color4<otherCustomStorage>& other) {
+            this->r = other.r;
+            this->g = other.g;
+            this->b = other.b;
+            this->a = other.a;
+        }
     };
 
     typedef Color4<false> Color;

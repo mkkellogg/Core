@@ -10,11 +10,17 @@
 
 namespace Core {
 
+    enum class ParticleStateProgressType {
+        Time = 0,
+        Sequence = 1
+    };
+
     class ParticleState {
     public:
+        Real progressType;
         Real lifetime;
         Real age;
-        Vector2r sequenceElement;
+        Vector3r sequenceElement;
         Point3r position;
         Vector3r velocity;
         Vector3r normal;
@@ -22,13 +28,17 @@ namespace Core {
         Real rotationalSpeed;
         Vector2r size;
         Color color;
+
+        Vector2r initialSize;
+        Color initialColor;
     };
 
     class ParticleStatePtr {
     public:
+        Real* progressType;
         Real* lifetime;
         Real* age;
-        Vector2rs* sequenceElement;
+        Vector3rs* sequenceElement;
         Point3rs* position;
         Vector3rs* velocity;
         Vector3rs* normal;
@@ -36,6 +46,9 @@ namespace Core {
         Real* rotationalSpeed;
         Vector2rs* size;
         ColorS* color;
+
+        Vector2rs* initialSize;
+        ColorS* initialColor;
     };
 
     class ParticleStateArrayBase {
@@ -78,6 +91,7 @@ namespace Core {
                 throw OutOfRangeException("ParticleStateAttributeArray::copyParticleState() -> 'destIndex' is out of range.");
             }
 
+            this->progressTypes->copyAttribute(srcIndex, destIndex);
             this->lifetimes->copyAttribute(srcIndex, destIndex);
             this->ages->copyAttribute(srcIndex, destIndex);
             this->sequenceElements->copyAttribute(srcIndex, destIndex);
@@ -88,6 +102,9 @@ namespace Core {
             this->rotationalSpeeds->copyAttribute(srcIndex, destIndex);
             this->sizes->copyAttribute(srcIndex, destIndex);
             this->colors->copyAttribute(srcIndex, destIndex);
+
+            this->initialSizes->copyAttribute(srcIndex, destIndex);
+            this->initialColors->copyAttribute(srcIndex, destIndex);
         }
 
         ParticleStatePtr& getParticleStatePtr(UInt32 index) {
@@ -100,21 +117,27 @@ namespace Core {
         std::shared_ptr<AttributeArray<Point3rs>> getPositions() {return this->positions;}
         std::shared_ptr<AttributeArray<Vector2rs>> getSizes() {return this->sizes;}
         std::shared_ptr<ScalarAttributeArray<Real>> getRotations() {return this->rotations;}
-        std::shared_ptr<AttributeArray<Vector2rs>> getSequenceElements() {return this->sequenceElements;}
+        std::shared_ptr<AttributeArray<Vector3rs>> getSequenceElements() {return this->sequenceElements;}
+        std::shared_ptr<AttributeArray<ColorS>> getColors() {return this->colors;}
 
     protected:
 
         void allocate(UInt32 particleCount) override {
+            this->progressTypes = std::make_shared<ScalarAttributeArray<Real>>(particleCount, AttributeType::Float, false);
             this->lifetimes = std::make_shared<ScalarAttributeArray<Real>>(particleCount, AttributeType::Float, false);
             this->ages = std::make_shared<ScalarAttributeArray<Real>>(particleCount, AttributeType::Float, false);
-            this->sequenceElements = std::make_shared<AttributeArray<Vector2rs>>(particleCount, AttributeType::Float, false);
+            this->sequenceElements = std::make_shared<AttributeArray<Vector3rs>>(particleCount, AttributeType::Float, false);
             this->positions = std::make_shared<AttributeArray<Point3rs>>(particleCount, AttributeType::Float, false);
             this->velocities = std::make_shared<AttributeArray<Vector3rs>>(particleCount, AttributeType::Float, false);
             this->normals = std::make_shared<AttributeArray<Vector3rs>>(particleCount, AttributeType::Float, false);
             this->rotations = std::make_shared<ScalarAttributeArray<Real>>(particleCount, AttributeType::Float, false);
             this->rotationalSpeeds = std::make_shared<ScalarAttributeArray<Real>>(particleCount, AttributeType::Float, false);
+
             this->sizes = std::make_shared<AttributeArray<Vector2rs>>(particleCount, AttributeType::Float, false);
             this->colors = std::make_shared<AttributeArray<ColorS>>(particleCount, AttributeType::Float, false);
+
+            this->initialSizes = std::make_shared<AttributeArray<Vector2rs>>(particleCount, AttributeType::Float, false);
+            this->initialColors = std::make_shared<AttributeArray<ColorS>>(particleCount, AttributeType::Float, false);
 
             ParticleStatePtr* particleStatePointers = new(std::nothrow) ParticleStatePtr[particleCount];
             if (particleStatePointers == nullptr) {
@@ -130,6 +153,7 @@ namespace Core {
         }
 
         void bindParticleStatePtr(UInt32 index, ParticleStatePtr& ptr) {
+            ptr.progressType = &this->progressTypes->getAttribute(index);
             ptr.lifetime = &this->lifetimes->getAttribute(index);
             ptr.age = &this->ages->getAttribute(index);
             ptr.sequenceElement = &this->sequenceElements->getAttribute(index);
@@ -140,12 +164,16 @@ namespace Core {
             ptr.rotationalSpeed = &this->rotationalSpeeds->getAttribute(index);
             ptr.size = &this->sizes->getAttribute(index);
             ptr.color = &this->colors->getAttribute(index);
+
+            ptr.initialSize = &this->initialSizes->getAttribute(index);
+            ptr.initialColor = &this->initialColors->getAttribute(index);
         }
 
         std::shared_ptr<ParticleStatePtr> particleStatePointers;
+        std::shared_ptr<ScalarAttributeArray<Real>> progressTypes;
         std::shared_ptr<ScalarAttributeArray<Real>> lifetimes;
         std::shared_ptr<ScalarAttributeArray<Real>> ages;
-        std::shared_ptr<AttributeArray<Vector2rs>> sequenceElements;
+        std::shared_ptr<AttributeArray<Vector3rs>> sequenceElements;
         std::shared_ptr<AttributeArray<Point3rs>> positions;
         std::shared_ptr<AttributeArray<Vector3rs>> velocities;
         std::shared_ptr<AttributeArray<Vector3rs>> normals;
@@ -153,5 +181,8 @@ namespace Core {
         std::shared_ptr<ScalarAttributeArray<Real>> rotationalSpeeds;
         std::shared_ptr<AttributeArray<Vector2rs>> sizes;
         std::shared_ptr<AttributeArray<ColorS>> colors;
+
+        std::shared_ptr<AttributeArray<Vector2rs>> initialSizes;
+        std::shared_ptr<AttributeArray<ColorS>> initialColors;
     };
 }

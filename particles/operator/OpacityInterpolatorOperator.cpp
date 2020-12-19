@@ -5,14 +5,20 @@
 
 namespace Core {
 
-    OpacityInterpolatorOperator::OpacityInterpolatorOperator() {
+    OpacityInterpolatorOperator::OpacityInterpolatorOperator(Bool relativeToInitialValue): InterpolatorOperator(relativeToInitialValue) {
     }
 
     OpacityInterpolatorOperator::~OpacityInterpolatorOperator() {
     }
 
     Bool OpacityInterpolatorOperator::updateState(ParticleStatePtr& state, Real timeDelta) {
-        this->getInterpolatedValue(state, (*state.color).a);
+        if (this->relativeToInitialValue) {
+            Real a;
+            this->getInterpolatedValue(state, a);
+            state.color->a = state.initialColor->a * a;
+        } else {
+            this->getInterpolatedValue(state, (*state.color).a);
+        }
         return true;
     }
 }

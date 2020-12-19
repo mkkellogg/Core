@@ -16,7 +16,7 @@ namespace Core {
 
     class SequenceInitializer: public ParticleStateInitializer {
     public:
-        SequenceInitializer(WeakPointer<ParticleSequenceGroup> particleSequences);
+        SequenceInitializer(WeakPointer<ParticleSequenceGroup> particleSequences, Bool reverse = false);
         virtual ~SequenceInitializer();
 ;
         void setParticleSequences(WeakPointer<ParticleSequenceGroup> particleSequences);
@@ -27,6 +27,7 @@ namespace Core {
         PersistentWeakPointer<ParticleSequenceGroup> particleSequences;
         std::uniform_real_distribution<Real> randomDist;
         std::mt19937 mt;
+        Bool reverse;
 
     };
 }

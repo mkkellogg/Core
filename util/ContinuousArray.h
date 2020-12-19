@@ -28,8 +28,8 @@ namespace Core {
         }
 
         void addElement(const T& element, Real tValue) {
-            elements.push_back(element);
-            tValues.push_back(tValue);
+            this->elements.push_back(element);
+            this->tValues.push_back(tValue);
         }
 
         T& getInterpolatedElement(Real t, T& out) {

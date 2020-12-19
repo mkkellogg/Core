@@ -13,7 +13,7 @@ namespace Core {
 
     class SequenceOperator: public ParticleStateOperator {
     public:
-        SequenceOperator(WeakPointer<ParticleSequenceGroup> particleSequences, Real speed, Bool loop);
+        SequenceOperator(WeakPointer<ParticleSequenceGroup> particleSequences, Real speed, Bool loop, Bool reverse = false);
         virtual ~SequenceOperator();
 
         virtual Bool updateState(ParticleStatePtr& state, Real timeDelta) override;
@@ -23,6 +23,7 @@ namespace Core {
         PersistentWeakPointer<ParticleSequenceGroup> particleSequences;
         Real speed;
         Bool loop;
+        Bool reverse;
 
     };
 }

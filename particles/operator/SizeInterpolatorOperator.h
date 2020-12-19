@@ -4,13 +4,14 @@
 #include "../../common/types.h"
 #include "InterpolatorOperator.h"
 #include "../ParticleState.h"
+#include "../../geometry/Vector2.h"
 
 namespace Core {
 
-    class OpacityInterpolatorOperator: public InterpolatorOperator<Real> {
+    class SizeInterpolatorOperator: public InterpolatorOperator<Vector2r> {
     public:
-        OpacityInterpolatorOperator(Bool relativeToInitialValue = false);
-        virtual ~OpacityInterpolatorOperator();
+        SizeInterpolatorOperator(Bool relativeToInitialValue = false);
+        virtual ~SizeInterpolatorOperator();
 
         virtual Bool updateState(ParticleStatePtr& state, Real timeDelta) override;
     

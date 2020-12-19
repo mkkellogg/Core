@@ -7,7 +7,7 @@ namespace Core {
         return [this](Real tValue, std::vector<Real>& elements, std::vector<Real>& tValues, Real& out) {
             Int32 lowerIndex, upperIndex;
             Real localT;
-            this->getInterpolationValuesForTValue(tValue, lowerIndex, upperIndex, localT);
+            this->getInterpolationValuesForTValue(tValue, lowerIndex, upperIndex, localT); 
             out = (1.0f - localT) * this->elements[lowerIndex] + localT * this->elements[upperIndex];
         };
     }
