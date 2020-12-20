@@ -179,18 +179,18 @@ namespace Core {
         if (viewInverseTransposeMatrixLoc >= 0) shader->setUniformMatrix4(viewInverseTransposeMatrixLoc, viewDescriptor.transposedCameraTransformation);
 
 
-        UInt32 currentTextureSlot = material->textureCount();
+        UInt32 baseTextureSlot = material->textureCount();
         Int32 ssaoMapLoc = material->getShaderLocation(StandardUniform::SSAOMap);
         Int32 ssaoEnabledLoc = material->getShaderLocation(StandardUniform::SSAOEnabled);
         if (ssaoMapLoc >= 0) {
             if (isStatic && viewDescriptor.ssaoEnabled && viewDescriptor.ssaoMap.isValid()) {
-                shader->setTexture2D(currentTextureSlot, ssaoMapLoc, viewDescriptor.ssaoMap->getTextureID());
+                shader->setTexture2D(baseTextureSlot, ssaoMapLoc, viewDescriptor.ssaoMap->getTextureID());
                 if (ssaoEnabledLoc >= 0) shader->setUniform1i(ssaoEnabledLoc, 1.0);
             } else {
-                shader->setTexture2D(currentTextureSlot, ssaoMapLoc, graphics->getPlaceHolderTexture2D()->getTextureID());
+                shader->setTexture2D(baseTextureSlot, ssaoMapLoc, graphics->getPlaceHolderTexture2D()->getTextureID());
                 if (ssaoEnabledLoc >= 0) shader->setUniform1i(ssaoEnabledLoc, 0.0);
             }
-            currentTextureSlot++;
+            baseTextureSlot++;
         } else {
             if (ssaoEnabledLoc >= 0) shader->setUniform1i(ssaoEnabledLoc, 0.0);
         }
@@ -212,10 +212,13 @@ namespace Core {
             Int32 ambientIBLLightIndex = -1;
             Int32 shadowLightIndex = -1;
 
+            UInt32 currentTextureSlot = baseTextureSlot;
             for (UInt32 i = 0; i < lightPack.lightCount(); i++) {
 
                 WeakPointer<Light> light = lightPack.getLight(i);
                 LightType lightType = light->getType();
+
+                if (renderPath != RenderPath::SinglePassMultiLight) currentTextureSlot = baseTextureSlot;
 
                 switch (lightType) {
                     case LightType::Directional:
