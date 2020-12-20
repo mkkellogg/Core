@@ -18,6 +18,7 @@ Light-weight, C/C++ based, 3D rendering library built on OpenGL. Ultimately inte
 * Skeletal animation:
   - Vertex skinning
   - Animation blending
+* Particle systems
 * Scene-graph API
 * Render-to-texture capability
 * Screen-space ambient occlusion
