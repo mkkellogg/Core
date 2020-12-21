@@ -20,7 +20,7 @@ namespace Core {
         ~ParticleSystemAnimatedSpriteRenderer() override;
         Bool forwardRender(const ViewDescriptor& viewDescriptor, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) override;
         Bool forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<BaseRenderable> renderable, Bool isStatic,
-                                         const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) override;
+                                 const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) override;
         Bool forwardRenderParticleSystem(const ViewDescriptor& viewDescriptor, WeakPointer<ParticleSystem> particleSystem, Bool isStatic,
                                          const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) override;
         Bool supportsRenderPath(RenderPath renderPath) override;

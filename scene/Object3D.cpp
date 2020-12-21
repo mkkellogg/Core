@@ -19,6 +19,7 @@ namespace Core {
 
     Object3D::Object3D() : transform(*this), active(true) {
         this->id = Object3D::getNextID();
+        this->layer = (Int32) Object3D::ObjectLayer::Default;
     }
 
     Object3D::~Object3D() {
@@ -171,6 +172,14 @@ namespace Core {
         }
         
         return true;
+    }
+
+    Int32 Object3D::getLayer() {
+        return this->layer;
+    }
+
+    void Object3D::setLayer(Int32 layer) {
+        this->layer = layer;
     }
 
     void Object3D::setActive(Bool active) {

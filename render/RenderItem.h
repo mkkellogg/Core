@@ -37,5 +37,6 @@ namespace Core {
         PersistentWeakPointer<ParticleSystem> particleSystem;
         Bool isStatic;
         Bool isActive;
+        Int32 layer;
     };
 }

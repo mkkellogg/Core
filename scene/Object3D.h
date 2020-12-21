@@ -39,6 +39,11 @@ namespace Core {
         friend class Engine;
 
     public:
+
+        enum class ObjectLayer {
+            Default = 0
+        };
+
         virtual ~Object3D() override;
 
         UInt64 getID() const;
@@ -52,6 +57,8 @@ namespace Core {
         void removeChild(WeakPointer<Object3D> object);
         WeakPointer<Object3D> getParent() const;
         Bool addComponent(WeakPointer<Object3DComponent> component);
+        Int32 getLayer();
+        void setLayer(Int32 layer);
         void setActive(Bool active);
         Bool isActive() const;
         void setStatic(Bool objStatic);
@@ -82,6 +89,7 @@ namespace Core {
     protected:
         Object3D();
 
+        Int32 layer;
         Transform transform;
         std::vector<PersistentWeakPointer<Object3D>> children;
         PersistentWeakPointer<Object3D> parent;

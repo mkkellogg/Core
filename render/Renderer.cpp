@@ -948,15 +948,15 @@ namespace Core {
                     UInt32 renderableCount = meshContainer->getBaseRenderableCount();
                     for(UInt32 i = 0; i < renderableCount; i++) {
                         WeakPointer<Mesh> mesh = meshContainer->getRenderable(i);
-                        renderQueueManager.addMeshToQueue(renderQueueID, meshRenderer, mesh, object->isStatic(), true);
+                        renderQueueManager.addMeshToQueue(renderQueueID, meshRenderer, mesh, object->isStatic(), true, object->getLayer());
                     }
                 } if (particleSystemRenderer.isValid() && particleSystem.isValid()) {
-                    renderQueueManager.addParticleSystemToQueue(renderQueueID, particleSystemRenderer, particleSystem, object->isStatic(), true);
+                    renderQueueManager.addParticleSystemToQueue(renderQueueID, particleSystemRenderer, particleSystem, object->isStatic(), true, object->getLayer());
                 } else if (renderableContainer.isValid()) {
                     UInt32 renderableCount = renderableContainer->getBaseRenderableCount();
                     for(UInt32 i = 0; i < renderableCount; i++) {
                         WeakPointer<BaseRenderable> renderable = renderableContainer->getBaseRenderable(i);
-                        renderQueueManager.addItemToQueue(renderQueueID, renderer, renderable, object->isStatic(), true);
+                        renderQueueManager.addItemToQueue(renderQueueID, renderer, renderable, object->isStatic(), true, object->getLayer());
                     }
                 }
             }
@@ -978,15 +978,15 @@ namespace Core {
                     UInt32 renderableCount = meshContainer->getBaseRenderableCount();
                     for(UInt32 i = 0; i < renderableCount; i++) {
                         WeakPointer<Mesh> mesh = meshContainer->getRenderable(i);
-                        renderList.addMesh(meshRenderer, mesh, object->isStatic(), true);
+                        renderList.addMesh(meshRenderer, mesh, object->isStatic(), true, object->getLayer());
                     }
                 } if (particleSystemRenderer.isValid() && particleSystem.isValid()) {
-                    renderList.addParticleSystem(particleSystemRenderer, particleSystem, object->isStatic(), true);
+                    renderList.addParticleSystem(particleSystemRenderer, particleSystem, object->isStatic(), true, object->getLayer());
                 } else if (renderableContainer.isValid()) {
                     UInt32 renderableCount = renderableContainer->getBaseRenderableCount();
                     for(UInt32 i = 0; i < renderableCount; i++) {
                         WeakPointer<BaseRenderable> renderable = renderableContainer->getBaseRenderable(i);
-                        renderList.addItem(renderer, renderable, object->isStatic(), true);
+                        renderList.addItem(renderer, renderable, object->isStatic(), true, object->getLayer());
                     }
                 }
             }

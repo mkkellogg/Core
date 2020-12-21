@@ -26,14 +26,14 @@ namespace Core {
 
         UInt32 getItemCount() const;
         void clear();
-        void addItem(WeakPointer<BaseObject3DRenderer> renderer, WeakPointer<BaseRenderable> renderable, Bool isStatic, Bool isActive);
-        void addMesh(WeakPointer<MeshRenderer> meshRenderer, WeakPointer<Mesh> mesh, Bool isStatic, Bool isActive);
-        void addParticleSystem(WeakPointer<ParticleSystemRenderer> particleSystemRenderer, WeakPointer<ParticleSystem> particleSystem, Bool isStatic, Bool isActive);
+        void addItem(WeakPointer<BaseObject3DRenderer> renderer, WeakPointer<BaseRenderable> renderable, Bool isStatic, Bool isActive, Int32 layer);
+        void addMesh(WeakPointer<MeshRenderer> meshRenderer, WeakPointer<Mesh> mesh, Bool isStatic, Bool isActive, Int32 layer);
+        void addParticleSystem(WeakPointer<ParticleSystemRenderer> particleSystemRenderer, WeakPointer<ParticleSystem> particleSystem, Bool isStatic, Bool isActive, Int32 layer);
         RenderItem& getRenderItem(UInt32 index);
         void setAllActive();
 
     protected:
-        void initRenderItem(RenderItem& renderItem, Bool isStatic, Bool isActive);
+        void initRenderItem(RenderItem& renderItem, Bool isStatic, Bool isActive, Int32 layer);
         ObjectPool<RenderItem> renderItemPool;
         std::vector<RenderItem*> renderItems;
         UInt32 itemCount;

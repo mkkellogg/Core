@@ -20,20 +20,21 @@ namespace Core {
     }
 
     void RenderQueueManager::addItemToQueue(UInt32 queueID, WeakPointer<BaseObject3DRenderer> renderer,
-                                            WeakPointer<BaseRenderable> renderable, Bool isStatic, Bool isActive) {
+                                            WeakPointer<BaseRenderable> renderable, Bool isStatic, Bool isActive, Int32 layer) {
         RenderQueue& queue = this->getOrAddRenderQueue(queueID);
-        queue.addItem(renderer, renderable, isStatic, isActive);
+        queue.addItem(renderer, renderable, isStatic, isActive, layer);
     }
 
-    void RenderQueueManager::addMeshToQueue(UInt32 queueID, WeakPointer<MeshRenderer> meshRenderer, WeakPointer<Mesh> mesh, Bool isStatic, Bool isActive) {
+    void RenderQueueManager::addMeshToQueue(UInt32 queueID, WeakPointer<MeshRenderer> meshRenderer, WeakPointer<Mesh> mesh,
+                                            Bool isStatic, Bool isActive, Int32 layer) {
         RenderQueue& queue = this->getOrAddRenderQueue(queueID);
-        queue.addMesh(meshRenderer, mesh, isStatic, isActive);
+        queue.addMesh(meshRenderer, mesh, isStatic, isActive, layer);
     }
 
     void RenderQueueManager::addParticleSystemToQueue(UInt32 queueID, WeakPointer<ParticleSystemRenderer> particleSystemRenderer,
-                                                      WeakPointer<ParticleSystem> particleSystem, Bool isStatic, Bool isActive) {
+                                                      WeakPointer<ParticleSystem> particleSystem, Bool isStatic, Bool isActive, Int32 layer) {
         RenderQueue& queue = this->getOrAddRenderQueue(queueID);
-        queue.addParticleSystem(particleSystemRenderer, particleSystem, isStatic, isActive);
+        queue.addParticleSystem(particleSystemRenderer, particleSystem, isStatic, isActive, layer);
     }
 
     RenderQueue& RenderQueueManager::getOrAddRenderQueue(UInt32 queueID) {

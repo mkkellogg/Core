@@ -6,6 +6,7 @@ namespace Core {
         this->color.set(1, 1, 1, 1);
         this->intensity = 1;
         this->cullingMask = IntMaskUtil::createMask();
+        IntMaskUtil::setAll(&this->cullingMask);
     }
 
     Light::~Light() {
