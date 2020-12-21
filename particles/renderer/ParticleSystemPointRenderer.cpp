@@ -24,12 +24,12 @@ namespace Core {
     }
 
     Bool ParticleSystemPointRenderer::forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<BaseRenderable> renderable, Bool isStatic,
-                                                          const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
+                                                          Int32 layer, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
 
     }
 
     Bool ParticleSystemPointRenderer::forwardRenderParticleSystem(const ViewDescriptor& viewDescriptor, WeakPointer<ParticleSystem> particleSystem, Bool isStatic,
-                                                                  const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
+                                                                  Int32 layer, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
         this->updatePointMeshCount(particleSystem);
         UInt32 maxActiveParticles = particleSystem->getMaximumActiveParticles();
         if (maxActiveParticles != this->renderAttributes.getParticleCount()) {

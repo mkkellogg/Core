@@ -102,17 +102,17 @@ namespace Core {
     }
 
      Bool MeshRenderer::forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<BaseRenderable> renderable, Bool isStatic,
-                                            const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
+                                            Int32 layer, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
         WeakPointer<Mesh> mesh = WeakPointer<BaseRenderable>::dynamicPointerCast<Mesh>(renderable);
         if (!mesh.isValid()) {
             throw RenderException("MeshRenderer::forwardRenderObject() -> 'renderable' is not an instance of Mesh!");  
         }
 
-        this->forwardRenderMesh(viewDescriptor, mesh, isStatic, lightPack, matchPhysicalPropertiesWithLighting);
+        this->forwardRenderMesh(viewDescriptor, mesh, isStatic, layer, lightPack, matchPhysicalPropertiesWithLighting);
     }
 
     Bool MeshRenderer::forwardRenderMesh(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh, Bool isStatic,
-                                         const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
+                                         Int32 layer, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
 
         Matrix4x4 tempMatrix;
         WeakPointer<Material> material;
@@ -217,6 +217,10 @@ namespace Core {
 
                 WeakPointer<Light> light = lightPack.getLight(i);
                 LightType lightType = light->getType();
+
+                IntMask cullingMask = light->getCullingMask();
+                Bool layerValidForLight = IntMaskUtil::isBitSet(cullingMask, layer);
+                if (!layerValidForLight) continue;
 
                 if (renderPath != RenderPath::SinglePassMultiLight) currentTextureSlot = baseTextureSlot;
 
@@ -429,11 +433,13 @@ namespace Core {
 
     Bool MeshRenderer::forwardRender(const ViewDescriptor& viewDescriptor, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
         WeakPointer<MeshContainer> meshContainer = this->owner->getMeshContainer();
+        Int32 layer = this->owner->getLayer();
+        Bool isStatic = this->owner->isStatic();
         if (meshContainer) {
             UInt32 renderableCount = meshContainer->getBaseRenderableCount();
             for (UInt32 i = 0; i < renderableCount; i++) {
                 WeakPointer<BaseRenderable> mesh = meshContainer->getBaseRenderable(i);
-                this->forwardRenderObject(viewDescriptor, mesh, this->owner->isStatic(), lightPack, matchPhysicalPropertiesWithLighting);
+                this->forwardRenderObject(viewDescriptor, mesh, isStatic, layer, lightPack, matchPhysicalPropertiesWithLighting);
             }
         }
 

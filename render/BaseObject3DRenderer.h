@@ -21,7 +21,7 @@ namespace Core {
         BaseObject3DRenderer(WeakPointer<Object3D> owner) : Object3DComponent(owner), castShadows(true) {}
         virtual Bool forwardRender(const ViewDescriptor& viewDescriptor, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting);
         virtual Bool forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<BaseRenderable> renderable, Bool isStatic,
-                                         const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting);
+                                         Int32 layer, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting);
         virtual Bool supportsRenderPath(RenderPath renderPath);
         virtual UInt32 getRenderQueueID() const = 0;
         virtual Bool init() = 0;

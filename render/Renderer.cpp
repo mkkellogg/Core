@@ -282,7 +282,7 @@ namespace Core {
         this->getViewDescriptorForCamera(camera, viewDescriptor);
         viewDescriptor.ssaoMap = ssaoMap;
         viewDescriptor.ssaoEnabled = ssaoMap.isValid();
-        renderForViewDescriptor(viewDescriptor, objects, lightPack, matchPhysicalPropertiesWithLighting);
+        this->renderForViewDescriptor(viewDescriptor, objects, lightPack, matchPhysicalPropertiesWithLighting);
     }
 
     void Renderer::renderForCubeCamera(WeakPointer<Camera> camera, std::vector<WeakPointer<Object3D>>& objects,
@@ -334,11 +334,14 @@ namespace Core {
                                     const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
         if (renderItem.isActive) {
             if (renderItem.meshRenderer.isValid()) {
-                renderItem.meshRenderer->forwardRenderMesh(viewDescriptor, renderItem.mesh, renderItem.isStatic, lightPack, matchPhysicalPropertiesWithLighting);
+                renderItem.meshRenderer->forwardRenderMesh(viewDescriptor, renderItem.mesh, renderItem.isStatic,
+                                                           renderItem.layer, lightPack, matchPhysicalPropertiesWithLighting);
             } else if(renderItem.particleSystemRenderer.isValid()) {
-                renderItem.particleSystemRenderer->forwardRenderParticleSystem(viewDescriptor, renderItem.particleSystem, renderItem.isStatic, lightPack, matchPhysicalPropertiesWithLighting);
+                renderItem.particleSystemRenderer->forwardRenderParticleSystem(viewDescriptor, renderItem.particleSystem, renderItem.isStatic,
+                                                                               renderItem.layer, lightPack, matchPhysicalPropertiesWithLighting);
             } else if (renderItem.renderer.isValid()) {
-                renderItem.renderer->forwardRenderObject(viewDescriptor, renderItem.renderable, renderItem.isStatic, lightPack, matchPhysicalPropertiesWithLighting);
+                renderItem.renderer->forwardRenderObject(viewDescriptor, renderItem.renderable, renderItem.isStatic,
+                                                         renderItem.layer, lightPack, matchPhysicalPropertiesWithLighting);
             }
         }
     }
@@ -369,14 +372,31 @@ namespace Core {
         this->setViewportAndMipLevelForRenderTarget(currentRenderTarget, -1);
     }
 
+    void Renderer::cullRenderListForDirectionalLight(RenderList& renderList, WeakPointer<DirectionalLight> directionalLight) {
+        for (UInt32 i = 0; i < renderList.getItemCount(); i++) {
+            RenderItem& renderItem = renderList.getRenderItem(i);
+            if (renderItem.mesh.isValid()) {
+                Bool layerValidForLight = IntMaskUtil::isBitSet(directionalLight->getCullingMask(), renderItem.meshRenderer->getOwner()->getLayer());
+                if (!layerValidForLight) {
+                    renderItem.isActive = false;
+                    continue;
+                }
+            }
+        }
+    }
+
     void Renderer::cullRenderListForPointLight(RenderList& renderList, WeakPointer<PointLight> pointLight) {
-        return;
         static Point3r pointLightPos;
         pointLightPos.set(0.0f, 0.0f, 0.0f);
         pointLight->getOwner()->getTransform().applyTransformationTo(pointLightPos);
         for (UInt32 i = 0; i < renderList.getItemCount(); i++) {
             RenderItem& renderItem = renderList.getRenderItem(i);
-            if (renderItem.mesh) {
+            if (renderItem.mesh.isValid()) {
+                Bool layerValidForLight = IntMaskUtil::isBitSet(pointLight->getCullingMask(), renderItem.meshRenderer->getOwner()->getLayer());
+                if (!layerValidForLight) {
+                    renderItem.isActive = false;
+                    continue;
+                }
                 if (!RenderUtils::isPointLightInRangeOfMesh(pointLightPos, pointLight->getRadius(), renderItem.mesh, renderItem.meshRenderer->getOwner())) {
                     renderItem.isActive = false;
                 }
@@ -965,7 +985,7 @@ namespace Core {
 
     void Renderer::buildRenderListFromObjects(std::vector<WeakPointer<Object3D>>& objects, RenderList& renderList) {
         renderList.clear();
-         for(UInt32 i = 0; i < objects.size(); i++) {
+        for(UInt32 i = 0; i < objects.size(); i++) {
             WeakPointer<Object3D> object = objects[i];
             WeakPointer<BaseObject3DRenderer> renderer = object->getBaseRenderer();
             if (renderer.isValid()) {
@@ -980,12 +1000,42 @@ namespace Core {
                         WeakPointer<Mesh> mesh = meshContainer->getRenderable(i);
                         renderList.addMesh(meshRenderer, mesh, object->isStatic(), true, object->getLayer());
                     }
-                } if (particleSystemRenderer.isValid() && particleSystem.isValid()) {
+                } else if (particleSystemRenderer.isValid() && particleSystem.isValid()) {
                     renderList.addParticleSystem(particleSystemRenderer, particleSystem, object->isStatic(), true, object->getLayer());
                 } else if (renderableContainer.isValid()) {
                     UInt32 renderableCount = renderableContainer->getBaseRenderableCount();
                     for(UInt32 i = 0; i < renderableCount; i++) {
                         WeakPointer<BaseRenderable> renderable = renderableContainer->getBaseRenderable(i);
+                        renderList.addItem(renderer, renderable, object->isStatic(), true, object->getLayer());
+                    }
+                }
+            }
+        }
+    }
+
+    void Renderer::buildRenderListFromObjectsP(std::vector<WeakPointer<Object3D>>& objects, RenderList& renderList) {
+        renderList.clear();
+        for(UInt32 i = 0; i < objects.size(); i++) {
+            WeakPointer<Object3D> object = objects[i];
+            WeakPointer<BaseObject3DRenderer> renderer = object->getBaseRenderer();
+            if (renderer.isValid()) {
+                WeakPointer<BaseRenderableContainer> renderableContainer = object->getBaseRenderableContainer();
+                WeakPointer<MeshContainer> meshContainer = object->getMeshContainer();
+                WeakPointer<MeshRenderer> meshRenderer = object->getMeshRenderer();
+                WeakPointer<ParticleSystemRenderer> particleSystemRenderer = object->getParticleSystemRenderer();
+                WeakPointer<ParticleSystem> particleSystem = object->getParticleSystem();
+                if (meshRenderer.isValid() && meshContainer.isValid()) {
+                    UInt32 renderableCount = meshContainer->getBaseRenderableCount();
+                    for(UInt32 r = 0; r < renderableCount; r++) {
+                        WeakPointer<Mesh> mesh = meshContainer->getRenderable(r);
+                        renderList.addMesh(meshRenderer, mesh, object->isStatic(), true, object->getLayer());
+                    }
+                } else if (particleSystemRenderer.isValid() && particleSystem.isValid()) {
+                    renderList.addParticleSystem(particleSystemRenderer, particleSystem, object->isStatic(), true, object->getLayer());
+                } else if (renderableContainer.isValid()) {
+                    UInt32 renderableCount = renderableContainer->getBaseRenderableCount();
+                    for(UInt32 r = 0; r < renderableCount; r++) {
+                        WeakPointer<BaseRenderable> renderable = renderableContainer->getBaseRenderable(r);
                         renderList.addItem(renderer, renderable, object->isStatic(), true, object->getLayer());
                     }
                 }

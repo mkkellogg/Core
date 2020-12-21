@@ -15,7 +15,7 @@ namespace Core {
         friend class Engine;
     public:
         virtual Bool forwardRenderParticleSystem(const ViewDescriptor& viewDescriptor, WeakPointer<ParticleSystem> particleSystem, Bool isStatic,
-                                         const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) = 0;
+                                         Int32 layer, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) = 0;
         virtual ~ParticleSystemRenderer() = 0;
 
     protected:

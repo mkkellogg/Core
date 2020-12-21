@@ -82,6 +82,7 @@ namespace Core {
         WeakPointer<RenderTarget> preRenderForViewDescriptor(ViewDescriptor& viewDescriptor);
         void postRenderForViewDescriptor(ViewDescriptor& viewDescriptor, WeakPointer<RenderTarget> currentRenderTarget);
 
+        void cullRenderListForDirectionalLight(RenderList& renderList, WeakPointer<DirectionalLight> DirectionalLight);
         void cullRenderListForPointLight(RenderList& renderList, WeakPointer<PointLight> pointLight);
         void renderSkybox(ViewDescriptor& viewDescriptor);
         void renderObjectDirect(WeakPointer<Object3D> object, ViewDescriptor& viewDescriptor, const LightPack& lightPack,
@@ -116,6 +117,9 @@ namespace Core {
 
         void sortObjectsIntoRenderQueues(std::vector<WeakPointer<Object3D>>& objects, RenderQueueManager& renderQueueManager, Int32 overrideRenderQueueID=-1);
         void buildRenderListFromObjects(std::vector<WeakPointer<Object3D>>& objects, RenderList& renderList);
+
+
+void buildRenderListFromObjectsP(std::vector<WeakPointer<Object3D>>& objects, RenderList& renderList);
 
         static Bool isShadowCastingCapableLight(WeakPointer<Light> light);
         static Bool compareLights (WeakPointer<Light> a, WeakPointer<Light> b);

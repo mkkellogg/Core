@@ -7,7 +7,7 @@ namespace Core {
     }
 
     Bool BaseObject3DRenderer::forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<BaseRenderable> renderable, Bool isStatic,
-                                                   const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
+                                                   Int32 layer, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
         return false;
     }
 

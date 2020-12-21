@@ -70,12 +70,12 @@ namespace Core {
     }
 
     Bool ParticleSystemAnimatedSpriteRenderer::forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<BaseRenderable> renderable, Bool isStatic,
-                                                                   const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
+                                                                   Int32 layer, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
 
     }
 
     Bool ParticleSystemAnimatedSpriteRenderer::forwardRenderParticleSystem(const ViewDescriptor& viewDescriptor, WeakPointer<ParticleSystem> particleSystem, Bool isStatic,
-                                                                           const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
+                                                                           Int32 layer, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
         UInt32 maxActiveParticles = particleSystem->getMaximumActiveParticles();
         if (maxActiveParticles != this->renderAttributes.getParticleCount()) {
             this->renderAttributes.setParticleCount(maxActiveParticles);

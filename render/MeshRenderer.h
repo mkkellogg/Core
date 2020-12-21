@@ -26,9 +26,9 @@ namespace Core {
         virtual ~MeshRenderer();
         virtual Bool forwardRender(const ViewDescriptor& viewDescriptor, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) override;
         virtual Bool forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<BaseRenderable> renderable, Bool isStatic,
-                                         const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) override;
+                                         Int32 layer, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) override;
         Bool forwardRenderMesh(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh, Bool isStatic,
-                               const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting);
+                               Int32 layer, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting);
         virtual Bool supportsRenderPath(RenderPath renderPath) override;
         virtual UInt32 getRenderQueueID() const override;
         virtual Bool init() override;
