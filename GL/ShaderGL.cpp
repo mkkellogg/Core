@@ -97,7 +97,7 @@ namespace Core {
                                  GL_TEXTURE18, GL_TEXTURE19, GL_TEXTURE20, GL_TEXTURE21, GL_TEXTURE22, GL_TEXTURE23,
                                  GL_TEXTURE24, GL_TEXTURE25, GL_TEXTURE26, GL_TEXTURE27, GL_TEXTURE28, GL_TEXTURE29,
                                  GL_TEXTURE30, GL_TEXTURE31};
-        if (slot >= 32) {
+        if (slot >= 31) {
             std::cerr << "slot: " << slot << std::endl;
             throw Shader::ShaderVariableException("ShaderGL::setTexture2D() value for [slot] is too high.");
         }
