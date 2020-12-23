@@ -35,7 +35,7 @@ namespace Core {
 
     protected:
         void initRenderItem(RenderItem& renderItem, Bool isStatic, Bool isActive, Int32 layer);
-        SimpleObjectPool<RenderItem> renderItemPool;
+        ObjectPool<RenderItem> renderItemPool;
         std::vector<RenderItem*> renderItems;
         UInt32 itemCount;
 
