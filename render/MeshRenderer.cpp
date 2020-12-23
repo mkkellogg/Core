@@ -218,10 +218,6 @@ namespace Core {
                 WeakPointer<Light> light = lightPack.getLight(i);
                 LightType lightType = light->getType();
 
-                IntMask cullingMask = light->getCullingMask();
-                Bool layerValidForLight = IntMaskUtil::isBitSet(cullingMask, layer);
-                if (!layerValidForLight) continue;
-
                 if (renderPath != RenderPath::SinglePassMultiLight) currentTextureSlot = baseTextureSlot;
 
                 switch (lightType) {
@@ -240,6 +236,10 @@ namespace Core {
                         ambientIBLLightIndex++;
                     break;
                 }
+
+                IntMask cullingMask = light->getCullingMask();
+                Bool layerValidForLight = IntMaskUtil::isBitSet(cullingMask, layer);
+                if (!layerValidForLight) continue;
 
                 if (lightType == LightType::AmbientIBL && !material->isPhysical()) continue;
                 if (matchPhysicalPropertiesWithLighting) {
