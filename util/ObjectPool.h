@@ -88,7 +88,7 @@ namespace Core {
             UInt32 nextArray = this->objects.size();
             this->objects.push_back(temp);
             for (unsigned int i = 0; i < capacityDelta; i++) {
-                this->storageMap[i + capacity] = StorageDesc(nextArray, i);
+                this->storageMap[i + this->capacity] = StorageDesc(nextArray, i);
             }
             for (unsigned int i = capacity; i < newCapacity; i++) {
                 StorageDesc storageDesc = this->storageMap[i];

@@ -205,6 +205,7 @@ set(INCLUDE_FILES
     util/PersistentWeakPointer.h
     util/ValueIterator.h
     util/ObjectPool.h
+    util/SimpleObjectPool.h
     util/Tree.h
     util/ContinuousArray.h
     math/Math.h

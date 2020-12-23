@@ -6,6 +6,7 @@
 #include "../util/WeakPointer.h"
 #include "../util/PersistentWeakPointer.h"
 #include "../util/ObjectPool.h"
+#include "../util/SimpleObjectPool.h"
 #include "RenderItem.h"
 
 namespace Core {
@@ -34,7 +35,7 @@ namespace Core {
 
     protected:
         void initRenderItem(RenderItem& renderItem, Bool isStatic, Bool isActive, Int32 layer);
-        ObjectPool<RenderItem> renderItemPool;
+        SimpleObjectPool<RenderItem> renderItemPool;
         std::vector<RenderItem*> renderItems;
         UInt32 itemCount;
 

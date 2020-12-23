@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 #ifdef CORE_USE_PRIVATE_INCLUDES
 #include "assimp/Importer.hpp"
@@ -105,6 +106,7 @@ namespace Core {
         Bool processMaterials(const std::string& modelPath, const aiScene& scene,
                              std::vector<MaterialImportDescriptor>& materialImportDescriptors, Bool preferPhysicalMaterial) const;
         WeakPointer<Texture> loadAITexture(aiMaterial& assimpMaterial, aiTextureType textureType, const std::string& modelPath, TextureFilter filter, UInt32 mipLevel) const;
+        WeakPointer<Texture2D> loadTexture(const std::string& path, const TextureAttributes& textureAttributes) const;
         void getImportDetails(const aiMaterial* mtl, MaterialImportDescriptor& materialImportDesc, const aiScene& scene, Bool preferPhysicalMaterial) const;
         Bool setupMeshSpecificMaterialWithTextures(const aiScene& scene, const aiMaterial& assimpMaterial, WeakPointer<Texture> diffuseTexture,
                                                   WeakPointer<Texture> normalsTexture, WeakPointer<Texture> roughnessGlossTexture, WeakPointer<Texture> opacityTexture,
@@ -139,5 +141,6 @@ namespace Core {
         ImageLoader imageLoader;
         Bool fallbackTexturePathSet;
         std::string fallbackTexturePath;
+        mutable std::unordered_map<std::string, WeakPointer<Texture2D>> textureCache;
     };
 }
