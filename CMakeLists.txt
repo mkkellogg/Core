@@ -175,6 +175,7 @@ set(INCLUDE_FILES
     particles/operator/SequenceOperator.h
     particles/operator/OpacityInterpolatorOperator.h
     particles/operator/SizeInterpolatorOperator.h
+    particles/operator/ColorInterpolatorOperator.h
     particles/operator/InterpolatorOperator.h
     particles/material/ParticleStandardMaterial.h
     light/Light.h
@@ -312,6 +313,7 @@ set(SOURCE_FILES
     particles/operator/SequenceOperator.cpp
     particles/operator/OpacityInterpolatorOperator.cpp
     particles/operator/SizeInterpolatorOperator.cpp
+    particles/operator/ColorInterpolatorOperator.cpp
     particles/material/ParticleStandardMaterial.cpp
     light/Light.cpp
     light/ShadowLight.cpp

@@ -5,8 +5,6 @@
 
 #include "PersistentWeakPointer.h"
 #include "../math/Math.h"
-#include "../geometry/Vector3.h"
-#include "../geometry/Vector2.h"
 
 namespace Core {
 

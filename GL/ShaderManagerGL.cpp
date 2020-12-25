@@ -596,7 +596,7 @@ namespace Core {
             "in vec2 vUV;\n"
             "in vec4 vFragColor;\n"
             "void main() {\n"
-            "   vec4 color = texture(atlasTexture, vUV) * vec4(1.0, 1.0, 1.0, vFragColor.a);\n"
+            "   vec4 color = texture(atlasTexture, vUV) * vFragColor;\n"
             "   out_color = color;\n"
             "}\n";
 
