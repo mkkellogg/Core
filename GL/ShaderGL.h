@@ -39,6 +39,7 @@ namespace Core {
         void setTextureCube(UInt32 samplerSlot, UInt32 uniformLocation, UInt32 textureID) override;
         void setUniform1i(UInt32 location, Int32 val) override;
         void setUniform1f(UInt32 location, Real val) override;
+        void setUniform2f(UInt32 location, Real x, Real y) override;
         void setUniform3f(UInt32 location, Real x, Real y, Real z) override;
         void setUniform4f(UInt32 location, Real x, Real y, Real z, Real w) override;
         void setUniformMatrix4(UInt32 location, const Real* data) override;

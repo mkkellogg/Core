@@ -41,6 +41,9 @@ namespace Core {
                 }
             }
         }
+        if (this->uvOffsetLocation >= 0) {
+            this->shader->setUniform2f(this->uvOffsetLocation, this->uvOffset.x, this->uvOffset.y);
+        }
     }
 
     Int32 ParticleStandardMaterial::getShaderLocation(StandardAttribute attribute, UInt32 offset) {
@@ -86,6 +89,7 @@ namespace Core {
             particleMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
             particleMaterial->viewMatrixLocation = this->viewMatrixLocation;
             particleMaterial->atlasTextureLocation = this->atlasTextureLocation;
+            particleMaterial->uvOffsetLocation = this->uvOffsetLocation;
             for (UInt32 i = 0; i < Constants::MaxAtlasTileArrays; i++) {
                 particleMaterial->atlasTileArayLocation[i] = this->atlasTileArayLocation[i];
             }
@@ -109,6 +113,7 @@ namespace Core {
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
         this->atlasTextureLocation = this->shader->getUniformLocation("atlasTexture");
+        this->uvOffsetLocation = this->shader->getUniformLocation("uvOffset");
         for (UInt32 i = 0; i < Constants::MaxAtlasTileArrays; i++) {
             this->atlasTileArayLocation[i] = this->shader->getUniformLocation("atlasTileArray", i);
         }
@@ -125,5 +130,9 @@ namespace Core {
 
     void ParticleStandardMaterial::setAtlas(const Atlas& atlas) {
         this->atlas = atlas;
+    }
+
+    void ParticleStandardMaterial::setUVOffset(Real x, Real y) {
+        this->uvOffset.set(x, y);
     }
 }

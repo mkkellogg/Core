@@ -141,6 +141,10 @@ namespace Core {
         glUniform1f(location, val);
     }
 
+    void ShaderGL::setUniform2f(UInt32 location, Real x, Real y) {
+        glUniform2f(location, x, y);
+    }
+
     void ShaderGL::setUniform3f(UInt32 location, Real x, Real y, Real z) {
         glUniform3f(location, x, y, z);
     }

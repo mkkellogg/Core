@@ -56,6 +56,7 @@ namespace Core {
         virtual void setTextureCube(UInt32 samplerSlot, UInt32 uniformLocation, UInt32 textureID) = 0;
         virtual void setUniform1i(UInt32 location, Int32 val) = 0;
         virtual void setUniform1f(UInt32 location, Real val) = 0;
+        virtual void setUniform2f(UInt32 location, Real x, Real y) = 0;
         virtual void setUniform3f(UInt32 location, Real x, Real y, Real z) = 0;
         virtual void setUniform4f(UInt32 location, Real x, Real y, Real z, Real w) = 0;
         virtual void setUniformMatrix4(UInt32 location, const Real * data) = 0;

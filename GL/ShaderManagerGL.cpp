@@ -592,11 +592,12 @@ namespace Core {
             "#version 330\n"
             "precision highp float;\n"
             "uniform sampler2D atlasTexture;\n"
+            "uniform vec2 uvOffset;\n"
             "layout( location = 0 ) out vec4 out_color;\n"
             "in vec2 vUV;\n"
             "in vec4 vFragColor;\n"
             "void main() {\n"
-            "   vec4 color = texture(atlasTexture, vUV) * vFragColor;\n"
+            "   vec4 color = texture(atlasTexture, vUV + uvOffset) * vFragColor;\n"
             "   out_color = color;\n"
             "}\n";
 

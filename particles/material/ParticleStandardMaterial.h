@@ -5,6 +5,7 @@
 #include "../../material/Material.h"
 #include "../../color/Color.h"
 #include "../../image/Atlas.h"
+#include "../../geometry/Vector2.h"
 
 namespace Core {
 
@@ -32,11 +33,16 @@ namespace Core {
         const Atlas& getAtlas() const;
         void setAtlas(const Atlas& atlas);
 
+        void setUVOffset(Real x, Real y);
+
     private:
 
         ParticleStandardMaterial();
 
+        Vector2r uvOffset;
         Atlas atlas;
+
+        Int32 uvOffsetLocation;
         Int32 atlasTextureLocation;
         Int32 atlasTileArayLocation[Constants::MaxAtlasTileArrays];
         Int32 worldPositionLocation;
