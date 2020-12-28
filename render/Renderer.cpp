@@ -920,7 +920,7 @@ namespace Core {
         noiseTextureAttributes.MipLevels = 0;
         noiseTextureAttributes.WrapMode = TextureWrap::Clamp;
         this->ssaoNoise = Engine::instance()->getGraphicsSystem()->createTexture2D(noiseTextureAttributes);
-        this->ssaoNoise->buildFromData(4, 4, (Byte*)ssaoNoiseData);
+        this->ssaoNoise->buildFromData((Byte*)ssaoNoiseData, 4, 4);
 
         const Vector2u ssaoRenderTargetSize(Constants::EffectsBuffer2DSize, Constants::EffectsBuffer2DSize);
         TextureAttributes ssaoColorAttributes;

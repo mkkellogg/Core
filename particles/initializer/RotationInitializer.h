@@ -4,20 +4,20 @@
 #include "../../common/types.h"
 #include "../ParticleState.h"
 #include "ParticleStateInitializer.h"
+#include "../util/Generator.h"
 
 namespace Core {
 
     class RotationInitializer: public ParticleStateInitializer {
     public:
-        RotationInitializer(Real range, Real offset);
+        RotationInitializer(const Generator<Real>& generator);
         virtual ~RotationInitializer();
 
         virtual void initializeState(ParticleStatePtr& state) override;
 
     private:
 
-        Real rotationRange;
-        Real rotationOffset;
+        std::unique_ptr<Generator<Real>> generator;
 
     };
 }

@@ -4,6 +4,8 @@
 #include "../../common/types.h"
 #include "../ParticleState.h"
 #include "ParticleStateInitializer.h"
+#include "../../geometry/Vector3.h"
+#include "../util/RandomGenerator.h"
 
 namespace Core {
 
@@ -17,9 +19,7 @@ namespace Core {
 
     private:
 
-        Real speedRange;
-        Real speedOffset;
-        Vector3r range;
-        Vector3r offset;
+        RandomGenerator<Vector3r> directionGenerator;
+        RandomGenerator<Real> speedGenerator;
     };
 }

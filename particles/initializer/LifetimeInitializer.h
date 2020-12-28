@@ -4,20 +4,20 @@
 #include "../../common/types.h"
 #include "../ParticleState.h"
 #include "ParticleStateInitializer.h"
+#include "../util/Generator.h"
 
 namespace Core {
 
     class LifetimeInitializer: public ParticleStateInitializer {
     public:
-        LifetimeInitializer(Real range, Real offset);
+        LifetimeInitializer(const Generator<Real>& generator);
         virtual ~LifetimeInitializer();
 
         virtual void initializeState(ParticleStatePtr& state) override;
 
     private:
 
-        Real lifetimeRange;
-        Real lifetimeOffset;
+        std::unique_ptr<Generator<Real>> generator;
 
     };
 }

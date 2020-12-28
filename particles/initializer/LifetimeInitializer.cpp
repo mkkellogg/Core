@@ -3,16 +3,17 @@
 
 namespace Core {
 
-    LifetimeInitializer::LifetimeInitializer(Real range, Real offset) {
-        this->lifetimeRange = range;
-        this->lifetimeOffset = offset;
+    LifetimeInitializer::LifetimeInitializer(const Generator<Real>& generator) {
+        this->generator = std::unique_ptr<Generator<Real>>(generator.clone());
     }
 
     LifetimeInitializer::~LifetimeInitializer() {
     }
 
     void LifetimeInitializer::initializeState(ParticleStatePtr& state) {
-        *state.lifetime = Math::random() * this->lifetimeRange + this->lifetimeOffset;
+        Real lifetime;
+        this->generator->generate(lifetime);
+        *state.lifetime = lifetime;
     }
 
 }

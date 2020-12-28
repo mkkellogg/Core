@@ -178,6 +178,8 @@ set(INCLUDE_FILES
     particles/operator/ColorInterpolatorOperator.h
     particles/operator/InterpolatorOperator.h
     particles/material/ParticleStandardMaterial.h
+    particles/util/RandomGenerator.h
+    particles/util/Generator.h
     light/Light.h
     light/ShadowLight.h
     light/PointLight.h
@@ -315,6 +317,7 @@ set(SOURCE_FILES
     particles/operator/SizeInterpolatorOperator.cpp
     particles/operator/ColorInterpolatorOperator.cpp
     particles/material/ParticleStandardMaterial.cpp
+    particles/util/RandomGenerator.cpp
     light/Light.cpp
     light/ShadowLight.cpp
     light/PointLight.cpp

@@ -20,22 +20,48 @@ namespace Core {
         if (this->attributes.Format != TextureFormat::RGBA8) {
             throw TextureException("Texture2DGL::build() -> Textures built with StandardImage must have type RGBA8.");
         }
-        this->setupTexture(imageData->getWidth(), imageData->getHeight(), imageData->getImageData());
+        this->buildFromImage(imageData, imageData->getWidth(), imageData->getHeight());
+    }
+
+    void Texture2DGL::buildFromImage(WeakPointer<StandardImage> imageData, UInt32 resizeWidth, UInt32 resizeHeight) {
+        if (this->attributes.Format != TextureFormat::RGBA8) {
+            throw TextureException("Texture2DGL::build() -> Textures built with StandardImage must have type RGBA8.");
+        }
+        UInt32 width = imageData->getWidth();
+        UInt32 height = imageData->getHeight();
+        Byte * imageBytes = imageData->getImageBytes();
+        if (imageData->getWidth() != resizeWidth || imageData->getHeight() != resizeHeight) {
+            // TODO: implement resize / resample
+        }
+        this->setupTexture(imageBytes, width, height);
     }
 
     void Texture2DGL::buildFromImage(WeakPointer<HDRImage> imageData) {
         if (this->attributes.Format != TextureFormat::RGBA16F && this->attributes.Format != TextureFormat::RGBA32F) {
             throw TextureException("Texture2DGL::build() -> Textures built with HDRImage must have type RGBA16F or RGBA32F.");
         }
-        this->setupTexture(imageData->getWidth(), imageData->getHeight(), imageData->getImageBytes());
+        this->buildFromImage(imageData, imageData->getWidth(), imageData->getHeight());
     }
 
-    void Texture2DGL::buildFromData(UInt32 width, UInt32 height, Byte* data) {
-        this->setupTexture(width, height, data);
+    void Texture2DGL::buildFromImage(WeakPointer<HDRImage> imageData, UInt32 resizeWidth, UInt32 resizeHeight) {
+        if (this->attributes.Format != TextureFormat::RGBA16F && this->attributes.Format != TextureFormat::RGBA32F) {
+            throw TextureException("Texture2DGL::build() -> Textures built with HDRImage must have type RGBA16F or RGBA32F.");
+        }
+        UInt32 width = imageData->getWidth();
+        UInt32 height = imageData->getHeight();
+        Byte * imageBytes = imageData->getImageBytes();
+        if (imageData->getWidth() != resizeWidth || imageData->getHeight() != resizeHeight) {
+            // TODO: implement resize / resample
+        }
+        this->setupTexture(imageBytes, width, height);
+    }
+
+    void Texture2DGL::buildFromData(Byte* data, UInt32 width, UInt32 height) {
+        this->setupTexture(data, width, height);
     }
       
     void Texture2DGL::buildEmpty(UInt32 width, UInt32 height) {
-        this->setupTexture(width, height, nullptr);
+        this->setupTexture(nullptr, width, height);
     }
 
     void Texture2DGL::updateMipMaps() {
@@ -45,7 +71,7 @@ namespace Core {
     }
 
 
-    void Texture2DGL::setupTexture(UInt32 width, UInt32 height, Byte* data) {
+    void Texture2DGL::setupTexture(Byte* data, UInt32 width, UInt32 height) {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         WeakPointer<GraphicsGL> graphicsGL =  WeakPointer<Graphics>::dynamicPointerCast<GraphicsGL>(graphics);
 

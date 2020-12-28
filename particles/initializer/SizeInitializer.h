@@ -5,21 +5,19 @@
 #include "../ParticleState.h"
 #include "ParticleStateInitializer.h"
 #include "../../geometry/Vector2.h"
+#include "../util/Generator.h"
 
 namespace Core {
 
     class SizeInitializer: public ParticleStateInitializer {
     public:
-        SizeInitializer(const Vector2r& range, Real uniformSizeRange, const Vector2r& offset, Real uniformSizeOffset);
+        SizeInitializer(const Generator<Vector2r>& generator);
         virtual ~SizeInitializer();
 
         virtual void initializeState(ParticleStatePtr& state) override;
 
     private:
 
-        Vector2r sizeRange;
-        Vector2r sizeOffset;
-        Real uniformSizeRange;
-        Real uniformSizeOffset;
+        std::unique_ptr<Generator<Vector2r>> generator;
     };
 }

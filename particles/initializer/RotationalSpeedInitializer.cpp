@@ -3,16 +3,17 @@
 
 namespace Core {
 
-    RotationalSpeedInitializer::RotationalSpeedInitializer(Real range, Real offset) {
-        this->rotationalSpeedRange = range;
-        this->rotationalSpeedOffset = offset;
+    RotationalSpeedInitializer::RotationalSpeedInitializer(const Generator<Real>& generator) {
+        this->generator = std::unique_ptr<Generator<Real>>(generator.clone());
     }
 
     RotationalSpeedInitializer::~RotationalSpeedInitializer() {
     }
 
     void RotationalSpeedInitializer::initializeState(ParticleStatePtr& state) {
-        *state.rotationalSpeed = Math::random() * this->rotationalSpeedRange + this->rotationalSpeedOffset;
+        Real rotationalSpeed;
+        this->generator->generate(rotationalSpeed);
+        *state.rotationalSpeed = rotationalSpeed;
     }
 
 }

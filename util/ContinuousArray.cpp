@@ -55,13 +55,10 @@ namespace Core {
             out.copy(this->elements[lowerIndex]);
             Color upper;
             upper.copy(this->elements[upperIndex]);
-            //std::cerr << std::to_string(this->elements.size()) << ", " << std::to_string(lowerIndex) << ", " << std::to_string(upperIndex) << std::endl;;
             out.set(out.r * (1.0f - localT)  + localT * upper.r,
                     out.g * (1.0f - localT)  + localT * upper.g,
                     out.b * (1.0f - localT)  + localT * upper.b,
                     out.a * (1.0f - localT)  + localT * upper.a);
-            //std::cerr << std::to_string(this->elements[1].r) << ", " << std::to_string(this->elements[1].g) << ", " << std::to_string(this->elements[1].b) << ", " << std::to_string(this->elements[1].a) << std::endl;
-            //out.copy(this->elements[1]);
         };
     }
 

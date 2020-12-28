@@ -3,16 +3,17 @@
 
 namespace Core {
 
-    RotationInitializer::RotationInitializer(Real range, Real offset) {
-        this->rotationRange = range;
-        this->rotationOffset = offset;
+    RotationInitializer::RotationInitializer(const Generator<Real>& generator) {
+        this->generator = std::unique_ptr<Generator<Real>>(generator.clone());
     }
 
     RotationInitializer::~RotationInitializer() {
     }
 
     void RotationInitializer::initializeState(ParticleStatePtr& state) {
-        *state.rotation = Math::random() * this->rotationRange + this->rotationOffset;
+        Real rotation;
+        this->generator->generate(rotation);
+        *state.rotation = rotation;
     }
 
 }

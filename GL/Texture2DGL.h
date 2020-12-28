@@ -17,13 +17,15 @@ namespace Core {
         ~Texture2DGL() override;
 
         void buildFromImage(WeakPointer<StandardImage> imageData) override;
+        void buildFromImage(WeakPointer<StandardImage> imageData, UInt32 resizeWidth, UInt32 resizeHeight) override;
         void buildFromImage(WeakPointer<HDRImage> imageData) override;
-        void buildFromData(UInt32 width, UInt32 height, Byte* data) override;
+        void buildFromImage(WeakPointer<HDRImage> imageData, UInt32 resizeWidth, UInt32 resizeHeight) override;
+        void buildFromData(Byte* data, UInt32 width, UInt32 height) override;
         void buildEmpty(UInt32 width, UInt32 height) override;
         void updateMipMaps() override;
 
     protected:
         Texture2DGL(const TextureAttributes& attributes);
-        void setupTexture(UInt32 width, UInt32 height, Byte* data);
+        void setupTexture(Byte* data, UInt32 width, UInt32 height);
     };
 }
