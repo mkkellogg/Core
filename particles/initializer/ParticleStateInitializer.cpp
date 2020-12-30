@@ -16,7 +16,7 @@ namespace Core {
         *state.progressType = (Real)ParticleStateProgressType::Time;
         *state.lifetime = 0.0f;
         *state.age = 0.0f;
-        (*state.sequenceElement).set(0, 0, 0);
+        (*state.sequenceElement).set(0, 0, 0, 0);
         (*state.position).set(0.0f, 0.0f, 0.0f);
         (*state.velocity).set(0.0f, 0.0f, 0.0f);
         (*state.acceleration).set(0.0f, 0.0f, 0.0f);

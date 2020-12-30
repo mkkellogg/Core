@@ -20,7 +20,7 @@ namespace Core {
         Real progressType;
         Real lifetime;
         Real age;
-        Vector3r sequenceElement;
+        Vector4r sequenceElement;
         Point3r position;
         Vector3r velocity;
         Vector3r acceleration;
@@ -39,7 +39,7 @@ namespace Core {
         Real* progressType;
         Real* lifetime;
         Real* age;
-        Vector3rs* sequenceElement;
+        Vector4rs* sequenceElement;
         Point3rs* position;
         Vector3rs* velocity;
         Vector3rs* acceleration;
@@ -120,7 +120,7 @@ namespace Core {
         std::shared_ptr<AttributeArray<Point3rs>> getPositions() {return this->positions;}
         std::shared_ptr<AttributeArray<Vector2rs>> getSizes() {return this->sizes;}
         std::shared_ptr<ScalarAttributeArray<Real>> getRotations() {return this->rotations;}
-        std::shared_ptr<AttributeArray<Vector3rs>> getSequenceElements() {return this->sequenceElements;}
+        std::shared_ptr<AttributeArray<Vector4rs>> getSequenceElements() {return this->sequenceElements;}
         std::shared_ptr<AttributeArray<ColorS>> getColors() {return this->colors;}
 
     protected:
@@ -129,7 +129,7 @@ namespace Core {
             this->progressTypes = std::make_shared<ScalarAttributeArray<Real>>(particleCount, AttributeType::Float, false);
             this->lifetimes = std::make_shared<ScalarAttributeArray<Real>>(particleCount, AttributeType::Float, false);
             this->ages = std::make_shared<ScalarAttributeArray<Real>>(particleCount, AttributeType::Float, false);
-            this->sequenceElements = std::make_shared<AttributeArray<Vector3rs>>(particleCount, AttributeType::Float, false);
+            this->sequenceElements = std::make_shared<AttributeArray<Vector4rs>>(particleCount, AttributeType::Float, false);
             this->positions = std::make_shared<AttributeArray<Point3rs>>(particleCount, AttributeType::Float, false);
             this->velocities = std::make_shared<AttributeArray<Vector3rs>>(particleCount, AttributeType::Float, false);
             this->accelerations = std::make_shared<AttributeArray<Vector3rs>>(particleCount, AttributeType::Float, false);
@@ -177,7 +177,7 @@ namespace Core {
         std::shared_ptr<ScalarAttributeArray<Real>> progressTypes;
         std::shared_ptr<ScalarAttributeArray<Real>> lifetimes;
         std::shared_ptr<ScalarAttributeArray<Real>> ages;
-        std::shared_ptr<AttributeArray<Vector3rs>> sequenceElements;
+        std::shared_ptr<AttributeArray<Vector4rs>> sequenceElements;
         std::shared_ptr<AttributeArray<Point3rs>> positions;
         std::shared_ptr<AttributeArray<Vector3rs>> velocities;
         std::shared_ptr<AttributeArray<Vector3rs>> accelerations;

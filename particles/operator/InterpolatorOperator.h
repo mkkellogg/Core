@@ -36,7 +36,7 @@ namespace Core {
                 }
                 break;
                 case ParticleStateProgressType::Sequence:
-                    t = (*state.sequenceElement).x / (*state.sequenceElement).z;
+                    t = (*state.sequenceElement).x / (*state.sequenceElement).w;
                 break;
             }
             this->interpolationElements.getInterpolatedElement(t, out);

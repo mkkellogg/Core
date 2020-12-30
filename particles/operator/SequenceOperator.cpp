@@ -16,7 +16,7 @@ namespace Core {
     }
 
     Bool SequenceOperator::updateState(ParticleStatePtr& state, Real timeDelta) {
-        Vector3rs& sequenceElement = *state.sequenceElement;
+        Vector4rs& sequenceElement = *state.sequenceElement;
         WeakPointer<ParticleSequence> activeSequence = this->particleSequences->getSequence((UInt32)sequenceElement.y);
         Real tdOverS = timeDelta / this->speed;
         if (reverse) {

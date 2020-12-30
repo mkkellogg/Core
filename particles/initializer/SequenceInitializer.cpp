@@ -21,16 +21,17 @@ namespace Core {
 
     void SequenceInitializer::initializeState(ParticleStatePtr& state) {
         const std::vector<UInt32> sequenceIDs = this->particleSequences->getSequenceIDs();
-        Real r = randomDist(this->mt);
+        Real r = this->randomDist(this->mt);
         if (r == (Real)sequenceIDs.size()) r--;
         UInt32 ir = (UInt32)r;
         UInt32 sequenceID = sequenceIDs[ir];
         WeakPointer<ParticleSequence> sequence = this->particleSequences->getSequence(sequenceID);
-        Vector3rs& sequenceElement = *state.sequenceElement;
+        Vector4rs& sequenceElement = *state.sequenceElement;
         if (reverse) sequenceElement.x = (Real)(sequence->length - 1);
         else sequenceElement.x = (Real)sequence->start;
         sequenceElement.y = (Real)sequence->id;
-        sequenceElement.z = (Real)sequence->length;
+        sequenceElement.z = (Real)sequence->start;
+        sequenceElement.w = (Real)sequence->length;
         *state.progressType = (Real)ParticleStateProgressType::Sequence;
     }
 
