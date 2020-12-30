@@ -23,6 +23,7 @@ namespace Core {
         Vector3r sequenceElement;
         Point3r position;
         Vector3r velocity;
+        Vector3r acceleration;
         Vector3r normal;
         Real rotation;
         Real rotationalSpeed;
@@ -41,6 +42,7 @@ namespace Core {
         Vector3rs* sequenceElement;
         Point3rs* position;
         Vector3rs* velocity;
+        Vector3rs* acceleration;
         Vector3rs* normal;
         Real* rotation;
         Real* rotationalSpeed;
@@ -97,6 +99,7 @@ namespace Core {
             this->sequenceElements->copyAttribute(srcIndex, destIndex);
             this->positions->copyAttribute(srcIndex, destIndex);
             this->velocities->copyAttribute(srcIndex, destIndex);
+            this->accelerations->copyAttribute(srcIndex, destIndex);
             this->normals->copyAttribute(srcIndex, destIndex);
             this->rotations->copyAttribute(srcIndex, destIndex);
             this->rotationalSpeeds->copyAttribute(srcIndex, destIndex);
@@ -129,10 +132,10 @@ namespace Core {
             this->sequenceElements = std::make_shared<AttributeArray<Vector3rs>>(particleCount, AttributeType::Float, false);
             this->positions = std::make_shared<AttributeArray<Point3rs>>(particleCount, AttributeType::Float, false);
             this->velocities = std::make_shared<AttributeArray<Vector3rs>>(particleCount, AttributeType::Float, false);
+            this->accelerations = std::make_shared<AttributeArray<Vector3rs>>(particleCount, AttributeType::Float, false);
             this->normals = std::make_shared<AttributeArray<Vector3rs>>(particleCount, AttributeType::Float, false);
             this->rotations = std::make_shared<ScalarAttributeArray<Real>>(particleCount, AttributeType::Float, false);
             this->rotationalSpeeds = std::make_shared<ScalarAttributeArray<Real>>(particleCount, AttributeType::Float, false);
-
             this->sizes = std::make_shared<AttributeArray<Vector2rs>>(particleCount, AttributeType::Float, false);
             this->colors = std::make_shared<AttributeArray<ColorS>>(particleCount, AttributeType::Float, false);
 
@@ -159,6 +162,7 @@ namespace Core {
             ptr.sequenceElement = &this->sequenceElements->getAttribute(index);
             ptr.position = &this->positions->getAttribute(index);
             ptr.velocity = &this->velocities->getAttribute(index);
+            ptr.acceleration = &this->accelerations->getAttribute(index);
             ptr.normal = &this->normals->getAttribute(index);
             ptr.rotation = &this->rotations->getAttribute(index);
             ptr.rotationalSpeed = &this->rotationalSpeeds->getAttribute(index);
@@ -176,6 +180,7 @@ namespace Core {
         std::shared_ptr<AttributeArray<Vector3rs>> sequenceElements;
         std::shared_ptr<AttributeArray<Point3rs>> positions;
         std::shared_ptr<AttributeArray<Vector3rs>> velocities;
+        std::shared_ptr<AttributeArray<Vector3rs>> accelerations;
         std::shared_ptr<AttributeArray<Vector3rs>> normals;
         std::shared_ptr<ScalarAttributeArray<Real>> rotations;
         std::shared_ptr<ScalarAttributeArray<Real>> rotationalSpeeds;

@@ -19,6 +19,7 @@ namespace Core {
         (*state.sequenceElement).set(0, 0, 0);
         (*state.position).set(0.0f, 0.0f, 0.0f);
         (*state.velocity).set(0.0f, 0.0f, 0.0f);
+        (*state.acceleration).set(0.0f, 0.0f, 0.0f);
         (*state.normal).set(0.0f, 0.0f, 1.0f);
         *state.rotation = 0.0f;
         *state.rotationalSpeed = 0.0f;
