@@ -172,6 +172,7 @@ set(INCLUDE_FILES
     particles/initializer/RotationInitializer.h
     particles/operator/ParticleStateOperator.h
     particles/operator/BasicParticleStateOperator.h
+    particles/operator/AccelerationOperator.h
     particles/operator/SequenceOperator.h
     particles/operator/OpacityInterpolatorOperator.h
     particles/operator/SizeInterpolatorOperator.h
@@ -179,6 +180,7 @@ set(INCLUDE_FILES
     particles/operator/InterpolatorOperator.h
     particles/material/ParticleStandardMaterial.h
     particles/util/RandomGenerator.h
+    particles/util/SphereRandomGenerator.h
     particles/util/Generator.h
     light/Light.h
     light/ShadowLight.h
@@ -312,12 +314,14 @@ set(SOURCE_FILES
     particles/initializer/RotationInitializer.cpp
     particles/operator/ParticleStateOperator.cpp
     particles/operator/BasicParticleStateOperator.cpp
+    particles/operator/AccelerationOperator.cpp
     particles/operator/SequenceOperator.cpp
     particles/operator/OpacityInterpolatorOperator.cpp
     particles/operator/SizeInterpolatorOperator.cpp
     particles/operator/ColorInterpolatorOperator.cpp
     particles/material/ParticleStandardMaterial.cpp
     particles/util/RandomGenerator.cpp
+    particles/util/SphereRandomGenerator.cpp
     light/Light.cpp
     light/ShadowLight.cpp
     light/PointLight.cpp
