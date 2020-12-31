@@ -32,16 +32,18 @@ namespace Core {
 
         const Atlas& getAtlas() const;
         void setAtlas(const Atlas& atlas);
-
         void setUVOffset(Real x, Real y);
+        void setInterpolateAtlasFrames(Bool interpolateAtlasFrames);
 
     private:
 
         ParticleStandardMaterial();
 
+        Bool interpolateAtlasFrames;
         Vector2r uvOffset;
         Atlas atlas;
 
+        Int32 interpolateAtlasFramesLocation;
         Int32 uvOffsetLocation;
         Int32 atlasTextureLocation;
         Int32 atlasTileArayLocation[Constants::MaxAtlasTileArrays];

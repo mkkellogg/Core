@@ -9,6 +9,7 @@
 namespace Core {
 
     ParticleStandardMaterial::ParticleStandardMaterial() {
+        this->interpolateAtlasFramesLocation = -1;
         this->worldPositionLocation = -1;
         this->sizeLocation = -1;
         this->rotationLocation = -1;
@@ -16,6 +17,8 @@ namespace Core {
         this->colorLocation = -1;
         this->projectionMatrixLocation = -1;
         this->viewMatrixLocation = -1;
+
+        this->interpolateAtlasFrames = false;
     }
 
     Bool ParticleStandardMaterial::build() {
@@ -43,6 +46,9 @@ namespace Core {
         }
         if (this->uvOffsetLocation >= 0) {
             this->shader->setUniform2f(this->uvOffsetLocation, this->uvOffset.x, this->uvOffset.y);
+        }
+        if (this->interpolateAtlasFramesLocation >= 0) {
+            this->shader->setUniform1i(this->interpolateAtlasFramesLocation, this->interpolateAtlasFrames ? 1 : 0);
         }
     }
 
@@ -86,6 +92,7 @@ namespace Core {
         if (particleMaterial.isValid()) {
             Material::copyTo(target);
             particleMaterial->atlas = this->atlas;
+            particleMaterial->interpolateAtlasFramesLocation = this->interpolateAtlasFramesLocation;
             particleMaterial->projectionMatrixLocation = this->projectionMatrixLocation;
             particleMaterial->viewMatrixLocation = this->viewMatrixLocation;
             particleMaterial->atlasTextureLocation = this->atlasTextureLocation;
@@ -110,6 +117,7 @@ namespace Core {
     }
 
     void ParticleStandardMaterial::bindShaderVarLocations() {
+        this->interpolateAtlasFramesLocation = this->shader->getUniformLocation("interpolateAtlasFrames");
         this->projectionMatrixLocation = this->shader->getUniformLocation(StandardUniform::ProjectionMatrix);
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
         this->atlasTextureLocation = this->shader->getUniformLocation("atlasTexture");
@@ -134,5 +142,9 @@ namespace Core {
 
     void ParticleStandardMaterial::setUVOffset(Real x, Real y) {
         this->uvOffset.set(x, y);
+    }
+
+    void ParticleStandardMaterial::setInterpolateAtlasFrames(Bool interpolateAtlasFrames) {
+        this->interpolateAtlasFrames = interpolateAtlasFrames;
     }
 }

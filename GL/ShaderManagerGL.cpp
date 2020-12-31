@@ -473,6 +473,7 @@ namespace Core {
             "#version 330\n"
             "precision highp float;\n"
             "layout( points ) in;\n"
+            "uniform int interpolateAtlasFrames; \n"
             + PROJECTION_MATRIX_DEF +
             "layout( triangle_strip, max_vertices = 4) out;\n"
             "in vec4 vViewPosition[];\n"
@@ -556,7 +557,7 @@ namespace Core {
             "   int firstSequenceElement = int(sequenceElement); \n"
             "   int secondSequenceElement = clamp(firstSequenceElement + 1, sequenceStart, sequenceStart + sequenceLength - 1); \n"
             "   getUV(firstSequenceElement, sequenceNumber, atlasTileArray, uv1); \n"
-            "   if (firstSequenceElement != secondSequenceElement) getUV(secondSequenceElement, sequenceNumber, atlasTileArray, uv2); \n"
+            "   if (interpolateAtlasFrames == 1 && firstSequenceElement != secondSequenceElement) getUV(secondSequenceElement, sequenceNumber, atlasTileArray, uv2); \n"
             "   float atlasTileWidth = atlasTileArray.z; \n"
             "   float atlasTileHeight = atlasTileArray.w; \n"
 
@@ -618,6 +619,7 @@ namespace Core {
         this->ParticleStandard_fragment =
             "#version 330\n"
             "precision highp float;\n"
+            "uniform int interpolateAtlasFrames; \n"
             "uniform sampler2D atlasTexture;\n"
             "uniform vec2 uvOffset;\n"
             "layout( location = 0 ) out vec4 out_color;\n"
@@ -627,7 +629,8 @@ namespace Core {
             "in float vSequenceElementT; \n"
             "void main() {\n"
             "   vec4 color1 = texture(atlasTexture, vUV1 + uvOffset) * vFragColor;\n"
-            "   vec4 color2 = texture(atlasTexture, vUV2 + uvOffset) * vFragColor;\n"
+            "   vec4 color2 = color1; \n"
+            "   if (interpolateAtlasFrames == 1) color2 = texture(atlasTexture, vUV2 + uvOffset) * vFragColor;\n"
             "   out_color = mix(color1, color2, vSequenceElementT);\n"
             "}\n";
 
