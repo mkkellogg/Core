@@ -14,15 +14,15 @@ namespace Core {
 
     Bool RenderUtils::isPointLightInRangeOfMesh(const Point3r& pointLightPosition, Real radius, WeakPointer<Mesh> mesh, WeakPointer<Object3D> meshOwner) {
         Vector4r boundingSphere = mesh->getBoundingSphere();
-        Point3r boundingSphereCenter(0.0f, 0.0f, 0.0f);
-        Matrix4x4 meshWorldMatrix =  meshOwner->getTransform().getWorldMatrix();
-        meshWorldMatrix.transform(boundingSphereCenter);
+        Point3r boundingSphereCenter(boundingSphere.x, boundingSphere.y, boundingSphere.z);
+        meshOwner->getTransform().applyTransformationTo(boundingSphereCenter);
         Vector3r centerToLight = pointLightPosition - boundingSphereCenter;
         Real distance = centerToLight.magnitude();
 
         static Point3r pos;
         static Quaternion rot;
         static Point3r scale;
+        Matrix4x4 meshWorldMatrix = meshOwner->getTransform().getWorldMatrix();
         meshWorldMatrix.decompose(pos, rot, scale);
         Real maxScale = Math::max(Math::max(scale.x, scale.y), scale.z);
 
