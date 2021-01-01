@@ -55,6 +55,7 @@ namespace Core {
     }
 
     Engine::Engine(): modelLoader() {
+        this->profilingEnabled = false;
     }
 
     Engine::~Engine() {
@@ -211,6 +212,14 @@ namespace Core {
 
     WeakPointer<Scene> Engine::getActiveScene() {
         return this->activeScene;
+    }
+
+    void Engine::setProfilingEnabled(Bool enabled) {
+        this->profilingEnabled = enabled;
+    }
+
+    Bool Engine::getProfilingEnabled() {
+        return this->profilingEnabled;
     }
 
     WeakPointer<Scene> Engine::createScene() {

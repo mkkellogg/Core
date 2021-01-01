@@ -213,6 +213,7 @@ set(INCLUDE_FILES
     util/SimpleObjectPool.h
     util/Tree.h
     util/ContinuousArray.h
+    util/Profiler.h
     math/Math.h
     math/Quaternion.h
     math/Matrix4x4.h
@@ -374,6 +375,7 @@ set(SOURCE_FILES
     util/Time.cpp
     util/String.cpp
     util/ContinuousArray.cpp
+    util/Profiler.cpp
     Engine.cpp
     Graphics.cpp
     GL/GraphicsGL.cpp

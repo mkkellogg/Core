@@ -22,7 +22,7 @@ namespace Core {
         if (!this->Target.isValid()) {
             throw InvalidReferenceException("Object3DSkeletonNode::getFullTransform -> Node does not have a valid target.");
         }
-        Target->getTransform().updateWorldMatrix();
+        //Target->getTransform().updateWorldMatrix();
         return  Target->getTransform().getWorldMatrix();
     }
 

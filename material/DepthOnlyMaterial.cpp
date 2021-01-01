@@ -21,7 +21,6 @@ namespace Core {
         this->shader = shaderManager.getShader("Depth");
         graphics->activateShader(this->shader);
         this->bindShaderVarLocations();
-        this->setSkinningEnabled(true);
         return true;
     }
 

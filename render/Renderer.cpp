@@ -42,6 +42,8 @@
 #include "../light/AmbientIBLLight.h"
 #include "../light/LightPack.h"
 #include "../geometry/Mesh.h"
+#include "../util/Time.h"
+#include "../util/Profiler.h"
 #include "ReflectionProbe.h"
 #include "RenderUtils.h"
 
@@ -130,6 +132,7 @@ namespace Core {
         this->renderScene(scene->getRoot(), overrideMaterial);
     }
 
+    Bool profileGlobal = false;
     void Renderer::renderScene(WeakPointer<Object3D> rootObject, WeakPointer<Material> overrideMaterial) {
         static std::vector<WeakPointer<Object3D>> objectList;
         static std::vector<WeakPointer<Camera>> cameraList;
@@ -156,8 +159,11 @@ namespace Core {
         reflectionProbeList.resize(0);
         renderProbeObjects.resize(0);
 
+        
+
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         this->collectSceneObjectsAndComputeTransforms(rootObject, objectList);
+
         this->collectSceneObjectComponents(objectList, cameraList, reflectionProbeList, nonIBLLightList,
                                            directionalLightList, pointLightList, ambientLightList, ambientIBLLightList, lightList);
 
@@ -186,10 +192,17 @@ namespace Core {
             ambientIBLLightList[i]->updateMapsFromReflectionProbe();
         }
 
+        if (profileGlobal) Profiler::SingleFunction::quickSinglePassStart(40.0f);
+
         this->renderPointLightShadowMaps(pointLightList, objectList);
+
+        if (profileGlobal) Profiler::SingleFunction::quickSinglePassSection("Point light shadows: ");
+
         for (auto camera : cameraList) {
             this->renderDirectionalLightShadowMaps(directionalLightList, objectList, camera);
         }
+
+        if (profileGlobal) Profiler::SingleFunction::quickSinglePassSection("Directional light shadows: ");
 
         for (auto camera : cameraList) {
             WeakPointer<Material> savedOverrideMaterial = camera->getOverrideMaterial();
@@ -197,6 +210,9 @@ namespace Core {
             this->renderForCamera(camera, objectList, lightPack, true);
             if (overrideMaterial.isValid()) camera->setOverrideMaterial(savedOverrideMaterial);
         }
+
+        if (profileGlobal) Profiler::SingleFunction::quickSinglePassSection("Rendering scene: ");
+        if (profileGlobal) Profiler::SingleFunction::quickSinglePassEnd(true);
     }
 
     void Renderer::collectSceneObjectComponents(std::vector<WeakPointer<Object3D>>& sceneObjects, std::vector<WeakPointer<Camera>>& cameraList,
@@ -547,10 +563,12 @@ namespace Core {
             }
         }
 
+        if (!profileGlobal) Profiler::SingleFunction::quickSinglePassStart(40.0f);
         UInt32 curLight = 0;
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         for (auto pointLight: renderLights) {
             if (pointLight->getShadowsEnabled()) {
+
                 WeakPointer<RenderTarget> shadowMapRenderTarget = pointLight->getShadowMap();
                 WeakPointer<Object3D> lightObject = pointLight->getOwner();
                 Matrix4x4 lightTransform = lightObject->getTransform().getWorldMatrix();
@@ -561,10 +579,13 @@ namespace Core {
                 this->perspectiveShadowMapCamera->setOverrideMaterial(this->distanceMaterial);
                 this->perspectiveShadowMapCamera->setDepthOutputOverride(DepthOutputOverride::Distance);
                 std::vector<WeakPointer<Object3D>>& renderObjects = toRenderPoint[curLight];
+
                 renderList.clear();
                 this->buildRenderListFromObjects(renderObjects, renderList);
+
                 this->cullRenderListForPointLight(renderList, pointLight);
                 ViewDescriptor viewDesc;
+
                 for (UInt32 i = 0; i < 6; i++) {
                     this->getViewDescriptorForCubeCamera(this->perspectiveShadowMapCamera, (CubeFace)i, viewDesc);
                     this->renderForViewDescriptor(viewDesc, renderList, lightPack, true);
@@ -572,6 +593,8 @@ namespace Core {
             }
             curLight++;
         }
+        if (!profileGlobal) Profiler::SingleFunction::quickSinglePassSection("Point lights: ");
+        if (!profileGlobal) Profiler::SingleFunction::quickSinglePassEnd(true);
     }
 
     void Renderer::setViewportAndMipLevelForRenderTarget(WeakPointer<RenderTarget> renderTarget, Int16 cubeFace) {

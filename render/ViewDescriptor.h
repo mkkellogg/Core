@@ -23,7 +23,7 @@ namespace Core {
         Matrix4x4 cameraTransformation;
         Matrix4x4 transposedCameraTransformation;
         Matrix4x4 projectionMatrix;
-        PersistentWeakPointer<Material> overrideMaterial;
+        mutable PersistentWeakPointer<Material> overrideMaterial;
         PersistentWeakPointer<RenderTarget> renderTarget;
         PersistentWeakPointer<RenderTarget> hdrRenderTarget;
         Int32 cubeFace = -1;

@@ -179,6 +179,9 @@ namespace Core {
         void onPreRender(LifecycleEventCallback func, Bool persistent = false);
         void onPostRender(LifecycleEventCallback func, Bool persistent = false);
 
+        void setProfilingEnabled(Bool enabled);
+        Bool getProfilingEnabled();
+
     private:
         Engine();
         void init();
@@ -188,6 +191,8 @@ namespace Core {
         static std::shared_ptr<Engine> _instance;
         static Bool _shuttingDown;
         static void errorIfShuttingDown();
+
+        Bool profilingEnabled;
 
         CoreObjectReferenceManager objectManager;
         std::shared_ptr<ParticleSystemManager> particleSystemManager;

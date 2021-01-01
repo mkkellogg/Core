@@ -79,7 +79,6 @@ namespace Core {
                 WeakPointer<VertexBoneMap> vertexBoneMap = meshContainer->getVertexBoneMap(mesh->getObjectID());
                 this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::BoneIndex, StandardAttribute::BoneIndex, vertexBoneMap->getIndices(), true);
                 this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::BoneWeight, StandardAttribute::BoneWeight, vertexBoneMap->getWeights(), true);
-
                 Matrix4x4 rootTransformInverse = this->owner->getTransform().getWorldMatrix();
                 rootTransformInverse.invert();
 
@@ -90,9 +89,9 @@ namespace Core {
                     if (node->BoneIndex >= 0) {
                         Int32 bonesLocation = material->getShaderLocation(StandardUniform::Bones, node->BoneIndex);
                         if (bonesLocation >= 0) {
-                            temp.copy(skeleton->getBone(node->BoneIndex)->OffsetMatrix);
-                            temp.preMultiply(node->getFullTransform());
-                            temp.preMultiply(rootTransformInverse);
+                            // temp.copy(skeleton->getBone(node->BoneIndex)->OffsetMatrix);
+                            // temp.preMultiply(node->getFullTransform());
+                            // temp.preMultiply(rootTransformInverse);
                             shader->setUniformMatrix4(bonesLocation, temp);
                         }
                     }
@@ -117,10 +116,15 @@ namespace Core {
         Matrix4x4 tempMatrix;
         WeakPointer<Material> material;
         Bool copiedStateFromOverrideMaterial = false;
+        Bool usingOverrideMaterial = false;
+        Bool savedOverrideMaterialSkinningEnabled = false;
         MaterialState savedState;
         Bool renderingDepthOutput = this->material->hasCustomDepthOutput() && viewDescriptor.depthOutputOverride != DepthOutputOverride::None;
         if (!renderingDepthOutput && viewDescriptor.overrideMaterial.isValid()) {
             material = viewDescriptor.overrideMaterial;
+            savedOverrideMaterialSkinningEnabled = material->isSkinningEnabled();
+            material->setSkinningEnabled(this->material->isSkinningEnabled());
+            usingOverrideMaterial = true;
         } else {
             material = this->material;
             if (material->getCustomDepthOutputCopyOverrideMatrialState() && viewDescriptor.overrideMaterial.isValid()) {
@@ -426,6 +430,10 @@ namespace Core {
                     this->disableShaderAttribute(mesh, material, StandardAttribute::BoneWeight, vertexBoneMap->getWeights());
                 }
             }
+        }
+
+        if (usingOverrideMaterial) {
+            material->setSkinningEnabled(savedOverrideMaterialSkinningEnabled);
         }
 
         return true;

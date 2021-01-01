@@ -160,7 +160,6 @@ namespace Core {
         ShaderMaterial<BaseLitMaterial>::build();
         this->setLit(true);
         this->setPhysical(true);
-        this->setSkinningEnabled(true);
         return true;
     }
 

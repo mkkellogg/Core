@@ -57,6 +57,7 @@ namespace Core {
             Vector3r InitialTranslation;
             Vector3r InitialScale;
             Quaternion InitialRotation;
+            Matrix4x4 TempRenderTransformation;
 
             SkeletonNode(Int32 boneIndex, const std::string& name) {
                 this->BoneIndex = boneIndex;
