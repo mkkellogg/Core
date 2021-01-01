@@ -25,6 +25,7 @@ namespace Core {
         virtual Bool supportsRenderPath(RenderPath renderPath);
         virtual UInt32 getRenderQueueID() const = 0;
         virtual Bool init() = 0;
+        virtual void preProcess();
         Bool castsShadows();
         void setCastShadows(Bool castShadows);
 

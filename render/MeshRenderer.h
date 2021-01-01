@@ -32,6 +32,7 @@ namespace Core {
         virtual Bool supportsRenderPath(RenderPath renderPath) override;
         virtual UInt32 getRenderQueueID() const override;
         virtual Bool init() override;
+        virtual void preProcess() override;
         void setMaterial(WeakPointer<Material> material);
         WeakPointer<Material> getMaterial();
 

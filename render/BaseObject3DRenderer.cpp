@@ -22,4 +22,8 @@ namespace Core {
     void BaseObject3DRenderer::setCastShadows(Bool castShadows) {
         this->castShadows = castShadows;
     }
+
+    void BaseObject3DRenderer::preProcess() {
+
+    }
 }

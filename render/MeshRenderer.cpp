@@ -39,6 +39,31 @@ namespace Core {
         return true;
     }
 
+    void MeshRenderer::preProcess() {
+        WeakPointer<MeshContainer> meshContainer = this->owner->getMeshContainer();
+        if (meshContainer.isValid()) {
+            Matrix4x4 rootTransformInverse = this->owner->getTransform().getWorldMatrix();
+            rootTransformInverse.invert();
+
+            Matrix4x4 temp;
+            WeakPointer<Skeleton> skeleton = meshContainer->getSkeleton();
+            if (skeleton.isValid()) {
+                for(UInt32 i = 0; i < skeleton->getNodeCount(); i++) {
+                    Skeleton::SkeletonNode * node = skeleton->getNodeFromList(i);
+                    if (node->BoneIndex >= 0) {
+                        Int32 bonesLocation = material->getShaderLocation(StandardUniform::Bones, node->BoneIndex);
+                        if (bonesLocation >= 0) {
+                            temp.copy(skeleton->getBone(node->BoneIndex)->OffsetMatrix);
+                            temp.preMultiply(node->getFullTransform());
+                            temp.preMultiply(rootTransformInverse);
+                            node->TempRenderTransformation.copy(temp);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     void MeshRenderer::setRenderStateForMaterial(WeakPointer<Material> material, Bool renderingDepthOutput) {
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         graphics->setColorWriteEnabled(material->getColorWriteEnabled());
@@ -79,20 +104,14 @@ namespace Core {
                 WeakPointer<VertexBoneMap> vertexBoneMap = meshContainer->getVertexBoneMap(mesh->getObjectID());
                 this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::BoneIndex, StandardAttribute::BoneIndex, vertexBoneMap->getIndices(), true);
                 this->checkAndSetShaderAttribute(mesh, material, StandardAttribute::BoneWeight, StandardAttribute::BoneWeight, vertexBoneMap->getWeights(), true);
-                Matrix4x4 rootTransformInverse = this->owner->getTransform().getWorldMatrix();
-                rootTransformInverse.invert();
 
-                Matrix4x4 temp;
                 WeakPointer<Skeleton> skeleton = meshContainer->getSkeleton();
                 for(UInt32 i = 0; i < skeleton->getNodeCount(); i++) {
                     Skeleton::SkeletonNode * node = skeleton->getNodeFromList(i);
                     if (node->BoneIndex >= 0) {
                         Int32 bonesLocation = material->getShaderLocation(StandardUniform::Bones, node->BoneIndex);
                         if (bonesLocation >= 0) {
-                            // temp.copy(skeleton->getBone(node->BoneIndex)->OffsetMatrix);
-                            // temp.preMultiply(node->getFullTransform());
-                            // temp.preMultiply(rootTransformInverse);
-                            shader->setUniformMatrix4(bonesLocation, temp);
+                            shader->setUniformMatrix4(bonesLocation, node->TempRenderTransformation);
                         }
                     }
                 }

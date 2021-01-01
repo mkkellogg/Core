@@ -132,7 +132,7 @@ namespace Core {
         this->renderScene(scene->getRoot(), overrideMaterial);
     }
 
-    Bool profileGlobal = false;
+    UInt32 profileType = 0;
     void Renderer::renderScene(WeakPointer<Object3D> rootObject, WeakPointer<Material> overrideMaterial) {
         static std::vector<WeakPointer<Object3D>> objectList;
         static std::vector<WeakPointer<Camera>> cameraList;
@@ -192,17 +192,17 @@ namespace Core {
             ambientIBLLightList[i]->updateMapsFromReflectionProbe();
         }
 
-        if (profileGlobal) Profiler::SingleFunction::quickSinglePassStart(40.0f);
+        if (profileType == 1) Profiler::SingleFunction::quickSinglePassStart(40.0f);
 
         this->renderPointLightShadowMaps(pointLightList, objectList);
 
-        if (profileGlobal) Profiler::SingleFunction::quickSinglePassSection("Point light shadows: ");
+        if (profileType == 1) Profiler::SingleFunction::quickSinglePassSection("Point light shadows: ");
 
         for (auto camera : cameraList) {
             this->renderDirectionalLightShadowMaps(directionalLightList, objectList, camera);
         }
 
-        if (profileGlobal) Profiler::SingleFunction::quickSinglePassSection("Directional light shadows: ");
+        if (profileType == 1) Profiler::SingleFunction::quickSinglePassSection("Directional light shadows: ");
 
         for (auto camera : cameraList) {
             WeakPointer<Material> savedOverrideMaterial = camera->getOverrideMaterial();
@@ -211,8 +211,8 @@ namespace Core {
             if (overrideMaterial.isValid()) camera->setOverrideMaterial(savedOverrideMaterial);
         }
 
-        if (profileGlobal) Profiler::SingleFunction::quickSinglePassSection("Rendering scene: ");
-        if (profileGlobal) Profiler::SingleFunction::quickSinglePassEnd(true);
+        if (profileType == 1) Profiler::SingleFunction::quickSinglePassSection("Rendering scene: ");
+        if (profileType == 1) Profiler::SingleFunction::quickSinglePassEnd(true);
     }
 
     void Renderer::collectSceneObjectComponents(std::vector<WeakPointer<Object3D>>& sceneObjects, std::vector<WeakPointer<Camera>>& cameraList,
@@ -563,7 +563,7 @@ namespace Core {
             }
         }
 
-        if (!profileGlobal) Profiler::SingleFunction::quickSinglePassStart(40.0f);
+        if (profileType == 2) Profiler::SingleFunction::quickSinglePassStart(40.0f);
         UInt32 curLight = 0;
         WeakPointer<Graphics> graphics = Engine::instance()->getGraphicsSystem();
         for (auto pointLight: renderLights) {
@@ -593,8 +593,8 @@ namespace Core {
             }
             curLight++;
         }
-        if (!profileGlobal) Profiler::SingleFunction::quickSinglePassSection("Point lights: ");
-        if (!profileGlobal) Profiler::SingleFunction::quickSinglePassEnd(true);
+        if (profileType == 2) Profiler::SingleFunction::quickSinglePassSection("Point lights: ");
+        if (profileType == 2) Profiler::SingleFunction::quickSinglePassEnd(true);
     }
 
     void Renderer::setViewportAndMipLevelForRenderTarget(WeakPointer<RenderTarget> renderTarget, Int16 cubeFace) {
@@ -740,6 +740,11 @@ namespace Core {
         Matrix4x4 nextTransform = worldMatrix;
 
         outObjects.push_back(object);
+
+         WeakPointer<BaseObject3DRenderer> renderer = object->getBaseRenderer();
+        if (renderer.isValid()) {
+            renderer->preProcess();
+        }
 
         for (SceneObjectIterator<Object3D> itr = object->beginIterateChildren(); itr != object->endIterateChildren(); ++itr) {
             WeakPointer<Object3D> obj = *itr;
