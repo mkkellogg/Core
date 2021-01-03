@@ -19,6 +19,12 @@ namespace Core {
         return 3;
     }
 
+    WeakPointer<Material> StandardPhysicalMaterialMultiLight::clone() {
+        WeakPointer<StandardPhysicalMaterialMultiLight> newMaterial = Engine::instance()->createMaterial<StandardPhysicalMaterialMultiLight>(false);
+        this->copyTo(newMaterial);
+        return newMaterial;
+    }
+
     void StandardPhysicalMaterialMultiLight::copyAttributesFromStandardPhysicalMaterial(WeakPointer<StandardPhysicalMaterial> source) {
 
         this->albedo.set(source->albedo.r, source->albedo.g, source->albedo.b, source->albedo.a);
