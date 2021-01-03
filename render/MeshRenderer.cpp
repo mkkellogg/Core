@@ -125,8 +125,8 @@ namespace Core {
         if (!mesh.isValid()) {
             throw RenderException("MeshRenderer::forwardRenderObject() -> 'renderable' is not an instance of Mesh!");  
         }
-
         this->forwardRenderMesh(viewDescriptor, mesh, isStatic, layer, lightPack, matchPhysicalPropertiesWithLighting);
+        return true;
     }
 
     Bool MeshRenderer::forwardRenderMesh(const ViewDescriptor& viewDescriptor, WeakPointer<Mesh> mesh, Bool isStatic,
@@ -479,7 +479,7 @@ namespace Core {
     }
 
     UInt32 MeshRenderer::getRenderQueueID() const {
-        this->material->getRenderQueueID();
+        return this->material->getRenderQueueID();
     }
 
     void MeshRenderer::setMaterial(WeakPointer<Material> material) {

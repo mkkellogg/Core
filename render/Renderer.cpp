@@ -122,9 +122,7 @@ namespace Core {
         this->positionsNormalsRenderTarget = Engine::instance()->getGraphicsSystem()->createRenderTarget2D(true, true, false, positionsNormalsColorAttributes,
                                                                                                            positionsNormalsDepthAttributes, positionsNormalsRenderTargetSize);
         this->positionsNormalsRenderTarget->addColorTexture(positionsNormalsColorAttributes);
-
         this->initializeSSAO();
-
         return true;
     }
 
@@ -858,7 +856,7 @@ namespace Core {
     }
 
     WeakPointer<Texture2D> Renderer::getSSAOTexture() {
-        this->ssaoBlurMap;
+        return this->ssaoBlurMap;
     }
 
     void Renderer::renderDepthAndNormals(ViewDescriptor& viewDescriptor, std::vector<WeakPointer<Object3D>>& objects) {

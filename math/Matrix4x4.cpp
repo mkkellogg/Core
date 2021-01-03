@@ -633,6 +633,7 @@ namespace Core {
 
     Vector3r Matrix4x4::getTranslation() {
         Vector3r translation(this->data[12], this->data[13], this->data[14]);
+        return translation;
     }
 
     /*

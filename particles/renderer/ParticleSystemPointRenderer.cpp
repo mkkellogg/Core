@@ -20,12 +20,12 @@ namespace Core {
     }
 
     Bool ParticleSystemPointRenderer::forwardRender(const ViewDescriptor& viewDescriptor, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
-
+        return true;
     }
 
     Bool ParticleSystemPointRenderer::forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<BaseRenderable> renderable, Bool isStatic,
                                                           Int32 layer, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
-
+        return true;
     }
 
     Bool ParticleSystemPointRenderer::forwardRenderParticleSystem(const ViewDescriptor& viewDescriptor, WeakPointer<ParticleSystem> particleSystem, Bool isStatic,
@@ -59,14 +59,15 @@ namespace Core {
             meshRoot->setActive(false);
         }
         this->worldRenderRoot->getTransform().getWorldMatrix().setIdentity();
+        return true;
     }
 
     Bool ParticleSystemPointRenderer::supportsRenderPath(RenderPath renderPath) {
-
+        return true;
     }
 
     UInt32 ParticleSystemPointRenderer::getRenderQueueID() const {
-
+        return 0;
     }
 
     void ParticleSystemPointRenderer::updatePointMeshCount(WeakPointer<ParticleSystem> particleSystem) {

@@ -66,12 +66,12 @@ namespace Core {
     }
 
     Bool ParticleSystemAnimatedSpriteRenderer::forwardRender(const ViewDescriptor& viewDescriptor, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
-
+        return true;
     }
 
     Bool ParticleSystemAnimatedSpriteRenderer::forwardRenderObject(const ViewDescriptor& viewDescriptor, WeakPointer<BaseRenderable> renderable, Bool isStatic,
                                                                    Int32 layer, const LightPack& lightPack, Bool matchPhysicalPropertiesWithLighting) {
-
+        return true;
     }
 
     Bool ParticleSystemAnimatedSpriteRenderer::forwardRenderParticleSystem(const ViewDescriptor& viewDescriptor, WeakPointer<ParticleSystem> particleSystem, Bool isStatic,
@@ -133,14 +133,16 @@ namespace Core {
         positionsGPUStorage->disable(worldPositionLocation);
         sizesGPUStorage->disable(sizeLocation);
         rotationsGPUStorage->disable(rotationLocation);
+
+        return true;
     }
 
     Bool ParticleSystemAnimatedSpriteRenderer::supportsRenderPath(RenderPath renderPath) {
-
+        return true;
     }
 
     UInt32 ParticleSystemAnimatedSpriteRenderer::getRenderQueueID() const {
-
+        return this->material->getRenderQueueID();
     }
 
 }

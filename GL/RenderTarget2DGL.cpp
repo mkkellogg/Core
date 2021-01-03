@@ -64,6 +64,7 @@ namespace Core {
             this->activeColorTextures++;
             this->completeFramebuffer();
         }
+        return true;
     }
 
     Bool RenderTarget2DGL::initColorTexture(UInt32 index) {

@@ -30,7 +30,7 @@ namespace Core {
             this->tValues.push_back(tValue);
         }
 
-        T& getInterpolatedElement(Real t, T& out) {
+        void getInterpolatedElement(Real t, T& out) {
             this->interpolator(t, this->elements, this->tValues, out);
         }
 
