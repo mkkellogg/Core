@@ -52,6 +52,7 @@ namespace Core {
             }
         }
         RenderQueue& queue = this->queues.at(queueID);
+        return queue;
     }
 
     RenderQueue& RenderQueueManager::getRenderQueue(UInt32 index) {
