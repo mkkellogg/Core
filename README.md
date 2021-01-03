@@ -31,7 +31,7 @@ Light-weight, C/C++ based, 3D rendering library built on OpenGL. Ultimately inte
 Dynamic versions of the above libraries are required.
 
 ## Building
-Standard CMake build is currently supported and an out-of-source build is recommended. To generate the make files, execute the command relevant to the desired configuration:
+Standard CMake build is currently supported and an out-of-source build is recommended. To generate the make files, execute the command relevant to the desired configuration (Linux/Unix examples shown):
 
 Debug:
 
