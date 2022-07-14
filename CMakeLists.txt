@@ -404,7 +404,7 @@ set(ASSIMP_DIR ../../assimp)
 # The Asset importer library seems to have multiple locations for required header files, both within
 # the build directory, and the source directory
 set(ASSIMP_BUILD_INCLUDE ${ASSIMP_DIR}/build/include)
-set(ASSIMP_SRC_INCLUDE ${ASSIMP_DIR}/assimp/include)
+set(ASSIMP_SRC_INCLUDE ${ASSIMP_DIR}/src/include)
 set(ASSIMP_BINARY_DIR ${ASSIMP_DIR}/build/bin)
 include_directories(${ASSIMP_BUILD_INCLUDE})
 include_directories(${ASSIMP_SRC_INCLUDE})

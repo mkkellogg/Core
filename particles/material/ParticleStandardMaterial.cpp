@@ -36,9 +36,9 @@ namespace Core {
         WeakPointer<Texture2D> atlasTexture = this->atlas.getTexture();
         if (atlasTexture.isValid() && this->atlasTextureLocation >= 0) {
             this->shader->setTexture2D(0, atlasTextureLocation, atlasTexture->getTextureID());
-            if (this->atlasTileArayLocation >= 0) {
-                UInt32 atlasTileArrayCount = this->atlas.getTileArrayCount();
-                for (UInt32 i = 0; i < atlasTileArrayCount; i++) {
+            UInt32 atlasTileArrayCount = this->atlas.getTileArrayCount();
+            for (UInt32 i = 0; i < atlasTileArrayCount; i++) {
+                if (atlasTileArayLocation[i] >= 0) {
                     Atlas::TileArrayDescriptor& tileArray = this->atlas.getTileArray(i);
                     this->shader->setUniform4f(atlasTileArayLocation[i], tileArray.x, tileArray.y, tileArray.width, tileArray.height);
                 }
