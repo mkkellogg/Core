@@ -4,6 +4,7 @@ project(Core)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -fPIC")
 
+set(OpenGL_GL_PREFERENCE GLVND)
 find_package (OpenGL REQUIRED)
 
 set(EXECUTABLE_NAME core)
