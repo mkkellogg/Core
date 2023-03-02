@@ -54,5 +54,3 @@ In order for CMake to find your OpenGL installation on some Linux distributions,
 The DevIL library can be installed via:
 
      sudo apt-get install libdevil-dev
-
-Building against the Asset Importer Library package (`libassimp-dev`) seems to cause linker issues when building projects that use Core (such as Modeler). It is recommended that you build this library from source. 
