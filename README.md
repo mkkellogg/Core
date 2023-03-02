@@ -54,3 +54,7 @@ In order for CMake to find your OpenGL installation on some Linux distributions,
 The DevIL library can be installed via:
 
      sudo apt-get install libdevil-dev
+     
+The Assimp library can be installed via:
+
+     sudo apt-get install lassimp-dev
