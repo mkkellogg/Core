@@ -98,52 +98,6 @@ namespace Core {
         return n >= 0 ? n : -n;
     }
 
-    Real Math::min(Real a, Real b) {
-        if (a < b)
-            return a;
-        else
-            return b;
-    }
-
-    Int32 Math::min(Int32 a, Int32 b) {
-        if (a < b)
-            return a;
-        else
-            return b;
-    }
-
-    UInt32 Math::min(UInt32 a, UInt32 b) {
-        if (a < b)
-            return a;
-        else
-            return b;
-    }
-
-    Real Math::max(Real a, Real b) {
-        if (a > b)
-            return a;
-        else
-            return b;
-    }
-
-    Int32 Math::max(Int32 a, Int32 b) {
-        if (a > b)
-            return a;
-        else
-            return b;
-    }
-
-    UInt32 Math::max(UInt32 a, UInt32 b) {
-        if (a > b)
-            return a;
-        else
-            return b;
-    }
-
-    Real Math::clamp(Real value, Real min, Real max) {
-        return Math::max(Math::min(value, max), min);
-    }
-
     Real Math::lerp(Real a, Real b, Real t) {
         return (b - a) * t + a;
     }
@@ -154,5 +108,9 @@ namespace Core {
 
     Real Math::sign(Real a) {
         return a < 0.0f ? -1.0f : 1.0f;
+    }
+
+    Real Math::pow(Real b, Real e) {
+        return std::pow(b, e);
     }
 }

@@ -49,7 +49,7 @@ namespace Core {
     }
 
     void ParticleSystem::activateParticles(UInt32 particleCount) { 
-        UInt32 newActiveParticleCount = Math::clamp(this->activeParticleCount + particleCount, 0, this->maximumActiveParticles);
+        UInt32 newActiveParticleCount = Math::clamp(this->activeParticleCount + particleCount, (UInt32)0, this->maximumActiveParticles);
         for (UInt32 i = this->activeParticleCount; i < newActiveParticleCount; i++) {
             this->activateParticle(i);
         }

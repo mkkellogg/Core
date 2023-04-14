@@ -484,8 +484,8 @@ namespace Core {
         Real z;
 
 		// XYZ:
-        y = Math::aSin( Math::clamp( m13, - 1, 1 ) );
-        if ( Math::abs( m13 ) < 0.9999999 ) {
+        y = Math::aSin( Math::clamp( m13, -1.0f, 1.0f ) );
+        if ( Math::abs( m13 ) < 0.9999999f ) {
             x = Math::aTan2( -m23, m33 );
             z = Math::aTan2( -m12, m11 );
         } else {

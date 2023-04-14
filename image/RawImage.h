@@ -57,6 +57,15 @@ namespace Core {
             }
         }
 
+        T getElement(UInt32 index) {
+            if (index < imageSizeElements()) {
+                return this->imageData[index];
+            }
+            else {
+                throw OutOfRangeException("RawImage::getElement() -> [index] is out of range");
+            }
+        }
+
         T * getImageData() {
             return imageData;
         }

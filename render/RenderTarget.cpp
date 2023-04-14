@@ -103,13 +103,17 @@ namespace Core {
         return depthBufferIsTexture;
     }
 
+    void RenderTarget::setHDRIncapableOverride(Bool override) {
+        this->hdrIncapableOverride = override;
+    }
+
     Bool RenderTarget::isHDRCapable() const {
         Bool capable = true;
         for (UInt32 i = 0; i < this->activeColorTextures; i++) {
             capable = capable && this->colorTextureAttributes[i].Format == TextureFormat::RGBA16F ||
                                  this->colorTextureAttributes[i].Format == TextureFormat::RGBA32F;
         }
-        return capable;
+        return capable && !this->hdrIncapableOverride;
     }
 
     UInt32 RenderTarget::getMaxMipLevel(UInt32 index) const {

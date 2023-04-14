@@ -381,7 +381,6 @@ namespace Core {
             this->tonemapMaterial->setGamma(viewDescriptor.hdrGamma);
             graphics->blit(viewDescriptor.hdrRenderTarget, viewDescriptor.renderTarget, viewDescriptor.cubeFace, this->tonemapMaterial, true);
         }
-
         graphics->activateRenderTarget(currentRenderTarget);
         this->setViewportAndMipLevelForRenderTarget(currentRenderTarget, -1);
     }

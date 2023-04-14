@@ -33,13 +33,13 @@ namespace Core {
         WeakPointer<Texture2D> equirectangularTexture;
         TextureAttributes equiTexAttributes;
         if (isHDR) {
-            std::shared_ptr<Core::HDRImage> equiRectangularImage = Core::ImageLoader::loadImageHDR(filePath, true);
+            std::shared_ptr<Core::HDRImage> equiRectangularImage = Core::ImageLoader::loadImageHDR(filePath, true, false);
             equiTexAttributes.Format = Core::TextureFormat::RGBA16F;
             equirectangularTexture = Engine::instance()->createTexture2D(equiTexAttributes);
             equirectangularTexture->buildFromImage(equiRectangularImage);
         }
         else {
-            std::shared_ptr<Core::StandardImage> equiRectangularImage = Core::ImageLoader::loadImageU(filePath, true);
+            std::shared_ptr<Core::StandardImage> equiRectangularImage = Core::ImageLoader::loadImageU(filePath, true, false);
             equiTexAttributes.Format = Core::TextureFormat::RGBA8;
             equirectangularTexture = Engine::instance()->createTexture2D(equiTexAttributes);
             equirectangularTexture->buildFromImage(equiRectangularImage);

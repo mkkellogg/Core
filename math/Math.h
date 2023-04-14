@@ -25,15 +25,31 @@ namespace Core {
     static Real aTan2(Real n1, Real n2);
     static Real abs(Real n);
     static UInt32 iAbs(Int32 n);
-    static Real min(Real a, Real b);
-    static Int32 min(Int32 a, Int32 b);
-    static UInt32 min(UInt32 a, UInt32 b);
-    static Real max(Real a, Real b);
-    static Int32 max(Int32 a, Int32 b);
-    static UInt32 max(UInt32 a, UInt32 b);
-    static Real clamp(Real value, Real min, Real max);
+
+    template <typename T>
+    static T min(T a, T b) {
+        if (a < b)
+            return a;
+        else
+            return b;
+    }
+
+    template <typename T>
+    static T max(T a, T b) {
+        if (a > b)
+            return a;
+        else
+            return b;
+    }
+
+    template <typename T>
+    static T clamp(T value, T min, T max) {
+        return Math::max(Math::min(value, max), min);
+    }
+
     static Real lerp(Real a, Real b, Real t);
     static Real random();
     static Real sign(Real a);
+    static Real pow(Real b, Real e);
   };
 }

@@ -8,7 +8,7 @@ namespace Core {
     template <>
     typename ContinuousArray<Real>::Interpolator ContinuousArray<Real>::getInterpolator() {
         return [this](Real tValue, std::vector<Real>& elements, std::vector<Real>& tValues, Real& out) {
-            Int32 lowerIndex, upperIndex;
+            UInt32 lowerIndex, upperIndex;
             Real localT;
             this->getInterpolationValuesForTValue(tValue, lowerIndex, upperIndex, localT); 
             out = (1.0f - localT) * this->elements[lowerIndex] + localT * this->elements[upperIndex];
@@ -18,7 +18,7 @@ namespace Core {
     template <>
     typename ContinuousArray<Vector2r>::Interpolator ContinuousArray<Vector2r>::getInterpolator() {
         return [this](Real tValue, std::vector<Vector2r>& elements, std::vector<Real>& tValues, Vector2r& out) {
-            Int32 lowerIndex, upperIndex;
+            UInt32 lowerIndex, upperIndex;
             Real localT;
             this->getInterpolationValuesForTValue(tValue, lowerIndex, upperIndex, localT);
             out.copy(this->elements[lowerIndex]);
@@ -33,7 +33,7 @@ namespace Core {
     template <>
     typename ContinuousArray<Vector3r>::Interpolator ContinuousArray<Vector3r>::getInterpolator() {
         return [this](Real tValue, std::vector<Vector3r>& elements, std::vector<Real>& tValues, Vector3r& out) {
-            Int32 lowerIndex, upperIndex;
+            UInt32 lowerIndex, upperIndex;
             Real localT;
             this->getInterpolationValuesForTValue(tValue, lowerIndex, upperIndex, localT);
             out.copy(this->elements[lowerIndex]);
@@ -49,7 +49,7 @@ namespace Core {
     template <>
     typename ContinuousArray<Color>::Interpolator ContinuousArray<Color>::getInterpolator() {
         return [this](Real tValue, std::vector<Color>& elements, std::vector<Real>& tValues, Color& out) {
-            Int32 lowerIndex, upperIndex;
+            UInt32 lowerIndex, upperIndex;
             Real localT;
             this->getInterpolationValuesForTValue(tValue, lowerIndex, upperIndex, localT);
             out.copy(this->elements[lowerIndex]);

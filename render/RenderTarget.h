@@ -34,6 +34,7 @@ namespace Core {
         Bool isColorBufferTexture(UInt32 index = 0) const;
         Bool isDepthBufferTexture() const;
         Bool isHDRCapable() const;
+        void setHDRIncapableOverride(Bool override);
         UInt32 getMaxMipLevel(UInt32 index = 0) const;
         UInt32 getMipLevel(UInt32 index = 0) const;
         void setMipLevel(UInt32 level, UInt32 index = 0);
@@ -43,6 +44,8 @@ namespace Core {
 
      protected:
 
+        // explicitly specify that this render target is not HDR capable
+        Bool hdrIncapableOverride;
         // is this a cube render target
         Bool cube;
         // does this render target support standard color-buffer rendering?

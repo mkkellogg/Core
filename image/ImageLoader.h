@@ -27,10 +27,8 @@ namespace Core {
             ImageLoaderException(const char* msg): Exception(msg) {}
         };
 
-        static std::shared_ptr<StandardImage> loadImageU(const std::string& fullPath);
-        static std::shared_ptr<StandardImage> loadImageU(const std::string& fullPath, Bool reverseOrigin);
-        static std::shared_ptr<HDRImage> loadImageHDR(const std::string& fullPath);
-        static std::shared_ptr<HDRImage> loadImageHDR(const std::string& fullPath, Bool reverseOrigin);
+        static std::shared_ptr<StandardImage> loadImageU(const std::string& fullPath, Bool reverseOrigin, Bool shouldGammaCompress);
+        static std::shared_ptr<HDRImage> loadImageHDR(const std::string& fullPath, Bool reverseOrigin, Bool shouldGammaCompress);
         static std::string getFileExtension(const std::string& filePath);
     
     private:
@@ -38,6 +36,9 @@ namespace Core {
         static Bool initialize();
 #ifdef CORE_USE_PRIVATE_INCLUDES
         static std::shared_ptr<StandardImage> getStandardImageFromILData(const ILubyte * data, UInt32 width, UInt32 height);
+
+        static void gammaCompress(std::shared_ptr<StandardImage> image);
+        static void gammaCompress(std::shared_ptr<HDRImage> image);
 #endif
     };
 

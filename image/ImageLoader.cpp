@@ -4,6 +4,7 @@
 #include "RawImage.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "STBImage.h"
+#include "../math/Math.h"
 
 namespace Core {
 
@@ -25,11 +26,7 @@ namespace Core {
         return true;
     }
 
-    std::shared_ptr<StandardImage> ImageLoader::loadImageU(const std::string& fullPath) {
-        return loadImageU(fullPath, false);
-    }
-
-    std::shared_ptr<StandardImage> ImageLoader::loadImageU(const std::string& fullPath, Bool reverseOrigin) {
+    std::shared_ptr<StandardImage> ImageLoader::loadImageU(const std::string& fullPath, Bool reverseOrigin, Bool shouldGammaCompress) {
         Bool initializeSuccess = initialize();
 
         if (!initializeSuccess) {
@@ -77,14 +74,11 @@ namespace Core {
             ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
         }
 
+        if (shouldGammaCompress) gammaCompress(rawImage);
         return rawImage;
     }
 
-    std::shared_ptr<HDRImage> ImageLoader::loadImageHDR(const std::string& fullPath) {
-        return loadImageHDR(fullPath, false);
-    }
-
-    std::shared_ptr<HDRImage> ImageLoader::loadImageHDR(const std::string& fullPath, bool invertY) {
+    std::shared_ptr<HDRImage> ImageLoader::loadImageHDR(const std::string& fullPath, bool invertY, Bool shouldGammaCompress) {
         Bool initializeSuccess = initialize();
 
         if (!initializeSuccess) {
@@ -110,7 +104,7 @@ namespace Core {
         if (!initSuccess) {
             throw ImageLoaderException("ImageLoader::loadImageHDR -> Could not init HDRImage.");
         }
-        for (UInt32 i = 0; i < width * height; i++) {
+        for (UInt32 i = 0; i < (UInt32)width * (UInt32)height; i++) {
             UInt32 baseIndex = i * 4;
             UInt32 baseHDRIndex = i * 3;
             hdrImage->setElement(baseIndex, hdr_data[baseHDRIndex]);
@@ -119,6 +113,7 @@ namespace Core {
             hdrImage->setElement(baseIndex + 3, 1.0f);
         }
 
+        if (shouldGammaCompress) gammaCompress(hdrImage);
         return hdrImage;
     }
 
@@ -141,7 +136,31 @@ namespace Core {
 
         return rawImage;
     }
- 
+
+    void ImageLoader::gammaCompress(std::shared_ptr<StandardImage> image) {
+        UInt32 width = image->getWidth();
+        UInt32 height = image->getHeight();
+
+        for (UInt32 i = 0; i < width * height * 4; i++) {
+            if ((i + 1) % 4 == 0) continue;
+            Byte val = image->getElement(i);
+            Real normalized = ((Real)val) / 255.0f;
+            Real compressed = Math::pow(normalized, 2.22f);
+            val = Math::clamp((Byte)(compressed * 255.0f), (Byte)0, (Byte)255);
+            image->setElement(i, val);
+        }
+    }
+
+    void ImageLoader::gammaCompress(std::shared_ptr<HDRImage> image) {
+        UInt32 width = image->getWidth();
+        UInt32 height = image->getHeight();
+        Real * imageData = image->getImageData();
+        for (UInt32 i = 0; i < width * height * 4; i++) {
+            Real val = imageData[i];
+            imageData[i] = Math::pow(val, 2.22f);
+        }
+    }
+
     std::string ImageLoader::getFileExtension(const std::string& filePath) {
         Int32 dotIndex = (Int32)filePath.find_last_of(".");
         if (dotIndex < 0)dotIndex = 0;

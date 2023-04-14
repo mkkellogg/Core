@@ -791,9 +791,11 @@ namespace Core {
         texAttributes.WrapMode = TextureWrap::Mirror;
         texAttributes.Format = TextureFormat::RGBA8;
 
+        Bool gammaCompress = (textureType == aiTextureType_DIFFUSE);
+
         // check if the file specified by the full path in the Assimp material exists
         if (fileSystem->fileExists(fullTextureFilePath)) {
-            texture = this->loadTexture(fullTextureFilePath, texAttributes);
+            texture = this->loadTexture(fullTextureFilePath, texAttributes, gammaCompress);
         }
         // if it does not exist, try looking for the texture image file in the model's directory
         else {
@@ -804,7 +806,7 @@ namespace Core {
                 fullTextureFilePath = fileSystem->concatenatePaths(modelDirectory, filename);
                 // check if the image file is in the same directory as the model and if so, load it
                 if (fileSystem->fileExists(fullTextureFilePath)) {
-                    texture = this->loadTexture(fullTextureFilePath, texAttributes);
+                    texture = this->loadTexture(fullTextureFilePath, texAttributes, gammaCompress);
                 }
                 // check the fallback resource path for the texture
                 else if (this->fallbackTexturePathSet) {
@@ -812,7 +814,7 @@ namespace Core {
                     std::string fullFallbackTexturePath = fileSystem->getBasePath(fallbackTexturePath);
                     fullTextureFilePath = fileSystem->concatenatePaths(fullFallbackTexturePath, filename);
                     if (fileSystem->fileExists(fullTextureFilePath)) {
-                        texture = this->loadTexture(fullTextureFilePath, texAttributes);
+                        texture = this->loadTexture(fullTextureFilePath, texAttributes, gammaCompress);
                     }
                 }
             }
@@ -821,11 +823,11 @@ namespace Core {
         return texture;
     }
 
-    WeakPointer<Texture2D> ModelLoader::loadTexture(const std::string& path, const TextureAttributes& textureAttributes) const {
+    WeakPointer<Texture2D> ModelLoader::loadTexture(const std::string& path, const TextureAttributes& textureAttributes, Bool gammaCompress) const {
         if (this->textureCache.find(path) != this->textureCache.end()) {
             return this->textureCache[path];
         } else {
-            std::shared_ptr<StandardImage> textureImage = ImageLoader::loadImageU(path.c_str());
+            std::shared_ptr<StandardImage> textureImage = ImageLoader::loadImageU(path.c_str(), false, gammaCompress);
             WeakPointer<Texture2D> texture = Engine::instance()->getGraphicsSystem()->createTexture2D(textureAttributes);
             this->textureCache[path] = texture;
             if (textureImage && texture.isValid()) {

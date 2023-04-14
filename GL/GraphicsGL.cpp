@@ -760,6 +760,7 @@ namespace Core {
         }
         std::shared_ptr<RenderTarget2DGL> defaultTarget(defaultTargetPtr);
         this->addCoreObjectReference(defaultTarget, CoreObjectReferenceManager::OwnerType::Single);
+        defaultTarget->setHDRIncapableOverride(true);
         return defaultTarget;
     }
 
