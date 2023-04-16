@@ -270,8 +270,6 @@ namespace Core {
         glBindFramebuffer(GL_FRAMEBUFFER, renderTargetGL->getFBOID());
         this->currentRenderTarget = target;
 
-        //GetCurrentBufferBits();
-
         return true;
     }
 

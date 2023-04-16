@@ -39,7 +39,7 @@ namespace Core {
             equirectangularTexture->buildFromImage(equiRectangularImage);
         }
         else {
-            std::shared_ptr<Core::StandardImage> equiRectangularImage = Core::ImageLoader::loadImageU(filePath, true, false);
+            std::shared_ptr<Core::StandardImage> equiRectangularImage = Core::ImageLoader::loadImageU(filePath, true, true);
             equiTexAttributes.Format = Core::TextureFormat::RGBA8;
             equirectangularTexture = Engine::instance()->createTexture2D(equiTexAttributes);
             equirectangularTexture->buildFromImage(equiRectangularImage);
