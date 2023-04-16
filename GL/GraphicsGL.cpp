@@ -115,7 +115,13 @@ namespace Core {
     }
 
     void GraphicsGL::activateShader(WeakPointer<Shader> shader) {
-        glUseProgram(shader->getProgram());
+        UInt64 newShaderID = shader->getObjectID();
+        Bool newShader = lastActivatedShaderID != newShaderID;
+        Bool shouldActivate = newShader || !hasAnyShaderBeenActivated;
+        Graphics::activateShader(shader);
+        if (shouldActivate) {
+            glUseProgram(shader->getProgram());
+        }
     }
 
     std::shared_ptr<AttributeArrayGPUStorage> GraphicsGL::createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) {

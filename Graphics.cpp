@@ -21,6 +21,8 @@
 namespace Core {
 
     Graphics::Graphics(): sharedRenderState(false) {
+        this->hasAnyShaderBeenActivated = false;
+        this->lastActivatedShaderID = 0;
     }
 
     Graphics::~Graphics() {
@@ -68,6 +70,11 @@ namespace Core {
 
     void Graphics::setDefaultViewport(UInt32 hOffset, UInt32 vOffset, UInt32 viewPortWidth, UInt32 viewPortHeight) {
         this->updateDefaultRenderTargetViewport(Vector4u(hOffset, vOffset, viewPortWidth, viewPortHeight));
+    }
+
+    void Graphics::activateShader(WeakPointer<Shader> shader) {
+        lastActivatedShaderID = shader->getObjectID();
+        hasAnyShaderBeenActivated = true;
     }
 
     void Graphics::blit(WeakPointer<RenderTarget> source, WeakPointer<RenderTarget> destination, Int16 cubeFace, WeakPointer<Material> material, Bool includeDepth) {

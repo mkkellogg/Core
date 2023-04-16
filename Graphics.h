@@ -65,7 +65,7 @@ namespace Core {
         virtual WeakPointer<Shader> createShader(const std::string& vertex, const std::string& geometry, const std::string& fragment) = 0;
         virtual WeakPointer<Shader> createShader(const char vertex[], const char fragment[]) = 0;
         virtual WeakPointer<Shader> createShader(const char vertex[], const char geometry[], const char fragment[]) = 0;
-        virtual void activateShader(WeakPointer<Shader> shader) = 0;
+        virtual void activateShader(WeakPointer<Shader> shader);
 
         virtual void drawBoundVertexBuffer(UInt32 vertexCount, PrimitiveType primitiveType = PrimitiveType::Triangles) = 0;
         virtual void drawBoundVertexBuffer(UInt32 vertexCount, WeakPointer<IndexBuffer> indices, PrimitiveType primitiveType = PrimitiveType::Triangles) = 0;
@@ -118,6 +118,9 @@ namespace Core {
         virtual void restoreState() = 0;
 
     protected:
+
+        Bool hasAnyShaderBeenActivated;
+        UInt64 lastActivatedShaderID;
 
         virtual std::shared_ptr<AttributeArrayGPUStorage> createGPUStorage(UInt32 size, UInt32 componentCount, AttributeType type, Bool normalize) = 0;
         virtual std::shared_ptr<IndexBuffer> createIndexBuffer(UInt32 size) = 0;
