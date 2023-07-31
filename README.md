@@ -57,4 +57,4 @@ The DevIL library can be installed via:
      
 The Assimp library can be installed via:
 
-     sudo apt-get install lassimp-dev
+     sudo apt-get install libassimp-dev
