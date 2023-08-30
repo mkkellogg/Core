@@ -4,7 +4,7 @@
 namespace Core {
 
     RandomVelocityInitializer::RandomVelocityInitializer(const Vector3r& range, const Vector3r& offset, Real speedRange, Real speedOffset):
-        directionGenerator(range, offset, 0.0f, 0.0f, true), speedGenerator(speedRange, speedOffset, false)  {
+        directionGenerator(range, offset, 0.0f, 0.0f, true), speedGenerator(speedRange, speedOffset, 0.0f, 0.0f, false)  {
     }
 
     RandomVelocityInitializer::RandomVelocityInitializer(Real rangeX, Real rangeY, Real rangeZ,

@@ -9,6 +9,8 @@ namespace Core {
         this->range = range;
         this->offset = offset;
         this->normalize = normalize;
+        this->uniformRange = 0.0f;
+        this->uniformOffset = 0.0f;
     }
 
     template <>
