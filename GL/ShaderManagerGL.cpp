@@ -353,7 +353,7 @@ namespace Core {
             "} \n ";
 
         this->Copy_vertex =  
-            "#version 330\n"
+            "#version 400\n"
             + POSITION_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
@@ -366,7 +366,7 @@ namespace Core {
             "}\n";
 
         this->Copy_fragment =  
-            "#version 330 core \n"
+            "#version 400 \n"
             "out vec4 out_color; \n"
             "in vec2 vUV; \n"
             + TEXTURE0_DEF + 
@@ -376,7 +376,7 @@ namespace Core {
             "}\n";
 
         this->Equirectangular_vertex =
-            "#version 330 core\n "
+            "#version 400\n "
             "layout (location = 0) " + POSITION_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
@@ -389,7 +389,7 @@ namespace Core {
             "}\n ";
 
         this->Equirectangular_fragment =   
-            "#version 330 core \n"
+            "#version 400 \n"
             "out vec4 FragColor; \n"
             "in vec3 localPos; \n"
             "uniform sampler2D equirectangularTexture; \n"
@@ -409,7 +409,7 @@ namespace Core {
             "}\n";
 
         this->Skybox_vertex =
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "layout (location = 0 ) " + POSITION_DEF
             + PROJECTION_MATRIX_DEF
@@ -423,7 +423,7 @@ namespace Core {
             "}\n";
 
         this->Skybox_fragment =   
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "uniform samplerCube cubeTexture; \n"
             "in vec4 TexCoord0;\n"
@@ -435,7 +435,7 @@ namespace Core {
             "}\n";
 
         this->ParticleStandard_vertex = 
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "const int MAX_ATLAS_TILE_ARRAYS = 16; \n"
             "uniform vec4 atlasTileArray[MAX_ATLAS_TILE_ARRAYS]; \n"
@@ -470,7 +470,7 @@ namespace Core {
             "}\n";
 
         this->ParticleStandard_geometry =
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "layout( points ) in;\n"
             "uniform int interpolateAtlasFrames; \n"
@@ -617,7 +617,7 @@ namespace Core {
             "}\n";
 
         this->ParticleStandard_fragment =
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "uniform int interpolateAtlasFrames; \n"
             "uniform sampler2D atlasTexture;\n"
@@ -635,7 +635,7 @@ namespace Core {
             "}\n";
 
         this->Outline_vertex =
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "#include \"VertexSkinning\" \n"
             "layout (location = 0 ) " + POSITION_DEF + 
@@ -662,7 +662,7 @@ namespace Core {
             "}\n";
 
         this->Outline_geometry =
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "layout( triangles ) in;\n"
             + PROJECTION_MATRIX_DEF +
@@ -745,7 +745,7 @@ namespace Core {
             "}\n";
 
         this->Outline_fragment = 
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "in vec4 vColor;\n"
             "in float vAlpha;\n"
@@ -759,7 +759,7 @@ namespace Core {
             "}\n";
 
         this->BufferOutline_vertex =  
-            "#version 330\n"
+            "#version 400\n"
             + POSITION_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
@@ -772,7 +772,7 @@ namespace Core {
             "}\n";
 
         this->BufferOutline_fragment =  
-            "#version 330 core \n"
+            "#version 400 \n"
             "out vec4 out_color; \n"
             "in vec2 vUV; \n"
             + TEXTURE0_DEF + 
@@ -805,7 +805,7 @@ namespace Core {
             "}\n";
 
         this->Blur_vertex =  
-            "#version 330\n"
+            "#version 400\n"
             + POSITION_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
@@ -818,7 +818,7 @@ namespace Core {
             "}\n";
 
         this->Blur_fragment =  
-            "#version 330 core \n"
+            "#version 400 \n"
             "out vec4 out_color; \n"
             "in vec2 vUV; \n"
             + TEXTURE0_DEF + 
@@ -861,9 +861,9 @@ namespace Core {
             "    {\n"
             "        for(float i=1.0/Quality; i<=1.0; i+=1.0/Quality)\n"
             "        {\n"
-            "            vec4 sample =  texture(" + TEXTURE0 + ", uv+vec2(cos(d),sin(d))*Radius*i); \n"
-            "            Color += sample;		\n"
-            "            totalAlpha += sample.a; \n"
+            "            vec4 sampled =  texture(" + TEXTURE0 + ", uv+vec2(cos(d),sin(d))*Radius*i); \n"
+            "            Color += sampled;		\n"
+            "            totalAlpha += sampled.a; \n"
              "           totalWeight += 1.0; \n"
             "        }\n"
             "    }\n"
@@ -874,7 +874,7 @@ namespace Core {
             "}   \n";
 
         this->RedColorSet_vertex =  
-            "#version 330\n"
+            "#version 400\n"
             + POSITION_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
@@ -887,16 +887,16 @@ namespace Core {
             "}\n";
 
         this->RedColorSet_fragment =  
-            "#version 330 core \n"
+            "#version 400 \n"
             "out vec4 out_color; \n"
             "in vec2 vUV; \n"
             + TEXTURE0_DEF + 
             "uniform vec4 outputColor; \n"
             "void main()  \n"
             "{ \n"
-            "    vec4 sample = texture(" + TEXTURE0 + ", vUV); \n"
-            "    float stepVal = step(0.001, sample.r) * (1.0 - step(0.001, sample.g)) * (1.0 - step(0.001, sample.b)); \n"
-            "    out_color =  outputColor * stepVal + sample * (1.0 - stepVal);\n"
+            "    vec4 sampled = texture(" + TEXTURE0 + ", vUV); \n"
+            "    float stepVal = step(0.001, sampled.r) * (1.0 - step(0.001, sampled.g)) * (1.0 - step(0.001, sampled.b)); \n"
+            "    out_color =  outputColor * stepVal + sampled * (1.0 - stepVal);\n"
             "}   \n";
 
         this->Lighting_Common_vertex = "";
@@ -1392,7 +1392,7 @@ namespace Core {
             "}\n";
 
         this->StandardPhysical_vertex =  
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "#include \"Common\" \n"
             "#include \"PhysicalLightingSingle\" \n"
@@ -1517,7 +1517,7 @@ namespace Core {
             "   } \n";
 
         this->StandardPhysical_fragment =   
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "#include \"Common\" \n"
             "#include \"LightingCommon\" \n"
@@ -1534,7 +1534,7 @@ namespace Core {
             "} \n";
 
         this->StandardPhysicalMulti_vertex =  
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "#include \"Common\" \n"
             "#include \"PhysicalLightingMulti\" \n"
@@ -1580,7 +1580,7 @@ namespace Core {
             "}\n";
 
         this->StandardPhysicalMulti_fragment =   
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "#include \"Common\" \n"
             "#include \"LightingCommon\" \n"
@@ -1605,7 +1605,7 @@ namespace Core {
             "}\n";
 
         this->AmbientPhysical_vertex =  
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "#include \"Common\" \n"
             "#include \"PhysicalLightingSingle\" \n"
@@ -1643,7 +1643,7 @@ namespace Core {
             "}\n";
 
         this->AmbientPhysical_fragment =   
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "#include \"Common\" \n"
             "#include \"LightingCommon\" \n"
@@ -1688,7 +1688,7 @@ namespace Core {
             "}\n";
         
         this->PhysicalSkybox_vertex =
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "layout (location = 0 ) " + POSITION_DEF
             + PROJECTION_MATRIX_DEF
@@ -1702,7 +1702,7 @@ namespace Core {
             "}\n";
 
         this->PhysicalSkybox_fragment =   
-            "#version 330\n"
+            "#version 400\n"
             "#include \"Common\" \n"
             "#include \"PhysicalCommon\" \n"
             "precision highp float;\n"
@@ -1717,7 +1717,7 @@ namespace Core {
             "}\n";
 
         this->Tonemap_vertex =
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "layout (location = 0 ) " + POSITION_DEF
             + PROJECTION_MATRIX_DEF
@@ -1734,7 +1734,7 @@ namespace Core {
             "}\n";
 
         this->Tonemap_fragment =   
-            "#version 330\n"
+            "#version 400\n"
             "#include \"Common\" \n"
             "#include \"PhysicalCommon\" \n"
             "precision highp float;\n"
@@ -1759,7 +1759,7 @@ namespace Core {
             "}\n";
 
         this->IrradianceRenderer_vertex =
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "layout (location = 0 ) " + POSITION_DEF
             + PROJECTION_MATRIX_DEF
@@ -1773,7 +1773,7 @@ namespace Core {
             "}\n";
 
         this->IrradianceRenderer_fragment =   
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "#include \"Common\" \n"
             "out vec4 FragColor;\n"
@@ -1813,7 +1813,7 @@ namespace Core {
             "}\n";
 
         this->SpecularIBLPreFilteredRenderer_vertex =
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "layout (location = 0 ) " + POSITION_DEF
             + PROJECTION_MATRIX_DEF
@@ -1827,7 +1827,7 @@ namespace Core {
             "}\n";
 
         this->SpecularIBLPreFilteredRenderer_fragment =  
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "#include \"Common\" \n"
             "#include \"LightingCommon\" \n"
@@ -1877,7 +1877,7 @@ namespace Core {
             "} \n";
 
           this->SpecularIBLBRDFRenderer_vertex =
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "layout (location = 0 ) " + POSITION_DEF
             + PROJECTION_MATRIX_DEF
@@ -1893,7 +1893,7 @@ namespace Core {
             "}\n";
 
         this->SpecularIBLBRDFRenderer_fragment =  
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "#include \"Common\"\n"
             "#include \"LightingCommon\" \n"
@@ -2002,7 +2002,7 @@ namespace Core {
         this->VertexSkinning_fragment = "";
 
         this->Depth_vertex =
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "#include \"VertexSkinning\" \n"
             + POSITION_DEF
@@ -2016,7 +2016,7 @@ namespace Core {
             "}\n";
 
         this->Depth_fragment =   
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "out vec4 out_color;\n"
             "void main() {\n"
@@ -2024,7 +2024,7 @@ namespace Core {
             "}\n";
 
         this->Distance_vertex =
-            "#version 330\n"
+            "#version 400\n"
             "#include \"VertexSkinning\" \n"
             + POSITION_DEF 
             + PROJECTION_MATRIX_DEF
@@ -2039,7 +2039,7 @@ namespace Core {
             "}\n";
 
         this->Distance_fragment =   
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "in vec4 vPos;\n"
             "out vec4 out_color;\n"
@@ -2049,7 +2049,7 @@ namespace Core {
             "}\n";
 
         this->Basic_vertex =
-            "#version 330\n"
+            "#version 400\n"
             + POSITION_DEF
             + COLOR_DEF
             + PROJECTION_MATRIX_DEF
@@ -2062,7 +2062,7 @@ namespace Core {
             "}\n";
 
         this->Basic_fragment =   
-            "#version 330\n"
+            "#version 400\n"
             "precision mediump float;\n"
             "in vec4 vColor;\n"
             "out vec4 out_color;\n"
@@ -2071,7 +2071,7 @@ namespace Core {
             "}\n";
 
         this->BasicExtrusion_vertex =
-            "#version 330\n"
+            "#version 400\n"
             + POSITION_DEF
             + AVERAGED_NORMAL_DEF
             + NORMAL_DEF
@@ -2093,7 +2093,7 @@ namespace Core {
             "}\n";
 
         this->BasicExtrusion_fragment =   
-            "#version 330\n"
+            "#version 400\n"
             "precision mediump float;\n"
             "in vec4 vColor;\n"
             "out vec4 out_color;\n"
@@ -2103,7 +2103,7 @@ namespace Core {
 
 
         this->BasicColored_vertex =
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "#include \"VertexSkinning\" \n"
             + POSITION_DEF
@@ -2123,7 +2123,7 @@ namespace Core {
             "}\n";
 
         this->BasicColored_fragment =   
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "in vec4 vColor;\n"
             "out vec4 out_color;\n"
@@ -2132,7 +2132,7 @@ namespace Core {
             "}\n";
 
         this->BasicLit_vertex =  
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "#include \"Common\"\n"
             "#include \"LightingSingle\" \n"
@@ -2156,7 +2156,7 @@ namespace Core {
             "}\n";
 
         this->BasicLit_fragment =   
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "#include \"Common\"\n"
             "#include \"LightingCommon\" \n"
@@ -2174,7 +2174,7 @@ namespace Core {
             "}\n";
 
         this->BasicTextured_vertex =  
-            "#version 330\n"
+            "#version 400\n"
             + POSITION_DEF
             + COLOR_DEF 
             + ALBEDO_UV_DEF
@@ -2191,7 +2191,7 @@ namespace Core {
             "}\n";
 
         this->BasicTextured_fragment =   
-            "#version 330\n"
+            "#version 400\n"
             "precision mediump float;\n"
             "uniform sampler2D twoDtexture; \n"
             "in vec4 vColor;\n"
@@ -2203,7 +2203,7 @@ namespace Core {
             "}\n";
 
         this->BasicTexturedFullScreenQuad_vertex =  
-            "#version 330\n"
+            "#version 400\n"
             + POSITION_DEF
             + COLOR_DEF 
             + ALBEDO_UV_DEF
@@ -2220,7 +2220,7 @@ namespace Core {
             "}\n";
 
         this->BasicTexturedFullScreenQuad_fragment =   
-            "#version 330\n"
+            "#version 400\n"
             "precision mediump float;\n"
             "uniform sampler2D twoDtexture; \n"
             "in vec4 vColor;\n"
@@ -2232,7 +2232,7 @@ namespace Core {
             "}\n";
 
         this->BasicTexturedLit_vertex =  
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "#include \"Common\"\n"
             "#include \"PhysicalLightingSingle\" \n"
@@ -2271,7 +2271,7 @@ namespace Core {
             "}\n";
 
         this->BasicTexturedLit_fragment =   
-            "#version 330\n"
+            "#version 400\n"
             "precision highp float;\n"
             "#include \"Common\"\n"
             "#include \"LightingCommon\" \n"
@@ -2307,7 +2307,7 @@ namespace Core {
             "}\n";
 
         this->BasicCube_vertex =  
-            "#version 330\n"
+            "#version 400\n"
             + POSITION_DEF
             + COLOR_DEF
             + PROJECTION_MATRIX_DEF
@@ -2322,7 +2322,7 @@ namespace Core {
             "}\n";
 
         this->BasicCube_fragment =  
-            "#version 330\n"
+            "#version 400\n"
             "precision mediump float;\n"
             "#include \"Common\" \n"
             "#include \"PhysicalCommon\" \n"
@@ -2337,7 +2337,7 @@ namespace Core {
             "}\n";
 
         this->Normals_vertex =  
-            "#version 330\n"
+            "#version 400\n"
             "#include \"VertexSkinning\" \n"
             + POSITION_DEF
             + NORMAL_DEF
@@ -2361,7 +2361,7 @@ namespace Core {
             "}\n";
 
         this->Normals_fragment =  
-            "#version 330\n"
+            "#version 400\n"
             "precision mediump float;\n"
             "#include \"Common\" \n"
             "in vec3 vNormal;\n"
@@ -2371,7 +2371,7 @@ namespace Core {
             "}\n";
 
         this->Positions_vertex =  
-            "#version 330\n"
+            "#version 400\n"
             "#include \"VertexSkinning\" \n"
             + POSITION_DEF
             + NORMAL_DEF
@@ -2392,7 +2392,7 @@ namespace Core {
             "}\n";
 
         this->Positions_fragment =  
-            "#version 330\n"
+            "#version 400\n"
             "precision mediump float;\n"
             "#include \"Common\" \n"
             "in vec3 vPosition;\n"
@@ -2402,7 +2402,7 @@ namespace Core {
             "}\n";
 
         this->PositionsAndNormals_vertex =  
-            "#version 330\n"
+            "#version 400\n"
             "#include \"VertexSkinning\" \n"
             + POSITION_DEF
             + NORMAL_DEF
@@ -2429,7 +2429,7 @@ namespace Core {
             "}\n";
 
         this->PositionsAndNormals_fragment =  
-            "#version 330\n"
+            "#version 400\n"
             "precision mediump float;\n"
             "#include \"Common\" \n"
             "in vec3 vPosition;\n"
@@ -2453,7 +2453,7 @@ namespace Core {
             "} \n";
 
         this->SSAO_vertex =  
-            "#version 330\n"
+            "#version 400\n"
             + POSITION_DEF
             + ALBEDO_UV_DEF
             + PROJECTION_MATRIX_DEF
@@ -2467,7 +2467,7 @@ namespace Core {
             "}\n";
 
         this->SSAO_fragment =  
-            "#version 330\n"
+            "#version 400\n"
             "out float out_color;\n"
             "in vec2 vUV;\n"
 
@@ -2498,19 +2498,19 @@ namespace Core {
                 "float occlusion = 0.0;\n"
                 "for(int i = 0; i < kernelSize; ++i) \n"
                 "{\n"
-                    "vec3 sample = TBN * samples[i]; \n" // from tangent to view-space
-                    "sample = fragPos + sample * eRadius; \n"
+                    "vec3 sampled = TBN * samples[i]; \n" // from tangent to view-space
+                    "sampled = fragPos + sampled * eRadius; \n"
                     
-                    "vec4 offset = vec4(sample, 1.0);\n"
+                    "vec4 offset = vec4(sampled, 1.0);\n"
                     "offset = projection * offset;\n"
                     "offset.xyz /= offset.w;\n"
                     "offset.xyz = offset.xyz * 0.5 + 0.5;\n"
                     
                     // get sample depth
-                    "float sampleDepth = texture(viewPositions, offset.xy).z;\n" // get depth value of kernel sample
+                    "float sampleDepth = texture(viewPositions, offset.xy).z;\n" // get depth value of kernel sampled
                     
                     "float rangeCheck = smoothstep(0.0, 1.0, eRadius / abs(fragPos.z - sampleDepth));\n"
-                    "occlusion += (sampleDepth >= sample.z + bias ? 1.0 : 0.0) * rangeCheck;\n"
+                    "occlusion += (sampleDepth >= sampled.z + bias ? 1.0 : 0.0) * rangeCheck;\n"
                 "}\n"
                 "occlusion = 1.0 - (occlusion / kernelSize);\n"
                 "out_color = occlusion;\n"
@@ -2518,7 +2518,7 @@ namespace Core {
             "}\n";
 
         this->SSAOBlur_vertex =  
-            "#version 330\n"
+            "#version 400\n"
             + POSITION_DEF
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF
@@ -2531,7 +2531,7 @@ namespace Core {
             "}\n";
 
         this->SSAOBlur_fragment =  
-            "#version 330 core \n"
+            "#version 400 \n"
             "out float out_color; \n"
             "in vec2 vUV; \n"
             "uniform sampler2D ssaoInput; \n"
