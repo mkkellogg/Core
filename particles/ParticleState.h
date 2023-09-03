@@ -85,12 +85,12 @@ namespace Core {
         ParticleStateAttributeArray() {
         }
 
-        void copyParticleState(UInt32 srcIndex, UInt32 destIndex) {
+        void copyState(UInt32 srcIndex, UInt32 destIndex) {
             if (srcIndex >= this->particleCount) {
-                throw OutOfRangeException("ParticleStateAttributeArray::copyParticleState() -> 'srcIndex' is out of range.");
+                throw OutOfRangeException("ParticleStateAttributeArray::copyState() -> 'srcIndex' is out of range.");
             }
             if (destIndex >= this->particleCount) {
-                throw OutOfRangeException("ParticleStateAttributeArray::copyParticleState() -> 'destIndex' is out of range.");
+                throw OutOfRangeException("ParticleStateAttributeArray::copyState() -> 'destIndex' is out of range.");
             }
 
             this->progressTypes->copyAttribute(srcIndex, destIndex);
@@ -110,9 +110,9 @@ namespace Core {
             this->initialColors->copyAttribute(srcIndex, destIndex);
         }
 
-        ParticleStatePtr& getParticleStatePtr(UInt32 index) {
+        ParticleStatePtr& getStatePtr(UInt32 index) {
             if (index >= this->particleCount) {
-                throw OutOfRangeException("ParticleStateAttributeArray::getParticleStatePtr() -> 'index' is out of range.");
+                throw OutOfRangeException("ParticleStateAttributeArray::getStatePtr() -> 'index' is out of range.");
             }
             return this->particleStatePointers.get()[index];
         }
@@ -148,14 +148,14 @@ namespace Core {
             }
             this->particleStatePointers = std::shared_ptr<ParticleStatePtr>(particleStatePointers);
             for (UInt32 i = 0; i < particleCount; i++) {
-                this->bindParticleStatePtr(i, this->particleStatePointers.get()[i]);
+                this->bindStatePtr(i, this->particleStatePointers.get()[i]);
             }
         }
 
         void deallocate() override {
         }
 
-        void bindParticleStatePtr(UInt32 index, ParticleStatePtr& ptr) {
+        void bindStatePtr(UInt32 index, ParticleStatePtr& ptr) {
             ptr.progressType = &this->progressTypes->getAttribute(index);
             ptr.lifetime = &this->lifetimes->getAttribute(index);
             ptr.age = &this->ages->getAttribute(index);

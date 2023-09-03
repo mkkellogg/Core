@@ -57,7 +57,7 @@ namespace Core {
     }
 
     void ParticleSystem::activateParticle(UInt32 index) {
-        ParticleStatePtr statePtr = this->particleStates.getParticleStatePtr(index);
+        ParticleStatePtr statePtr = this->particleStates.getStatePtr(index);
         *statePtr.age = 0.0f;
         for (UInt32 i = 0; i < this->particleStateInitializers.size(); i++) {
             std::shared_ptr<ParticleStateInitializer> particleStateInitializer = this->particleStateInitializers[i];
@@ -70,7 +70,6 @@ namespace Core {
     void ParticleSystem::advanceActiveParticles(Real timeDelta) {
         UInt32 i = 0;
         while (i < this->activeParticleCount) {
-            ParticleStatePtr statePtr = this->particleStates.getParticleStatePtr(i);
             Bool particleIsActive = this->advanceActiveParticle(i, timeDelta); 
             if (!particleIsActive) {
                 if (i < this->activeParticleCount - 1) {
@@ -84,7 +83,7 @@ namespace Core {
     }
 
     Bool ParticleSystem::advanceActiveParticle(UInt32 index, Real timeDelta) {
-        ParticleStatePtr statePtr = this->particleStates.getParticleStatePtr(index);
+        ParticleStatePtr statePtr = this->particleStates.getStatePtr(index);
         for (UInt32 i = 0; i < this->particleStateOperators.size(); i++) {
             std::shared_ptr<ParticleStateOperator> particleStateOperator = this->particleStateOperators[i];
             Bool stillAlive = particleStateOperator->updateState(statePtr, timeDelta);
@@ -97,7 +96,7 @@ namespace Core {
     }
 
     void ParticleSystem::copyParticleInArray(UInt32 srcIndex, UInt32 destIndex) {
-        this->particleStates.copyParticleState(srcIndex, destIndex);
+        this->particleStates.copyState(srcIndex, destIndex);
     }
 
     ParticleSystem::SystemState ParticleSystem::getSystemState() {
@@ -134,7 +133,7 @@ namespace Core {
         if (index >= this->activeParticleCount) {
             throw OutOfRangeException("ParticleSystem::getParticleStatePtr() -> 'index' is out of range.");
         }
-        return this->particleStates.getParticleStatePtr(index);
+        return this->particleStates.getStatePtr(index);
     }
 
     ParticleStateAttributeArray& ParticleSystem::getParticleStates() {
