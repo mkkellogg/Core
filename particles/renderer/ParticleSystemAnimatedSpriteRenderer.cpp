@@ -26,7 +26,9 @@ namespace Core {
         this->material = Engine::instance()->createMaterial<ParticleStandardMaterial>();
         this->material->setBlendingMode(RenderState::BlendingMode::Custom);
         this->material->setSourceBlendingFactor(RenderState::BlendingFactor::SrcAlpha);
+        this->material->setSourceAlphaBlendingFactor(RenderState::BlendingFactor::One);
         this->material->setDestBlendingFactor(RenderState::BlendingFactor::OneMinusSrcAlpha);
+        this->material->setDestAlphaBlendingFactor(RenderState::BlendingFactor::OneMinusSrcAlpha);
         this->material->setRenderQueue(EngineRenderQueue::Transparent);
         return this->material.isValid();
     }
@@ -40,7 +42,9 @@ namespace Core {
             if (this->material->getBlendingMode() == RenderState::BlendingMode::Custom) {
                 graphics->setBlendingEquation(this->material->getBlendingEquation());
             }
-            graphics->setBlendingFactors(this->material->getSourceBlendingFactor(), this->material->getDestBlendingFactor());
+            graphics->setBlendingFactors(this->material->getSourceBlendingFactor(), this->material->getDestBlendingFactor(),
+                                         this->material->getSourceAlphaBlendingFactor(), this->material->getDestAlphaBlendingFactor());
+
         }
         else {
             graphics->setBlendingEnabled(false);

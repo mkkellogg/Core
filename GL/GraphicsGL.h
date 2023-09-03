@@ -59,6 +59,8 @@ namespace Core {
         void setBlendingEnabled(Bool enabled) override;
         void setBlendingEquation(RenderState::BlendingEquation) override;
         void setBlendingFactors(RenderState::BlendingFactor source, RenderState::BlendingFactor dest) override;
+        void setBlendingFactors(RenderState::BlendingFactor source, RenderState::BlendingFactor sourceAlpha,
+                                RenderState::BlendingFactor dest, RenderState::BlendingFactor destAlpha) override;
 
         WeakPointer<RenderTarget2D> createRenderTarget2D(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
                                                      const TextureAttributes& colorTextureAttributes, 

@@ -175,6 +175,12 @@ namespace Core {
         glBlendFunc(getGLBlendingFactor(source), getGLBlendingFactor(dest));
     }
 
+    void GraphicsGL::setBlendingFactors(RenderState::BlendingFactor source, RenderState::BlendingFactor sourceAlpha,
+                                        RenderState::BlendingFactor dest, RenderState::BlendingFactor destAlpha) {
+        glBlendFuncSeparate(getGLBlendingFactor(source), getGLBlendingFactor(dest),
+                            getGLBlendingFactor(sourceAlpha), getGLBlendingFactor(destAlpha));
+    }
+
     WeakPointer<RenderTarget2D> GraphicsGL::createRenderTarget2D(Bool hasColor, Bool hasDepth, Bool enableStencilBuffer,
                                                                  const TextureAttributes& colorTextureAttributes, 
                                                                  const TextureAttributes& depthTextureAttributes,

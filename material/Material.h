@@ -36,8 +36,12 @@ namespace Core {
         void setBlendingEquation(RenderState::BlendingEquation equation);
         RenderState::BlendingFactor getSourceBlendingFactor() const;
         void setSourceBlendingFactor(RenderState::BlendingFactor factor);
+        RenderState::BlendingFactor getSourceAlphaBlendingFactor() const;
+        void setSourceAlphaBlendingFactor(RenderState::BlendingFactor factor);
         RenderState::BlendingFactor getDestBlendingFactor() const;
         void setDestBlendingFactor(RenderState::BlendingFactor factor);
+         RenderState::BlendingFactor getDestAlphaBlendingFactor() const;
+        void setDestAlphaBlendingFactor(RenderState::BlendingFactor factor);
         RenderStyle getRenderStyle() const;
         void setRenderStyle(RenderStyle style);
         RenderPath getRenderPath() const;

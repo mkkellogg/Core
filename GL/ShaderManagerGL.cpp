@@ -490,7 +490,7 @@ namespace Core {
             "out vec4 vFragColor;\n"
             "out float vSequenceElementT; \n"
 
-            "void getUV(in int sequenceElement, in int sequenceNumber, in vec4 atlasTileArray, out vec2 uv) { \n"
+         /*  "void getUV(in int sequenceElement, in int sequenceNumber, in vec4 atlasTileArray, out vec2 uv) { \n"
             "   float atlasTileWidth = atlasTileArray.z; \n"
             "   float atlasTileHeight = atlasTileArray.w; \n"
             "   float atlasTileX = atlasTileArray.x; \n"
@@ -502,11 +502,34 @@ namespace Core {
             "   float firstRowY = 1.0 - (atlasTileY + atlasTileHeight); \n"
 
             "   int nRowSequenceElement = sequenceElement - firstRowSections; \n"
-            "   float SNOverHS = float(nRowSequenceElement) / maxRowSections;\n"
+            "   float SNOverHS = float(nRowSequenceElement) / float(maxRowSections);\n"
             "   int nRowYTile = int(SNOverHS);\n"
-            "   int nRowXTile = int((SNOverHS - float(nRowYTile)) * maxRowSections);\n"
-            "   float nRowX = nRowXTile * atlasTileWidth;\n"
-            "   float nRowY = 1.0 - ((nRowYTile + 1) * (atlasTileHeight) + atlasTileY + atlasTileHeight);\n"
+            "   int nRowXTile = int(SNOverHS - float(nRowYTile)) * maxRowSections;\n"
+            "   float nRowX = float(nRowXTile) * atlasTileWidth;\n"
+            "   float nRowY = 1.0 - ((float(nRowYTile) + 1) * (atlasTileHeight) + atlasTileY + atlasTileHeight);\n"
+
+            "   float nRow = step(float(firstRowSections), float(sequenceElement)); \n"
+            "   uv.x = nRow * nRowX + (1.0 - nRow) * firstRowX; \n"
+            "   uv.y = nRow * nRowY + (1.0 - nRow) * firstRowY; \n"
+            "} \n"*/
+
+            "void getUV(in int sequenceElement, in int sequenceNumber, in vec4 atlasTiles, out vec2 uv) { \n"
+            "   float atlasTileWidth = atlasTiles.z; \n"
+            "   float atlasTileHeight = atlasTiles.w; \n"
+            "   float atlasTileX = atlasTiles.x; \n"
+            "   float atlasTileY = atlasTiles.y; \n"
+            "   int firstRowSections = int((1.0 - atlasTileX) / atlasTileWidth); \n"
+            "   int maxRowSections = int(1.0 / atlasTileWidth); \n"
+
+            "   float firstRowX = atlasTileX + atlasTileWidth * float(sequenceElement); \n"
+            "   float firstRowY = 1.0 - (atlasTileY + atlasTileHeight); \n"
+
+            "   int nRowSequenceElement = sequenceElement - firstRowSections; \n"
+            "   float SNOverHS = float(nRowSequenceElement) / float(maxRowSections);\n"
+            "   int nRowYTile = int(SNOverHS);\n"
+            "   int nRowXTile = int((SNOverHS - float(nRowYTile)) * float(maxRowSections));\n"
+            "   float nRowX = float(nRowXTile) * atlasTileWidth;\n"
+            "   float nRowY = 1.0 - ((float(nRowYTile) + 1.0) * (atlasTileHeight) + atlasTileY + atlasTileHeight);\n"
 
             "   float nRow = step(float(firstRowSections), float(sequenceElement)); \n"
             "   uv.x = nRow * nRowX + (1.0 - nRow) * firstRowX; \n"

@@ -18,7 +18,9 @@ namespace Core {
         RenderState::BlendingMode blendingMode;
         RenderState::BlendingEquation blendingEquation;
         RenderState::BlendingFactor srcBlendingFactor;
+        RenderState::BlendingFactor srcAlphaBlendingFactor;
         RenderState::BlendingFactor destBlendingFactor;
+        RenderState::BlendingFactor destAlphaBlendingFactor;
         RenderStyle renderStyle;
 
         Bool stencilTestEnabled;

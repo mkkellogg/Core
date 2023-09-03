@@ -63,12 +63,29 @@ namespace Core {
         this->materialState.srcBlendingFactor = factor;
     }
 
+
+    RenderState::BlendingFactor Material::getSourceAlphaBlendingFactor() const {
+        return this->materialState.srcAlphaBlendingFactor;
+    }
+
+    void Material::setSourceAlphaBlendingFactor(RenderState::BlendingFactor factor) {
+        this->materialState.srcAlphaBlendingFactor = factor;
+    }
+
     RenderState::BlendingFactor Material::getDestBlendingFactor() const {
         return this->materialState.destBlendingFactor;
     }
 
     void Material::setDestBlendingFactor(RenderState::BlendingFactor factor) {
         this->materialState.destBlendingFactor = factor;
+    }
+
+    RenderState::BlendingFactor Material::getDestAlphaBlendingFactor() const {
+        return this->materialState.destAlphaBlendingFactor;
+    }
+
+    void Material::setDestAlphaBlendingFactor(RenderState::BlendingFactor factor) {
+        this->materialState.destAlphaBlendingFactor = factor;
     }
 
     RenderStyle Material::getRenderStyle() const {

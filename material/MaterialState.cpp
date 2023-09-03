@@ -12,7 +12,9 @@ namespace Core {
         this->blendingMode = RenderState::BlendingMode::None;
         this->blendingEquation = RenderState::BlendingEquation::Add;
         this->srcBlendingFactor = RenderState::BlendingFactor::One;
+        this->srcAlphaBlendingFactor = RenderState::BlendingFactor::One;
         this->destBlendingFactor = RenderState::BlendingFactor::Zero;
+        this->destAlphaBlendingFactor = RenderState::BlendingFactor::Zero;
         this->renderStyle = RenderStyle::Fill;
         
         this->depthWriteEnabled = true;
