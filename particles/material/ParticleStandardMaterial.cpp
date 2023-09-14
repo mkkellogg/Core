@@ -36,11 +36,11 @@ namespace Core {
         WeakPointer<Texture2D> atlasTexture = this->atlas.getTexture();
         if (atlasTexture.isValid() && this->atlasTextureLocation >= 0) {
             this->shader->setTexture2D(0, atlasTextureLocation, atlasTexture->getTextureID());
-            UInt32 atlasTileArrayCount = this->atlas.getTileArrayCount();
-            for (UInt32 i = 0; i < atlasTileArrayCount; i++) {
+            UInt32 atlasFrameSetCount = this->atlas.getFrameSetCount();
+            for (UInt32 i = 0; i < atlasFrameSetCount; i++) {
                 if (atlasTileArayLocation[i] >= 0) {
-                    Atlas::TileArrayDescriptor& tileArray = this->atlas.getTileArray(i);
-                    this->shader->setUniform4f(atlasTileArayLocation[i], tileArray.x, tileArray.y, tileArray.width, tileArray.height);
+                    Atlas::FrameSetDescriptor& frameSet = this->atlas.getFrameSet(i);
+                    this->shader->setUniform4f(atlasTileArayLocation[i], frameSet.x, frameSet.y, frameSet.width, frameSet.height);
                 }
             }
         }
@@ -97,7 +97,7 @@ namespace Core {
             particleMaterial->viewMatrixLocation = this->viewMatrixLocation;
             particleMaterial->atlasTextureLocation = this->atlasTextureLocation;
             particleMaterial->uvOffsetLocation = this->uvOffsetLocation;
-            for (UInt32 i = 0; i < Constants::MaxAtlasTileArrays; i++) {
+            for (UInt32 i = 0; i < Constants::MaxAtlasFrameSets; i++) {
                 particleMaterial->atlasTileArayLocation[i] = this->atlasTileArayLocation[i];
             }
             particleMaterial->worldPositionLocation = this->worldPositionLocation;
@@ -122,8 +122,8 @@ namespace Core {
         this->viewMatrixLocation = this->shader->getUniformLocation(StandardUniform::ViewMatrix);
         this->atlasTextureLocation = this->shader->getUniformLocation("atlasTexture");
         this->uvOffsetLocation = this->shader->getUniformLocation("uvOffset");
-        for (UInt32 i = 0; i < Constants::MaxAtlasTileArrays; i++) {
-            this->atlasTileArayLocation[i] = this->shader->getUniformLocation("atlasTileArray", i);
+        for (UInt32 i = 0; i < Constants::MaxAtlasFrameSets; i++) {
+            this->atlasTileArayLocation[i] = this->shader->getUniformLocation("atlasFrameSet", i);
         }
         this->worldPositionLocation = this->shader->getAttributeLocation("worldPosition");
         this->sizeLocation = this->shader->getAttributeLocation("size");

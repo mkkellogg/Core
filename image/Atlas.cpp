@@ -18,18 +18,18 @@ namespace Core {
         return this->texture;
     }
 
-    UInt32 Atlas::getTileArrayCount() const {
-        return this->tileArrays.size();
+    UInt32 Atlas::getFrameSetCount() const {
+        return this->frameSets.size();
     }
 
-    void Atlas::addTileArray(UInt32 length, Real x, Real y, Real width, Real height) {
-        this->tileArrays.push_back(TileArrayDescriptor(length, x, y, width, height));
+    void Atlas::addFrameSet(UInt32 length, Real x, Real y, Real width, Real height) {
+        this->frameSets.push_back(FrameSetDescriptor(length, x, y, width, height));
     }
 
-    Atlas::TileArrayDescriptor& Atlas::getTileArray(UInt32 index) {
-        if (index >= this->tileArrays.size()) {
-            throw OutOfRangeException("Atlas::getTileArray -> 'index' is out of range.");
+    Atlas::FrameSetDescriptor& Atlas::getFrameSet(UInt32 index) {
+        if (index >= this->frameSets.size()) {
+            throw OutOfRangeException("Atlas::getFrameSet -> 'index' is out of range.");
         }
-        return this->tileArrays[index];
+        return this->frameSets[index];
     }
 }

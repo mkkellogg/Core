@@ -10,9 +10,9 @@ namespace Core {
     class Atlas {
     public:
 
-        class TileArrayDescriptor {
+        class FrameSetDescriptor {
         public:
-            TileArrayDescriptor(UInt32 length, Real x, Real y, Real width, Real height) {
+            FrameSetDescriptor(UInt32 length, Real x, Real y, Real width, Real height) {
                 this->length = length;
                 this->x = x;
                 this->y = y;
@@ -32,12 +32,12 @@ namespace Core {
         virtual ~Atlas();
 
         WeakPointer<Texture2D> getTexture();
-        UInt32 getTileArrayCount () const;
-        void addTileArray(UInt32 length, Real x, Real y, Real width, Real height);
-        TileArrayDescriptor& getTileArray(UInt32 index);
+        UInt32 getFrameSetCount () const;
+        void addFrameSet(UInt32 length, Real x, Real y, Real width, Real height);
+        FrameSetDescriptor& getFrameSet(UInt32 index);
 
     private:
         PersistentWeakPointer<Texture2D> texture;
-        std::vector<TileArrayDescriptor> tileArrays;
+        std::vector<FrameSetDescriptor> frameSets;
     };
 }

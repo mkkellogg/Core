@@ -46,7 +46,7 @@ namespace Core {
         Int32 interpolateAtlasFramesLocation;
         Int32 uvOffsetLocation;
         Int32 atlasTextureLocation;
-        Int32 atlasTileArayLocation[Constants::MaxAtlasTileArrays];
+        Int32 atlasTileArayLocation[Constants::MaxAtlasFrameSets];
         Int32 worldPositionLocation;
         Int32 sizeLocation;
         Int32 rotationLocation;

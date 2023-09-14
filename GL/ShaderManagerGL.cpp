@@ -437,8 +437,8 @@ namespace Core {
         this->ParticleStandard_vertex = 
             "#version 400\n"
             "precision highp float;\n"
-            "const int MAX_ATLAS_TILE_ARRAYS = 16; \n"
-            "uniform vec4 atlasTileArray[MAX_ATLAS_TILE_ARRAYS]; \n"
+            "const int MAX_ATLAS_FRAME_SETS = 16; \n"
+            "uniform vec4 atlasFrameSet[MAX_ATLAS_FRAME_SETS]; \n"
             + PROJECTION_MATRIX_DEF
             + VIEW_MATRIX_DEF +
             "in vec4 worldPosition;\n"
@@ -454,7 +454,7 @@ namespace Core {
             "out int vSequenceStart;\n"
             "out int vSequenceLength;\n"
             "out vec4 vColor;\n"
-            "out vec4 vAtlasTileArray;\n"
+            "out vec4 vAtlasFrameSet;\n"
             "void main()\n"
             "{\n"
             "   vViewPosition = " + VIEW_MATRIX + " * worldPosition;\n"
@@ -465,7 +465,7 @@ namespace Core {
             "   vSequenceNumber = int(sequenceElement.y);\n"
             "   vSequenceStart = int(sequenceElement.z);\n"
             "   vSequenceLength = int(sequenceElement.w);\n"
-            "   vAtlasTileArray = atlasTileArray[vSequenceNumber]; \n"
+            "   vAtlasFrameSet = atlasFrameSet[vSequenceNumber]; \n"
             "   gl_Position = " + PROJECTION_MATRIX + " * vViewPosition;\n"
             "}\n";
 
@@ -484,17 +484,17 @@ namespace Core {
             "in int vSequenceStart[];\n"
             "in int vSequenceLength[];\n"
             "in vec4 vColor[];\n"
-            "in vec4 vAtlasTileArray[];\n"
+            "in vec4 vAtlasFrameSet[];\n"
             "out vec2 vUV1;\n"
             "out vec2 vUV2;\n"
             "out vec4 vFragColor;\n"
             "out float vSequenceElementT; \n"
 
-         /*  "void getUV(in int sequenceElement, in int sequenceNumber, in vec4 atlasTileArray, out vec2 uv) { \n"
-            "   float atlasTileWidth = atlasTileArray.z; \n"
-            "   float atlasTileHeight = atlasTileArray.w; \n"
-            "   float atlasTileX = atlasTileArray.x; \n"
-            "   float atlasTileY = atlasTileArray.y; \n"
+         /*  "void getUV(in int sequenceElement, in int sequenceNumber, in vec4 atlasFrameSet, out vec2 uv) { \n"
+            "   float atlasTileWidth = atlasFrameSet.z; \n"
+            "   float atlasTileHeight = atlasFrameSet.w; \n"
+            "   float atlasTileX = atlasFrameSet.x; \n"
+            "   float atlasTileY = atlasFrameSet.y; \n"
             "   int firstRowSections = int((1.0 - atlasTileX) / atlasTileWidth); \n"
             "   int maxRowSections = int(1.0 / atlasTileWidth); \n"
 
@@ -555,7 +555,7 @@ namespace Core {
             "   int sequenceNumber = vSequenceNumber[0];\n"
             "   int sequenceStart = vSequenceStart[0];\n"
             "   int sequenceLength = vSequenceLength[0];\n"
-            "   vec4 atlasTileArray = vAtlasTileArray[0];\n"
+            "   vec4 atlasFrameSet = vAtlasFrameSet[0];\n"
 
             /*"   float atlasTileWidth = 1.0 / atlasHorizontalSections;\n"
             "   float atlasTileHeight = 1.0 / atlasVerticalSections;\n"
@@ -565,10 +565,10 @@ namespace Core {
             "   float uvLeft = float(xTile) * atlasTileWidth;\n"
             "   float uvTop = 1.0 - ((float(yTile) + 1) * atlasTileHeight);\n"*/
 
-            /*"   float atlasTileWidth = atlasTileArray.z; \n"
-            "   float atlasTileHeight = atlasTileArray.w; \n"
-            "   float tileX = atlasTileArray.x + atlasTileWidth * float(sequenceElement); \n"
-            "   float tileY = atlasTileArray.y; \n"
+            /*"   float atlasTileWidth = atlasFrameSet.z; \n"
+            "   float atlasTileHeight = atlasFrameSet.w; \n"
+            "   float tileX = atlasFrameSet.x + atlasTileWidth * float(sequenceElement); \n"
+            "   float tileY = atlasFrameSet.y; \n"
             "   float uvLeft = tileX;\n"
             "   float uvBottom = 1.0 - (tileY + atlasTileHeight);\n"*/
 
@@ -579,10 +579,10 @@ namespace Core {
             "   vSequenceElementT = sequenceElement - float(int(sequenceElement)); \n"
             "   int firstSequenceElement = int(sequenceElement); \n"
             "   int secondSequenceElement = clamp(firstSequenceElement + 1, sequenceStart, sequenceStart + sequenceLength - 1); \n"
-            "   getUV(firstSequenceElement, sequenceNumber, atlasTileArray, uv1); \n"
-            "   if (interpolateAtlasFrames == 1 && firstSequenceElement != secondSequenceElement) getUV(secondSequenceElement, sequenceNumber, atlasTileArray, uv2); \n"
-            "   float atlasTileWidth = atlasTileArray.z; \n"
-            "   float atlasTileHeight = atlasTileArray.w; \n"
+            "   getUV(firstSequenceElement, sequenceNumber, atlasFrameSet, uv1); \n"
+            "   if (interpolateAtlasFrames == 1 && firstSequenceElement != secondSequenceElement) getUV(secondSequenceElement, sequenceNumber, atlasFrameSet, uv2); \n"
+            "   float atlasTileWidth = atlasFrameSet.z; \n"
+            "   float atlasTileHeight = atlasFrameSet.w; \n"
 
 
 
